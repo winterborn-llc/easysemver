@@ -20,11 +20,11 @@ internal class VersionHandler
     
     public Version TargetVersion { get; }
     
-    public VersionHandler(string xml)
+    public VersionHandler(string xml, bool isSignificant = false)
     {
         this.SourceXml = xml;
         this.SourceVersion = GetOriginalVersion(this.SourceXml);
-        this.TargetVersion = this.SourceVersion.GetNextIncrement();
+        this.TargetVersion = this.SourceVersion.GetNextIncrement(isSignificant);
         this.TargetXml = UpdateVersion(this.SourceXml, this.TargetVersion);
     }
     
@@ -36,11 +36,6 @@ internal class VersionHandler
         foreach (var propertyPreference in PropertyPreferences)
         {
             var elements = xmlDoc.GetElementsByTagName(propertyPreference);
-            if (elements.Count != 1)
-            {
-                continue;
-            }
-            
             var value = elements[0]?.InnerText;
             if (string.IsNullOrWhiteSpace(value))
             {
@@ -51,7 +46,7 @@ internal class VersionHandler
             return version;
         }
 
-        return new Version();
+        return new Version("1.0.0");
     }
     
     internal static string UpdateVersion(string inputXml, Version newVersion)
@@ -64,11 +59,6 @@ internal class VersionHandler
             var elements = xmlDoc.GetElementsByTagName(propertyPreference);
             for (var i = 0; i < elements.Count; i++)
             {
-                if (elements[i] == null)
-                {
-                    continue;
-                }
-                
                 elements[i]!.InnerText = newVersion.ToString();
             }
         }

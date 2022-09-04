@@ -18,11 +18,6 @@ internal class VersionList
     
     public override string ToString()
     {
-        if (!this.List.Any())
-        {
-            return string.Empty;
-        }
-        
         var builder = new StringBuilder();
         builder.Append($"{this.List[0]}");
         for (var i = 1; i < this.List.Count; i++)
@@ -55,11 +50,6 @@ internal class VersionList
     
     public void Increment(bool isSignificant = false)
     {
-        if (this.List.Count < 2)
-        {
-            throw new InvalidOperationException("A version segment value must have a minimum of 3 segments");
-        }
-
         var startAt = this.List.Count - 1;
         if (isSignificant)
         {

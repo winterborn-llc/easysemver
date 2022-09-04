@@ -4,10 +4,10 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <OutputType>Exe</OutputType>
-    <PackageVersion>1.0.3</PackageVersion>
+    <PackageVersion>1.0.8</PackageVersion>
     <Title>Version Counter by Yamamari</Title>
-    <AssemblyVersion>1.0.3</AssemblyVersion>
-    <FileVersion>1.0.3</FileVersion>
+    <AssemblyVersion>1.0.8</AssemblyVersion>
+    <FileVersion>1.0.8</FileVersion>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <RootNamespace>Yamamari.Library.VersionCounter</RootNamespace>
     <PackageProjectUrl>https://github.com/yamamari-llc/library-versioncounter</PackageProjectUrl>

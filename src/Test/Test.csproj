@@ -6,8 +6,6 @@
         <Nullable>enable</Nullable>
 
         <IsPackable>false</IsPackable>
-
-        <RootNamespace>VersionCounter.Test</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>
@@ -25,6 +23,15 @@
 
     <ItemGroup>
       <ProjectReference Include="..\VersionCounter\VersionCounter.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Update="SampleCsProj.xml">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+      <None Update="TargetCsProj.xml">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
     </ItemGroup>
 
 </Project>
