@@ -18,15 +18,19 @@ jobs:
         dotnet-version: 6.0.x
         
     - name: Restore dependencies
+      working-directory: ./src
       run: dotnet restore
       
     - name: Build
+      working-directory: ./src
       run: dotnet build --no-restore
       
     - name: Test
+      working-directory: ./src
       run: dotnet test --no-build --verbosity normal
       
     - name: Publish the package to nuget.org
+      working-directory: ./src
       run: dotnet nuget push */bin/Release/*.nupkg -k $NUGET_AUTH_TOKEN -s https://api.nuget.org/v3/index.json
       env:
         NUGET_AUTH_TOKEN: ${{ secrets.NUGET_TOKEN }}
