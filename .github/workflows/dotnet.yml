@@ -27,7 +27,7 @@ jobs:
       
     - name: Test
       working-directory: ./src
-      run: dotnet test --no-build --verbosity normal
+      run: dotnet test --no-build --verbosity normal --configuration Release
       
     - name: Publish the package to nuget.org
       run: dotnet nuget push */src/*/bin/Release/*.nupkg -k $NUGET_AUTH_TOKEN -s https://api.nuget.org/v3/index.json
