@@ -1,3 +1,4 @@
+using System;
 using Yamamari.Library.VersionCounter;
 
 namespace Test;
