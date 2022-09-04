@@ -4,8 +4,8 @@ on:
   push:
     branches: [ "main" ]
 env:
-  CONFIGURATION: Release
-  PROJECT: VersionCounter
+  configuration: Release
+  project: VersionCounter
 
 jobs:
   build:
@@ -26,13 +26,13 @@ jobs:
       
     - name: Build
       working-directory: ./src
-      run: dotnet build --no-restore --configuration ${{ CONFIGURATION }}
+      run: dotnet build --no-restore --configuration ${{ env.configuration }}
       
     - name: Test
       working-directory: ./src
-      run: dotnet test --no-build --verbosity normal --configuration ${{ CONFIGURATION }}
+      run: dotnet test --no-build --verbosity normal --configuration ${{ env.configuration }}
       
     - name: Publish the package to nuget.org
       env:
         NUGET_AUTH_TOKEN: ${{ secrets.NUGET_TOKEN }}
-      run: dotnet nuget push ./src/${{ PROJECT }}/bin/${{ CONFIGURATION }}/*.nupkg -k ${{ NUGET_AUTH_TOKEN }} -s https://api.nuget.org/v3/index.json
+      run: dotnet nuget push ./src/${{ env.project }}/bin/${{ configuration }}/*.nupkg -k ${{ NUGET_AUTH_TOKEN }} -s https://api.nuget.org/v3/index.json
