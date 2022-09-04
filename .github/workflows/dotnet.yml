@@ -3,6 +3,9 @@ name: .NET
 on:
   push:
     branches: [ "main" ]
+env:
+  CONFIGURATION: Release
+  PROJECT: VersionCounter
 
 jobs:
   build:
@@ -23,13 +26,13 @@ jobs:
       
     - name: Build
       working-directory: ./src
-      run: dotnet build --no-restore --configuration Release
+      run: dotnet build --no-restore --configuration ${{ CONFIGURATION }}
       
     - name: Test
       working-directory: ./src
-      run: dotnet test --no-build --verbosity normal --configuration Release
+      run: dotnet test --no-build --verbosity normal --configuration ${{ CONFIGURATION }}
       
     - name: Publish the package to nuget.org
-      run: dotnet nuget push ./src/VersionCounter/bin/Release/*.nupkg -k $NUGET_AUTH_TOKEN -s https://api.nuget.org/v3/index.json
       env:
         NUGET_AUTH_TOKEN: ${{ secrets.NUGET_TOKEN }}
+      run: dotnet nuget push ./src/${{ PROJECT }}/bin/${{ CONFIGURATION }}/*.nupkg -k ${{ NUGET_AUTH_TOKEN }} -s https://api.nuget.org/v3/index.json
