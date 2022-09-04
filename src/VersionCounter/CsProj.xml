@@ -1,0 +1,31 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net6.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <OutputType>Exe</OutputType>
+        <PackageVersion>1.0.1</PackageVersion>
+        <Title>Version Counter by Yamamari</Title>
+        <AssemblyVersion>1.0.1</AssemblyVersion>
+        <FileVersion>1.0.1</FileVersion>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <RootNamespace>Yamamari.Library.VersionCounter</RootNamespace>
+        <PackageProjectUrl>https://github.com/yamamari-llc/library-versioncounter</PackageProjectUrl>
+        <PackageIcon>Resources\yamamari-logo-package.png</PackageIcon>
+        <RepositoryUrl>https://github.com/yamamari-llc/library-versioncounter</RepositoryUrl>
+        <RepositoryType>Git</RepositoryType>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <None Update="Resources\yamamari-logo-package.png">
+            <Pack>True</Pack>
+            <PackagePath></PackagePath>
+        </None>
+    </ItemGroup>
+
+    <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+        <Exec Command="./$(OutDir)VersionCounter ./$(ProjectFileName)" />
+    </Target>
+
+</Project>
