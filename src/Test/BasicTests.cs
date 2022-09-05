@@ -1,5 +1,5 @@
 using System;
-using Yamamari.Library.VersionCounter;
+using Yamamari.AutoVersion;
 
 namespace Test;
 

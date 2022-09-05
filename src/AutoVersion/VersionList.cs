@@ -1,9 +1,7 @@
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
 
-namespace Yamamari.Library.VersionCounter;
+namespace Yamamari.AutoVersion;
 
 // Major.Minor[.Build[.Revision]]
 [DebuggerDisplay("{ToString()}")]

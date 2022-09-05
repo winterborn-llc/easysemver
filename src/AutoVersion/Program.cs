@@ -1,6 +1,6 @@
 ﻿// See https://aka.ms/new-console-template for more information
 
-namespace Yamamari.Library.VersionCounter;
+namespace Yamamari.AutoVersion;
 
 public static class Program
 {

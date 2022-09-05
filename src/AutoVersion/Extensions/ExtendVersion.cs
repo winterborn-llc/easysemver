@@ -1,6 +1,4 @@
-using System;
-
-namespace Yamamari.Library.VersionCounter.Extensions;
+namespace Yamamari.AutoVersion.Extensions;
 
 internal static class ExtendVersion
 {

@@ -4,18 +4,18 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <OutputType>Exe</OutputType>
-    <PackageVersion>1.0.51</PackageVersion>
-    <AssemblyVersion>1.0.51</AssemblyVersion>
-    <FileVersion>1.0.51</FileVersion>
+    <PackageVersion>1.0.0</PackageVersion>
+    <AssemblyVersion>1.0.0</AssemblyVersion>
+    <FileVersion>1.0.0</FileVersion>
     <Title>Auto-Version by Yamamari</Title>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <RootNamespace>Yamamari.Library.AutoVersion</RootNamespace>
+    <RootNamespace>Yamamari.AutoVersion</RootNamespace>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageIcon>Resources/yamamari-logo-package.png</PackageIcon>
     <PackageProjectUrl>https://github.com/yamamari-llc/library-autoversion</PackageProjectUrl>
     <RepositoryUrl>https://github.com/yamamari-llc/library-autoversion</RepositoryUrl>
     <RepositoryType>Git</RepositoryType>
-    <PackageId>AutoVersion</PackageId>
+    <PackageId>Yamamari.AutoVersion</PackageId>
     <EnableDynamicLoading>True</EnableDynamicLoading>
   </PropertyGroup>
   <ItemGroup>

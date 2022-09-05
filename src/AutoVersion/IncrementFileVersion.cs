@@ -1,9 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Xml;
 
-namespace Yamamari.Library.VersionCounter;
+namespace Yamamari.AutoVersion;
 
 internal static class IncrementFileVersion
 {
@@ -21,7 +18,7 @@ internal static class IncrementFileVersion
         if (args.Count != 1)
         {
             throw new InvalidProgramException(
-                $"{nameof(VersionCounter)} expects exactly one input parameter as the file to be incremented");
+                $"{nameof(AutoVersion)} expects exactly one input parameter as the file to be incremented");
         }
         
         var filePath = args[0];

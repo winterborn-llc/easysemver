@@ -1,8 +1,7 @@
-using System;
 using System.Xml;
-using Yamamari.Library.VersionCounter.Extensions;
+using Yamamari.AutoVersion.Extensions;
 
-namespace Yamamari.Library.VersionCounter;
+namespace Yamamari.AutoVersion;
 
 // <AssemblyVersion>1.0.1</AssemblyVersion>
 // <PackageVersion>1.0.1</PackageVersion>
