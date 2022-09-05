@@ -3,9 +3,9 @@
     <TargetFramework>net6.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <PackageVersion>1.0.2</PackageVersion>
-    <AssemblyVersion>1.0.2</AssemblyVersion>
-    <FileVersion>1.0.2</FileVersion>
+    <PackageVersion>1.0.3</PackageVersion>
+    <AssemblyVersion>1.0.3</AssemblyVersion>
+    <FileVersion>1.0.3</FileVersion>
     <Title>Auto-Version by Yamamari</Title>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <RootNamespace>Yamamari.AutoVersion</RootNamespace>
@@ -18,12 +18,14 @@
     <EnableDynamicLoading>True</EnableDynamicLoading>
     <CustomTasksAssembly>$(OutDir)AutoVersion.dll</CustomTasksAssembly>
   </PropertyGroup>
+  
   <ItemGroup>
     <None Update="Resources/yamamari-logo-package.png">
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>
     </None>
   </ItemGroup>
+  
   <ItemGroup>
     <None Include="..\..\README.md">
       <Link>Resources/README.md</Link>
@@ -32,23 +34,12 @@
       <PackagePath>\</PackagePath>
     </None>
   </ItemGroup>
+  
   <ItemGroup>
     <PackageReference Include="Microsoft.Build.Framework" Version="17.3.1" CopyLocal="false" Publish="false" />
     <PackageReference Include="Microsoft.Build.Utilities.Core" Version="17.3.1" CopyLocal="false" Publish="false" />
   </ItemGroup>
-  <!--
-  <ItemGroup>
-    <None Include="$(TargetDir)AutoVersion">
-      <Pack>True</Pack>
-      <PackagePath>\lib\net6.0</PackagePath>
-    </None>
-  </ItemGroup>
-  -->
-  <!--
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="./$(OutDir)AutoVersion ./$(ProjectFileName)" />
-  </Target>
-  -->
+  
   <Target Name="RemoveMicrosoftBuildDllsFromOutput" AfterTargets="ResolveReferences">
     <PropertyGroup>
       <NonCopyLocalPackageReferences Condition="'%(PackageReference.CopyLocal)' == 'false'">;@(PackageReference);</NonCopyLocalPackageReferences>
@@ -57,10 +48,7 @@
       <ReferenceCopyLocalPaths Remove="@(ReferenceCopyLocalPaths)" Condition="$(NonCopyLocalPackageReferences.Contains(';%(ReferenceCopyLocalPaths.NuGetPackageId);'))" />
     </ItemGroup>
   </Target>
-  <!--
-  <UsingTask 
-          TaskName="$(MSBuildThisFileName).AutoVersion" AssemblyFile="$(CustomTasksAssembly)"/>
-          -->
+  
   <UsingTask TaskName="AutoVersion" AssemblyFile="$(OutDir)AutoVersion.dll" />
   <Target Name="RunCustomTask" AfterTargets="PostBuildEvent">
     <AutoVersion ProjectFile="./$(ProjectFileName)" />
