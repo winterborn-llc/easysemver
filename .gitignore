@@ -127,6 +127,7 @@ $tf/
 _ReSharper*/
 *.[Rr]e[Ss]harper
 *.DotSettings.user
+*/.idea/*
 
 # TeamCity is a build add-in
 _TeamCity*
@@ -349,3 +350,9 @@ MigrationBackup/
 
 # Ionide (cross platform F# VS Code tools) working folder
 .ionide/
+src/.DS_Store
+src/.idea/.DS_Store
+src/Test/.DS_Store
+src/VersionCounter/.DS_Store
+src/.idea/.idea.Yamamari.Library.VersionCounter/.idea/workspace.xml
+src/VersionCounter/.DS_Store
