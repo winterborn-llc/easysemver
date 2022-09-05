@@ -19,7 +19,7 @@ public class TestParts
     {
         Assert.Throws
             <FileNotFoundException>
-            (() => IncrementFileVersion.GetFilePath(new []{ "HelloWorld.csv" }));
+            (() => IncrementFileVersion.EnsureFileExists("HelloWorld.csv"));
     }
     
     [Fact]
