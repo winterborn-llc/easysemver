@@ -1,0 +1,38 @@
+name: .NET
+
+on:
+  push:
+    branches: [ "main" ]
+env:
+  configuration: Release
+  project: VersionCounter
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v2
+      with:
+        dotnet-version: 6.0.x
+        
+    - name: Restore dependencies
+      working-directory: ./src
+      run: dotnet restore
+      
+    - name: Build
+      working-directory: ./src
+      run: dotnet build --no-restore --configuration ${{ env.configuration }}
+      
+    - name: Test
+      working-directory: ./src
+      run: dotnet test --no-build --verbosity normal --configuration ${{ env.configuration }}
+      
+    - name: Publish the package to nuget.org
+      env:
+        NUGET_AUTH_TOKEN: ${{ secrets.NUGET_TOKEN }}
+      run: dotnet nuget push ./src/${{ env.project }}/bin/${{ env.configuration }}/*.nupkg -k ${{ env.NUGET_AUTH_TOKEN }} -s https://api.nuget.org/v3/index.json --skip-duplicate
