@@ -5,7 +5,7 @@ on:
     branches: [ "main" ]
 env:
   configuration: Release
-  project: VersionCounter
+  project: AutoVersion
 
 jobs:
   build:
