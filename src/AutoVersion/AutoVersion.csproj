@@ -4,15 +4,15 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <OutputType>Exe</OutputType>
-    <PackageVersion>1.0.49</PackageVersion>
+    <PackageVersion>1.0.51</PackageVersion>
+    <AssemblyVersion>1.0.51</AssemblyVersion>
+    <FileVersion>1.0.51</FileVersion>
     <Title>Auto-Version by Yamamari</Title>
-    <AssemblyVersion>1.0.49</AssemblyVersion>
-    <FileVersion>1.0.49</FileVersion>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <RootNamespace>Yamamari.Library.AutoVersion</RootNamespace>
-    <PackageProjectUrl>https://github.com/yamamari-llc/library-autoversion</PackageProjectUrl>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageIcon>Resources/yamamari-logo-package.png</PackageIcon>
+    <PackageProjectUrl>https://github.com/yamamari-llc/library-autoversion</PackageProjectUrl>
     <RepositoryUrl>https://github.com/yamamari-llc/library-autoversion</RepositoryUrl>
     <RepositoryType>Git</RepositoryType>
     <PackageId>AutoVersion</PackageId>
@@ -33,7 +33,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <None Include="$(TargetDir)VersionCounter">
+    <None Include="$(TargetDir)AutoVersion">
       <Pack>True</Pack>
       <PackagePath>\lib\net6.0</PackagePath>
     </None>
