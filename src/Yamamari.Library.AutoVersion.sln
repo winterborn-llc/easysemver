@@ -6,7 +6,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Resources", "Resources", "{
 		..\LICENSE = ..\LICENSE
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VersionCounter", "VersionCounter\VersionCounter.csproj", "{BAF9CCC1-CC11-4C02-9542-6981FA5DCAE1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutoVersion", "AutoVersion\AutoVersion.csproj", "{BAF9CCC1-CC11-4C02-9542-6981FA5DCAE1}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test", "Test\Test.csproj", "{710127D8-399C-428C-B066-A536249856E8}"
 EndProject

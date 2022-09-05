@@ -1,4 +1,4 @@
-# VersionCounter by Yamamari
+# Auto-Version by Yamamari
 This is intended to be a lightweight utility for synchronizing and incrementing the various version counters across a C# project file.
 
 ## Configuration Step 1
@@ -8,14 +8,14 @@ Within your project settings, set the post-build action to the following:
 
 
 ```config
-./$(OutDir)VersionCounter ./$(ProjectFileName)
+./$(OutDir)AutoVersion ./$(ProjectFileName)
 ```
 
 If that is unclear or the project settings cannot be edited via the UI, you can modify the `.csproj` file by appending the following node.
 
 ```xml
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="./$(OutDir)VersionCounter ./$(ProjectFileName)" />
+    <Exec Command="./$(OutDir)AutoVersion ./$(ProjectFileName)" />
   </Target>
 ```
 

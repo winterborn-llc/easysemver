@@ -22,7 +22,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\VersionCounter\VersionCounter.csproj" />
+      <ProjectReference Include="..\AutoVersion\AutoVersion.csproj" />
     </ItemGroup>
 
     <ItemGroup>

@@ -4,19 +4,19 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <OutputType>Exe</OutputType>
-    <PackageVersion>1.0.37</PackageVersion>
-    <Title>Version Counter by Yamamari</Title>
-    <AssemblyVersion>1.0.37</AssemblyVersion>
-    <FileVersion>1.0.37</FileVersion>
+    <PackageVersion>1.0.49</PackageVersion>
+    <Title>Auto-Version by Yamamari</Title>
+    <AssemblyVersion>1.0.49</AssemblyVersion>
+    <FileVersion>1.0.49</FileVersion>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <RootNamespace>Yamamari.Library.VersionCounter</RootNamespace>
-    <PackageProjectUrl>https://github.com/yamamari-llc/library-versioncounter</PackageProjectUrl>
+    <RootNamespace>Yamamari.Library.AutoVersion</RootNamespace>
+    <PackageProjectUrl>https://github.com/yamamari-llc/library-autoversion</PackageProjectUrl>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageIcon>Resources/yamamari-logo-package.png</PackageIcon>
-    <RepositoryUrl>https://github.com/yamamari-llc/library-versioncounter</RepositoryUrl>
+    <RepositoryUrl>https://github.com/yamamari-llc/library-autoversion</RepositoryUrl>
     <RepositoryType>Git</RepositoryType>
-    <PackageId>VersionCounter</PackageId>
-    <AutoIncrementPackageRevision>true</AutoIncrementPackageRevision>
+    <PackageId>AutoVersion</PackageId>
+    <EnableDynamicLoading>True</EnableDynamicLoading>
   </PropertyGroup>
   <ItemGroup>
     <None Update="Resources/yamamari-logo-package.png">
@@ -32,4 +32,13 @@
       <PackagePath>\</PackagePath>
     </None>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="$(TargetDir)VersionCounter">
+      <Pack>True</Pack>
+      <PackagePath>\lib\net6.0</PackagePath>
+    </None>
+  </ItemGroup>
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="./$(OutDir)AutoVersion ./$(ProjectFileName)" />
+  </Target>
 </Project>
