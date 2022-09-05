@@ -1,4 +1,5 @@
 using System.IO;
+using Microsoft.Build.Utilities;
 using Yamamari.AutoVersion;
 
 namespace Test;
@@ -14,8 +15,11 @@ public class Regression
         
         var expected = File.ReadAllText(target);
         var actual = File.ReadAllText(source);
+
+        var auto = new AutoVersion();
+        auto.ProjectFile = source;
+        auto.Execute();
         
-        Program.Main(new [] {source});
         Assert.Equal(expected, actual, true, true);
         File.Delete(source);
         File.Delete(target);

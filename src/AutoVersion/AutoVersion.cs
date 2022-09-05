@@ -15,7 +15,6 @@ public class AutoVersion : Microsoft.Build.Utilities.Task
     
     public override bool Execute()
     {
-        this.Log.LogMessage($"Versioning project file {this.ProjectFile}");
         IncrementFileVersion.HandleFile(this.ProjectFile);
         return true;
     }
