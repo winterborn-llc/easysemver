@@ -15,6 +15,9 @@ public class AutoVersion : Microsoft.Build.Utilities.Task
     
     public override bool Execute()
     {
+        Console.WriteLine($"Testing {DateTime.Now}");
+        var xml = File.ReadAllText(this.ProjectFile);
+        var signature = SignatureBuilder.GetSignatureFor(this, this.ProjectFile, xml);
         IncrementFileVersion.HandleFile(this.ProjectFile);
         return true;
     }
