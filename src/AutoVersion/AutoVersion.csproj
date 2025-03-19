@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net9.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <PackageVersion>1.0.11</PackageVersion>
@@ -8,7 +8,7 @@
     <FileVersion>1.0.11</FileVersion>
     <Title>Auto-Version by Yamamari</Title>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <RootNamespace>Yamamari.AutoVersion</RootNamespace>
+    <RootNamespace>Yamamari.Library.AutoVersion</RootNamespace>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageIcon>Resources/yamamari-logo-package.png</PackageIcon>
     <PackageProjectUrl>https://github.com/yamamari-llc/library-autoversion</PackageProjectUrl>
@@ -17,7 +17,7 @@
     <PackageId>Yamamari.AutoVersion</PackageId>
     <EnableDynamicLoading>True</EnableDynamicLoading>
     <CustomTasksAssembly>$(OutDir)AutoVersion.dll</CustomTasksAssembly>
-    <LangVersion>12</LangVersion>
+    <LangVersion>13</LangVersion>
   </PropertyGroup>
   <ItemGroup>
     <None Update="Resources/yamamari-logo-package.png">
@@ -34,8 +34,9 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.Build.Framework" Version="17.3.1" CopyLocal="false" Publish="false" />
-    <PackageReference Include="Microsoft.Build.Utilities.Core" Version="17.3.1" CopyLocal="false" Publish="false" />
+    <PackageReference Include="Microsoft.Build.Framework" Version="17.13.9" CopyLocal="false" Publish="false" />
+    <PackageReference Include="Microsoft.Build.Utilities.Core" Version="17.13.9" CopyLocal="false" Publish="false" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
   </ItemGroup>
   <Target Name="RemoveMicrosoftBuildDllsFromOutput" AfterTargets="ResolveReferences">
     <PropertyGroup>

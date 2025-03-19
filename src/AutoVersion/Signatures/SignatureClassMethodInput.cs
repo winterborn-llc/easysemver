@@ -1,4 +1,4 @@
-namespace Yamamari.AutoVersion;
+namespace Yamamari.Library.AutoVersion.Signatures;
 
 public class SignatureClassMethodInput
 {

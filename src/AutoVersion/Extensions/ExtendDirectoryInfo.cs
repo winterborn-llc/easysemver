@@ -1,4 +1,4 @@
-namespace Yamamari.AutoVersion.Extensions;
+namespace Yamamari.Library.AutoVersion.Extensions;
 
 internal static class ExtendDirectoryInfo
 {

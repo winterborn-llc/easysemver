@@ -1,20 +1,20 @@
 using System.Xml;
 
-namespace Yamamari.AutoVersion;
+namespace Yamamari.Library.AutoVersion;
 
 internal static class IncrementFileVersion
 {
-    internal static void Go(params string[] args)
+    internal static void Go(VersionType type, params string[] args)
     {
         var filePath = GetFilePath(args);
-        HandleFile(filePath);
+        HandleFile(filePath, type);
     }
     
-    internal static void HandleFile(string filePath)
+    internal static void HandleFile(string filePath, VersionType versionType)
     {
         EnsureFileExists(filePath);
         var xml = File.ReadAllText(filePath);
-        var versionHandler = new VersionHandler(xml);
+        var versionHandler = new VersionHandler(xml, versionType);
         var updatedXml = GetCleanXml(versionHandler);
         File.WriteAllText(filePath, updatedXml);
     }

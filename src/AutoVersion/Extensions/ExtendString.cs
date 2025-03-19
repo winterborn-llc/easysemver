@@ -1,19 +1,46 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Xml;
+using Newtonsoft.Json;
 
-namespace Yamamari.AutoVersion.Extensions;
+namespace Yamamari.Library.AutoVersion.Extensions;
 
 internal static class ExtendString
 {
-    public static bool IsNullOrWhitespace([NotNullWhen(false)] this string? text)
+    internal static T Deserialize<T>(this string json)
+    {
+        var stringReader = new StringReader(json);
+        var reader = new JsonTextReader(stringReader);
+        var serializer = new JsonSerializer();
+        try
+        {
+            var item = DeserializeReader<T>(serializer, reader, json);
+            return item;
+        }
+        catch (Exception ex)
+        {
+            throw new InvalidCastException($"Unable to create an instance of '{typeof(T).Name}' from the json: {json}", ex);
+        }
+    }
+
+    private static T DeserializeReader<T>(JsonSerializer serializer, JsonTextReader reader, string json)
+    {
+        var item = serializer.Deserialize<T>(reader);
+        if (item != null)
+        {
+            return item;
+        }
+
+        throw new InvalidCastException($"Unable to create an instance of '{typeof(T).Name}' from the json: {json}");
+    }
+    internal static bool IsNullOrWhitespace([NotNullWhen(false)] this string? text)
     {
         return string.IsNullOrWhiteSpace(text);
     }
     
-    public static string? GetXmlNodeValue(this string xml, string nodeName)
+    internal static string? GetXmlNodeValue(this string xml, string nodeName)
     {
         var xmlDoc = new XmlDocument();
-        xmlDoc.Load(xml);
+        xmlDoc.LoadXml(xml);
         return GetXmlNodeValue(xmlDoc, nodeName);
     }
 

@@ -1,6 +1,4 @@
-using System.IO;
-using Microsoft.Build.Utilities;
-using Yamamari.AutoVersion;
+using Yamamari.Library.AutoVersion;
 
 namespace Test;
 
@@ -35,7 +33,7 @@ public class Regression
         var expected = File.ReadAllText(target);
         var actual = File.ReadAllText(source);
         
-        IncrementFileVersion.Go(source);
+        IncrementFileVersion.Go(VersionType.Major, source);
         Assert.Equal(expected, actual, true, true);
         File.Delete(source);
         File.Delete(target);

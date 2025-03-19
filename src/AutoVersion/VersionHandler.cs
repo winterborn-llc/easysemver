@@ -1,7 +1,7 @@
 using System.Xml;
-using Yamamari.AutoVersion.Extensions;
+using Yamamari.Library.AutoVersion.Extensions;
 
-namespace Yamamari.AutoVersion;
+namespace Yamamari.Library.AutoVersion;
 
 // <AssemblyVersion>1.0.1</AssemblyVersion>
 // <PackageVersion>1.0.1</PackageVersion>
@@ -20,11 +20,11 @@ internal class VersionHandler
     
     public Version TargetVersion { get; }
     
-    public VersionHandler(string xml, bool isSignificant = false)
+    public VersionHandler(string xml, VersionType type)
     {
         this.SourceXml = xml;
         this.SourceVersion = GetOriginalVersion(this.SourceXml);
-        this.TargetVersion = this.SourceVersion.GetNextIncrement(isSignificant);
+        this.TargetVersion = this.SourceVersion.GetNextIncrement(type);
         this.TargetXml = UpdateVersion(this.SourceXml, this.TargetVersion);
     }
     

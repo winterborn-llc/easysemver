@@ -1,24 +1,48 @@
 using Microsoft.Build.Framework;
 
-namespace Yamamari.AutoVersion.Extensions;
+namespace Yamamari.Library.AutoVersion.Extensions;
 
 internal static class ExtendITask
 {
     public static void LogInfo(this ITask task, string message)
     {
-        var logger = new Microsoft.Build.Utilities.TaskLoggingHelper(task);
-        logger.LogMessage(message);
+        try
+        {
+            var logger = new Microsoft.Build.Utilities.TaskLoggingHelper(task);
+            logger.LogMessage(message);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine($"Failed to create Microsoft.Build.Utilities.TaskLoggingHelper:\n{e.Message}");
+            Console.WriteLine(message);
+        }
     }
     
     public static void LogWarn(this ITask task, string message)
     {
-        var logger = new Microsoft.Build.Utilities.TaskLoggingHelper(task);
-        logger.LogWarning(message);
+        try
+        {
+            var logger = new Microsoft.Build.Utilities.TaskLoggingHelper(task);
+            logger.LogWarning(message);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine($"Failed to create Microsoft.Build.Utilities.TaskLoggingHelper:\n{e.Message}");
+            Console.WriteLine(message);
+        }
     }
     
     public static void LogFail(this ITask task, string message)
     {
-        var logger = new Microsoft.Build.Utilities.TaskLoggingHelper(task);
-        logger.LogError(message);
+        try
+        {
+            var logger = new Microsoft.Build.Utilities.TaskLoggingHelper(task);
+            logger.LogError(message);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine($"Failed to create Microsoft.Build.Utilities.TaskLoggingHelper:\n{e.Message}");
+            Console.WriteLine(message);
+        }
     }
 }

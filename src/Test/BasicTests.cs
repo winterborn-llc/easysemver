@@ -1,5 +1,4 @@
-using System;
-using Yamamari.AutoVersion;
+using Yamamari.Library.AutoVersion;
 
 namespace Test;
 
@@ -47,7 +46,7 @@ public class BasicTests
     </ItemGroup>
 </Project>";
         
-        var handler = new VersionHandler(sourceXml);
+        var handler = new VersionHandler(sourceXml, VersionType.Patch);
         Assert.Equal("1.0.0", handler.SourceVersion.ToString());
         Assert.Equal("1.0.1", handler.TargetVersion.ToString());
         Assert.Equal(targetXml, handler.TargetXml);
@@ -89,7 +88,7 @@ public class BasicTests
     </ItemGroup>
 </Project>";
         
-        var handler = new VersionHandler(sourceXml);
+        var handler = new VersionHandler(sourceXml, VersionType.Patch);
         Assert.Equal("1.0.1", handler.SourceVersion.ToString());
         Assert.Equal("1.0.2", handler.TargetVersion.ToString());
         Assert.Equal(targetXml, handler.TargetXml);
@@ -131,7 +130,7 @@ public class BasicTests
     </ItemGroup>
 </Project>";
         
-        var handler = new VersionHandler(sourceXml, true);
+        var handler = new VersionHandler(sourceXml, VersionType.Minor);
         Assert.Equal("1.0.1", handler.SourceVersion.ToString());
         Assert.Equal("1.1.0", handler.TargetVersion.ToString());
         Assert.Equal(targetXml, handler.TargetXml);

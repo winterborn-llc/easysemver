@@ -1,9 +1,9 @@
 using System.Diagnostics;
 using System.Text;
 
-namespace Yamamari.AutoVersion;
+namespace Yamamari.Library.AutoVersion;
 
-// Major.Minor[.Build[.Revision]]
+// Major.Minor[.Patch]
 [DebuggerDisplay("{ToString()}")]
 internal class VersionList
 {
@@ -35,7 +35,6 @@ internal class VersionList
         this.AppendIfHasValue(version.Major);
         this.AppendIfHasValue(version.Minor);
         this.AppendIfHasValue(version.Build);
-        this.AppendIfHasValue(version.Revision);
     }
     
     private void AppendIfHasValue(int item)
@@ -48,23 +47,54 @@ internal class VersionList
         this.List.Add(item);
     }
     
-    public void Increment(bool isSignificant = false)
+    public void Increment(VersionType type)
     {
-        var startAt = this.List.Count - 1;
-        if (isSignificant)
+        const int indexOfMajor = 0;
+        const int indexOfMinor = 1;
+        const int indexOfPatch = 2;
+        if (type == VersionType.Major)
         {
-            this.List[startAt] = 0;
-            startAt--;
+            var index = indexOfMajor;
+            this.IncrementCounterAt(index);
+            this.ResetSubsequentCounters(index);
+            return;
         }
         
-        for (var index = startAt; index >= 0; index--)
+        if (type == VersionType.Minor)
         {
-            if (this.List[index] < int.MaxValue)
-            {
-                this.List[index]++;
-                return;
-            }
-            
+            var index = indexOfMinor;
+            this.IncrementCounterAt(index);
+            this.ResetSubsequentCounters(index);
+            return;
+        }
+        
+        var patchValue = this.List[indexOfPatch];
+        if (patchValue < int.MaxValue)
+        {
+            this.IncrementCounterAt(indexOfPatch);
+            this.ResetSubsequentCounters(indexOfPatch);
+            return;
+        }
+        
+        this.List[indexOfPatch] = 0;
+        this.IncrementCounterAt(indexOfMinor);
+        this.ResetSubsequentCounters(indexOfMinor);
+    }
+
+    private void IncrementCounterAt(int indexToIncrement)
+    {
+        while (this.List.Count < indexToIncrement)
+        {
+            this.List.Add(0);
+        }
+        
+        this.List[indexToIncrement] += 1;
+    }
+
+    private void ResetSubsequentCounters(int indexOfValueToKeep)
+    {
+        for (var index = indexOfValueToKeep + 1; index < this.List.Count; index++)
+        {
             this.List[index] = 0;
         }
     }

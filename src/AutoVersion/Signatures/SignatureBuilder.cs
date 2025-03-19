@@ -1,16 +1,14 @@
 using System.Reflection;
 using Microsoft.Build.Framework;
-using Microsoft.Build.Utilities;
-using Yamamari.AutoVersion.Extensions;
+using Yamamari.Library.AutoVersion.Extensions;
 
-namespace Yamamari.AutoVersion;
+namespace Yamamari.Library.AutoVersion.Signatures;
 
 public class SignatureBuilder
 {
     public static Signature? GetSignatureFor(ITask task, string projectFilePath, string projectXml)
     {
         task.LogWarn($"Project File Path: {projectFilePath}");
-        task.LogWarn($"Project XML: {projectXml}");
         var assembly = GetAssemblyForSignature(task, projectFilePath, projectXml);
         if (assembly == null)
         {
@@ -32,65 +30,79 @@ public class SignatureBuilder
             };
 
             signature.Add(signatureClass);
-
-            var properties = type.GetProperties();
-            foreach (var property in properties)
-            {
-                if (!property.CanRead  && !property.CanWrite)
-                {
-                    continue;
-                }
-                
-                var signatureMethod = new SignatureClassMethod
-                {
-                    MethodName = property.Name,
-                    Parameters = new List<SignatureClassMethodInput>()
-                };
-                
-                signatureMethod.Parameters.Add(new SignatureClassMethodInput
-                {
-                    ParameterName = property.Name,
-                    ParameterType = property.PropertyType.Name
-                });
-                
-                signatureClass.Methods.Add(signatureMethod);
-            }
-            
-            var methods = type.GetMethods();
-            foreach (var method in methods)
-            {
-                if (!method.IsPublic)
-                {
-                    continue;
-                }
-                
-                var signatureMethod = new SignatureClassMethod
-                {
-                    MethodName = method.Name,
-                    Parameters = new List<SignatureClassMethodInput>()
-                };
-
-                foreach (var param in method.GetParameters())
-                {
-                    signatureMethod.Parameters.Add(new SignatureClassMethodInput
-                    {
-                        ParameterName = param.Name ?? string.Empty,
-                        ParameterType = param.ParameterType.Name,
-                        IsRequired = !param.IsOptional
-                    });
-                }
-                
-                signatureClass.Methods.Add(signatureMethod);
-            }
+            AddPropertiesOfTypeToSignature(type, signatureClass);
+            AddMethodsOfTypeToSignature(type, signatureClass);
         }
         
         return signature;
     }
 
+    private static void AddMethodsOfTypeToSignature(Type type, SignatureClass signatureClass)
+    {
+        var methods = type.GetMethods();
+        foreach (var method in methods)
+        {
+            AddMethodToSignature(signatureClass, method);
+        }
+    }
+
+    private static void AddMethodToSignature(SignatureClass signatureClass, MethodInfo method)
+    {
+        if (!method.IsPublic)
+        {
+            return;
+        }
+                
+        var signatureMethod = new SignatureClassMethod
+        {
+            MethodName = method.Name,
+            MethodType = method.ReturnType.Name,
+            Parameters = new List<SignatureClassMethodInput>()
+        };
+
+        foreach (var param in method.GetParameters())
+        {
+            signatureMethod.Parameters.Add(new SignatureClassMethodInput
+            {
+                ParameterName = param.Name ?? string.Empty,
+                ParameterType = param.ParameterType.Name,
+                IsRequired = !param.IsOptional
+            });
+        }
+                
+        signatureClass.Methods.Add(signatureMethod);
+    }
+
+    private static void AddPropertiesOfTypeToSignature(Type type, SignatureClass signatureClass)
+    {
+        var properties = type.GetProperties();
+        foreach (var property in properties)
+        {
+            AddPropertyToSignature(signatureClass, property);
+        }
+    }
+
+    private static void AddPropertyToSignature(SignatureClass signatureClass, PropertyInfo property)
+    {
+        if (!property.CanRead  && !property.CanWrite)
+        {
+            return;
+        }
+                
+        var signatureProperty = new SignatureClassProperty
+        {
+            Name = property.Name,
+            Type = property.PropertyType.Name,
+            IsWritable = property.CanWrite,
+            IsReadable = property.CanRead,
+        };
+                
+        signatureClass.Properties.Add(signatureProperty);
+    }
+
     private static Assembly? GetAssemblyForSignature(ITask task, string projectFilePath, string projectXml)
     {
         task.LogWarn($"Project File Path: {projectFilePath}");
-        task.LogWarn($"Project XML: {projectXml}");
         var fileInfo = new FileInfo(projectFilePath);
         var directory = fileInfo.Directory;
         if (directory == null)
@@ -98,13 +110,13 @@ public class SignatureBuilder
             return null;
         }
 
-        var assemblyName = GetAssemblyName(task, projectFilePath, projectXml);
         var bin = directory.GetSubDirectory("bin");
         if (bin == null)
         {
             return null;
         }
         
+        var assemblyName = GetAssemblyName(task, projectFilePath, projectXml);
         var latest = GetLatestAssemblyFile(bin, assemblyName);
         if (latest == null)
         {
