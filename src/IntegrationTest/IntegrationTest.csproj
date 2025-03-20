@@ -9,10 +9,10 @@
     <ProjectReference Include="..\AutoVersion\AutoVersion.csproj" />
   </ItemGroup>
   <UsingTask TaskName="AutoVersion" AssemblyFile="$(OutDir)AutoVersion.dll" />
-  <Target Name="RunCustomTask" AfterTargets="PostBuildEvent">
-    <AutoVersion ProjectFile="./$(ProjectFileName)" />
-  </Target>
   <!--    
+  <Target Name="RunCustomTask" AfterTargets="PostBuildEvent">
+    <AutoVersion />
+  </Target>
     <UsingTask TaskName="AutoVersion" AssemblyFile="$(PkgYamamari_AutoVersion)/lib/net8.0/AutoVersion.dll" />
     <Target Name="IncrementTheVersion" AfterTargets="PostBuildEvent">
         <AutoVersion ProjectFile="./$(ProjectFileName)" />

@@ -122,485 +122,530 @@ public class TestSignatures
         Assert.Equal(VersionType.Minor, changeLevel);
     }
     
-    private static Signature SignatureBase = new()
-    {
-        new SignatureClass
+    private static readonly Signature SignatureBase =
+    [
+        new SignatureProject("TestProject")
         {
-            ClassName = "TestClass",
-            Properties = new List<SignatureClassProperty>
+            new SignatureProjectClass
             {
-                new()
-                {
-                    Name = "TestProperty",
-                    Type = "string",
-                    IsReadable = true,
-                    IsWritable = true
-                }
-            },
-            Methods = new List<SignatureClassMethod>
-            {
-                new()
-                {
-                    MethodName = "TestMethod",
-                    Parameters = new List<SignatureClassMethodInput>
+                ClassName = "TestClass",
+                Properties =
+                [
+                    new SignatureProjectClassProperty
                     {
-                        new()
-                        {
-                            ParameterName = "input",
-                            ParameterType = "string",
-                            IsRequired = false
-                        }
+                        Name = "TestProperty",
+                        Type = "string",
+                        IsReadable = true,
+                        IsWritable = true
                     }
-                }
+                ],
+                Methods =
+                [
+                    new SignatureProjectClassMethod
+                    {
+                        MethodName = "TestMethod",
+                        Parameters =
+                        [
+                            new SignatureProjectClassMethodInput
+                            {
+                                ParameterName = "input",
+                                ParameterType = "string",
+                                IsRequired = false
+                            }
+                        ]
+                    }
+                ]
             }
         }
-    };
+    ];
     
-    private static Signature MajorSignatureOfReorderedParameters = new()
-    {
-        new SignatureClass
+    private static readonly Signature MajorSignatureOfReorderedParameters =
+    [
+        new SignatureProject("TestProject")
         {
-            ClassName = "TestClass",
-            Properties = new List<SignatureClassProperty>
+            new SignatureProjectClass
             {
-                new()
-                {
-                    Name = "TestProperty",
-                    Type = "string",
-                    IsReadable = true,
-                    IsWritable = true
-                }
-            },
-            Methods = new List<SignatureClassMethod>
-            {
-                new()
-                {
-                    MethodName = "TestMethod",
-                    Parameters = new List<SignatureClassMethodInput>
+                ClassName = "TestClass",
+                Properties =
+                [
+                    new SignatureProjectClassProperty
                     {
-                        new()
-                        {
-                            ParameterName = "newInput",
-                            ParameterType = "string",
-                            IsRequired = false
-                        },
-                        new()
-                        {
-                            ParameterName = "input",
-                            ParameterType = "string",
-                            IsRequired = false
-                        }
+                        Name = "TestProperty",
+                        Type = "string",
+                        IsReadable = true,
+                        IsWritable = true
                     }
-                }
+                ],
+                Methods =
+                [
+                    new SignatureProjectClassMethod
+                    {
+                        MethodName = "TestMethod",
+                        Parameters =
+                        [
+                            new SignatureProjectClassMethodInput
+                            {
+                                ParameterName = "newInput",
+                                ParameterType = "string",
+                                IsRequired = false
+                            },
+                            new SignatureProjectClassMethodInput
+                            {
+                                ParameterName = "input",
+                                ParameterType = "string",
+                                IsRequired = false
+                            }
+                        ]
+                    }
+                ]
             }
         }
-    };
+    ];
 
     
-    private static Signature MajorSignatureOfChangeOptionalParameterNowRequired = new()
-    {
-        new SignatureClass
+    private static readonly Signature MajorSignatureOfChangeOptionalParameterNowRequired =
+    [
+        new SignatureProject("TestProject")
         {
-            ClassName = "TestClass",
-            Properties = new List<SignatureClassProperty>
+            new SignatureProjectClass
             {
-                new()
-                {
-                    Name = "TestProperty",
-                    Type = "string",
-                    IsReadable = true,
-                    IsWritable = true
-                }
-            },
-            Methods = new List<SignatureClassMethod>
-            {
-                new()
-                {
-                    MethodName = "TestMethod",
-                    Parameters = new List<SignatureClassMethodInput>
+                ClassName = "TestClass",
+                Properties =
+                [
+                    new SignatureProjectClassProperty
                     {
-                        new()
-                        {
-                            ParameterName = "input",
-                            ParameterType = "string",
-                            IsRequired = true
-                        }
+                        Name = "TestProperty",
+                        Type = "string",
+                        IsReadable = true,
+                        IsWritable = true
                     }
-                }
-            }
-        }
-    };
-    
-    private static Signature MajorSignatureOfChangeMissingClass = new();
-    
-    private static Signature MajorSignatureOfChangeMissingMethod = new()
-    {
-        new SignatureClass
-        {
-            ClassName = "TestClass",
-            Properties = new List<SignatureClassProperty>
-            {
-                new()
-                {
-                    Name = "TestProperty",
-                    Type = "string",
-                    IsReadable = true,
-                    IsWritable = true
-                }
-            },
-            Methods = new List<SignatureClassMethod>()
-        }
-    };
-    
-    private static Signature MajorSignatureOfChangedReturnType = new()
-    {
-        new SignatureClass
-        {
-            ClassName = "TestClass",
-            Properties = new List<SignatureClassProperty>
-            {
-                new()
-                {
-                    Name = "TestProperty",
-                    Type = "string",
-                    IsReadable = true,
-                    IsWritable = true
-                }
-            },
-            Methods = new List<SignatureClassMethod>
-            {
-                new()
-                {
-                    MethodName = "TestMethod",
-                    MethodType = "boolean",
-                    Parameters = new List<SignatureClassMethodInput>
+                ],
+                Methods =
+                [
+                    new SignatureProjectClassMethod
                     {
-                        new()
-                        {
-                            ParameterName = "input",
-                            ParameterType = "string",
-                            IsRequired = false
-                        }
+                        MethodName = "TestMethod",
+                        Parameters =
+                        [
+                            new SignatureProjectClassMethodInput
+                            {
+                                ParameterName = "input",
+                                ParameterType = "string",
+                                IsRequired = true
+                            }
+                        ]
                     }
-                }
+                ]
             }
         }
-    };
+    ];
     
-    private static Signature MajorSignatureOfMethodMissingParameter = new()
-    {
-        new SignatureClass
+    private static readonly Signature MajorSignatureOfChangeMissingClass = [];
+    
+    private static readonly Signature MajorSignatureOfChangeMissingMethod =
+    [
+        new SignatureProject("TestProject")
         {
-            ClassName = "TestClass",
-            Properties = new List<SignatureClassProperty>
+            new SignatureProjectClass
             {
-                new()
-                {
-                    Name = "TestProperty",
-                    Type = "string",
-                    IsReadable = true,
-                    IsWritable = true
-                }
-            },
-            Methods = new List<SignatureClassMethod>
-            {
-                new()
-                {
-                    MethodName = "TestMethod",
-                    MethodType = "boolean",
-                    Parameters = new List<SignatureClassMethodInput>()
-                }
+                ClassName = "TestClass",
+                Properties =
+                [
+                    new SignatureProjectClassProperty
+                    {
+                        Name = "TestProperty",
+                        Type = "string",
+                        IsReadable = true,
+                        IsWritable = true
+                    }
+                ],
+                Methods = []
             }
         }
-    };
+    ];
+    
+    private static readonly Signature MajorSignatureOfChangedReturnType =
+    [
+        new SignatureProject("TestProject")
+        {
+            new SignatureProjectClass
+            {
+                ClassName = "TestClass",
+                Properties =
+                [
+                    new SignatureProjectClassProperty
+                    {
+                        Name = "TestProperty",
+                        Type = "string",
+                        IsReadable = true,
+                        IsWritable = true
+                    }
+                ],
+                Methods =
+                [
+                    new SignatureProjectClassMethod
+                    {
+                        MethodName = "TestMethod",
+                        MethodType = "boolean",
+                        Parameters =
+                        [
+                            new SignatureProjectClassMethodInput
+                            {
+                                ParameterName = "input",
+                                ParameterType = "string",
+                                IsRequired = false
+                            }
+                        ]
+                    }
+                ]
+            }
+        }
+    ];
+    
+    private static readonly Signature MajorSignatureOfMethodMissingParameter =
+    [
+        new SignatureProject("TestProject")
+        {
+            new SignatureProjectClass
+            {
+                ClassName = "TestClass",
+                Properties =
+                [
+                    new SignatureProjectClassProperty
+                    {
+                        Name = "TestProperty",
+                        Type = "string",
+                        IsReadable = true,
+                        IsWritable = true
+                    }
+                ],
+                Methods =
+                [
+                    new SignatureProjectClassMethod
+                    {
+                        MethodName = "TestMethod",
+                        MethodType = "boolean",
+                        Parameters = new List<SignatureProjectClassMethodInput>()
+                    }
+                ]
+            }
+        }
+    ];
 
-    private static Signature MajorSignatureOfMissingProperty = new()
-    {
-        new SignatureClass
+    private static readonly Signature MajorSignatureOfMissingProperty =
+    [
+        new SignatureProject("TestProject")
         {
-            ClassName = "TestClass",
-            Properties = new List<SignatureClassProperty>(),
-            Methods = new List<SignatureClassMethod>
+            new SignatureProjectClass
             {
-                new()
-                {
-                    MethodName = "TestMethod",
-                    Parameters = new List<SignatureClassMethodInput>
+                ClassName = "TestClass",
+                Properties = [],
+                Methods =
+                [
+                    new SignatureProjectClassMethod
                     {
-                        new()
-                        {
-                            ParameterName = "input",
-                            ParameterType = "string",
-                            IsRequired = false
-                        }
+                        MethodName = "TestMethod",
+                        Parameters =
+                        [
+                            new SignatureProjectClassMethodInput
+                            {
+                                ParameterName = "input",
+                                ParameterType = "string",
+                                IsRequired = false
+                            }
+                        ]
                     }
-                }
+                ]
             }
         }
-    };
+    ];
 
-    private static Signature MajorSignatureOfChangePropertyType = new();
+    private static readonly Signature MajorSignatureOfChangePropertyType = [];
     
-    private static Signature MajorSignatureOfChangedPropertyType = new()
-    {
-        new SignatureClass
+    private static readonly Signature MajorSignatureOfChangedPropertyType =
+    [
+        new SignatureProject("TestProject")
         {
-            ClassName = "TestClass",
-            Properties = new List<SignatureClassProperty>
+            new SignatureProjectClass
             {
-                new()
-                {
-                    Name = "TestProperty",
-                    Type = "boolean",
-                    IsReadable = true,
-                    IsWritable = true
-                }
-            },
-            Methods = new List<SignatureClassMethod>
-            {
-                new()
-                {
-                    MethodName = "TestMethod",
-                    MethodType = "boolean",
-                    Parameters = new List<SignatureClassMethodInput>
+                ClassName = "TestClass",
+                Properties =
+                [
+                    new SignatureProjectClassProperty
                     {
-                        new()
-                        {
-                            ParameterName = "input",
-                            ParameterType = "string",
-                            IsRequired = false
-                        }
+                        Name = "TestProperty",
+                        Type = "boolean",
+                        IsReadable = true,
+                        IsWritable = true
                     }
-                }
+                ],
+                Methods =
+                [
+                    new SignatureProjectClassMethod
+                    {
+                        MethodName = "TestMethod",
+                        MethodType = "boolean",
+                        Parameters =
+                        [
+                            new SignatureProjectClassMethodInput
+                            {
+                                ParameterName = "input",
+                                ParameterType = "string",
+                                IsRequired = false
+                            }
+                        ]
+                    }
+                ]
             }
         }
-    };
+    ];
     
-    private static Signature MajorSignatureOfChangedPropertyReadAccess = new()
-    {
-        new SignatureClass
+    private static readonly Signature MajorSignatureOfChangedPropertyReadAccess =
+    [
+        new SignatureProject("TestProject")
         {
-            ClassName = "TestClass",
-            Properties = new List<SignatureClassProperty>
+            new SignatureProjectClass
             {
-                new()
-                {
-                    Name = "TestProperty",
-                    Type = "string",
-                    IsReadable = false,
-                    IsWritable = true
-                }
-            },
-            Methods = new List<SignatureClassMethod>
-            {
-                new()
-                {
-                    MethodName = "TestMethod",
-                    MethodType = "boolean",
-                    Parameters = new List<SignatureClassMethodInput>
+                ClassName = "TestClass",
+                Properties =
+                [
+                    new SignatureProjectClassProperty
                     {
-                        new()
-                        {
-                            ParameterName = "input",
-                            ParameterType = "string",
-                            IsRequired = false
-                        }
+                        Name = "TestProperty",
+                        Type = "string",
+                        IsReadable = false,
+                        IsWritable = true
                     }
-                }
-            }
-        }
-    };
-    
-    private static Signature MajorSignatureOfChangedPropertyWriteAccess = new()
-    {
-        new SignatureClass
-        {
-            ClassName = "TestClass",
-            Properties = new List<SignatureClassProperty>
-            {
-                new()
-                {
-                    Name = "TestProperty",
-                    Type = "string",
-                    IsReadable = true,
-                    IsWritable = false
-                }
-            },
-            Methods = new List<SignatureClassMethod>
-            {
-                new()
-                {
-                    MethodName = "TestMethod",
-                    MethodType = "boolean",
-                    Parameters = new List<SignatureClassMethodInput>
+                ],
+                Methods =
+                [
+                    new SignatureProjectClassMethod
                     {
-                        new()
-                        {
-                            ParameterName = "input",
-                            ParameterType = "string",
-                            IsRequired = false
-                        }
+                        MethodName = "TestMethod",
+                        MethodType = "boolean",
+                        Parameters =
+                        [
+                            new SignatureProjectClassMethodInput
+                            {
+                                ParameterName = "input",
+                                ParameterType = "string",
+                                IsRequired = false
+                            }
+                        ]
                     }
-                }
+                ]
             }
-        }
-    };
 
-    private static Signature MinorSignatureOfChangeNewClass = new()
-    {
-        new SignatureClass
-        {
-            ClassName = "TestClass",
-            Properties = new List<SignatureClassProperty>
-            {
-                new()
-                {
-                    Name = "TestProperty",
-                    Type = "string",
-                    IsReadable = true,
-                    IsWritable = true
-                }
-            },
-            Methods = new List<SignatureClassMethod>
-            {
-                new()
-                {
-                    MethodName = "TestMethod",
-                    Parameters = new List<SignatureClassMethodInput>
-                    {
-                        new()
-                        {
-                            ParameterName = "input",
-                            ParameterType = "string",
-                            IsRequired = false
-                        }
-                    }
-                }
-            }
-        },
-        new SignatureClass
-        {
-            ClassName = "NewClass",
-            Methods = new List<SignatureClassMethod>()
         }
-    };
+    ];
     
-    private static Signature MinorSignatureOfChangeNewProperty = new()
-    {
-        new SignatureClass
+    private static readonly Signature MajorSignatureOfChangedPropertyWriteAccess =
+    [
+        new SignatureProject("TestProject")
         {
-            ClassName = "TestClass",
-            Properties = new List<SignatureClassProperty>
+            new SignatureProjectClass
             {
-                new()
-                {
-                    Name = "TestProperty",
-                    Type = "string",
-                    IsReadable = true,
-                    IsWritable = true
-                },
-                new()
-                {
-                    Name = "TestProperty2",
-                    Type = "string",
-                    IsReadable = true,
-                    IsWritable = true
-                }
-            },
-            Methods = new List<SignatureClassMethod>
-            {
-                new()
-                {
-                    MethodName = "TestMethod",
-                    Parameters = new List<SignatureClassMethodInput>
+                ClassName = "TestClass",
+                Properties =
+                [
+                    new SignatureProjectClassProperty
                     {
-                        new()
-                        {
-                            ParameterName = "input",
-                            ParameterType = "string",
-                            IsRequired = false
-                        }
+                        Name = "TestProperty",
+                        Type = "string",
+                        IsReadable = true,
+                        IsWritable = false
                     }
-                }
+                ],
+                Methods =
+                [
+                    new SignatureProjectClassMethod
+                    {
+                        MethodName = "TestMethod",
+                        MethodType = "boolean",
+                        Parameters =
+                        [
+                            new SignatureProjectClassMethodInput
+                            {
+                                ParameterName = "input",
+                                ParameterType = "string",
+                                IsRequired = false
+                            }
+                        ]
+                    }
+                ]
             }
         }
-    };
+    ];
+
+    private static readonly Signature MinorSignatureOfChangeNewClass =
+    [
+        new SignatureProject("TestProject")
+        {
+            new SignatureProjectClass
+            {
+                ClassName = "TestClass",
+                Properties =
+                [
+                    new SignatureProjectClassProperty
+                    {
+                        Name = "TestProperty",
+                        Type = "string",
+                        IsReadable = true,
+                        IsWritable = true
+                    }
+                ],
+                Methods =
+                [
+                    new SignatureProjectClassMethod
+                    {
+                        MethodName = "TestMethod",
+                        Parameters =
+                        [
+                            new SignatureProjectClassMethodInput
+                            {
+                                ParameterName = "input",
+                                ParameterType = "string",
+                                IsRequired = false
+                            }
+                        ]
+                    }
+                ]
+            },
+            new SignatureProjectClass
+            {
+                ClassName = "NewClass",
+                Methods = []
+            }
+        }
+    ];
     
-    private static Signature MinorSignatureOfChangeNewMethod = new()
-    {
-        new SignatureClass
+    private static readonly Signature MinorSignatureOfChangeNewProperty =
+    [
+        new SignatureProject("TestProject")
         {
-            ClassName = "TestClass",
-            Properties = new List<SignatureClassProperty>
+
+            new SignatureProjectClass
             {
-                new()
-                {
-                    Name = "TestProperty",
-                    Type = "string",
-                    IsReadable = true,
-                    IsWritable = true
-                }
-            },
-            Methods = new List<SignatureClassMethod>
-            {
-                new()
-                {
-                    MethodName = "TestMethod",
-                    Parameters = new List<SignatureClassMethodInput>
+                ClassName = "TestClass",
+                Properties =
+                [
+                    new SignatureProjectClassProperty
                     {
-                        new()
-                        {
-                            ParameterName = "input",
-                            ParameterType = "string",
-                            IsRequired = false
-                        }
+                        Name = "TestProperty",
+                        Type = "string",
+                        IsReadable = true,
+                        IsWritable = true
+                    },
+                    new SignatureProjectClassProperty
+                    {
+                        Name = "TestProperty2",
+                        Type = "string",
+                        IsReadable = true,
+                        IsWritable = true
                     }
-                },
-                new()
-                {
-                    MethodName = "TestMethod2"
-                }
+                ],
+                Methods =
+                [
+                    new SignatureProjectClassMethod
+                    {
+                        MethodName = "TestMethod",
+                        Parameters =
+                        [
+                            new SignatureProjectClassMethodInput
+                            {
+                                ParameterName = "input",
+                                ParameterType = "string",
+                                IsRequired = false
+                            }
+                        ]
+                    }
+                ]
             }
         }
-    };
+    ];
     
-    private static Signature MinorSignatureOfNewOptionalParameter = new()
-    {
-        new SignatureClass
+    private static readonly Signature MinorSignatureOfChangeNewMethod =
+    [
+        new SignatureProject("TestProject")
         {
-            ClassName = "TestClass",
-            Properties = new List<SignatureClassProperty>
+            new SignatureProjectClass
             {
-                new()
-                {
-                    Name = "TestProperty",
-                    Type = "string",
-                    IsReadable = true,
-                    IsWritable = true
-                }
-            },
-            Methods = new List<SignatureClassMethod>
-            {
-                new()
-                {
-                    MethodName = "TestMethod",
-                    Parameters = new List<SignatureClassMethodInput>
+                ClassName = "TestClass",
+                Properties =
+                [
+                    new SignatureProjectClassProperty
                     {
-                        new()
-                        {
-                            ParameterName = "input",
-                            ParameterType = "string",
-                            IsRequired = false
-                        },
-                        new()
-                        {
-                            ParameterName = "optionalInput",
-                            ParameterType = "string",
-                            IsRequired = false
-                        }
+                        Name = "TestProperty",
+                        Type = "string",
+                        IsReadable = true,
+                        IsWritable = true
                     }
-                }
+                ],
+                Methods =
+                [
+                    new SignatureProjectClassMethod
+                    {
+                        MethodName = "TestMethod",
+                        Parameters =
+                        [
+                            new SignatureProjectClassMethodInput
+                            {
+                                ParameterName = "input",
+                                ParameterType = "string",
+                                IsRequired = false
+                            }
+                        ]
+                    },
+
+                    new SignatureProjectClassMethod
+                    {
+                        MethodName = "TestMethod2"
+                    }
+                ]
             }
         }
-    };
+    ];
+    
+    private static readonly Signature MinorSignatureOfNewOptionalParameter =
+    [
+        new SignatureProject("TestProject")
+        {
+            new SignatureProjectClass
+            {
+                ClassName = "TestClass",
+                Properties =
+                [
+                    new SignatureProjectClassProperty
+                    {
+                        Name = "TestProperty",
+                        Type = "string",
+                        IsReadable = true,
+                        IsWritable = true
+                    }
+                ],
+                Methods =
+                [
+                    new SignatureProjectClassMethod
+                    {
+                        MethodName = "TestMethod",
+                        Parameters =
+                        [
+                            new SignatureProjectClassMethodInput
+                            {
+                                ParameterName = "input",
+                                ParameterType = "string",
+                                IsRequired = false
+                            },
+                            new SignatureProjectClassMethodInput
+                            {
+                                ParameterName = "optionalInput",
+                                ParameterType = "string",
+                                IsRequired = false
+                            }
+                        ]
+                    }
+                ]
+            }
+        }
+    ];
 }

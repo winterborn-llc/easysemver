@@ -1,3 +1,3 @@
 namespace Yamamari.Library.AutoVersion.Signatures;
 
-public class Signature: List<SignatureClass>;
+public class Signature: List<SignatureProject>;
