@@ -1,14 +1,14 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net9.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <PackageVersion>1.0.9</PackageVersion>
-    <AssemblyVersion>1.0.9</AssemblyVersion>
-    <FileVersion>1.0.9</FileVersion>
+    <PackageVersion>5.1.3</PackageVersion>
+    <AssemblyVersion>5.1.3</AssemblyVersion>
+    <FileVersion>5.1.3</FileVersion>
     <Title>Auto-Version by Yamamari</Title>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <RootNamespace>Yamamari.AutoVersion</RootNamespace>
+    <RootNamespace>Yamamari.Library.AutoVersion</RootNamespace>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageIcon>Resources/yamamari-logo-package.png</PackageIcon>
     <PackageProjectUrl>https://github.com/yamamari-llc/library-autoversion</PackageProjectUrl>
@@ -17,15 +17,14 @@
     <PackageId>Yamamari.AutoVersion</PackageId>
     <EnableDynamicLoading>True</EnableDynamicLoading>
     <CustomTasksAssembly>$(OutDir)AutoVersion.dll</CustomTasksAssembly>
+    <LangVersion>13</LangVersion>
   </PropertyGroup>
-  
   <ItemGroup>
     <None Update="Resources/yamamari-logo-package.png">
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>
     </None>
   </ItemGroup>
-  
   <ItemGroup>
     <None Include="..\..\README.md">
       <Link>Resources/README.md</Link>
@@ -34,12 +33,11 @@
       <PackagePath>\</PackagePath>
     </None>
   </ItemGroup>
-  
   <ItemGroup>
-    <PackageReference Include="Microsoft.Build.Framework" Version="17.3.1" CopyLocal="false" Publish="false" />
-    <PackageReference Include="Microsoft.Build.Utilities.Core" Version="17.3.1" CopyLocal="false" Publish="false" />
+    <PackageReference Include="Microsoft.Build.Framework" Version="17.13.9" CopyLocal="false" Publish="false" />
+    <PackageReference Include="Microsoft.Build.Utilities.Core" Version="17.13.9" CopyLocal="false" Publish="false" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
   </ItemGroup>
-  
   <Target Name="RemoveMicrosoftBuildDllsFromOutput" AfterTargets="ResolveReferences">
     <PropertyGroup>
       <NonCopyLocalPackageReferences Condition="'%(PackageReference.CopyLocal)' == 'false'">;@(PackageReference);</NonCopyLocalPackageReferences>
@@ -48,9 +46,10 @@
       <ReferenceCopyLocalPaths Remove="@(ReferenceCopyLocalPaths)" Condition="$(NonCopyLocalPackageReferences.Contains(';%(ReferenceCopyLocalPaths.NuGetPackageId);'))" />
     </ItemGroup>
   </Target>
-  
+  <!--
   <UsingTask TaskName="AutoVersion" AssemblyFile="$(OutDir)AutoVersion.dll" />
   <Target Name="RunCustomTask" AfterTargets="PostBuildEvent">
     <AutoVersion ProjectFile="./$(ProjectFileName)" />
   </Target>
+  -->
 </Project>
