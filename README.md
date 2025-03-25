@@ -36,10 +36,10 @@ We need to add an XML block to add our build step. The example below should work
 
 ```xml
 <Project Sdk="Microsoft.NET.Sdk">
-   <UsingTask TaskName="AutoVersion" AssemblyFile="$(PkgYamamari_AutoVersion)/lib/net9.0/AutoVersion.dll" />
-   <Target Name="IncrementTheVersion" AfterTargets="PostBuildEvent">
-      <AutoVersion />
-   </Target>
+    <UsingTask TaskName="AutoVersion" AssemblyFile="$(OutDir)AutoVersion.dll" />
+    <Target Name="RunCustomTask" AfterTargets="PostBuildEvent">
+        <AutoVersion />
+    </Target>
 </Project>
 ```
 
