@@ -1,5 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
+    <AssemblyVersion>8.0.5</AssemblyVersion>
     <TargetFramework>net9.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
@@ -8,17 +9,33 @@
   <ItemGroup>
     <ProjectReference Include="..\AutoVersion\AutoVersion.csproj" />
   </ItemGroup>
+  <!--
   <UsingTask TaskName="AutoVersion" AssemblyFile="$(OutDir)AutoVersion.dll" />
-  <!--    
   <Target Name="RunCustomTask" AfterTargets="PostBuildEvent">
     <AutoVersion />
   </Target>
-    <UsingTask TaskName="AutoVersion" AssemblyFile="$(PkgYamamari_AutoVersion)/lib/net8.0/AutoVersion.dll" />
+  -->
+  <!--
+  <UsingTask TaskName="AutoVersion" AssemblyFile="$(PkgYamamari_AutoVersion)/lib/net9.0/AutoVersion.dll" />
     <Target Name="IncrementTheVersion" AfterTargets="PostBuildEvent">
         <AutoVersion ProjectFile="./$(ProjectFileName)" />
     </Target>
     -->
   <ItemGroup>
     <AssemblyAttribute Include="System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverageAttribute" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="coverlet.collector" Version="6.0.4">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.13.0" />
+    <PackageReference Include="xunit" Version="2.9.3" />
+    <PackageReference Include="xunit.assert" Version="2.9.3" />
+    <PackageReference Include="xunit.extensibility.core" Version="2.9.3" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="3.0.2">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
   </ItemGroup>
 </Project>

@@ -3,53 +3,6 @@
       "Name": "Test.csproj",
       "Classes": [
          {
-            "Name": "Test.Regression",
-            "Methods": {
-               "TestProgramInvocation": {
-                  "MethodName": "TestProgramInvocation",
-                  "MethodType": "Void",
-                  "Overrides": [
-                     []
-                  ]
-               },
-               "GetType": {
-                  "MethodName": "GetType",
-                  "MethodType": "Type",
-                  "Overrides": [
-                     []
-                  ]
-               },
-               "ToString": {
-                  "MethodName": "ToString",
-                  "MethodType": "String",
-                  "Overrides": [
-                     []
-                  ]
-               },
-               "Equals": {
-                  "MethodName": "Equals",
-                  "MethodType": "Boolean",
-                  "Overrides": [
-                     [
-                        {
-                           "ParameterName": "obj",
-                           "ParameterType": "Object",
-                           "IsRequired": true
-                        }
-                     ]
-                  ]
-               },
-               "GetHashCode": {
-                  "MethodName": "GetHashCode",
-                  "MethodType": "Int32",
-                  "Overrides": [
-                     []
-                  ]
-               }
-            },
-            "Properties": {}
-         },
-         {
             "Name": "Test.TestExtractingVersionFromCsProjFile",
             "Methods": {
                "TestProjectWithNoVersions": {
@@ -153,25 +106,25 @@
          {
             "Name": "Test.TestVersion",
             "Methods": {
-               "LearningTest": {
-                  "MethodName": "LearningTest",
+               "CanExtractPartsFromVersionString": {
+                  "MethodName": "CanExtractPartsFromVersionString",
                   "MethodType": "Void",
                   "Overrides": [
                      []
                   ]
                },
-               "TestVersionIncrement": {
-                  "MethodName": "TestVersionIncrement",
+               "VerifyIncrementingLogic": {
+                  "MethodName": "VerifyIncrementingLogic",
                   "MethodType": "Void",
                   "Overrides": [
                      [
                         {
-                           "ParameterName": "expected",
+                           "ParameterName": "given",
                            "ParameterType": "String",
                            "IsRequired": true
                         },
                         {
-                           "ParameterName": "given",
+                           "ParameterName": "expected",
                            "ParameterType": "String",
                            "IsRequired": true
                         },
@@ -1086,6 +1039,53 @@
    {
       "Name": "IntegrationTest.csproj",
       "Classes": [
+         {
+            "Name": "Test.Regression",
+            "Methods": {
+               "TestProgramInvocation": {
+                  "MethodName": "TestProgramInvocation",
+                  "MethodType": "Void",
+                  "Overrides": [
+                     []
+                  ]
+               },
+               "GetType": {
+                  "MethodName": "GetType",
+                  "MethodType": "Type",
+                  "Overrides": [
+                     []
+                  ]
+               },
+               "ToString": {
+                  "MethodName": "ToString",
+                  "MethodType": "String",
+                  "Overrides": [
+                     []
+                  ]
+               },
+               "Equals": {
+                  "MethodName": "Equals",
+                  "MethodType": "Boolean",
+                  "Overrides": [
+                     [
+                        {
+                           "ParameterName": "obj",
+                           "ParameterType": "Object",
+                           "IsRequired": true
+                        }
+                     ]
+                  ]
+               },
+               "GetHashCode": {
+                  "MethodName": "GetHashCode",
+                  "MethodType": "Int32",
+                  "Overrides": [
+                     []
+                  ]
+               }
+            },
+            "Properties": {}
+         },
          {
             "Name": "IntegrationTest.Class1",
             "Methods": {

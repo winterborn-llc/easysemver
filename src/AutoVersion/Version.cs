@@ -7,6 +7,10 @@ namespace Yamamari.Library.AutoVersion;
 [DebuggerDisplay("{ToString()}")]
 public class Version
 {
+    private const int IndexOfMajor = 0;
+    private const int IndexOfMinor = 1;
+    private const int IndexOfPatch = 2;
+    
     public int? Major => this.List.Count > 0 ? this.List[0] : null;
     public int? Minor => this.List.Count > 1 ? this.List[1] : null;
     public int? Patch => this.List.Count > 2 ? this.List[2] : null;
@@ -50,36 +54,31 @@ public class Version
     
     public void Increment(VersionType type)
     {
-        const int indexOfMajor = 0;
-        const int indexOfMinor = 1;
-        const int indexOfPatch = 2;
-        if (type == VersionType.Major)
+        var index = GetIndexFromChangeType(type);
+        if (this.List[index] == int.MaxValue)
         {
-            var index = indexOfMajor;
-            this.IncrementCounterAt(index);
-            this.ResetSubsequentCounters(index);
-            return;
+            index--;
+        }
+
+        if (index < 0)
+        {
+            throw new OverflowException($"The major version has exceeded the maximum size of {int.MaxValue}.");
         }
         
-        if (type == VersionType.Minor)
+        this.IncrementCounterAt(index);
+        this.ResetSubsequentCounters(index);
+    }
+
+    private static int GetIndexFromChangeType(VersionType type)
+    {
+        var index = type switch
         {
-            var index = indexOfMinor;
-            this.IncrementCounterAt(index);
-            this.ResetSubsequentCounters(index);
-            return;
-        }
-        
-        var patchValue = this.List[indexOfPatch];
-        if (patchValue < int.MaxValue)
-        {
-            this.IncrementCounterAt(indexOfPatch);
-            this.ResetSubsequentCounters(indexOfPatch);
-            return;
-        }
-        
-        this.List[indexOfPatch] = 0;
-        this.IncrementCounterAt(indexOfMinor);
-        this.ResetSubsequentCounters(indexOfMinor);
+            VersionType.Major => IndexOfMajor,
+            VersionType.Minor => IndexOfMinor,
+            VersionType.Patch => IndexOfPatch,
+            _ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
+        };
+        return index;
     }
 
     private void IncrementCounterAt(int indexToIncrement)
@@ -88,7 +87,7 @@ public class Version
         {
             this.List.Add(0);
         }
-        
+
         this.List[indexToIncrement] += 1;
     }
 
