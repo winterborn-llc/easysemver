@@ -2,7 +2,7 @@ using Xunit;
 using Yamamari.Library.AutoVersion;
 using Version = Yamamari.Library.AutoVersion.Version;
 
-namespace Test;
+namespace IntegrationTest;
 
 public class Regression
 {

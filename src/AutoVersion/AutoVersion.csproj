@@ -1,11 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net9.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <PackageVersion>8.0.7</PackageVersion>
-    <AssemblyVersion>8.0.7</AssemblyVersion>
-    <FileVersion>8.0.7</FileVersion>
+    <PackageVersion>8.0.10</PackageVersion>
+    <AssemblyVersion>8.0.10</AssemblyVersion>
+    <FileVersion>8.0.10</FileVersion>
     <Title>Auto-Version by Yamamari</Title>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <RootNamespace>Yamamari.Library.AutoVersion</RootNamespace>
@@ -18,11 +17,12 @@
     <EnableDynamicLoading>True</EnableDynamicLoading>
     <CustomTasksAssembly>$(OutDir)AutoVersion.dll</CustomTasksAssembly>
     <LangVersion>13</LangVersion>
+    <TargetFrameworks>net8.0;net9.0</TargetFrameworks>
   </PropertyGroup>
   <ItemGroup>
-    <None Update="Resources/yamamari-logo-package.png">
+    <None Include="Resources/yamamari-logo-package.png">
       <Pack>True</Pack>
-      <PackagePath>\</PackagePath>
+      <PackagePath>Resources/yamamari-logo-package.png</PackagePath>
     </None>
   </ItemGroup>
   <ItemGroup>

@@ -1040,53 +1040,6 @@
       "Name": "IntegrationTest.csproj",
       "Classes": [
          {
-            "Name": "Test.Regression",
-            "Methods": {
-               "TestProgramInvocation": {
-                  "MethodName": "TestProgramInvocation",
-                  "MethodType": "Void",
-                  "Overrides": [
-                     []
-                  ]
-               },
-               "GetType": {
-                  "MethodName": "GetType",
-                  "MethodType": "Type",
-                  "Overrides": [
-                     []
-                  ]
-               },
-               "ToString": {
-                  "MethodName": "ToString",
-                  "MethodType": "String",
-                  "Overrides": [
-                     []
-                  ]
-               },
-               "Equals": {
-                  "MethodName": "Equals",
-                  "MethodType": "Boolean",
-                  "Overrides": [
-                     [
-                        {
-                           "ParameterName": "obj",
-                           "ParameterType": "Object",
-                           "IsRequired": true
-                        }
-                     ]
-                  ]
-               },
-               "GetHashCode": {
-                  "MethodName": "GetHashCode",
-                  "MethodType": "Int32",
-                  "Overrides": [
-                     []
-                  ]
-               }
-            },
-            "Properties": {}
-         },
-         {
             "Name": "IntegrationTest.Class1",
             "Methods": {
                "get_Property1": {
@@ -1170,6 +1123,53 @@
                   "IsWritable": true
                }
             }
+         },
+         {
+            "Name": "IntegrationTest.Regression",
+            "Methods": {
+               "TestProgramInvocation": {
+                  "MethodName": "TestProgramInvocation",
+                  "MethodType": "Void",
+                  "Overrides": [
+                     []
+                  ]
+               },
+               "GetType": {
+                  "MethodName": "GetType",
+                  "MethodType": "Type",
+                  "Overrides": [
+                     []
+                  ]
+               },
+               "ToString": {
+                  "MethodName": "ToString",
+                  "MethodType": "String",
+                  "Overrides": [
+                     []
+                  ]
+               },
+               "Equals": {
+                  "MethodName": "Equals",
+                  "MethodType": "Boolean",
+                  "Overrides": [
+                     [
+                        {
+                           "ParameterName": "obj",
+                           "ParameterType": "Object",
+                           "IsRequired": true
+                        }
+                     ]
+                  ]
+               },
+               "GetHashCode": {
+                  "MethodName": "GetHashCode",
+                  "MethodType": "Int32",
+                  "Overrides": [
+                     []
+                  ]
+               }
+            },
+            "Properties": {}
          }
       ]
    },
@@ -1417,13 +1417,6 @@
                      []
                   ]
                },
-               "get_Build": {
-                  "MethodName": "get_Build",
-                  "MethodType": "Nullable`1",
-                  "Overrides": [
-                     []
-                  ]
-               },
                "ToString": {
                   "MethodName": "ToString",
                   "MethodType": "String",
@@ -1579,12 +1572,6 @@
                },
                "Patch": {
                   "Name": "Patch",
-                  "Type": "Nullable`1",
-                  "IsReadable": true,
-                  "IsWritable": false
-               },
-               "Build": {
-                  "Name": "Build",
                   "Type": "Nullable`1",
                   "IsReadable": true,
                   "IsWritable": false

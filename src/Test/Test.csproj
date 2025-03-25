@@ -5,8 +5,8 @@
     <Nullable>enable</Nullable>
     <IsPackable>false</IsPackable>
     <LangVersion>13</LangVersion>
-    <AssemblyVersion>8.0.7</AssemblyVersion>
-    <FileVersion>8.0.7</FileVersion>
+    <AssemblyVersion>8.0.10</AssemblyVersion>
+    <FileVersion>8.0.10</FileVersion>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.13.0" />
