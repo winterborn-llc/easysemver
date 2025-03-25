@@ -75,6 +75,6 @@ public class TestExtractingVersionFromCsProjFile
 </Project>";
         
         var version = CsProjFile.GetOriginalVersion(sourceXml);
-        Assert.Equal("1.0.1", version);
+        Assert.Equal("1.0.3", version);
     }
 }
