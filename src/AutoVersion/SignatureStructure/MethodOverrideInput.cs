@@ -1,6 +1,6 @@
-namespace Yamamari.Library.AutoVersion.Signatures;
+namespace Yamamari.Library.AutoVersion.SignatureStructure;
 
-public class SignatureProjectClassMethodInput
+public class MethodOverrideInput
 {
     public string ParameterName { get; init; } = string.Empty;
 

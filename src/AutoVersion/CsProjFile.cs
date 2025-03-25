@@ -1,7 +1,9 @@
+using System.Diagnostics;
 using System.Xml;
 
 namespace Yamamari.Library.AutoVersion;
 
+[DebuggerDisplay("{ProjectName}")]
 internal class CsProjFile
 {
     private static readonly string[] PropertyPreferences = 

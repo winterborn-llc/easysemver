@@ -1,5 +1,5 @@
 using Yamamari.Library.AutoVersion;
-using Yamamari.Library.AutoVersion.Signatures;
+using Yamamari.Library.AutoVersion.SignatureStructure;
 
 namespace Test;
 
@@ -8,13 +8,45 @@ public class TestSelfSignature
     [Fact]
     public void IAmInTheSignature()
     {
+        var slnDirectory = GetParentDirectoryContaining(".sln", "slnx");
+        var csProjDirectory = GetParentDirectoryContaining("Test.csproj");
+        var csprojFileInfo = csProjDirectory.GetFiles().FirstOrDefault(f => f.Name.EndsWith("Test.csproj"));
+        if (csprojFileInfo == null)
+        {
+            Assert.Fail("Unable to access csproj file for this test");
+        }
+        
+        var csProjFile = new CsProjFile(csprojFileInfo.FullName);
+        var signature = SignatureBuilder.GetSignatureFor(null!, slnDirectory.FullName, csProjFile);
+        Assert.NotNull(signature);
+        var project = signature.FirstOrDefault();
+        Assert.NotNull(project);
+        var signatureOfThisClass = project.Classes.FirstOrDefault(s => s.Name == $"{typeof(TestSelfSignature).Namespace}.{nameof(TestSelfSignature)}");
+        Assert.NotNull(signatureOfThisClass);
+        Assert.NotEmpty(signatureOfThisClass.Methods);
+        var thisMethodsSignature = signatureOfThisClass.Methods.FirstOrDefault(m => m.Value.MethodName == nameof(IAmInTheSignature)); 
+        Assert.NotNull(thisMethodsSignature.Value);
+        Assert.Equal("Void", thisMethodsSignature.Value.MethodType);
+        Assert.Single(thisMethodsSignature.Value.Overrides);
+    }
+
+    private static DirectoryInfo GetParentDirectoryContaining(params string[] fileSuffixes)
+    {
         var directory = new DirectoryInfo(Environment.CurrentDirectory);
-        FileInfo? csprojFileInfo = null;
+        FileInfo? targetFileInfo = null;
         while (directory != null)
         {
             directory = directory.Parent;
-            csprojFileInfo = directory?.GetFiles().FirstOrDefault(f => f.Name.EndsWith("Test.csproj"));
-            if (csprojFileInfo != null)
+            foreach (var fileSuffix in fileSuffixes)
+            {
+                targetFileInfo = directory?.GetFiles().FirstOrDefault(f => f.Name.EndsWith(fileSuffix));
+                if (targetFileInfo != null)
+                {
+                    break;
+                }
+            }
+            
+            if (targetFileInfo != null)
             {
                 break;
             }
@@ -23,26 +55,15 @@ public class TestSelfSignature
         if (directory == null)
         {
             Assert.Fail($"Unable to find the csproj file for this test");
-            return;
+            return directory;
         }
         
-        if (csprojFileInfo == null)
+        if (targetFileInfo == null)
         {
             Assert.Fail($"Unable to access csproj file for this test");
-            return;
+            return directory;
         }
-        
-        var csProjFile = new CsProjFile(csprojFileInfo.FullName);
-        var signature = SignatureBuilder.GetSignatureFor(null!, csProjFile);
-        Assert.NotNull(signature);
-        var project = signature.FirstOrDefault();
-        Assert.NotNull(project);
-        var signatureOfThisClass = project.FirstOrDefault(s => s.ClassName == $"{typeof(TestSelfSignature).Namespace}.{nameof(TestSelfSignature)}");
-        Assert.NotNull(signatureOfThisClass);
-        Assert.NotEmpty(signatureOfThisClass.Methods);
-        var thisMethodsSignature = signatureOfThisClass.Methods.FirstOrDefault(m => m.MethodName == nameof(IAmInTheSignature)); 
-        Assert.NotNull(thisMethodsSignature);
-        Assert.Equal("Void", thisMethodsSignature.MethodType);
-        Assert.Empty(thisMethodsSignature.Parameters);
+
+        return directory;
     }
 }

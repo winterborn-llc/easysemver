@@ -5,6 +5,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Resources", "Resources", "{
 		..\README.md = ..\README.md
 		..\LICENSE = ..\LICENSE
 		global.json = global.json
+		.autoversion.json = .autoversion.json
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutoVersion", "AutoVersion\AutoVersion.csproj", "{BAF9CCC1-CC11-4C02-9542-6981FA5DCAE1}"

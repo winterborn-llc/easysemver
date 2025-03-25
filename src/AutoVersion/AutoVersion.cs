@@ -1,5 +1,6 @@
 using Yamamari.Library.AutoVersion.Extensions;
-using Yamamari.Library.AutoVersion.Signatures;
+using Yamamari.Library.AutoVersion.SignatureEvaluation;
+using Yamamari.Library.AutoVersion.SignatureStructure;
 
 namespace Yamamari.Library.AutoVersion;
 
@@ -16,6 +17,8 @@ public class AutoVersion : Microsoft.Build.Utilities.Task
     
     internal Version StartingVersion { get; }
 
+    // This is used by the real execution of the process
+    // ReSharper disable once UnusedMember.Global
     public AutoVersion() : this("")
     {
     }
@@ -27,13 +30,8 @@ public class AutoVersion : Microsoft.Build.Utilities.Task
             currentDirectory = Environment.CurrentDirectory;
         }
         
+        var solutionDir = GetSolutionDirectory(currentDirectory);
         this.InitialDirectory = currentDirectory;
-        var solutionDir = GetSolutionDirectory(this.InitialDirectory);
-        if (solutionDir == null)
-        {
-            throw new InvalidOperationException($"Could not find solution directory.");
-        }
-        
         this.SolutionDirectory = solutionDir.FullName;
         this.CsProjFiles = GetProjectFiles(this.SolutionDirectory);
         this.StartingVersion = GetStartingVersion(this.CsProjFiles);
@@ -69,7 +67,7 @@ public class AutoVersion : Microsoft.Build.Utilities.Task
         return csProjFiles.ToArray();
     }
     
-    private static DirectoryInfo? GetSolutionDirectory(string startingDirectory)
+    private static DirectoryInfo GetSolutionDirectory(string startingDirectory)
     {
         var dir = new DirectoryInfo(startingDirectory);
         while (dir != null)
@@ -82,7 +80,7 @@ public class AutoVersion : Microsoft.Build.Utilities.Task
             dir = dir.Parent;
         }
 
-        return null;
+        throw new InvalidOperationException($"Could not find solution directory.");
     }
     
     public override bool Execute()
@@ -90,7 +88,7 @@ public class AutoVersion : Microsoft.Build.Utilities.Task
         this.LogInfo($"Auto versioning {this.SolutionDirectory}");
         var newSignature = this.GetNewSignature();
         var oldSignature = this.GetOldSignature();
-        var changeType = SignatureComparer.GetChangeType(oldSignature, newSignature);
+        var changeType = CompareSignatures.GetChangeType(this, oldSignature, newSignature);
         this.LogWarn($"Change Type: {changeType.ToString()}");
         
         var version = new Version(this.StartingVersion);
@@ -108,7 +106,7 @@ public class AutoVersion : Microsoft.Build.Utilities.Task
 
     private Signature GetNewSignature()
     {
-        var newSignature = SignatureBuilder.GetSignatureFor(this, this.CsProjFiles);
+        var newSignature = SignatureBuilder.GetSignatureFor(this, this.SolutionDirectory, this.CsProjFiles);
         return newSignature ?? [];
     }
     

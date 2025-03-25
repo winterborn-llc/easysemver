@@ -1,6 +1,6 @@
-namespace Yamamari.Library.AutoVersion.Signatures;
+namespace Yamamari.Library.AutoVersion.SignatureStructure;
 
-public class SignatureProjectClassProperty
+public class Property
 {
     public string Name { get; init; } = string.Empty;
     
