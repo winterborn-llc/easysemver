@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using Yamamari.Library.AutoVersion;
 using Version = Yamamari.Library.AutoVersion.Version;
 
@@ -12,7 +11,7 @@ public class TestVersion
         var version = new Version("1.0.2");
         Assert.Equal(1, version.Major);
         Assert.Equal(0, version.Minor);
-        Assert.Equal(2, version.Build);
+        Assert.Equal(2, version.Patch);
     }
     
     [Theory]

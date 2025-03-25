@@ -14,7 +14,6 @@ public class Version
     public int? Major => this.List.Count > 0 ? this.List[0] : null;
     public int? Minor => this.List.Count > 1 ? this.List[1] : null;
     public int? Patch => this.List.Count > 2 ? this.List[2] : null;
-    public int? Build => this.List.Count > 3 ? this.List[3] : null;
     
     private IList<int> List { get; }
 
@@ -101,7 +100,7 @@ public class Version
 
     public override int GetHashCode()
     {
-        return HashCode.Combine(this.Major, this.Minor, this.Patch, this.Build);
+        return HashCode.Combine(this.Major, this.Minor, this.Patch);
     }
 
     public override bool Equals(object? obj)
@@ -177,11 +176,6 @@ public class Version
             return v1.Minor.GetValueOrDefault().CompareTo(v2.Minor.GetValueOrDefault());
         }
         
-        if (v1.Patch != v2.Patch)
-        {
-            return v1.Patch.GetValueOrDefault().CompareTo(v2.Patch.GetValueOrDefault());
-        }
-        
-        return v1.Build.GetValueOrDefault().CompareTo(v2.Build.GetValueOrDefault());
+        return v1.Patch.GetValueOrDefault().CompareTo(v2.Patch.GetValueOrDefault());
     }
 }

@@ -3,9 +3,9 @@
     <TargetFramework>net9.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <PackageVersion>8.0.5</PackageVersion>
-    <AssemblyVersion>8.0.5</AssemblyVersion>
-    <FileVersion>8.0.5</FileVersion>
+    <PackageVersion>8.0.7</PackageVersion>
+    <AssemblyVersion>8.0.7</AssemblyVersion>
+    <FileVersion>8.0.7</FileVersion>
     <Title>Auto-Version by Yamamari</Title>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <RootNamespace>Yamamari.Library.AutoVersion</RootNamespace>
