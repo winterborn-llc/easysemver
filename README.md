@@ -65,3 +65,17 @@ If any of these versions don't match, the utility will take the highest of these
     <FileVersion>1.0.13</FileVersion>
 </PropertyGroup>
 ```
+
+## Configure Step 5
+After running a build to trigger this process once, a ".autoversion.json" file will be created in the same directory as your solution and used to identify what types of changes have been made. This file should be added to version control to enable the utility to work across multiple build environments.
+
+To avoid merge conflicts for developers and to still use the utility for published versions, you can add a condition to the csproj file's build step to only run the utility when the configuration is set to "Release" or your equivalent.
+
+```xml
+<Project Sdk="Microsoft.NET.Sdk">
+   <UsingTask TaskName="AutoVersion" AssemblyFile="$(PkgYamamari_AutoVersion)/lib/net9.0/AutoVersion.dll" />
+   <Target Name="IncrementTheVersion" Condition="'$(Configuration)' == 'Release'" AfterTargets="PostBuildEvent">
+      <AutoVersion />
+   </Target>
+</Project>
+```
