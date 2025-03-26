@@ -165,8 +165,11 @@ internal class CsProjFileActual
             return null;
         }
         
+        Console.WriteLine($"Processing project file: {projectFilePath}");
         var assemblyName = GetAssemblyName(projectFilePath, projectXml);
+        Console.WriteLine($"Target assembly name: {assemblyName}");
         var latest = GetLatestAssemblyFile(bin, assemblyName);
+        Console.WriteLine($"Target assembly file: {latest?.FullName}");
         if (latest == null)
         {
             return null;

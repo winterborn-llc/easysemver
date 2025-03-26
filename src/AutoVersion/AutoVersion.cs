@@ -31,8 +31,8 @@ public class AutoVersion : Microsoft.Build.Utilities.Task
         }
         
         var solutionDir = GetSolutionDirectory(currentDirectory);
-        this.InitialDirectory = currentDirectory;
         this.SolutionDirectory = solutionDir.FullName;
+        this.InitialDirectory = currentDirectory;
         this.CsProjFiles = GetProjectFiles(this.SolutionDirectory);
         this.StartingVersion = GetStartingVersion(this.CsProjFiles);
     }
