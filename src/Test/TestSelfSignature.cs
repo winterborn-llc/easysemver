@@ -8,7 +8,6 @@ public class TestSelfSignature
     [Fact]
     public void IAmInTheSignature()
     {
-        var slnDirectory = GetParentDirectoryContaining(".sln", "slnx");
         var csProjDirectory = GetParentDirectoryContaining("Test.csproj");
         var csprojFileInfo = csProjDirectory.GetFiles().FirstOrDefault(f => f.Name.EndsWith("Test.csproj"));
         if (csprojFileInfo == null)
@@ -17,7 +16,7 @@ public class TestSelfSignature
         }
         
         var csProjFile = new CsProjFile(csprojFileInfo.FullName);
-        var signature = SignatureBuilder.GetSignatureFor(null!, slnDirectory.FullName, csProjFile);
+        var signature = SignatureBuilder.GetSignatureFor(csProjFile);
         Assert.NotNull(signature);
         var project = signature.FirstOrDefault();
         Assert.NotNull(project);

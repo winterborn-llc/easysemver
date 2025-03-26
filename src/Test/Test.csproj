@@ -5,8 +5,8 @@
     <Nullable>enable</Nullable>
     <IsPackable>false</IsPackable>
     <LangVersion>13</LangVersion>
-    <AssemblyVersion>8.0.14</AssemblyVersion>
-    <FileVersion>8.0.14</FileVersion>
+    <AssemblyVersion>8.0.25</AssemblyVersion>
+    <FileVersion>8.0.25</FileVersion>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.13.0" />
@@ -36,4 +36,1043 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
+  <PropertyGroup>
+    <LatestAutoVersionSignature>{
+   "Name": "Test.csproj",
+   "Classes": [
+      {
+         "Name": "Test.TestExtractingVersionFromCsProjFile",
+         "Methods": {
+            "TestProjectWithNoVersions": {
+               "MethodName": "TestProjectWithNoVersions",
+               "MethodType": "Void",
+               "Overrides": [
+                  []
+               ]
+            },
+            "TestMajorUpdate": {
+               "MethodName": "TestMajorUpdate",
+               "MethodType": "Void",
+               "Overrides": [
+                  []
+               ]
+            },
+            "GetType": {
+               "MethodName": "GetType",
+               "MethodType": "Type",
+               "Overrides": [
+                  []
+               ]
+            },
+            "ToString": {
+               "MethodName": "ToString",
+               "MethodType": "String",
+               "Overrides": [
+                  []
+               ]
+            },
+            "Equals": {
+               "MethodName": "Equals",
+               "MethodType": "Boolean",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "obj",
+                        "ParameterType": "Object",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "GetHashCode": {
+               "MethodName": "GetHashCode",
+               "MethodType": "Int32",
+               "Overrides": [
+                  []
+               ]
+            }
+         },
+         "Properties": {}
+      },
+      {
+         "Name": "Test.TestSelfSignature",
+         "Methods": {
+            "IAmInTheSignature": {
+               "MethodName": "IAmInTheSignature",
+               "MethodType": "Void",
+               "Overrides": [
+                  []
+               ]
+            },
+            "GetType": {
+               "MethodName": "GetType",
+               "MethodType": "Type",
+               "Overrides": [
+                  []
+               ]
+            },
+            "ToString": {
+               "MethodName": "ToString",
+               "MethodType": "String",
+               "Overrides": [
+                  []
+               ]
+            },
+            "Equals": {
+               "MethodName": "Equals",
+               "MethodType": "Boolean",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "obj",
+                        "ParameterType": "Object",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "GetHashCode": {
+               "MethodName": "GetHashCode",
+               "MethodType": "Int32",
+               "Overrides": [
+                  []
+               ]
+            }
+         },
+         "Properties": {}
+      },
+      {
+         "Name": "Test.TestVersion",
+         "Methods": {
+            "CanExtractPartsFromVersionString": {
+               "MethodName": "CanExtractPartsFromVersionString",
+               "MethodType": "Void",
+               "Overrides": [
+                  []
+               ]
+            },
+            "VerifyIncrementingLogic": {
+               "MethodName": "VerifyIncrementingLogic",
+               "MethodType": "Void",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "given",
+                        "ParameterType": "String",
+                        "IsRequired": true
+                     },
+                     {
+                        "ParameterName": "expected",
+                        "ParameterType": "String",
+                        "IsRequired": true
+                     },
+                     {
+                        "ParameterName": "incrementer",
+                        "ParameterType": "VersionType",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "GetType": {
+               "MethodName": "GetType",
+               "MethodType": "Type",
+               "Overrides": [
+                  []
+               ]
+            },
+            "ToString": {
+               "MethodName": "ToString",
+               "MethodType": "String",
+               "Overrides": [
+                  []
+               ]
+            },
+            "Equals": {
+               "MethodName": "Equals",
+               "MethodType": "Boolean",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "obj",
+                        "ParameterType": "Object",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "GetHashCode": {
+               "MethodName": "GetHashCode",
+               "MethodType": "Int32",
+               "Overrides": [
+                  []
+               ]
+            }
+         },
+         "Properties": {}
+      },
+      {
+         "Name": "Test.TestSignatureEvaluators.TestMethodInputParameterOverrideRemoved",
+         "Methods": {
+            "ChangeTypeIsExpected": {
+               "MethodName": "ChangeTypeIsExpected",
+               "MethodType": "Void",
+               "Overrides": [
+                  []
+               ]
+            },
+            "MethodInputParameterOverrideIsNotChanged": {
+               "MethodName": "MethodInputParameterOverrideIsNotChanged",
+               "MethodType": "Void",
+               "Overrides": [
+                  []
+               ]
+            },
+            "MethodInputParameterIsRenamed": {
+               "MethodName": "MethodInputParameterIsRenamed",
+               "MethodType": "Void",
+               "Overrides": [
+                  []
+               ]
+            },
+            "MethodInputParameterOverrideTypeChanged": {
+               "MethodName": "MethodInputParameterOverrideTypeChanged",
+               "MethodType": "Void",
+               "Overrides": [
+                  []
+               ]
+            },
+            "GetType": {
+               "MethodName": "GetType",
+               "MethodType": "Type",
+               "Overrides": [
+                  []
+               ]
+            },
+            "ToString": {
+               "MethodName": "ToString",
+               "MethodType": "String",
+               "Overrides": [
+                  []
+               ]
+            },
+            "Equals": {
+               "MethodName": "Equals",
+               "MethodType": "Boolean",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "obj",
+                        "ParameterType": "Object",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "GetHashCode": {
+               "MethodName": "GetHashCode",
+               "MethodType": "Int32",
+               "Overrides": [
+                  []
+               ]
+            }
+         },
+         "Properties": {}
+      },
+      {
+         "Name": "Test.TestSignatureEvaluators.TestMethodOverrideAdded",
+         "Methods": {
+            "ChangeTypeIsExpected": {
+               "MethodName": "ChangeTypeIsExpected",
+               "MethodType": "Void",
+               "Overrides": [
+                  []
+               ]
+            },
+            "MethodOverrideIsNotChanged": {
+               "MethodName": "MethodOverrideIsNotChanged",
+               "MethodType": "Void",
+               "Overrides": [
+                  []
+               ]
+            },
+            "MethodOverrideAdded": {
+               "MethodName": "MethodOverrideAdded",
+               "MethodType": "Void",
+               "Overrides": [
+                  []
+               ]
+            },
+            "GetType": {
+               "MethodName": "GetType",
+               "MethodType": "Type",
+               "Overrides": [
+                  []
+               ]
+            },
+            "ToString": {
+               "MethodName": "ToString",
+               "MethodType": "String",
+               "Overrides": [
+                  []
+               ]
+            },
+            "Equals": {
+               "MethodName": "Equals",
+               "MethodType": "Boolean",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "obj",
+                        "ParameterType": "Object",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "GetHashCode": {
+               "MethodName": "GetHashCode",
+               "MethodType": "Int32",
+               "Overrides": [
+                  []
+               ]
+            }
+         },
+         "Properties": {}
+      },
+      {
+         "Name": "Test.TestSignatureEvaluators.TestMethodReturnType",
+         "Methods": {
+            "ChangeTypeIsExpected": {
+               "MethodName": "ChangeTypeIsExpected",
+               "MethodType": "Void",
+               "Overrides": [
+                  []
+               ]
+            },
+            "ReturnTypeIsNotChanged": {
+               "MethodName": "ReturnTypeIsNotChanged",
+               "MethodType": "Void",
+               "Overrides": [
+                  []
+               ]
+            },
+            "ReturnTypeIsChanged": {
+               "MethodName": "ReturnTypeIsChanged",
+               "MethodType": "Void",
+               "Overrides": [
+                  []
+               ]
+            },
+            "GetType": {
+               "MethodName": "GetType",
+               "MethodType": "Type",
+               "Overrides": [
+                  []
+               ]
+            },
+            "ToString": {
+               "MethodName": "ToString",
+               "MethodType": "String",
+               "Overrides": [
+                  []
+               ]
+            },
+            "Equals": {
+               "MethodName": "Equals",
+               "MethodType": "Boolean",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "obj",
+                        "ParameterType": "Object",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "GetHashCode": {
+               "MethodName": "GetHashCode",
+               "MethodType": "Int32",
+               "Overrides": [
+                  []
+               ]
+            }
+         },
+         "Properties": {}
+      },
+      {
+         "Name": "Test.TestSignatureEvaluators.TestMethodsContinueToExist",
+         "Methods": {
+            "TestChangeType": {
+               "MethodName": "TestChangeType",
+               "MethodType": "Void",
+               "Overrides": [
+                  []
+               ]
+            },
+            "EvaluateMethodStillExists": {
+               "MethodName": "EvaluateMethodStillExists",
+               "MethodType": "Void",
+               "Overrides": [
+                  []
+               ]
+            },
+            "EvaluateMethodNoLongerExists": {
+               "MethodName": "EvaluateMethodNoLongerExists",
+               "MethodType": "Void",
+               "Overrides": [
+                  []
+               ]
+            },
+            "GetType": {
+               "MethodName": "GetType",
+               "MethodType": "Type",
+               "Overrides": [
+                  []
+               ]
+            },
+            "ToString": {
+               "MethodName": "ToString",
+               "MethodType": "String",
+               "Overrides": [
+                  []
+               ]
+            },
+            "Equals": {
+               "MethodName": "Equals",
+               "MethodType": "Boolean",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "obj",
+                        "ParameterType": "Object",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "GetHashCode": {
+               "MethodName": "GetHashCode",
+               "MethodType": "Int32",
+               "Overrides": [
+                  []
+               ]
+            }
+         },
+         "Properties": {}
+      },
+      {
+         "Name": "Test.TestSignatureEvaluators.TestProjectAdded",
+         "Methods": {
+            "ChangeTypeIsExpected": {
+               "MethodName": "ChangeTypeIsExpected",
+               "MethodType": "Void",
+               "Overrides": [
+                  []
+               ]
+            },
+            "ProjectsSame": {
+               "MethodName": "ProjectsSame",
+               "MethodType": "Void",
+               "Overrides": [
+                  []
+               ]
+            },
+            "ProjectAdded": {
+               "MethodName": "ProjectAdded",
+               "MethodType": "Void",
+               "Overrides": [
+                  []
+               ]
+            },
+            "GetType": {
+               "MethodName": "GetType",
+               "MethodType": "Type",
+               "Overrides": [
+                  []
+               ]
+            },
+            "ToString": {
+               "MethodName": "ToString",
+               "MethodType": "String",
+               "Overrides": [
+                  []
+               ]
+            },
+            "Equals": {
+               "MethodName": "Equals",
+               "MethodType": "Boolean",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "obj",
+                        "ParameterType": "Object",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "GetHashCode": {
+               "MethodName": "GetHashCode",
+               "MethodType": "Int32",
+               "Overrides": [
+                  []
+               ]
+            }
+         },
+         "Properties": {}
+      },
+      {
+         "Name": "Test.TestSignatureEvaluators.TestProjectClassAdded",
+         "Methods": {
+            "ChangeTypeIsExpected": {
+               "MethodName": "ChangeTypeIsExpected",
+               "MethodType": "Void",
+               "Overrides": [
+                  []
+               ]
+            },
+            "ProjectsSame": {
+               "MethodName": "ProjectsSame",
+               "MethodType": "Void",
+               "Overrides": [
+                  []
+               ]
+            },
+            "ProjectClassAdded": {
+               "MethodName": "ProjectClassAdded",
+               "MethodType": "Void",
+               "Overrides": [
+                  []
+               ]
+            },
+            "GetType": {
+               "MethodName": "GetType",
+               "MethodType": "Type",
+               "Overrides": [
+                  []
+               ]
+            },
+            "ToString": {
+               "MethodName": "ToString",
+               "MethodType": "String",
+               "Overrides": [
+                  []
+               ]
+            },
+            "Equals": {
+               "MethodName": "Equals",
+               "MethodType": "Boolean",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "obj",
+                        "ParameterType": "Object",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "GetHashCode": {
+               "MethodName": "GetHashCode",
+               "MethodType": "Int32",
+               "Overrides": [
+                  []
+               ]
+            }
+         },
+         "Properties": {}
+      },
+      {
+         "Name": "Test.TestSignatureEvaluators.TestProjectClassesContinueToExist",
+         "Methods": {
+            "ChangeTypeIsExpected": {
+               "MethodName": "ChangeTypeIsExpected",
+               "MethodType": "Void",
+               "Overrides": [
+                  []
+               ]
+            },
+            "ProjectsSame": {
+               "MethodName": "ProjectsSame",
+               "MethodType": "Void",
+               "Overrides": [
+                  []
+               ]
+            },
+            "ClassNotFound": {
+               "MethodName": "ClassNotFound",
+               "MethodType": "Void",
+               "Overrides": [
+                  []
+               ]
+            },
+            "GetType": {
+               "MethodName": "GetType",
+               "MethodType": "Type",
+               "Overrides": [
+                  []
+               ]
+            },
+            "ToString": {
+               "MethodName": "ToString",
+               "MethodType": "String",
+               "Overrides": [
+                  []
+               ]
+            },
+            "Equals": {
+               "MethodName": "Equals",
+               "MethodType": "Boolean",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "obj",
+                        "ParameterType": "Object",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "GetHashCode": {
+               "MethodName": "GetHashCode",
+               "MethodType": "Int32",
+               "Overrides": [
+                  []
+               ]
+            }
+         },
+         "Properties": {}
+      },
+      {
+         "Name": "Test.TestSignatureEvaluators.TestProjectsContinueToExist",
+         "Methods": {
+            "ChangeTypeIsExpected": {
+               "MethodName": "ChangeTypeIsExpected",
+               "MethodType": "Void",
+               "Overrides": [
+                  []
+               ]
+            },
+            "ProjectsStillExist": {
+               "MethodName": "ProjectsStillExist",
+               "MethodType": "Void",
+               "Overrides": [
+                  []
+               ]
+            },
+            "ProjectsNoLongerExist": {
+               "MethodName": "ProjectsNoLongerExist",
+               "MethodType": "Void",
+               "Overrides": [
+                  []
+               ]
+            },
+            "GetType": {
+               "MethodName": "GetType",
+               "MethodType": "Type",
+               "Overrides": [
+                  []
+               ]
+            },
+            "ToString": {
+               "MethodName": "ToString",
+               "MethodType": "String",
+               "Overrides": [
+                  []
+               ]
+            },
+            "Equals": {
+               "MethodName": "Equals",
+               "MethodType": "Boolean",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "obj",
+                        "ParameterType": "Object",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "GetHashCode": {
+               "MethodName": "GetHashCode",
+               "MethodType": "Int32",
+               "Overrides": [
+                  []
+               ]
+            }
+         },
+         "Properties": {}
+      },
+      {
+         "Name": "Test.TestSignatureEvaluators.TestPropertiesContinueToExist",
+         "Methods": {
+            "ChangeTypeIsExpected": {
+               "MethodName": "ChangeTypeIsExpected",
+               "MethodType": "Void",
+               "Overrides": [
+                  []
+               ]
+            },
+            "PropertiesTheSame": {
+               "MethodName": "PropertiesTheSame",
+               "MethodType": "Void",
+               "Overrides": [
+                  []
+               ]
+            },
+            "PropertyRemoved": {
+               "MethodName": "PropertyRemoved",
+               "MethodType": "Void",
+               "Overrides": [
+                  []
+               ]
+            },
+            "GetType": {
+               "MethodName": "GetType",
+               "MethodType": "Type",
+               "Overrides": [
+                  []
+               ]
+            },
+            "ToString": {
+               "MethodName": "ToString",
+               "MethodType": "String",
+               "Overrides": [
+                  []
+               ]
+            },
+            "Equals": {
+               "MethodName": "Equals",
+               "MethodType": "Boolean",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "obj",
+                        "ParameterType": "Object",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "GetHashCode": {
+               "MethodName": "GetHashCode",
+               "MethodType": "Int32",
+               "Overrides": [
+                  []
+               ]
+            }
+         },
+         "Properties": {}
+      },
+      {
+         "Name": "Test.TestSignatureEvaluators.TestPropertyEditabilityEnhanced",
+         "Methods": {
+            "ChangeTypeIsExpected": {
+               "MethodName": "ChangeTypeIsExpected",
+               "MethodType": "Void",
+               "Overrides": [
+                  []
+               ]
+            },
+            "PropertiesTheSame": {
+               "MethodName": "PropertiesTheSame",
+               "MethodType": "Void",
+               "Overrides": [
+                  []
+               ]
+            },
+            "PropertyMadeEditable": {
+               "MethodName": "PropertyMadeEditable",
+               "MethodType": "Void",
+               "Overrides": [
+                  []
+               ]
+            },
+            "GetType": {
+               "MethodName": "GetType",
+               "MethodType": "Type",
+               "Overrides": [
+                  []
+               ]
+            },
+            "ToString": {
+               "MethodName": "ToString",
+               "MethodType": "String",
+               "Overrides": [
+                  []
+               ]
+            },
+            "Equals": {
+               "MethodName": "Equals",
+               "MethodType": "Boolean",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "obj",
+                        "ParameterType": "Object",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "GetHashCode": {
+               "MethodName": "GetHashCode",
+               "MethodType": "Int32",
+               "Overrides": [
+                  []
+               ]
+            }
+         },
+         "Properties": {}
+      },
+      {
+         "Name": "Test.TestSignatureEvaluators.TestPropertyEditabilityReduced",
+         "Methods": {
+            "ChangeTypeIsExpected": {
+               "MethodName": "ChangeTypeIsExpected",
+               "MethodType": "Void",
+               "Overrides": [
+                  []
+               ]
+            },
+            "PropertiesTheSame": {
+               "MethodName": "PropertiesTheSame",
+               "MethodType": "Void",
+               "Overrides": [
+                  []
+               ]
+            },
+            "PropertyMadeReadOnly": {
+               "MethodName": "PropertyMadeReadOnly",
+               "MethodType": "Void",
+               "Overrides": [
+                  []
+               ]
+            },
+            "GetType": {
+               "MethodName": "GetType",
+               "MethodType": "Type",
+               "Overrides": [
+                  []
+               ]
+            },
+            "ToString": {
+               "MethodName": "ToString",
+               "MethodType": "String",
+               "Overrides": [
+                  []
+               ]
+            },
+            "Equals": {
+               "MethodName": "Equals",
+               "MethodType": "Boolean",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "obj",
+                        "ParameterType": "Object",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "GetHashCode": {
+               "MethodName": "GetHashCode",
+               "MethodType": "Int32",
+               "Overrides": [
+                  []
+               ]
+            }
+         },
+         "Properties": {}
+      },
+      {
+         "Name": "Test.TestSignatureEvaluators.TestPropertyReadabilityEnhanced",
+         "Methods": {
+            "ChangeTypeIsExpected": {
+               "MethodName": "ChangeTypeIsExpected",
+               "MethodType": "Void",
+               "Overrides": [
+                  []
+               ]
+            },
+            "PropertiesTheSame": {
+               "MethodName": "PropertiesTheSame",
+               "MethodType": "Void",
+               "Overrides": [
+                  []
+               ]
+            },
+            "PropertyMadeReadable": {
+               "MethodName": "PropertyMadeReadable",
+               "MethodType": "Void",
+               "Overrides": [
+                  []
+               ]
+            },
+            "GetType": {
+               "MethodName": "GetType",
+               "MethodType": "Type",
+               "Overrides": [
+                  []
+               ]
+            },
+            "ToString": {
+               "MethodName": "ToString",
+               "MethodType": "String",
+               "Overrides": [
+                  []
+               ]
+            },
+            "Equals": {
+               "MethodName": "Equals",
+               "MethodType": "Boolean",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "obj",
+                        "ParameterType": "Object",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "GetHashCode": {
+               "MethodName": "GetHashCode",
+               "MethodType": "Int32",
+               "Overrides": [
+                  []
+               ]
+            }
+         },
+         "Properties": {}
+      },
+      {
+         "Name": "Test.TestSignatureEvaluators.TestPropertyReadabilityReduced",
+         "Methods": {
+            "ChangeTypeIsExpected": {
+               "MethodName": "ChangeTypeIsExpected",
+               "MethodType": "Void",
+               "Overrides": [
+                  []
+               ]
+            },
+            "PropertiesTheSame": {
+               "MethodName": "PropertiesTheSame",
+               "MethodType": "Void",
+               "Overrides": [
+                  []
+               ]
+            },
+            "PropertyMadeUnReadable": {
+               "MethodName": "PropertyMadeUnReadable",
+               "MethodType": "Void",
+               "Overrides": [
+                  []
+               ]
+            },
+            "GetType": {
+               "MethodName": "GetType",
+               "MethodType": "Type",
+               "Overrides": [
+                  []
+               ]
+            },
+            "ToString": {
+               "MethodName": "ToString",
+               "MethodType": "String",
+               "Overrides": [
+                  []
+               ]
+            },
+            "Equals": {
+               "MethodName": "Equals",
+               "MethodType": "Boolean",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "obj",
+                        "ParameterType": "Object",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "GetHashCode": {
+               "MethodName": "GetHashCode",
+               "MethodType": "Int32",
+               "Overrides": [
+                  []
+               ]
+            }
+         },
+         "Properties": {}
+      },
+      {
+         "Name": "Test.TestSignatureEvaluators.TestPropertyType",
+         "Methods": {
+            "ChangeTypeIsExpected": {
+               "MethodName": "ChangeTypeIsExpected",
+               "MethodType": "Void",
+               "Overrides": [
+                  []
+               ]
+            },
+            "PropertyTypesSame": {
+               "MethodName": "PropertyTypesSame",
+               "MethodType": "Void",
+               "Overrides": [
+                  []
+               ]
+            },
+            "PropertyTypesChanged": {
+               "MethodName": "PropertyTypesChanged",
+               "MethodType": "Void",
+               "Overrides": [
+                  []
+               ]
+            },
+            "GetType": {
+               "MethodName": "GetType",
+               "MethodType": "Type",
+               "Overrides": [
+                  []
+               ]
+            },
+            "ToString": {
+               "MethodName": "ToString",
+               "MethodType": "String",
+               "Overrides": [
+                  []
+               ]
+            },
+            "Equals": {
+               "MethodName": "Equals",
+               "MethodType": "Boolean",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "obj",
+                        "ParameterType": "Object",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "GetHashCode": {
+               "MethodName": "GetHashCode",
+               "MethodType": "Int32",
+               "Overrides": [
+                  []
+               ]
+            }
+         },
+         "Properties": {}
+      }
+   ]
+}</LatestAutoVersionSignature>
+  </PropertyGroup>
 </Project>

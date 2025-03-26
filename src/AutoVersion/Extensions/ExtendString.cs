@@ -1,4 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
+using System.Text.RegularExpressions;
 using System.Xml;
 using Newtonsoft.Json;
 
@@ -63,5 +64,82 @@ internal static class ExtendString
         }
 
         return null;
+    }
+    
+    internal static string EscapeJsonForXml(this string json)
+    {
+        if (string.IsNullOrEmpty(json))
+        {
+            return json;
+        }
+
+        var escapes = new Dictionary<string, string>
+        {
+            { "&", "&amp;" },
+            { "<", "&lt;" },
+            { ">", "&gt;" },
+            { "\"", "&quot;" },
+            { "'", "&apos;" }
+        };
+
+        foreach (var (key, value) in escapes)
+        {
+            json = json.Replace(key, value);
+        }
+
+        return json;
+    }
+
+    internal static string UnescapeXmlToJson(this string xml)
+    {
+        if (string.IsNullOrEmpty(xml))
+        {
+            return xml;
+        }
+
+        var escapes = new Dictionary<string, string>
+        {
+            { "<", "&lt;" },
+            { ">", "&gt;" },
+            { "\"", "&quot;" },
+            { "'", "&apos;" },
+            { "&", "&amp;" }
+        };
+
+        foreach (var (key, value) in escapes)
+        {
+            xml = xml.Replace(value, key);
+        }
+
+        return xml;
+    }
+    
+    internal static string GetSolutionDirectory(this string projectFilePath)
+    {
+        var solutionSuffixes = new[] { ".sln", ".slnx" };
+        var file = new FileInfo(projectFilePath);
+        if (!file.Exists)
+        {
+            return string.Empty;
+        }
+        
+        var directory = file.Directory;
+        while (directory != null)
+        {
+            foreach (var solutionSuffix in solutionSuffixes)
+            {
+                var solutionFile = directory.GetFiles(solutionSuffix);
+                if (solutionFile.Length < 1)
+                {
+                    continue;
+                }
+                
+                return directory.FullName;
+            }
+            
+            directory = directory.Parent;
+        }
+
+        return string.Empty;
     }
 }

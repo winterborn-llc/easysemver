@@ -85,28 +85,36 @@ public class AutoVersion : Microsoft.Build.Utilities.Task
     
     public override bool Execute()
     {
-        this.LogInfo($"Auto versioning {this.SolutionDirectory}");
-        var newSignature = this.GetNewSignature();
-        var oldSignature = this.GetOldSignature();
-        var changeType = CompareSignatures.GetChangeType(this, oldSignature, newSignature);
-        this.LogWarn($"Change Type: {changeType.ToString()}");
-        
-        var version = new Version(this.StartingVersion);
-        version.Increment(changeType);
-        
-        foreach (var csProjFile in this.CsProjFiles)
+        try
         {
-            csProjFile.Version = new Version(version);
-            csProjFile.Save();
-        }
+            this.LogInfo($"Auto versioning {this.SolutionDirectory}");
+            var newSignature = this.GetNewSignature();
+            var oldSignature = this.GetOldSignature();
+            var changeType = CompareSignatures.GetChangeType(this, oldSignature, newSignature);
+            this.LogWarn($"Change Type: {changeType.ToString()}");
         
-        File.WriteAllText(this.AutoVersionFile, newSignature.Serialize());
-        return true;
+            var version = new Version(this.StartingVersion);
+            version.Increment(changeType);
+        
+            foreach (var csProjFile in this.CsProjFiles)
+            {
+                csProjFile.Version = new Version(version);
+                csProjFile.Save();
+            }
+        
+            File.WriteAllText(this.AutoVersionFile, newSignature.Serialize());
+            return true;
+        }
+        catch (Exception e)
+        {
+            this.LogFail($"Failed to execute autoversion:\n{e.Message}");
+            return false;
+        }
     }
 
     private Signature GetNewSignature()
     {
-        var newSignature = SignatureBuilder.GetSignatureFor(this, this.SolutionDirectory, this.CsProjFiles);
+        var newSignature = SignatureBuilder.GetSignatureFor(this.CsProjFiles);
         return newSignature ?? [];
     }
     

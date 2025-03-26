@@ -1,5 +1,4 @@
 using Yamamari.Library.AutoVersion;
-using Version = Yamamari.Library.AutoVersion.Version;
 
 namespace Test;
 
@@ -36,7 +35,7 @@ public class TestExtractingVersionFromCsProjFile
     </ItemGroup>
 </Project>";
         
-        var version = CsProjFile.GetOriginalVersion(sourceXml);
+        var version = new CsProjFileVersion(sourceXml).Version;
         Assert.Equal("0.0.0", version);
     }
     
@@ -74,7 +73,7 @@ public class TestExtractingVersionFromCsProjFile
     </ItemGroup>
 </Project>";
         
-        var version = CsProjFile.GetOriginalVersion(sourceXml);
+        var version = new CsProjFileVersion(sourceXml).Version;
         Assert.Equal("1.0.3", version);
     }
 }

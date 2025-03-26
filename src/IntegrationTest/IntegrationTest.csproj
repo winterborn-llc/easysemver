@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <AssemblyVersion>8.0.14</AssemblyVersion>
+    <AssemblyVersion>8.0.25</AssemblyVersion>
     <TargetFramework>net9.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
@@ -9,18 +9,6 @@
   <ItemGroup>
     <ProjectReference Include="..\AutoVersion\AutoVersion.csproj" />
   </ItemGroup>
-  <!--
-  <UsingTask TaskName="AutoVersion" AssemblyFile="$(OutDir)AutoVersion.dll" />
-  <Target Name="RunCustomTask" AfterTargets="PostBuildEvent">
-    <AutoVersion />
-  </Target>
-  -->
-  <!--
-  <UsingTask TaskName="AutoVersion" AssemblyFile="$(PkgYamamari_AutoVersion)/lib/net9.0/AutoVersion.dll" />
-    <Target Name="IncrementTheVersion" AfterTargets="PostBuildEvent">
-        <AutoVersion ProjectFile="./$(ProjectFileName)" />
-    </Target>
-    -->
   <ItemGroup>
     <AssemblyAttribute Include="System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverageAttribute" />
   </ItemGroup>
@@ -38,4 +26,143 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
   </ItemGroup>
+  <PropertyGroup>
+    <LatestAutoVersionSignature>{
+   "Name": "IntegrationTest.csproj",
+   "Classes": [
+      {
+         "Name": "IntegrationTest.Class1",
+         "Methods": {
+            "get_Property1": {
+               "MethodName": "get_Property1",
+               "MethodType": "String",
+               "Overrides": [
+                  []
+               ]
+            },
+            "set_Property1": {
+               "MethodName": "set_Property1",
+               "MethodType": "Void",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "value",
+                        "ParameterType": "String",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "Method1": {
+               "MethodName": "Method1",
+               "MethodType": "Void",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "param1",
+                        "ParameterType": "String",
+                        "IsRequired": true
+                     },
+                     {
+                        "ParameterName": "param2",
+                        "ParameterType": "Int32",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "GetType": {
+               "MethodName": "GetType",
+               "MethodType": "Type",
+               "Overrides": [
+                  []
+               ]
+            },
+            "ToString": {
+               "MethodName": "ToString",
+               "MethodType": "String",
+               "Overrides": [
+                  []
+               ]
+            },
+            "Equals": {
+               "MethodName": "Equals",
+               "MethodType": "Boolean",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "obj",
+                        "ParameterType": "Object",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "GetHashCode": {
+               "MethodName": "GetHashCode",
+               "MethodType": "Int32",
+               "Overrides": [
+                  []
+               ]
+            }
+         },
+         "Properties": {
+            "Property1": {
+               "Name": "Property1",
+               "Type": "String",
+               "IsReadable": true,
+               "IsWritable": true
+            }
+         }
+      },
+      {
+         "Name": "IntegrationTest.Regression",
+         "Methods": {
+            "TestProgramInvocation": {
+               "MethodName": "TestProgramInvocation",
+               "MethodType": "Void",
+               "Overrides": [
+                  []
+               ]
+            },
+            "GetType": {
+               "MethodName": "GetType",
+               "MethodType": "Type",
+               "Overrides": [
+                  []
+               ]
+            },
+            "ToString": {
+               "MethodName": "ToString",
+               "MethodType": "String",
+               "Overrides": [
+                  []
+               ]
+            },
+            "Equals": {
+               "MethodName": "Equals",
+               "MethodType": "Boolean",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "obj",
+                        "ParameterType": "Object",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "GetHashCode": {
+               "MethodName": "GetHashCode",
+               "MethodType": "Int32",
+               "Overrides": [
+                  []
+               ]
+            }
+         },
+         "Properties": {}
+      }
+   ]
+}</LatestAutoVersionSignature>
+  </PropertyGroup>
 </Project>

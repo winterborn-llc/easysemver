@@ -2,9 +2,9 @@
   <PropertyGroup>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <PackageVersion>8.0.14</PackageVersion>
-    <AssemblyVersion>8.0.14</AssemblyVersion>
-    <FileVersion>8.0.14</FileVersion>
+    <PackageVersion>8.0.25</PackageVersion>
+    <AssemblyVersion>8.0.25</AssemblyVersion>
+    <FileVersion>8.0.25</FileVersion>
     <Title>Auto-Version by Yamamari</Title>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <RootNamespace>Yamamari.Library.AutoVersion</RootNamespace>
@@ -46,10 +46,4524 @@
       <ReferenceCopyLocalPaths Remove="@(ReferenceCopyLocalPaths)" Condition="$(NonCopyLocalPackageReferences.Contains(';%(ReferenceCopyLocalPaths.NuGetPackageId);'))" />
     </ItemGroup>
   </Target>
-  <!--
-  <UsingTask TaskName="AutoVersion" AssemblyFile="$(OutDir)AutoVersion.dll" />
-  <Target Name="RunCustomTask" AfterTargets="PostBuildEvent">
-    <AutoVersion ProjectFile="./$(ProjectFileName)" />
-  </Target>
-  -->
+  <PropertyGroup>
+    <LatestAutoVersionSignature>{
+   "Name": "AutoVersion.csproj",
+   "Classes": [
+      {
+         "Name": "Yamamari.Library.AutoVersion.AutoVersion",
+         "Methods": {
+            "Execute": {
+               "MethodName": "Execute",
+               "MethodType": "Boolean",
+               "Overrides": [
+                  []
+               ]
+            },
+            "get_BuildEngine": {
+               "MethodName": "get_BuildEngine",
+               "MethodType": "IBuildEngine",
+               "Overrides": [
+                  []
+               ]
+            },
+            "set_BuildEngine": {
+               "MethodName": "set_BuildEngine",
+               "MethodType": "Void",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "value",
+                        "ParameterType": "IBuildEngine",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "get_BuildEngine2": {
+               "MethodName": "get_BuildEngine2",
+               "MethodType": "IBuildEngine2",
+               "Overrides": [
+                  []
+               ]
+            },
+            "get_BuildEngine3": {
+               "MethodName": "get_BuildEngine3",
+               "MethodType": "IBuildEngine3",
+               "Overrides": [
+                  []
+               ]
+            },
+            "get_BuildEngine4": {
+               "MethodName": "get_BuildEngine4",
+               "MethodType": "IBuildEngine4",
+               "Overrides": [
+                  []
+               ]
+            },
+            "get_BuildEngine5": {
+               "MethodName": "get_BuildEngine5",
+               "MethodType": "IBuildEngine5",
+               "Overrides": [
+                  []
+               ]
+            },
+            "get_BuildEngine6": {
+               "MethodName": "get_BuildEngine6",
+               "MethodType": "IBuildEngine6",
+               "Overrides": [
+                  []
+               ]
+            },
+            "get_BuildEngine7": {
+               "MethodName": "get_BuildEngine7",
+               "MethodType": "IBuildEngine7",
+               "Overrides": [
+                  []
+               ]
+            },
+            "get_BuildEngine8": {
+               "MethodName": "get_BuildEngine8",
+               "MethodType": "IBuildEngine8",
+               "Overrides": [
+                  []
+               ]
+            },
+            "get_BuildEngine9": {
+               "MethodName": "get_BuildEngine9",
+               "MethodType": "IBuildEngine9",
+               "Overrides": [
+                  []
+               ]
+            },
+            "get_HostObject": {
+               "MethodName": "get_HostObject",
+               "MethodType": "ITaskHost",
+               "Overrides": [
+                  []
+               ]
+            },
+            "set_HostObject": {
+               "MethodName": "set_HostObject",
+               "MethodType": "Void",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "value",
+                        "ParameterType": "ITaskHost",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "get_Log": {
+               "MethodName": "get_Log",
+               "MethodType": "TaskLoggingHelper",
+               "Overrides": [
+                  []
+               ]
+            },
+            "GetType": {
+               "MethodName": "GetType",
+               "MethodType": "Type",
+               "Overrides": [
+                  []
+               ]
+            },
+            "ToString": {
+               "MethodName": "ToString",
+               "MethodType": "String",
+               "Overrides": [
+                  []
+               ]
+            },
+            "Equals": {
+               "MethodName": "Equals",
+               "MethodType": "Boolean",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "obj",
+                        "ParameterType": "Object",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "GetHashCode": {
+               "MethodName": "GetHashCode",
+               "MethodType": "Int32",
+               "Overrides": [
+                  []
+               ]
+            }
+         },
+         "Properties": {
+            "BuildEngine": {
+               "Name": "BuildEngine",
+               "Type": "IBuildEngine",
+               "IsReadable": true,
+               "IsWritable": true
+            },
+            "BuildEngine2": {
+               "Name": "BuildEngine2",
+               "Type": "IBuildEngine2",
+               "IsReadable": true,
+               "IsWritable": false
+            },
+            "BuildEngine3": {
+               "Name": "BuildEngine3",
+               "Type": "IBuildEngine3",
+               "IsReadable": true,
+               "IsWritable": false
+            },
+            "BuildEngine4": {
+               "Name": "BuildEngine4",
+               "Type": "IBuildEngine4",
+               "IsReadable": true,
+               "IsWritable": false
+            },
+            "BuildEngine5": {
+               "Name": "BuildEngine5",
+               "Type": "IBuildEngine5",
+               "IsReadable": true,
+               "IsWritable": false
+            },
+            "BuildEngine6": {
+               "Name": "BuildEngine6",
+               "Type": "IBuildEngine6",
+               "IsReadable": true,
+               "IsWritable": false
+            },
+            "BuildEngine7": {
+               "Name": "BuildEngine7",
+               "Type": "IBuildEngine7",
+               "IsReadable": true,
+               "IsWritable": false
+            },
+            "BuildEngine8": {
+               "Name": "BuildEngine8",
+               "Type": "IBuildEngine8",
+               "IsReadable": true,
+               "IsWritable": false
+            },
+            "BuildEngine9": {
+               "Name": "BuildEngine9",
+               "Type": "IBuildEngine9",
+               "IsReadable": true,
+               "IsWritable": false
+            },
+            "HostObject": {
+               "Name": "HostObject",
+               "Type": "ITaskHost",
+               "IsReadable": true,
+               "IsWritable": true
+            },
+            "Log": {
+               "Name": "Log",
+               "Type": "TaskLoggingHelper",
+               "IsReadable": true,
+               "IsWritable": false
+            }
+         }
+      },
+      {
+         "Name": "Yamamari.Library.AutoVersion.Version",
+         "Methods": {
+            "get_Major": {
+               "MethodName": "get_Major",
+               "MethodType": "Nullable`1",
+               "Overrides": [
+                  []
+               ]
+            },
+            "get_Minor": {
+               "MethodName": "get_Minor",
+               "MethodType": "Nullable`1",
+               "Overrides": [
+                  []
+               ]
+            },
+            "get_Patch": {
+               "MethodName": "get_Patch",
+               "MethodType": "Nullable`1",
+               "Overrides": [
+                  []
+               ]
+            },
+            "ToString": {
+               "MethodName": "ToString",
+               "MethodType": "String",
+               "Overrides": [
+                  []
+               ]
+            },
+            "Increment": {
+               "MethodName": "Increment",
+               "MethodType": "Void",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "type",
+                        "ParameterType": "VersionType",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "GetHashCode": {
+               "MethodName": "GetHashCode",
+               "MethodType": "Int32",
+               "Overrides": [
+                  []
+               ]
+            },
+            "Equals": {
+               "MethodName": "Equals",
+               "MethodType": "Boolean",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "obj",
+                        "ParameterType": "Object",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "op_Implicit": {
+               "MethodName": "op_Implicit",
+               "MethodType": "String",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "version",
+                        "ParameterType": "Version",
+                        "IsRequired": true
+                     }
+                  ],
+                  [
+                     {
+                        "ParameterName": "versionString",
+                        "ParameterType": "String",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "op_GreaterThan": {
+               "MethodName": "op_GreaterThan",
+               "MethodType": "Boolean",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "v1",
+                        "ParameterType": "Version",
+                        "IsRequired": true
+                     },
+                     {
+                        "ParameterName": "v2",
+                        "ParameterType": "Version",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "op_LessThan": {
+               "MethodName": "op_LessThan",
+               "MethodType": "Boolean",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "v1",
+                        "ParameterType": "Version",
+                        "IsRequired": true
+                     },
+                     {
+                        "ParameterName": "v2",
+                        "ParameterType": "Version",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "op_Equality": {
+               "MethodName": "op_Equality",
+               "MethodType": "Boolean",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "v1",
+                        "ParameterType": "Version",
+                        "IsRequired": true
+                     },
+                     {
+                        "ParameterName": "v2",
+                        "ParameterType": "Version",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "op_Inequality": {
+               "MethodName": "op_Inequality",
+               "MethodType": "Boolean",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "v1",
+                        "ParameterType": "Version",
+                        "IsRequired": true
+                     },
+                     {
+                        "ParameterName": "v2",
+                        "ParameterType": "Version",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "GetType": {
+               "MethodName": "GetType",
+               "MethodType": "Type",
+               "Overrides": [
+                  []
+               ]
+            }
+         },
+         "Properties": {
+            "Major": {
+               "Name": "Major",
+               "Type": "Nullable`1",
+               "IsReadable": true,
+               "IsWritable": false
+            },
+            "Minor": {
+               "Name": "Minor",
+               "Type": "Nullable`1",
+               "IsReadable": true,
+               "IsWritable": false
+            },
+            "Patch": {
+               "Name": "Patch",
+               "Type": "Nullable`1",
+               "IsReadable": true,
+               "IsWritable": false
+            }
+         }
+      },
+      {
+         "Name": "Yamamari.Library.AutoVersion.VersionType",
+         "Methods": {
+            "HasFlag": {
+               "MethodName": "HasFlag",
+               "MethodType": "Boolean",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "flag",
+                        "ParameterType": "Enum",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "Equals": {
+               "MethodName": "Equals",
+               "MethodType": "Boolean",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "obj",
+                        "ParameterType": "Object",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "GetHashCode": {
+               "MethodName": "GetHashCode",
+               "MethodType": "Int32",
+               "Overrides": [
+                  []
+               ]
+            },
+            "CompareTo": {
+               "MethodName": "CompareTo",
+               "MethodType": "Int32",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "target",
+                        "ParameterType": "Object",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "ToString": {
+               "MethodName": "ToString",
+               "MethodType": "String",
+               "Overrides": [
+                  [],
+                  [
+                     {
+                        "ParameterName": "format",
+                        "ParameterType": "String",
+                        "IsRequired": true
+                     }
+                  ],
+                  [
+                     {
+                        "ParameterName": "provider",
+                        "ParameterType": "IFormatProvider",
+                        "IsRequired": true
+                     }
+                  ],
+                  [
+                     {
+                        "ParameterName": "format",
+                        "ParameterType": "String",
+                        "IsRequired": true
+                     },
+                     {
+                        "ParameterName": "provider",
+                        "ParameterType": "IFormatProvider",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "GetTypeCode": {
+               "MethodName": "GetTypeCode",
+               "MethodType": "TypeCode",
+               "Overrides": [
+                  []
+               ]
+            },
+            "GetType": {
+               "MethodName": "GetType",
+               "MethodType": "Type",
+               "Overrides": [
+                  []
+               ]
+            }
+         },
+         "Properties": {}
+      },
+      {
+         "Name": "Yamamari.Library.AutoVersion.SignatureStructure.Method",
+         "Methods": {
+            "get_MethodName": {
+               "MethodName": "get_MethodName",
+               "MethodType": "String",
+               "Overrides": [
+                  []
+               ]
+            },
+            "set_MethodName": {
+               "MethodName": "set_MethodName",
+               "MethodType": "Void",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "value",
+                        "ParameterType": "String",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "get_MethodType": {
+               "MethodName": "get_MethodType",
+               "MethodType": "String",
+               "Overrides": [
+                  []
+               ]
+            },
+            "set_MethodType": {
+               "MethodName": "set_MethodType",
+               "MethodType": "Void",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "value",
+                        "ParameterType": "String",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "get_Overrides": {
+               "MethodName": "get_Overrides",
+               "MethodType": "MethodOverrides",
+               "Overrides": [
+                  []
+               ]
+            },
+            "set_Overrides": {
+               "MethodName": "set_Overrides",
+               "MethodType": "Void",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "value",
+                        "ParameterType": "MethodOverrides",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "GetType": {
+               "MethodName": "GetType",
+               "MethodType": "Type",
+               "Overrides": [
+                  []
+               ]
+            },
+            "ToString": {
+               "MethodName": "ToString",
+               "MethodType": "String",
+               "Overrides": [
+                  []
+               ]
+            },
+            "Equals": {
+               "MethodName": "Equals",
+               "MethodType": "Boolean",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "obj",
+                        "ParameterType": "Object",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "GetHashCode": {
+               "MethodName": "GetHashCode",
+               "MethodType": "Int32",
+               "Overrides": [
+                  []
+               ]
+            }
+         },
+         "Properties": {
+            "MethodName": {
+               "Name": "MethodName",
+               "Type": "String",
+               "IsReadable": true,
+               "IsWritable": true
+            },
+            "MethodType": {
+               "Name": "MethodType",
+               "Type": "String",
+               "IsReadable": true,
+               "IsWritable": true
+            },
+            "Overrides": {
+               "Name": "Overrides",
+               "Type": "MethodOverrides",
+               "IsReadable": true,
+               "IsWritable": true
+            }
+         }
+      },
+      {
+         "Name": "Yamamari.Library.AutoVersion.SignatureStructure.MethodOverride",
+         "Methods": {
+            "get_MethodSignature": {
+               "MethodName": "get_MethodSignature",
+               "MethodType": "String",
+               "Overrides": [
+                  []
+               ]
+            },
+            "get_Capacity": {
+               "MethodName": "get_Capacity",
+               "MethodType": "Int32",
+               "Overrides": [
+                  []
+               ]
+            },
+            "set_Capacity": {
+               "MethodName": "set_Capacity",
+               "MethodType": "Void",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "value",
+                        "ParameterType": "Int32",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "get_Count": {
+               "MethodName": "get_Count",
+               "MethodType": "Int32",
+               "Overrides": [
+                  []
+               ]
+            },
+            "get_Item": {
+               "MethodName": "get_Item",
+               "MethodType": "MethodOverrideInput",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "index",
+                        "ParameterType": "Int32",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "set_Item": {
+               "MethodName": "set_Item",
+               "MethodType": "Void",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "index",
+                        "ParameterType": "Int32",
+                        "IsRequired": true
+                     },
+                     {
+                        "ParameterName": "value",
+                        "ParameterType": "MethodOverrideInput",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "Add": {
+               "MethodName": "Add",
+               "MethodType": "Void",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "item",
+                        "ParameterType": "MethodOverrideInput",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "AddRange": {
+               "MethodName": "AddRange",
+               "MethodType": "Void",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "collection",
+                        "ParameterType": "IEnumerable`1",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "AsReadOnly": {
+               "MethodName": "AsReadOnly",
+               "MethodType": "ReadOnlyCollection`1",
+               "Overrides": [
+                  []
+               ]
+            },
+            "BinarySearch": {
+               "MethodName": "BinarySearch",
+               "MethodType": "Int32",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "index",
+                        "ParameterType": "Int32",
+                        "IsRequired": true
+                     },
+                     {
+                        "ParameterName": "count",
+                        "ParameterType": "Int32",
+                        "IsRequired": true
+                     },
+                     {
+                        "ParameterName": "item",
+                        "ParameterType": "MethodOverrideInput",
+                        "IsRequired": true
+                     },
+                     {
+                        "ParameterName": "comparer",
+                        "ParameterType": "IComparer`1",
+                        "IsRequired": true
+                     }
+                  ],
+                  [
+                     {
+                        "ParameterName": "item",
+                        "ParameterType": "MethodOverrideInput",
+                        "IsRequired": true
+                     }
+                  ],
+                  [
+                     {
+                        "ParameterName": "item",
+                        "ParameterType": "MethodOverrideInput",
+                        "IsRequired": true
+                     },
+                     {
+                        "ParameterName": "comparer",
+                        "ParameterType": "IComparer`1",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "Clear": {
+               "MethodName": "Clear",
+               "MethodType": "Void",
+               "Overrides": [
+                  []
+               ]
+            },
+            "Contains": {
+               "MethodName": "Contains",
+               "MethodType": "Boolean",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "item",
+                        "ParameterType": "MethodOverrideInput",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "ConvertAll": {
+               "MethodName": "ConvertAll",
+               "MethodType": "List`1",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "converter",
+                        "ParameterType": "Converter`2",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "CopyTo": {
+               "MethodName": "CopyTo",
+               "MethodType": "Void",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "array",
+                        "ParameterType": "MethodOverrideInput[]",
+                        "IsRequired": true
+                     }
+                  ],
+                  [
+                     {
+                        "ParameterName": "index",
+                        "ParameterType": "Int32",
+                        "IsRequired": true
+                     },
+                     {
+                        "ParameterName": "array",
+                        "ParameterType": "MethodOverrideInput[]",
+                        "IsRequired": true
+                     },
+                     {
+                        "ParameterName": "arrayIndex",
+                        "ParameterType": "Int32",
+                        "IsRequired": true
+                     },
+                     {
+                        "ParameterName": "count",
+                        "ParameterType": "Int32",
+                        "IsRequired": true
+                     }
+                  ],
+                  [
+                     {
+                        "ParameterName": "array",
+                        "ParameterType": "MethodOverrideInput[]",
+                        "IsRequired": true
+                     },
+                     {
+                        "ParameterName": "arrayIndex",
+                        "ParameterType": "Int32",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "EnsureCapacity": {
+               "MethodName": "EnsureCapacity",
+               "MethodType": "Int32",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "capacity",
+                        "ParameterType": "Int32",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "Exists": {
+               "MethodName": "Exists",
+               "MethodType": "Boolean",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "match",
+                        "ParameterType": "Predicate`1",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "Find": {
+               "MethodName": "Find",
+               "MethodType": "MethodOverrideInput",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "match",
+                        "ParameterType": "Predicate`1",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "FindAll": {
+               "MethodName": "FindAll",
+               "MethodType": "List`1",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "match",
+                        "ParameterType": "Predicate`1",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "FindIndex": {
+               "MethodName": "FindIndex",
+               "MethodType": "Int32",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "match",
+                        "ParameterType": "Predicate`1",
+                        "IsRequired": true
+                     }
+                  ],
+                  [
+                     {
+                        "ParameterName": "startIndex",
+                        "ParameterType": "Int32",
+                        "IsRequired": true
+                     },
+                     {
+                        "ParameterName": "match",
+                        "ParameterType": "Predicate`1",
+                        "IsRequired": true
+                     }
+                  ],
+                  [
+                     {
+                        "ParameterName": "startIndex",
+                        "ParameterType": "Int32",
+                        "IsRequired": true
+                     },
+                     {
+                        "ParameterName": "count",
+                        "ParameterType": "Int32",
+                        "IsRequired": true
+                     },
+                     {
+                        "ParameterName": "match",
+                        "ParameterType": "Predicate`1",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "FindLast": {
+               "MethodName": "FindLast",
+               "MethodType": "MethodOverrideInput",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "match",
+                        "ParameterType": "Predicate`1",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "FindLastIndex": {
+               "MethodName": "FindLastIndex",
+               "MethodType": "Int32",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "match",
+                        "ParameterType": "Predicate`1",
+                        "IsRequired": true
+                     }
+                  ],
+                  [
+                     {
+                        "ParameterName": "startIndex",
+                        "ParameterType": "Int32",
+                        "IsRequired": true
+                     },
+                     {
+                        "ParameterName": "match",
+                        "ParameterType": "Predicate`1",
+                        "IsRequired": true
+                     }
+                  ],
+                  [
+                     {
+                        "ParameterName": "startIndex",
+                        "ParameterType": "Int32",
+                        "IsRequired": true
+                     },
+                     {
+                        "ParameterName": "count",
+                        "ParameterType": "Int32",
+                        "IsRequired": true
+                     },
+                     {
+                        "ParameterName": "match",
+                        "ParameterType": "Predicate`1",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "ForEach": {
+               "MethodName": "ForEach",
+               "MethodType": "Void",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "action",
+                        "ParameterType": "Action`1",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "GetEnumerator": {
+               "MethodName": "GetEnumerator",
+               "MethodType": "Enumerator",
+               "Overrides": [
+                  []
+               ]
+            },
+            "GetRange": {
+               "MethodName": "GetRange",
+               "MethodType": "List`1",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "index",
+                        "ParameterType": "Int32",
+                        "IsRequired": true
+                     },
+                     {
+                        "ParameterName": "count",
+                        "ParameterType": "Int32",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "Slice": {
+               "MethodName": "Slice",
+               "MethodType": "List`1",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "start",
+                        "ParameterType": "Int32",
+                        "IsRequired": true
+                     },
+                     {
+                        "ParameterName": "length",
+                        "ParameterType": "Int32",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "IndexOf": {
+               "MethodName": "IndexOf",
+               "MethodType": "Int32",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "item",
+                        "ParameterType": "MethodOverrideInput",
+                        "IsRequired": true
+                     }
+                  ],
+                  [
+                     {
+                        "ParameterName": "item",
+                        "ParameterType": "MethodOverrideInput",
+                        "IsRequired": true
+                     },
+                     {
+                        "ParameterName": "index",
+                        "ParameterType": "Int32",
+                        "IsRequired": true
+                     }
+                  ],
+                  [
+                     {
+                        "ParameterName": "item",
+                        "ParameterType": "MethodOverrideInput",
+                        "IsRequired": true
+                     },
+                     {
+                        "ParameterName": "index",
+                        "ParameterType": "Int32",
+                        "IsRequired": true
+                     },
+                     {
+                        "ParameterName": "count",
+                        "ParameterType": "Int32",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "Insert": {
+               "MethodName": "Insert",
+               "MethodType": "Void",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "index",
+                        "ParameterType": "Int32",
+                        "IsRequired": true
+                     },
+                     {
+                        "ParameterName": "item",
+                        "ParameterType": "MethodOverrideInput",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "InsertRange": {
+               "MethodName": "InsertRange",
+               "MethodType": "Void",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "index",
+                        "ParameterType": "Int32",
+                        "IsRequired": true
+                     },
+                     {
+                        "ParameterName": "collection",
+                        "ParameterType": "IEnumerable`1",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "LastIndexOf": {
+               "MethodName": "LastIndexOf",
+               "MethodType": "Int32",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "item",
+                        "ParameterType": "MethodOverrideInput",
+                        "IsRequired": true
+                     }
+                  ],
+                  [
+                     {
+                        "ParameterName": "item",
+                        "ParameterType": "MethodOverrideInput",
+                        "IsRequired": true
+                     },
+                     {
+                        "ParameterName": "index",
+                        "ParameterType": "Int32",
+                        "IsRequired": true
+                     }
+                  ],
+                  [
+                     {
+                        "ParameterName": "item",
+                        "ParameterType": "MethodOverrideInput",
+                        "IsRequired": true
+                     },
+                     {
+                        "ParameterName": "index",
+                        "ParameterType": "Int32",
+                        "IsRequired": true
+                     },
+                     {
+                        "ParameterName": "count",
+                        "ParameterType": "Int32",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "Remove": {
+               "MethodName": "Remove",
+               "MethodType": "Boolean",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "item",
+                        "ParameterType": "MethodOverrideInput",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "RemoveAll": {
+               "MethodName": "RemoveAll",
+               "MethodType": "Int32",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "match",
+                        "ParameterType": "Predicate`1",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "RemoveAt": {
+               "MethodName": "RemoveAt",
+               "MethodType": "Void",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "index",
+                        "ParameterType": "Int32",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "RemoveRange": {
+               "MethodName": "RemoveRange",
+               "MethodType": "Void",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "index",
+                        "ParameterType": "Int32",
+                        "IsRequired": true
+                     },
+                     {
+                        "ParameterName": "count",
+                        "ParameterType": "Int32",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "Reverse": {
+               "MethodName": "Reverse",
+               "MethodType": "Void",
+               "Overrides": [
+                  [],
+                  [
+                     {
+                        "ParameterName": "index",
+                        "ParameterType": "Int32",
+                        "IsRequired": true
+                     },
+                     {
+                        "ParameterName": "count",
+                        "ParameterType": "Int32",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "Sort": {
+               "MethodName": "Sort",
+               "MethodType": "Void",
+               "Overrides": [
+                  [],
+                  [
+                     {
+                        "ParameterName": "comparer",
+                        "ParameterType": "IComparer`1",
+                        "IsRequired": true
+                     }
+                  ],
+                  [
+                     {
+                        "ParameterName": "index",
+                        "ParameterType": "Int32",
+                        "IsRequired": true
+                     },
+                     {
+                        "ParameterName": "count",
+                        "ParameterType": "Int32",
+                        "IsRequired": true
+                     },
+                     {
+                        "ParameterName": "comparer",
+                        "ParameterType": "IComparer`1",
+                        "IsRequired": true
+                     }
+                  ],
+                  [
+                     {
+                        "ParameterName": "comparison",
+                        "ParameterType": "Comparison`1",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "ToArray": {
+               "MethodName": "ToArray",
+               "MethodType": "MethodOverrideInput[]",
+               "Overrides": [
+                  []
+               ]
+            },
+            "TrimExcess": {
+               "MethodName": "TrimExcess",
+               "MethodType": "Void",
+               "Overrides": [
+                  []
+               ]
+            },
+            "TrueForAll": {
+               "MethodName": "TrueForAll",
+               "MethodType": "Boolean",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "match",
+                        "ParameterType": "Predicate`1",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "GetType": {
+               "MethodName": "GetType",
+               "MethodType": "Type",
+               "Overrides": [
+                  []
+               ]
+            },
+            "ToString": {
+               "MethodName": "ToString",
+               "MethodType": "String",
+               "Overrides": [
+                  []
+               ]
+            },
+            "Equals": {
+               "MethodName": "Equals",
+               "MethodType": "Boolean",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "obj",
+                        "ParameterType": "Object",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "GetHashCode": {
+               "MethodName": "GetHashCode",
+               "MethodType": "Int32",
+               "Overrides": [
+                  []
+               ]
+            }
+         },
+         "Properties": {
+            "MethodSignature": {
+               "Name": "MethodSignature",
+               "Type": "String",
+               "IsReadable": true,
+               "IsWritable": false
+            },
+            "Capacity": {
+               "Name": "Capacity",
+               "Type": "Int32",
+               "IsReadable": true,
+               "IsWritable": true
+            },
+            "Count": {
+               "Name": "Count",
+               "Type": "Int32",
+               "IsReadable": true,
+               "IsWritable": false
+            },
+            "Item": {
+               "Name": "Item",
+               "Type": "MethodOverrideInput",
+               "IsReadable": true,
+               "IsWritable": true
+            }
+         }
+      },
+      {
+         "Name": "Yamamari.Library.AutoVersion.SignatureStructure.MethodOverrideInput",
+         "Methods": {
+            "get_ParameterName": {
+               "MethodName": "get_ParameterName",
+               "MethodType": "String",
+               "Overrides": [
+                  []
+               ]
+            },
+            "set_ParameterName": {
+               "MethodName": "set_ParameterName",
+               "MethodType": "Void",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "value",
+                        "ParameterType": "String",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "get_ParameterType": {
+               "MethodName": "get_ParameterType",
+               "MethodType": "String",
+               "Overrides": [
+                  []
+               ]
+            },
+            "set_ParameterType": {
+               "MethodName": "set_ParameterType",
+               "MethodType": "Void",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "value",
+                        "ParameterType": "String",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "get_IsRequired": {
+               "MethodName": "get_IsRequired",
+               "MethodType": "Boolean",
+               "Overrides": [
+                  []
+               ]
+            },
+            "set_IsRequired": {
+               "MethodName": "set_IsRequired",
+               "MethodType": "Void",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "value",
+                        "ParameterType": "Boolean",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "GetType": {
+               "MethodName": "GetType",
+               "MethodType": "Type",
+               "Overrides": [
+                  []
+               ]
+            },
+            "ToString": {
+               "MethodName": "ToString",
+               "MethodType": "String",
+               "Overrides": [
+                  []
+               ]
+            },
+            "Equals": {
+               "MethodName": "Equals",
+               "MethodType": "Boolean",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "obj",
+                        "ParameterType": "Object",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "GetHashCode": {
+               "MethodName": "GetHashCode",
+               "MethodType": "Int32",
+               "Overrides": [
+                  []
+               ]
+            }
+         },
+         "Properties": {
+            "ParameterName": {
+               "Name": "ParameterName",
+               "Type": "String",
+               "IsReadable": true,
+               "IsWritable": true
+            },
+            "ParameterType": {
+               "Name": "ParameterType",
+               "Type": "String",
+               "IsReadable": true,
+               "IsWritable": true
+            },
+            "IsRequired": {
+               "Name": "IsRequired",
+               "Type": "Boolean",
+               "IsReadable": true,
+               "IsWritable": true
+            }
+         }
+      },
+      {
+         "Name": "Yamamari.Library.AutoVersion.SignatureStructure.MethodOverrides",
+         "Methods": {
+            "get_Capacity": {
+               "MethodName": "get_Capacity",
+               "MethodType": "Int32",
+               "Overrides": [
+                  []
+               ]
+            },
+            "set_Capacity": {
+               "MethodName": "set_Capacity",
+               "MethodType": "Void",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "value",
+                        "ParameterType": "Int32",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "get_Count": {
+               "MethodName": "get_Count",
+               "MethodType": "Int32",
+               "Overrides": [
+                  []
+               ]
+            },
+            "get_Item": {
+               "MethodName": "get_Item",
+               "MethodType": "MethodOverride",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "index",
+                        "ParameterType": "Int32",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "set_Item": {
+               "MethodName": "set_Item",
+               "MethodType": "Void",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "index",
+                        "ParameterType": "Int32",
+                        "IsRequired": true
+                     },
+                     {
+                        "ParameterName": "value",
+                        "ParameterType": "MethodOverride",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "Add": {
+               "MethodName": "Add",
+               "MethodType": "Void",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "item",
+                        "ParameterType": "MethodOverride",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "AddRange": {
+               "MethodName": "AddRange",
+               "MethodType": "Void",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "collection",
+                        "ParameterType": "IEnumerable`1",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "AsReadOnly": {
+               "MethodName": "AsReadOnly",
+               "MethodType": "ReadOnlyCollection`1",
+               "Overrides": [
+                  []
+               ]
+            },
+            "BinarySearch": {
+               "MethodName": "BinarySearch",
+               "MethodType": "Int32",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "index",
+                        "ParameterType": "Int32",
+                        "IsRequired": true
+                     },
+                     {
+                        "ParameterName": "count",
+                        "ParameterType": "Int32",
+                        "IsRequired": true
+                     },
+                     {
+                        "ParameterName": "item",
+                        "ParameterType": "MethodOverride",
+                        "IsRequired": true
+                     },
+                     {
+                        "ParameterName": "comparer",
+                        "ParameterType": "IComparer`1",
+                        "IsRequired": true
+                     }
+                  ],
+                  [
+                     {
+                        "ParameterName": "item",
+                        "ParameterType": "MethodOverride",
+                        "IsRequired": true
+                     }
+                  ],
+                  [
+                     {
+                        "ParameterName": "item",
+                        "ParameterType": "MethodOverride",
+                        "IsRequired": true
+                     },
+                     {
+                        "ParameterName": "comparer",
+                        "ParameterType": "IComparer`1",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "Clear": {
+               "MethodName": "Clear",
+               "MethodType": "Void",
+               "Overrides": [
+                  []
+               ]
+            },
+            "Contains": {
+               "MethodName": "Contains",
+               "MethodType": "Boolean",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "item",
+                        "ParameterType": "MethodOverride",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "ConvertAll": {
+               "MethodName": "ConvertAll",
+               "MethodType": "List`1",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "converter",
+                        "ParameterType": "Converter`2",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "CopyTo": {
+               "MethodName": "CopyTo",
+               "MethodType": "Void",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "array",
+                        "ParameterType": "MethodOverride[]",
+                        "IsRequired": true
+                     }
+                  ],
+                  [
+                     {
+                        "ParameterName": "index",
+                        "ParameterType": "Int32",
+                        "IsRequired": true
+                     },
+                     {
+                        "ParameterName": "array",
+                        "ParameterType": "MethodOverride[]",
+                        "IsRequired": true
+                     },
+                     {
+                        "ParameterName": "arrayIndex",
+                        "ParameterType": "Int32",
+                        "IsRequired": true
+                     },
+                     {
+                        "ParameterName": "count",
+                        "ParameterType": "Int32",
+                        "IsRequired": true
+                     }
+                  ],
+                  [
+                     {
+                        "ParameterName": "array",
+                        "ParameterType": "MethodOverride[]",
+                        "IsRequired": true
+                     },
+                     {
+                        "ParameterName": "arrayIndex",
+                        "ParameterType": "Int32",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "EnsureCapacity": {
+               "MethodName": "EnsureCapacity",
+               "MethodType": "Int32",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "capacity",
+                        "ParameterType": "Int32",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "Exists": {
+               "MethodName": "Exists",
+               "MethodType": "Boolean",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "match",
+                        "ParameterType": "Predicate`1",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "Find": {
+               "MethodName": "Find",
+               "MethodType": "MethodOverride",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "match",
+                        "ParameterType": "Predicate`1",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "FindAll": {
+               "MethodName": "FindAll",
+               "MethodType": "List`1",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "match",
+                        "ParameterType": "Predicate`1",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "FindIndex": {
+               "MethodName": "FindIndex",
+               "MethodType": "Int32",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "match",
+                        "ParameterType": "Predicate`1",
+                        "IsRequired": true
+                     }
+                  ],
+                  [
+                     {
+                        "ParameterName": "startIndex",
+                        "ParameterType": "Int32",
+                        "IsRequired": true
+                     },
+                     {
+                        "ParameterName": "match",
+                        "ParameterType": "Predicate`1",
+                        "IsRequired": true
+                     }
+                  ],
+                  [
+                     {
+                        "ParameterName": "startIndex",
+                        "ParameterType": "Int32",
+                        "IsRequired": true
+                     },
+                     {
+                        "ParameterName": "count",
+                        "ParameterType": "Int32",
+                        "IsRequired": true
+                     },
+                     {
+                        "ParameterName": "match",
+                        "ParameterType": "Predicate`1",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "FindLast": {
+               "MethodName": "FindLast",
+               "MethodType": "MethodOverride",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "match",
+                        "ParameterType": "Predicate`1",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "FindLastIndex": {
+               "MethodName": "FindLastIndex",
+               "MethodType": "Int32",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "match",
+                        "ParameterType": "Predicate`1",
+                        "IsRequired": true
+                     }
+                  ],
+                  [
+                     {
+                        "ParameterName": "startIndex",
+                        "ParameterType": "Int32",
+                        "IsRequired": true
+                     },
+                     {
+                        "ParameterName": "match",
+                        "ParameterType": "Predicate`1",
+                        "IsRequired": true
+                     }
+                  ],
+                  [
+                     {
+                        "ParameterName": "startIndex",
+                        "ParameterType": "Int32",
+                        "IsRequired": true
+                     },
+                     {
+                        "ParameterName": "count",
+                        "ParameterType": "Int32",
+                        "IsRequired": true
+                     },
+                     {
+                        "ParameterName": "match",
+                        "ParameterType": "Predicate`1",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "ForEach": {
+               "MethodName": "ForEach",
+               "MethodType": "Void",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "action",
+                        "ParameterType": "Action`1",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "GetEnumerator": {
+               "MethodName": "GetEnumerator",
+               "MethodType": "Enumerator",
+               "Overrides": [
+                  []
+               ]
+            },
+            "GetRange": {
+               "MethodName": "GetRange",
+               "MethodType": "List`1",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "index",
+                        "ParameterType": "Int32",
+                        "IsRequired": true
+                     },
+                     {
+                        "ParameterName": "count",
+                        "ParameterType": "Int32",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "Slice": {
+               "MethodName": "Slice",
+               "MethodType": "List`1",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "start",
+                        "ParameterType": "Int32",
+                        "IsRequired": true
+                     },
+                     {
+                        "ParameterName": "length",
+                        "ParameterType": "Int32",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "IndexOf": {
+               "MethodName": "IndexOf",
+               "MethodType": "Int32",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "item",
+                        "ParameterType": "MethodOverride",
+                        "IsRequired": true
+                     }
+                  ],
+                  [
+                     {
+                        "ParameterName": "item",
+                        "ParameterType": "MethodOverride",
+                        "IsRequired": true
+                     },
+                     {
+                        "ParameterName": "index",
+                        "ParameterType": "Int32",
+                        "IsRequired": true
+                     }
+                  ],
+                  [
+                     {
+                        "ParameterName": "item",
+                        "ParameterType": "MethodOverride",
+                        "IsRequired": true
+                     },
+                     {
+                        "ParameterName": "index",
+                        "ParameterType": "Int32",
+                        "IsRequired": true
+                     },
+                     {
+                        "ParameterName": "count",
+                        "ParameterType": "Int32",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "Insert": {
+               "MethodName": "Insert",
+               "MethodType": "Void",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "index",
+                        "ParameterType": "Int32",
+                        "IsRequired": true
+                     },
+                     {
+                        "ParameterName": "item",
+                        "ParameterType": "MethodOverride",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "InsertRange": {
+               "MethodName": "InsertRange",
+               "MethodType": "Void",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "index",
+                        "ParameterType": "Int32",
+                        "IsRequired": true
+                     },
+                     {
+                        "ParameterName": "collection",
+                        "ParameterType": "IEnumerable`1",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "LastIndexOf": {
+               "MethodName": "LastIndexOf",
+               "MethodType": "Int32",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "item",
+                        "ParameterType": "MethodOverride",
+                        "IsRequired": true
+                     }
+                  ],
+                  [
+                     {
+                        "ParameterName": "item",
+                        "ParameterType": "MethodOverride",
+                        "IsRequired": true
+                     },
+                     {
+                        "ParameterName": "index",
+                        "ParameterType": "Int32",
+                        "IsRequired": true
+                     }
+                  ],
+                  [
+                     {
+                        "ParameterName": "item",
+                        "ParameterType": "MethodOverride",
+                        "IsRequired": true
+                     },
+                     {
+                        "ParameterName": "index",
+                        "ParameterType": "Int32",
+                        "IsRequired": true
+                     },
+                     {
+                        "ParameterName": "count",
+                        "ParameterType": "Int32",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "Remove": {
+               "MethodName": "Remove",
+               "MethodType": "Boolean",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "item",
+                        "ParameterType": "MethodOverride",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "RemoveAll": {
+               "MethodName": "RemoveAll",
+               "MethodType": "Int32",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "match",
+                        "ParameterType": "Predicate`1",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "RemoveAt": {
+               "MethodName": "RemoveAt",
+               "MethodType": "Void",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "index",
+                        "ParameterType": "Int32",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "RemoveRange": {
+               "MethodName": "RemoveRange",
+               "MethodType": "Void",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "index",
+                        "ParameterType": "Int32",
+                        "IsRequired": true
+                     },
+                     {
+                        "ParameterName": "count",
+                        "ParameterType": "Int32",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "Reverse": {
+               "MethodName": "Reverse",
+               "MethodType": "Void",
+               "Overrides": [
+                  [],
+                  [
+                     {
+                        "ParameterName": "index",
+                        "ParameterType": "Int32",
+                        "IsRequired": true
+                     },
+                     {
+                        "ParameterName": "count",
+                        "ParameterType": "Int32",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "Sort": {
+               "MethodName": "Sort",
+               "MethodType": "Void",
+               "Overrides": [
+                  [],
+                  [
+                     {
+                        "ParameterName": "comparer",
+                        "ParameterType": "IComparer`1",
+                        "IsRequired": true
+                     }
+                  ],
+                  [
+                     {
+                        "ParameterName": "index",
+                        "ParameterType": "Int32",
+                        "IsRequired": true
+                     },
+                     {
+                        "ParameterName": "count",
+                        "ParameterType": "Int32",
+                        "IsRequired": true
+                     },
+                     {
+                        "ParameterName": "comparer",
+                        "ParameterType": "IComparer`1",
+                        "IsRequired": true
+                     }
+                  ],
+                  [
+                     {
+                        "ParameterName": "comparison",
+                        "ParameterType": "Comparison`1",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "ToArray": {
+               "MethodName": "ToArray",
+               "MethodType": "MethodOverride[]",
+               "Overrides": [
+                  []
+               ]
+            },
+            "TrimExcess": {
+               "MethodName": "TrimExcess",
+               "MethodType": "Void",
+               "Overrides": [
+                  []
+               ]
+            },
+            "TrueForAll": {
+               "MethodName": "TrueForAll",
+               "MethodType": "Boolean",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "match",
+                        "ParameterType": "Predicate`1",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "GetType": {
+               "MethodName": "GetType",
+               "MethodType": "Type",
+               "Overrides": [
+                  []
+               ]
+            },
+            "ToString": {
+               "MethodName": "ToString",
+               "MethodType": "String",
+               "Overrides": [
+                  []
+               ]
+            },
+            "Equals": {
+               "MethodName": "Equals",
+               "MethodType": "Boolean",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "obj",
+                        "ParameterType": "Object",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "GetHashCode": {
+               "MethodName": "GetHashCode",
+               "MethodType": "Int32",
+               "Overrides": [
+                  []
+               ]
+            }
+         },
+         "Properties": {
+            "Capacity": {
+               "Name": "Capacity",
+               "Type": "Int32",
+               "IsReadable": true,
+               "IsWritable": true
+            },
+            "Count": {
+               "Name": "Count",
+               "Type": "Int32",
+               "IsReadable": true,
+               "IsWritable": false
+            },
+            "Item": {
+               "Name": "Item",
+               "Type": "MethodOverride",
+               "IsReadable": true,
+               "IsWritable": true
+            }
+         }
+      },
+      {
+         "Name": "Yamamari.Library.AutoVersion.SignatureStructure.Project",
+         "Methods": {
+            "get_Name": {
+               "MethodName": "get_Name",
+               "MethodType": "String",
+               "Overrides": [
+                  []
+               ]
+            },
+            "set_Name": {
+               "MethodName": "set_Name",
+               "MethodType": "Void",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "value",
+                        "ParameterType": "String",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "get_Classes": {
+               "MethodName": "get_Classes",
+               "MethodType": "List`1",
+               "Overrides": [
+                  []
+               ]
+            },
+            "set_Classes": {
+               "MethodName": "set_Classes",
+               "MethodType": "Void",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "value",
+                        "ParameterType": "List`1",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "GetType": {
+               "MethodName": "GetType",
+               "MethodType": "Type",
+               "Overrides": [
+                  []
+               ]
+            },
+            "ToString": {
+               "MethodName": "ToString",
+               "MethodType": "String",
+               "Overrides": [
+                  []
+               ]
+            },
+            "Equals": {
+               "MethodName": "Equals",
+               "MethodType": "Boolean",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "obj",
+                        "ParameterType": "Object",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "GetHashCode": {
+               "MethodName": "GetHashCode",
+               "MethodType": "Int32",
+               "Overrides": [
+                  []
+               ]
+            }
+         },
+         "Properties": {
+            "Name": {
+               "Name": "Name",
+               "Type": "String",
+               "IsReadable": true,
+               "IsWritable": true
+            },
+            "Classes": {
+               "Name": "Classes",
+               "Type": "List`1",
+               "IsReadable": true,
+               "IsWritable": true
+            }
+         }
+      },
+      {
+         "Name": "Yamamari.Library.AutoVersion.SignatureStructure.ProjectClass",
+         "Methods": {
+            "get_Name": {
+               "MethodName": "get_Name",
+               "MethodType": "String",
+               "Overrides": [
+                  []
+               ]
+            },
+            "set_Name": {
+               "MethodName": "set_Name",
+               "MethodType": "Void",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "value",
+                        "ParameterType": "String",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "get_Methods": {
+               "MethodName": "get_Methods",
+               "MethodType": "Dictionary`2",
+               "Overrides": [
+                  []
+               ]
+            },
+            "set_Methods": {
+               "MethodName": "set_Methods",
+               "MethodType": "Void",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "value",
+                        "ParameterType": "Dictionary`2",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "get_Properties": {
+               "MethodName": "get_Properties",
+               "MethodType": "Dictionary`2",
+               "Overrides": [
+                  []
+               ]
+            },
+            "set_Properties": {
+               "MethodName": "set_Properties",
+               "MethodType": "Void",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "value",
+                        "ParameterType": "Dictionary`2",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "GetType": {
+               "MethodName": "GetType",
+               "MethodType": "Type",
+               "Overrides": [
+                  []
+               ]
+            },
+            "ToString": {
+               "MethodName": "ToString",
+               "MethodType": "String",
+               "Overrides": [
+                  []
+               ]
+            },
+            "Equals": {
+               "MethodName": "Equals",
+               "MethodType": "Boolean",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "obj",
+                        "ParameterType": "Object",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "GetHashCode": {
+               "MethodName": "GetHashCode",
+               "MethodType": "Int32",
+               "Overrides": [
+                  []
+               ]
+            }
+         },
+         "Properties": {
+            "Name": {
+               "Name": "Name",
+               "Type": "String",
+               "IsReadable": true,
+               "IsWritable": true
+            },
+            "Methods": {
+               "Name": "Methods",
+               "Type": "Dictionary`2",
+               "IsReadable": true,
+               "IsWritable": true
+            },
+            "Properties": {
+               "Name": "Properties",
+               "Type": "Dictionary`2",
+               "IsReadable": true,
+               "IsWritable": true
+            }
+         }
+      },
+      {
+         "Name": "Yamamari.Library.AutoVersion.SignatureStructure.Property",
+         "Methods": {
+            "get_Name": {
+               "MethodName": "get_Name",
+               "MethodType": "String",
+               "Overrides": [
+                  []
+               ]
+            },
+            "set_Name": {
+               "MethodName": "set_Name",
+               "MethodType": "Void",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "value",
+                        "ParameterType": "String",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "get_Type": {
+               "MethodName": "get_Type",
+               "MethodType": "String",
+               "Overrides": [
+                  []
+               ]
+            },
+            "set_Type": {
+               "MethodName": "set_Type",
+               "MethodType": "Void",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "value",
+                        "ParameterType": "String",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "get_IsReadable": {
+               "MethodName": "get_IsReadable",
+               "MethodType": "Boolean",
+               "Overrides": [
+                  []
+               ]
+            },
+            "set_IsReadable": {
+               "MethodName": "set_IsReadable",
+               "MethodType": "Void",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "value",
+                        "ParameterType": "Boolean",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "get_IsWritable": {
+               "MethodName": "get_IsWritable",
+               "MethodType": "Boolean",
+               "Overrides": [
+                  []
+               ]
+            },
+            "set_IsWritable": {
+               "MethodName": "set_IsWritable",
+               "MethodType": "Void",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "value",
+                        "ParameterType": "Boolean",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "GetType": {
+               "MethodName": "GetType",
+               "MethodType": "Type",
+               "Overrides": [
+                  []
+               ]
+            },
+            "ToString": {
+               "MethodName": "ToString",
+               "MethodType": "String",
+               "Overrides": [
+                  []
+               ]
+            },
+            "Equals": {
+               "MethodName": "Equals",
+               "MethodType": "Boolean",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "obj",
+                        "ParameterType": "Object",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "GetHashCode": {
+               "MethodName": "GetHashCode",
+               "MethodType": "Int32",
+               "Overrides": [
+                  []
+               ]
+            }
+         },
+         "Properties": {
+            "Name": {
+               "Name": "Name",
+               "Type": "String",
+               "IsReadable": true,
+               "IsWritable": true
+            },
+            "Type": {
+               "Name": "Type",
+               "Type": "String",
+               "IsReadable": true,
+               "IsWritable": true
+            },
+            "IsReadable": {
+               "Name": "IsReadable",
+               "Type": "Boolean",
+               "IsReadable": true,
+               "IsWritable": true
+            },
+            "IsWritable": {
+               "Name": "IsWritable",
+               "Type": "Boolean",
+               "IsReadable": true,
+               "IsWritable": true
+            }
+         }
+      },
+      {
+         "Name": "Yamamari.Library.AutoVersion.SignatureStructure.Signature",
+         "Methods": {
+            "get_Capacity": {
+               "MethodName": "get_Capacity",
+               "MethodType": "Int32",
+               "Overrides": [
+                  []
+               ]
+            },
+            "set_Capacity": {
+               "MethodName": "set_Capacity",
+               "MethodType": "Void",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "value",
+                        "ParameterType": "Int32",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "get_Count": {
+               "MethodName": "get_Count",
+               "MethodType": "Int32",
+               "Overrides": [
+                  []
+               ]
+            },
+            "get_Item": {
+               "MethodName": "get_Item",
+               "MethodType": "Project",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "index",
+                        "ParameterType": "Int32",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "set_Item": {
+               "MethodName": "set_Item",
+               "MethodType": "Void",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "index",
+                        "ParameterType": "Int32",
+                        "IsRequired": true
+                     },
+                     {
+                        "ParameterName": "value",
+                        "ParameterType": "Project",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "Add": {
+               "MethodName": "Add",
+               "MethodType": "Void",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "item",
+                        "ParameterType": "Project",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "AddRange": {
+               "MethodName": "AddRange",
+               "MethodType": "Void",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "collection",
+                        "ParameterType": "IEnumerable`1",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "AsReadOnly": {
+               "MethodName": "AsReadOnly",
+               "MethodType": "ReadOnlyCollection`1",
+               "Overrides": [
+                  []
+               ]
+            },
+            "BinarySearch": {
+               "MethodName": "BinarySearch",
+               "MethodType": "Int32",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "index",
+                        "ParameterType": "Int32",
+                        "IsRequired": true
+                     },
+                     {
+                        "ParameterName": "count",
+                        "ParameterType": "Int32",
+                        "IsRequired": true
+                     },
+                     {
+                        "ParameterName": "item",
+                        "ParameterType": "Project",
+                        "IsRequired": true
+                     },
+                     {
+                        "ParameterName": "comparer",
+                        "ParameterType": "IComparer`1",
+                        "IsRequired": true
+                     }
+                  ],
+                  [
+                     {
+                        "ParameterName": "item",
+                        "ParameterType": "Project",
+                        "IsRequired": true
+                     }
+                  ],
+                  [
+                     {
+                        "ParameterName": "item",
+                        "ParameterType": "Project",
+                        "IsRequired": true
+                     },
+                     {
+                        "ParameterName": "comparer",
+                        "ParameterType": "IComparer`1",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "Clear": {
+               "MethodName": "Clear",
+               "MethodType": "Void",
+               "Overrides": [
+                  []
+               ]
+            },
+            "Contains": {
+               "MethodName": "Contains",
+               "MethodType": "Boolean",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "item",
+                        "ParameterType": "Project",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "ConvertAll": {
+               "MethodName": "ConvertAll",
+               "MethodType": "List`1",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "converter",
+                        "ParameterType": "Converter`2",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "CopyTo": {
+               "MethodName": "CopyTo",
+               "MethodType": "Void",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "array",
+                        "ParameterType": "Project[]",
+                        "IsRequired": true
+                     }
+                  ],
+                  [
+                     {
+                        "ParameterName": "index",
+                        "ParameterType": "Int32",
+                        "IsRequired": true
+                     },
+                     {
+                        "ParameterName": "array",
+                        "ParameterType": "Project[]",
+                        "IsRequired": true
+                     },
+                     {
+                        "ParameterName": "arrayIndex",
+                        "ParameterType": "Int32",
+                        "IsRequired": true
+                     },
+                     {
+                        "ParameterName": "count",
+                        "ParameterType": "Int32",
+                        "IsRequired": true
+                     }
+                  ],
+                  [
+                     {
+                        "ParameterName": "array",
+                        "ParameterType": "Project[]",
+                        "IsRequired": true
+                     },
+                     {
+                        "ParameterName": "arrayIndex",
+                        "ParameterType": "Int32",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "EnsureCapacity": {
+               "MethodName": "EnsureCapacity",
+               "MethodType": "Int32",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "capacity",
+                        "ParameterType": "Int32",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "Exists": {
+               "MethodName": "Exists",
+               "MethodType": "Boolean",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "match",
+                        "ParameterType": "Predicate`1",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "Find": {
+               "MethodName": "Find",
+               "MethodType": "Project",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "match",
+                        "ParameterType": "Predicate`1",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "FindAll": {
+               "MethodName": "FindAll",
+               "MethodType": "List`1",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "match",
+                        "ParameterType": "Predicate`1",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "FindIndex": {
+               "MethodName": "FindIndex",
+               "MethodType": "Int32",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "match",
+                        "ParameterType": "Predicate`1",
+                        "IsRequired": true
+                     }
+                  ],
+                  [
+                     {
+                        "ParameterName": "startIndex",
+                        "ParameterType": "Int32",
+                        "IsRequired": true
+                     },
+                     {
+                        "ParameterName": "match",
+                        "ParameterType": "Predicate`1",
+                        "IsRequired": true
+                     }
+                  ],
+                  [
+                     {
+                        "ParameterName": "startIndex",
+                        "ParameterType": "Int32",
+                        "IsRequired": true
+                     },
+                     {
+                        "ParameterName": "count",
+                        "ParameterType": "Int32",
+                        "IsRequired": true
+                     },
+                     {
+                        "ParameterName": "match",
+                        "ParameterType": "Predicate`1",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "FindLast": {
+               "MethodName": "FindLast",
+               "MethodType": "Project",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "match",
+                        "ParameterType": "Predicate`1",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "FindLastIndex": {
+               "MethodName": "FindLastIndex",
+               "MethodType": "Int32",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "match",
+                        "ParameterType": "Predicate`1",
+                        "IsRequired": true
+                     }
+                  ],
+                  [
+                     {
+                        "ParameterName": "startIndex",
+                        "ParameterType": "Int32",
+                        "IsRequired": true
+                     },
+                     {
+                        "ParameterName": "match",
+                        "ParameterType": "Predicate`1",
+                        "IsRequired": true
+                     }
+                  ],
+                  [
+                     {
+                        "ParameterName": "startIndex",
+                        "ParameterType": "Int32",
+                        "IsRequired": true
+                     },
+                     {
+                        "ParameterName": "count",
+                        "ParameterType": "Int32",
+                        "IsRequired": true
+                     },
+                     {
+                        "ParameterName": "match",
+                        "ParameterType": "Predicate`1",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "ForEach": {
+               "MethodName": "ForEach",
+               "MethodType": "Void",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "action",
+                        "ParameterType": "Action`1",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "GetEnumerator": {
+               "MethodName": "GetEnumerator",
+               "MethodType": "Enumerator",
+               "Overrides": [
+                  []
+               ]
+            },
+            "GetRange": {
+               "MethodName": "GetRange",
+               "MethodType": "List`1",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "index",
+                        "ParameterType": "Int32",
+                        "IsRequired": true
+                     },
+                     {
+                        "ParameterName": "count",
+                        "ParameterType": "Int32",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "Slice": {
+               "MethodName": "Slice",
+               "MethodType": "List`1",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "start",
+                        "ParameterType": "Int32",
+                        "IsRequired": true
+                     },
+                     {
+                        "ParameterName": "length",
+                        "ParameterType": "Int32",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "IndexOf": {
+               "MethodName": "IndexOf",
+               "MethodType": "Int32",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "item",
+                        "ParameterType": "Project",
+                        "IsRequired": true
+                     }
+                  ],
+                  [
+                     {
+                        "ParameterName": "item",
+                        "ParameterType": "Project",
+                        "IsRequired": true
+                     },
+                     {
+                        "ParameterName": "index",
+                        "ParameterType": "Int32",
+                        "IsRequired": true
+                     }
+                  ],
+                  [
+                     {
+                        "ParameterName": "item",
+                        "ParameterType": "Project",
+                        "IsRequired": true
+                     },
+                     {
+                        "ParameterName": "index",
+                        "ParameterType": "Int32",
+                        "IsRequired": true
+                     },
+                     {
+                        "ParameterName": "count",
+                        "ParameterType": "Int32",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "Insert": {
+               "MethodName": "Insert",
+               "MethodType": "Void",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "index",
+                        "ParameterType": "Int32",
+                        "IsRequired": true
+                     },
+                     {
+                        "ParameterName": "item",
+                        "ParameterType": "Project",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "InsertRange": {
+               "MethodName": "InsertRange",
+               "MethodType": "Void",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "index",
+                        "ParameterType": "Int32",
+                        "IsRequired": true
+                     },
+                     {
+                        "ParameterName": "collection",
+                        "ParameterType": "IEnumerable`1",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "LastIndexOf": {
+               "MethodName": "LastIndexOf",
+               "MethodType": "Int32",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "item",
+                        "ParameterType": "Project",
+                        "IsRequired": true
+                     }
+                  ],
+                  [
+                     {
+                        "ParameterName": "item",
+                        "ParameterType": "Project",
+                        "IsRequired": true
+                     },
+                     {
+                        "ParameterName": "index",
+                        "ParameterType": "Int32",
+                        "IsRequired": true
+                     }
+                  ],
+                  [
+                     {
+                        "ParameterName": "item",
+                        "ParameterType": "Project",
+                        "IsRequired": true
+                     },
+                     {
+                        "ParameterName": "index",
+                        "ParameterType": "Int32",
+                        "IsRequired": true
+                     },
+                     {
+                        "ParameterName": "count",
+                        "ParameterType": "Int32",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "Remove": {
+               "MethodName": "Remove",
+               "MethodType": "Boolean",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "item",
+                        "ParameterType": "Project",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "RemoveAll": {
+               "MethodName": "RemoveAll",
+               "MethodType": "Int32",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "match",
+                        "ParameterType": "Predicate`1",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "RemoveAt": {
+               "MethodName": "RemoveAt",
+               "MethodType": "Void",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "index",
+                        "ParameterType": "Int32",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "RemoveRange": {
+               "MethodName": "RemoveRange",
+               "MethodType": "Void",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "index",
+                        "ParameterType": "Int32",
+                        "IsRequired": true
+                     },
+                     {
+                        "ParameterName": "count",
+                        "ParameterType": "Int32",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "Reverse": {
+               "MethodName": "Reverse",
+               "MethodType": "Void",
+               "Overrides": [
+                  [],
+                  [
+                     {
+                        "ParameterName": "index",
+                        "ParameterType": "Int32",
+                        "IsRequired": true
+                     },
+                     {
+                        "ParameterName": "count",
+                        "ParameterType": "Int32",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "Sort": {
+               "MethodName": "Sort",
+               "MethodType": "Void",
+               "Overrides": [
+                  [],
+                  [
+                     {
+                        "ParameterName": "comparer",
+                        "ParameterType": "IComparer`1",
+                        "IsRequired": true
+                     }
+                  ],
+                  [
+                     {
+                        "ParameterName": "index",
+                        "ParameterType": "Int32",
+                        "IsRequired": true
+                     },
+                     {
+                        "ParameterName": "count",
+                        "ParameterType": "Int32",
+                        "IsRequired": true
+                     },
+                     {
+                        "ParameterName": "comparer",
+                        "ParameterType": "IComparer`1",
+                        "IsRequired": true
+                     }
+                  ],
+                  [
+                     {
+                        "ParameterName": "comparison",
+                        "ParameterType": "Comparison`1",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "ToArray": {
+               "MethodName": "ToArray",
+               "MethodType": "Project[]",
+               "Overrides": [
+                  []
+               ]
+            },
+            "TrimExcess": {
+               "MethodName": "TrimExcess",
+               "MethodType": "Void",
+               "Overrides": [
+                  []
+               ]
+            },
+            "TrueForAll": {
+               "MethodName": "TrueForAll",
+               "MethodType": "Boolean",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "match",
+                        "ParameterType": "Predicate`1",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "GetType": {
+               "MethodName": "GetType",
+               "MethodType": "Type",
+               "Overrides": [
+                  []
+               ]
+            },
+            "ToString": {
+               "MethodName": "ToString",
+               "MethodType": "String",
+               "Overrides": [
+                  []
+               ]
+            },
+            "Equals": {
+               "MethodName": "Equals",
+               "MethodType": "Boolean",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "obj",
+                        "ParameterType": "Object",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "GetHashCode": {
+               "MethodName": "GetHashCode",
+               "MethodType": "Int32",
+               "Overrides": [
+                  []
+               ]
+            }
+         },
+         "Properties": {
+            "Capacity": {
+               "Name": "Capacity",
+               "Type": "Int32",
+               "IsReadable": true,
+               "IsWritable": true
+            },
+            "Count": {
+               "Name": "Count",
+               "Type": "Int32",
+               "IsReadable": true,
+               "IsWritable": false
+            },
+            "Item": {
+               "Name": "Item",
+               "Type": "Project",
+               "IsReadable": true,
+               "IsWritable": true
+            }
+         }
+      },
+      {
+         "Name": "Yamamari.Library.AutoVersion.SignatureStructure.Signatures",
+         "Methods": {
+            "get_Older": {
+               "MethodName": "get_Older",
+               "MethodType": "Signature",
+               "Overrides": [
+                  []
+               ]
+            },
+            "get_Newer": {
+               "MethodName": "get_Newer",
+               "MethodType": "Signature",
+               "Overrides": [
+                  []
+               ]
+            },
+            "GetClassesInBoth": {
+               "MethodName": "GetClassesInBoth",
+               "MethodType": "SignaturesClasses[]",
+               "Overrides": [
+                  []
+               ]
+            },
+            "GetType": {
+               "MethodName": "GetType",
+               "MethodType": "Type",
+               "Overrides": [
+                  []
+               ]
+            },
+            "ToString": {
+               "MethodName": "ToString",
+               "MethodType": "String",
+               "Overrides": [
+                  []
+               ]
+            },
+            "Equals": {
+               "MethodName": "Equals",
+               "MethodType": "Boolean",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "obj",
+                        "ParameterType": "Object",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "GetHashCode": {
+               "MethodName": "GetHashCode",
+               "MethodType": "Int32",
+               "Overrides": [
+                  []
+               ]
+            }
+         },
+         "Properties": {
+            "Older": {
+               "Name": "Older",
+               "Type": "Signature",
+               "IsReadable": true,
+               "IsWritable": false
+            },
+            "Newer": {
+               "Name": "Newer",
+               "Type": "Signature",
+               "IsReadable": true,
+               "IsWritable": false
+            }
+         }
+      },
+      {
+         "Name": "Yamamari.Library.AutoVersion.SignatureStructure.SignaturesClasses",
+         "Methods": {
+            "get_Older": {
+               "MethodName": "get_Older",
+               "MethodType": "ProjectClass",
+               "Overrides": [
+                  []
+               ]
+            },
+            "get_Newer": {
+               "MethodName": "get_Newer",
+               "MethodType": "ProjectClass",
+               "Overrides": [
+                  []
+               ]
+            },
+            "GetType": {
+               "MethodName": "GetType",
+               "MethodType": "Type",
+               "Overrides": [
+                  []
+               ]
+            },
+            "ToString": {
+               "MethodName": "ToString",
+               "MethodType": "String",
+               "Overrides": [
+                  []
+               ]
+            },
+            "Equals": {
+               "MethodName": "Equals",
+               "MethodType": "Boolean",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "obj",
+                        "ParameterType": "Object",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "GetHashCode": {
+               "MethodName": "GetHashCode",
+               "MethodType": "Int32",
+               "Overrides": [
+                  []
+               ]
+            }
+         },
+         "Properties": {
+            "Older": {
+               "Name": "Older",
+               "Type": "ProjectClass",
+               "IsReadable": true,
+               "IsWritable": false
+            },
+            "Newer": {
+               "Name": "Newer",
+               "Type": "ProjectClass",
+               "IsReadable": true,
+               "IsWritable": false
+            }
+         }
+      },
+      {
+         "Name": "Yamamari.Library.AutoVersion.SignatureEvaluation.CompareSignatures",
+         "Methods": {
+            "GetChangeType": {
+               "MethodName": "GetChangeType",
+               "MethodType": "VersionType",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "task",
+                        "ParameterType": "ITask",
+                        "IsRequired": true
+                     },
+                     {
+                        "ParameterName": "oldSignature",
+                        "ParameterType": "Signature",
+                        "IsRequired": true
+                     },
+                     {
+                        "ParameterName": "newSignature",
+                        "ParameterType": "Signature",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "GetType": {
+               "MethodName": "GetType",
+               "MethodType": "Type",
+               "Overrides": [
+                  []
+               ]
+            },
+            "ToString": {
+               "MethodName": "ToString",
+               "MethodType": "String",
+               "Overrides": [
+                  []
+               ]
+            },
+            "Equals": {
+               "MethodName": "Equals",
+               "MethodType": "Boolean",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "obj",
+                        "ParameterType": "Object",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "GetHashCode": {
+               "MethodName": "GetHashCode",
+               "MethodType": "Int32",
+               "Overrides": [
+                  []
+               ]
+            }
+         },
+         "Properties": {}
+      },
+      {
+         "Name": "Yamamari.Library.AutoVersion.SignatureEvaluation.IEvaluateSignatures",
+         "Methods": {
+            "get_EvaluationImpact": {
+               "MethodName": "get_EvaluationImpact",
+               "MethodType": "VersionType",
+               "Overrides": [
+                  []
+               ]
+            },
+            "AreDifferencesPresent": {
+               "MethodName": "AreDifferencesPresent",
+               "MethodType": "Boolean",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "signatures",
+                        "ParameterType": "Signatures",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            }
+         },
+         "Properties": {
+            "EvaluationImpact": {
+               "Name": "EvaluationImpact",
+               "Type": "VersionType",
+               "IsReadable": true,
+               "IsWritable": false
+            }
+         }
+      },
+      {
+         "Name": "Yamamari.Library.AutoVersion.SignatureEvaluation.MethodInputParameterOverrideRemoved",
+         "Methods": {
+            "get_EvaluationImpact": {
+               "MethodName": "get_EvaluationImpact",
+               "MethodType": "VersionType",
+               "Overrides": [
+                  []
+               ]
+            },
+            "AreDifferencesPresent": {
+               "MethodName": "AreDifferencesPresent",
+               "MethodType": "Boolean",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "signatures",
+                        "ParameterType": "Signatures",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "GetType": {
+               "MethodName": "GetType",
+               "MethodType": "Type",
+               "Overrides": [
+                  []
+               ]
+            },
+            "ToString": {
+               "MethodName": "ToString",
+               "MethodType": "String",
+               "Overrides": [
+                  []
+               ]
+            },
+            "Equals": {
+               "MethodName": "Equals",
+               "MethodType": "Boolean",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "obj",
+                        "ParameterType": "Object",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "GetHashCode": {
+               "MethodName": "GetHashCode",
+               "MethodType": "Int32",
+               "Overrides": [
+                  []
+               ]
+            }
+         },
+         "Properties": {
+            "EvaluationImpact": {
+               "Name": "EvaluationImpact",
+               "Type": "VersionType",
+               "IsReadable": true,
+               "IsWritable": false
+            }
+         }
+      },
+      {
+         "Name": "Yamamari.Library.AutoVersion.SignatureEvaluation.MethodOverrideAdded",
+         "Methods": {
+            "get_EvaluationImpact": {
+               "MethodName": "get_EvaluationImpact",
+               "MethodType": "VersionType",
+               "Overrides": [
+                  []
+               ]
+            },
+            "AreDifferencesPresent": {
+               "MethodName": "AreDifferencesPresent",
+               "MethodType": "Boolean",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "signatures",
+                        "ParameterType": "Signatures",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "GetType": {
+               "MethodName": "GetType",
+               "MethodType": "Type",
+               "Overrides": [
+                  []
+               ]
+            },
+            "ToString": {
+               "MethodName": "ToString",
+               "MethodType": "String",
+               "Overrides": [
+                  []
+               ]
+            },
+            "Equals": {
+               "MethodName": "Equals",
+               "MethodType": "Boolean",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "obj",
+                        "ParameterType": "Object",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "GetHashCode": {
+               "MethodName": "GetHashCode",
+               "MethodType": "Int32",
+               "Overrides": [
+                  []
+               ]
+            }
+         },
+         "Properties": {
+            "EvaluationImpact": {
+               "Name": "EvaluationImpact",
+               "Type": "VersionType",
+               "IsReadable": true,
+               "IsWritable": false
+            }
+         }
+      },
+      {
+         "Name": "Yamamari.Library.AutoVersion.SignatureEvaluation.MethodReturnType",
+         "Methods": {
+            "get_EvaluationImpact": {
+               "MethodName": "get_EvaluationImpact",
+               "MethodType": "VersionType",
+               "Overrides": [
+                  []
+               ]
+            },
+            "AreDifferencesPresent": {
+               "MethodName": "AreDifferencesPresent",
+               "MethodType": "Boolean",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "signatures",
+                        "ParameterType": "Signatures",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "GetType": {
+               "MethodName": "GetType",
+               "MethodType": "Type",
+               "Overrides": [
+                  []
+               ]
+            },
+            "ToString": {
+               "MethodName": "ToString",
+               "MethodType": "String",
+               "Overrides": [
+                  []
+               ]
+            },
+            "Equals": {
+               "MethodName": "Equals",
+               "MethodType": "Boolean",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "obj",
+                        "ParameterType": "Object",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "GetHashCode": {
+               "MethodName": "GetHashCode",
+               "MethodType": "Int32",
+               "Overrides": [
+                  []
+               ]
+            }
+         },
+         "Properties": {
+            "EvaluationImpact": {
+               "Name": "EvaluationImpact",
+               "Type": "VersionType",
+               "IsReadable": true,
+               "IsWritable": false
+            }
+         }
+      },
+      {
+         "Name": "Yamamari.Library.AutoVersion.SignatureEvaluation.MethodsContinueToExist",
+         "Methods": {
+            "get_EvaluationImpact": {
+               "MethodName": "get_EvaluationImpact",
+               "MethodType": "VersionType",
+               "Overrides": [
+                  []
+               ]
+            },
+            "AreDifferencesPresent": {
+               "MethodName": "AreDifferencesPresent",
+               "MethodType": "Boolean",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "signatures",
+                        "ParameterType": "Signatures",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "GetType": {
+               "MethodName": "GetType",
+               "MethodType": "Type",
+               "Overrides": [
+                  []
+               ]
+            },
+            "ToString": {
+               "MethodName": "ToString",
+               "MethodType": "String",
+               "Overrides": [
+                  []
+               ]
+            },
+            "Equals": {
+               "MethodName": "Equals",
+               "MethodType": "Boolean",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "obj",
+                        "ParameterType": "Object",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "GetHashCode": {
+               "MethodName": "GetHashCode",
+               "MethodType": "Int32",
+               "Overrides": [
+                  []
+               ]
+            }
+         },
+         "Properties": {
+            "EvaluationImpact": {
+               "Name": "EvaluationImpact",
+               "Type": "VersionType",
+               "IsReadable": true,
+               "IsWritable": false
+            }
+         }
+      },
+      {
+         "Name": "Yamamari.Library.AutoVersion.SignatureEvaluation.ProjectAdded",
+         "Methods": {
+            "get_EvaluationImpact": {
+               "MethodName": "get_EvaluationImpact",
+               "MethodType": "VersionType",
+               "Overrides": [
+                  []
+               ]
+            },
+            "AreDifferencesPresent": {
+               "MethodName": "AreDifferencesPresent",
+               "MethodType": "Boolean",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "signatures",
+                        "ParameterType": "Signatures",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "GetType": {
+               "MethodName": "GetType",
+               "MethodType": "Type",
+               "Overrides": [
+                  []
+               ]
+            },
+            "ToString": {
+               "MethodName": "ToString",
+               "MethodType": "String",
+               "Overrides": [
+                  []
+               ]
+            },
+            "Equals": {
+               "MethodName": "Equals",
+               "MethodType": "Boolean",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "obj",
+                        "ParameterType": "Object",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "GetHashCode": {
+               "MethodName": "GetHashCode",
+               "MethodType": "Int32",
+               "Overrides": [
+                  []
+               ]
+            }
+         },
+         "Properties": {
+            "EvaluationImpact": {
+               "Name": "EvaluationImpact",
+               "Type": "VersionType",
+               "IsReadable": true,
+               "IsWritable": false
+            }
+         }
+      },
+      {
+         "Name": "Yamamari.Library.AutoVersion.SignatureEvaluation.ProjectClassAdded",
+         "Methods": {
+            "get_EvaluationImpact": {
+               "MethodName": "get_EvaluationImpact",
+               "MethodType": "VersionType",
+               "Overrides": [
+                  []
+               ]
+            },
+            "AreDifferencesPresent": {
+               "MethodName": "AreDifferencesPresent",
+               "MethodType": "Boolean",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "signatures",
+                        "ParameterType": "Signatures",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "GetType": {
+               "MethodName": "GetType",
+               "MethodType": "Type",
+               "Overrides": [
+                  []
+               ]
+            },
+            "ToString": {
+               "MethodName": "ToString",
+               "MethodType": "String",
+               "Overrides": [
+                  []
+               ]
+            },
+            "Equals": {
+               "MethodName": "Equals",
+               "MethodType": "Boolean",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "obj",
+                        "ParameterType": "Object",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "GetHashCode": {
+               "MethodName": "GetHashCode",
+               "MethodType": "Int32",
+               "Overrides": [
+                  []
+               ]
+            }
+         },
+         "Properties": {
+            "EvaluationImpact": {
+               "Name": "EvaluationImpact",
+               "Type": "VersionType",
+               "IsReadable": true,
+               "IsWritable": false
+            }
+         }
+      },
+      {
+         "Name": "Yamamari.Library.AutoVersion.SignatureEvaluation.ProjectClassesContinueToExist",
+         "Methods": {
+            "get_EvaluationImpact": {
+               "MethodName": "get_EvaluationImpact",
+               "MethodType": "VersionType",
+               "Overrides": [
+                  []
+               ]
+            },
+            "AreDifferencesPresent": {
+               "MethodName": "AreDifferencesPresent",
+               "MethodType": "Boolean",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "signatures",
+                        "ParameterType": "Signatures",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "GetType": {
+               "MethodName": "GetType",
+               "MethodType": "Type",
+               "Overrides": [
+                  []
+               ]
+            },
+            "ToString": {
+               "MethodName": "ToString",
+               "MethodType": "String",
+               "Overrides": [
+                  []
+               ]
+            },
+            "Equals": {
+               "MethodName": "Equals",
+               "MethodType": "Boolean",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "obj",
+                        "ParameterType": "Object",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "GetHashCode": {
+               "MethodName": "GetHashCode",
+               "MethodType": "Int32",
+               "Overrides": [
+                  []
+               ]
+            }
+         },
+         "Properties": {
+            "EvaluationImpact": {
+               "Name": "EvaluationImpact",
+               "Type": "VersionType",
+               "IsReadable": true,
+               "IsWritable": false
+            }
+         }
+      },
+      {
+         "Name": "Yamamari.Library.AutoVersion.SignatureEvaluation.ProjectsContinueToExist",
+         "Methods": {
+            "get_EvaluationImpact": {
+               "MethodName": "get_EvaluationImpact",
+               "MethodType": "VersionType",
+               "Overrides": [
+                  []
+               ]
+            },
+            "AreDifferencesPresent": {
+               "MethodName": "AreDifferencesPresent",
+               "MethodType": "Boolean",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "signatures",
+                        "ParameterType": "Signatures",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "GetType": {
+               "MethodName": "GetType",
+               "MethodType": "Type",
+               "Overrides": [
+                  []
+               ]
+            },
+            "ToString": {
+               "MethodName": "ToString",
+               "MethodType": "String",
+               "Overrides": [
+                  []
+               ]
+            },
+            "Equals": {
+               "MethodName": "Equals",
+               "MethodType": "Boolean",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "obj",
+                        "ParameterType": "Object",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "GetHashCode": {
+               "MethodName": "GetHashCode",
+               "MethodType": "Int32",
+               "Overrides": [
+                  []
+               ]
+            }
+         },
+         "Properties": {
+            "EvaluationImpact": {
+               "Name": "EvaluationImpact",
+               "Type": "VersionType",
+               "IsReadable": true,
+               "IsWritable": false
+            }
+         }
+      },
+      {
+         "Name": "Yamamari.Library.AutoVersion.SignatureEvaluation.PropertiesContinueToExist",
+         "Methods": {
+            "get_EvaluationImpact": {
+               "MethodName": "get_EvaluationImpact",
+               "MethodType": "VersionType",
+               "Overrides": [
+                  []
+               ]
+            },
+            "AreDifferencesPresent": {
+               "MethodName": "AreDifferencesPresent",
+               "MethodType": "Boolean",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "signatures",
+                        "ParameterType": "Signatures",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "GetType": {
+               "MethodName": "GetType",
+               "MethodType": "Type",
+               "Overrides": [
+                  []
+               ]
+            },
+            "ToString": {
+               "MethodName": "ToString",
+               "MethodType": "String",
+               "Overrides": [
+                  []
+               ]
+            },
+            "Equals": {
+               "MethodName": "Equals",
+               "MethodType": "Boolean",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "obj",
+                        "ParameterType": "Object",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "GetHashCode": {
+               "MethodName": "GetHashCode",
+               "MethodType": "Int32",
+               "Overrides": [
+                  []
+               ]
+            }
+         },
+         "Properties": {
+            "EvaluationImpact": {
+               "Name": "EvaluationImpact",
+               "Type": "VersionType",
+               "IsReadable": true,
+               "IsWritable": false
+            }
+         }
+      },
+      {
+         "Name": "Yamamari.Library.AutoVersion.SignatureEvaluation.PropertyEditabilityEnhanced",
+         "Methods": {
+            "get_EvaluationImpact": {
+               "MethodName": "get_EvaluationImpact",
+               "MethodType": "VersionType",
+               "Overrides": [
+                  []
+               ]
+            },
+            "AreDifferencesPresent": {
+               "MethodName": "AreDifferencesPresent",
+               "MethodType": "Boolean",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "signatures",
+                        "ParameterType": "Signatures",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "GetType": {
+               "MethodName": "GetType",
+               "MethodType": "Type",
+               "Overrides": [
+                  []
+               ]
+            },
+            "ToString": {
+               "MethodName": "ToString",
+               "MethodType": "String",
+               "Overrides": [
+                  []
+               ]
+            },
+            "Equals": {
+               "MethodName": "Equals",
+               "MethodType": "Boolean",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "obj",
+                        "ParameterType": "Object",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "GetHashCode": {
+               "MethodName": "GetHashCode",
+               "MethodType": "Int32",
+               "Overrides": [
+                  []
+               ]
+            }
+         },
+         "Properties": {
+            "EvaluationImpact": {
+               "Name": "EvaluationImpact",
+               "Type": "VersionType",
+               "IsReadable": true,
+               "IsWritable": false
+            }
+         }
+      },
+      {
+         "Name": "Yamamari.Library.AutoVersion.SignatureEvaluation.PropertyEditabilityReduced",
+         "Methods": {
+            "get_EvaluationImpact": {
+               "MethodName": "get_EvaluationImpact",
+               "MethodType": "VersionType",
+               "Overrides": [
+                  []
+               ]
+            },
+            "AreDifferencesPresent": {
+               "MethodName": "AreDifferencesPresent",
+               "MethodType": "Boolean",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "signatures",
+                        "ParameterType": "Signatures",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "GetType": {
+               "MethodName": "GetType",
+               "MethodType": "Type",
+               "Overrides": [
+                  []
+               ]
+            },
+            "ToString": {
+               "MethodName": "ToString",
+               "MethodType": "String",
+               "Overrides": [
+                  []
+               ]
+            },
+            "Equals": {
+               "MethodName": "Equals",
+               "MethodType": "Boolean",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "obj",
+                        "ParameterType": "Object",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "GetHashCode": {
+               "MethodName": "GetHashCode",
+               "MethodType": "Int32",
+               "Overrides": [
+                  []
+               ]
+            }
+         },
+         "Properties": {
+            "EvaluationImpact": {
+               "Name": "EvaluationImpact",
+               "Type": "VersionType",
+               "IsReadable": true,
+               "IsWritable": false
+            }
+         }
+      },
+      {
+         "Name": "Yamamari.Library.AutoVersion.SignatureEvaluation.PropertyReadabilityEnhanced",
+         "Methods": {
+            "get_EvaluationImpact": {
+               "MethodName": "get_EvaluationImpact",
+               "MethodType": "VersionType",
+               "Overrides": [
+                  []
+               ]
+            },
+            "AreDifferencesPresent": {
+               "MethodName": "AreDifferencesPresent",
+               "MethodType": "Boolean",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "signatures",
+                        "ParameterType": "Signatures",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "GetType": {
+               "MethodName": "GetType",
+               "MethodType": "Type",
+               "Overrides": [
+                  []
+               ]
+            },
+            "ToString": {
+               "MethodName": "ToString",
+               "MethodType": "String",
+               "Overrides": [
+                  []
+               ]
+            },
+            "Equals": {
+               "MethodName": "Equals",
+               "MethodType": "Boolean",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "obj",
+                        "ParameterType": "Object",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "GetHashCode": {
+               "MethodName": "GetHashCode",
+               "MethodType": "Int32",
+               "Overrides": [
+                  []
+               ]
+            }
+         },
+         "Properties": {
+            "EvaluationImpact": {
+               "Name": "EvaluationImpact",
+               "Type": "VersionType",
+               "IsReadable": true,
+               "IsWritable": false
+            }
+         }
+      },
+      {
+         "Name": "Yamamari.Library.AutoVersion.SignatureEvaluation.PropertyReadabilityReduced",
+         "Methods": {
+            "get_EvaluationImpact": {
+               "MethodName": "get_EvaluationImpact",
+               "MethodType": "VersionType",
+               "Overrides": [
+                  []
+               ]
+            },
+            "AreDifferencesPresent": {
+               "MethodName": "AreDifferencesPresent",
+               "MethodType": "Boolean",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "signatures",
+                        "ParameterType": "Signatures",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "GetType": {
+               "MethodName": "GetType",
+               "MethodType": "Type",
+               "Overrides": [
+                  []
+               ]
+            },
+            "ToString": {
+               "MethodName": "ToString",
+               "MethodType": "String",
+               "Overrides": [
+                  []
+               ]
+            },
+            "Equals": {
+               "MethodName": "Equals",
+               "MethodType": "Boolean",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "obj",
+                        "ParameterType": "Object",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "GetHashCode": {
+               "MethodName": "GetHashCode",
+               "MethodType": "Int32",
+               "Overrides": [
+                  []
+               ]
+            }
+         },
+         "Properties": {
+            "EvaluationImpact": {
+               "Name": "EvaluationImpact",
+               "Type": "VersionType",
+               "IsReadable": true,
+               "IsWritable": false
+            }
+         }
+      },
+      {
+         "Name": "Yamamari.Library.AutoVersion.SignatureEvaluation.PropertyType",
+         "Methods": {
+            "get_EvaluationImpact": {
+               "MethodName": "get_EvaluationImpact",
+               "MethodType": "VersionType",
+               "Overrides": [
+                  []
+               ]
+            },
+            "AreDifferencesPresent": {
+               "MethodName": "AreDifferencesPresent",
+               "MethodType": "Boolean",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "signatures",
+                        "ParameterType": "Signatures",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "GetType": {
+               "MethodName": "GetType",
+               "MethodType": "Type",
+               "Overrides": [
+                  []
+               ]
+            },
+            "ToString": {
+               "MethodName": "ToString",
+               "MethodType": "String",
+               "Overrides": [
+                  []
+               ]
+            },
+            "Equals": {
+               "MethodName": "Equals",
+               "MethodType": "Boolean",
+               "Overrides": [
+                  [
+                     {
+                        "ParameterName": "obj",
+                        "ParameterType": "Object",
+                        "IsRequired": true
+                     }
+                  ]
+               ]
+            },
+            "GetHashCode": {
+               "MethodName": "GetHashCode",
+               "MethodType": "Int32",
+               "Overrides": [
+                  []
+               ]
+            }
+         },
+         "Properties": {
+            "EvaluationImpact": {
+               "Name": "EvaluationImpact",
+               "Type": "VersionType",
+               "IsReadable": true,
+               "IsWritable": false
+            }
+         }
+      }
+   ]
+}</LatestAutoVersionSignature>
+  </PropertyGroup>
 </Project>
