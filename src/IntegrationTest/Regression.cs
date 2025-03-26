@@ -1,5 +1,6 @@
 using Xunit;
 using Yamamari.Library.AutoVersion;
+using Yamamari.Library.AutoVersion.Extensions;
 using Version = Yamamari.Library.AutoVersion.Version;
 
 namespace IntegrationTest;
@@ -12,36 +13,33 @@ public class Regression
     [Fact]
     public void TestProgramInvocation()
     {
-        var autoVersion = GetAutoVersion();
-        var testFile = GetTestFile();
-        
         // Set the baseline and ensure the file exists.
+        var autoVersion = GetAutoVersion();
         autoVersion.Execute();
         
         // Get the current version from disk
         // Run the increment process
-        // Get the updated version from disk
-        
-        var previous = new Version(testFile.Version);
+        // Get the updated version from disk, which should be a patch since nothing changed
+
+        var baselineFile = GetTestFile();
+        var previous = new Version(baselineFile.Version);
         autoVersion.Execute();
 
-        var newTestFile = GetTestFile();
-        var current = new Version(newTestFile.Version);
-        
-        // Confirm it's just the patch that's updated
+        var updatedFile = GetTestFile();
+        var current = new Version(updatedFile.Version);
         Assert.Equal(previous.Patch + 1, current.Patch);
     }
 
     private static AutoVersion GetAutoVersion()
     {
-        var autoVersion = new AutoVersion(Environment.CurrentDirectory);
+        var autoVersion = new AutoVersion();
         return autoVersion;
     }
 
     private static CsProjFile GetTestFile()
     {
-        var autoVersion = GetAutoVersion();
-        var testFile = autoVersion.CsProjFiles.FirstOrDefault(p => p.ProjectName == "Test.csproj");
+        var solutionDirectory = Environment.CurrentDirectory.GetSolutionDirectory();
+        var testFile = AutoVersion.GetProjectFiles(solutionDirectory).FirstOrDefault(p => p.ProjectName == "Test.csproj");
         if (testFile == null)
         {
             Assert.Fail("Unable to load the test project file.");

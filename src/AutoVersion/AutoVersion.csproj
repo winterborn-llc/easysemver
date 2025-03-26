@@ -2,9 +2,9 @@
   <PropertyGroup>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <PackageVersion>8.0.25</PackageVersion>
-    <AssemblyVersion>8.0.25</AssemblyVersion>
-    <FileVersion>8.0.25</FileVersion>
+    <PackageVersion>9.0.1</PackageVersion>
+    <AssemblyVersion>9.0.1</AssemblyVersion>
+    <FileVersion>9.0.1</FileVersion>
     <Title>Auto-Version by Yamamari</Title>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <RootNamespace>Yamamari.Library.AutoVersion</RootNamespace>

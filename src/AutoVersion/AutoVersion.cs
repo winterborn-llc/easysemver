@@ -5,25 +5,23 @@ using Yamamari.Library.AutoVersion.SignatureStructure;
 namespace Yamamari.Library.AutoVersion;
 
 // ReSharper disable once ClassNeverInstantiated.Global
-public class AutoVersion : Microsoft.Build.Utilities.Task 
+public class AutoVersion : Microsoft.Build.Utilities.Task
 {
-    internal string AutoVersionFile => $"{this.SolutionDirectory}/.autoversion.json";
-    
-    internal CsProjFile[] CsProjFiles { get; set; }
-    
-    internal string InitialDirectory { get; }
-    
-    internal string SolutionDirectory { get; }
-    
-    internal Version StartingVersion { get; }
-
-    // This is used by the real execution of the process
-    // ReSharper disable once UnusedMember.Global
-    public AutoVersion() : this("")
+    public override bool Execute()
     {
+        try
+        {
+            this.Execute(Environment.CurrentDirectory);
+            return true;
+        }
+        catch (Exception e)
+        {
+            this.LogFail(e.Message);
+            return false;
+        }
     }
     
-    public AutoVersion(string currentDirectory)
+    private void Execute(string currentDirectory)
     {
         if (currentDirectory.IsNullOrWhitespace())
         {
@@ -31,10 +29,24 @@ public class AutoVersion : Microsoft.Build.Utilities.Task
         }
         
         var solutionDir = GetSolutionDirectory(currentDirectory);
-        this.SolutionDirectory = solutionDir.FullName;
-        this.InitialDirectory = currentDirectory;
-        this.CsProjFiles = GetProjectFiles(this.SolutionDirectory);
-        this.StartingVersion = GetStartingVersion(this.CsProjFiles);
+        var solutionDirectory = solutionDir.FullName;
+        var csProjFiles = GetProjectFiles(solutionDirectory);
+        var startingVersion = GetStartingVersion(csProjFiles);
+        
+        this.LogInfo($"Auto versioning {solutionDirectory}");
+        var newSignature = GetNewSignature(csProjFiles);
+        var oldSignature = GetOldSignature(csProjFiles);
+        var changeType = CompareSignatures.GetChangeType(this, oldSignature, newSignature);
+        this.LogWarn($"Change Type: {changeType.ToString()}");
+
+        var version = new Version(startingVersion);
+        version.Increment(changeType);
+
+        foreach (var csProjFile in csProjFiles)
+        {
+            csProjFile.Version = new Version(version);
+            csProjFile.Save();
+        }
     }
 
     private static Version GetStartingVersion(params CsProjFile[] csProjFiles)
@@ -53,8 +65,13 @@ public class AutoVersion : Microsoft.Build.Utilities.Task
         return startingVersion;
     }
 
-    private static CsProjFile[] GetProjectFiles(string startingDirectory)
+    internal static CsProjFile[] GetProjectFiles(string startingDirectory)
     {
+        if (startingDirectory.IsNullOrWhitespace())
+        {
+            startingDirectory = Environment.CurrentDirectory.GetSolutionDirectory();
+        }
+        
         var csProjFiles = new List<CsProjFile>();
         var projectFilePaths = Directory.GetFiles(startingDirectory, "*.csproj", SearchOption.AllDirectories);
         foreach (var projectFilePath in projectFilePaths)
@@ -82,60 +99,21 @@ public class AutoVersion : Microsoft.Build.Utilities.Task
 
         throw new InvalidOperationException($"Could not find solution directory.");
     }
-    
-    public override bool Execute()
-    {
-        try
-        {
-            this.LogInfo($"Auto versioning {this.SolutionDirectory}");
-            var newSignature = this.GetNewSignature();
-            var oldSignature = this.GetOldSignature();
-            var changeType = CompareSignatures.GetChangeType(this, oldSignature, newSignature);
-            this.LogWarn($"Change Type: {changeType.ToString()}");
-        
-            var version = new Version(this.StartingVersion);
-            version.Increment(changeType);
-        
-            foreach (var csProjFile in this.CsProjFiles)
-            {
-                csProjFile.Version = new Version(version);
-                csProjFile.Save();
-            }
-        
-            File.WriteAllText(this.AutoVersionFile, newSignature.Serialize());
-            return true;
-        }
-        catch (Exception e)
-        {
-            this.LogFail($"Failed to execute autoversion:\n{e.Message}");
-            return false;
-        }
-    }
 
-    private Signature GetNewSignature()
+    private static Signature GetNewSignature(params CsProjFile[] csProjFiles)
     {
-        var newSignature = SignatureBuilder.GetSignatureFor(this.CsProjFiles);
+        var newSignature = SignatureBuilder.GetSignatureFor(csProjFiles);
         return newSignature ?? [];
     }
     
-    private Signature GetOldSignature()
+    private static Signature GetOldSignature(params CsProjFile[] csProjFiles)
     {
-        if (!File.Exists(this.AutoVersionFile))
+        var signature = new Signature();
+        foreach (var csProjFile in csProjFiles)
         {
-            return new Signature();
+            signature.Add(csProjFile.ProjectLatest);
         }
         
-        try
-        {
-            var json = File.ReadAllText(this.AutoVersionFile);
-            var oldSignature = json.Deserialize<Signature>();
-            return oldSignature;
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine($"Failed to deserialize old signature: {e.Message}");
-        }
-        
-        return new Signature();
+        return signature;
     }
 }

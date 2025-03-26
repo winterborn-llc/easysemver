@@ -118,18 +118,13 @@ internal static class ExtendString
     {
         var solutionSuffixes = new[] { ".sln", ".slnx" };
         var file = new FileInfo(projectFilePath);
-        if (!file.Exists)
-        {
-            return string.Empty;
-        }
-        
         var directory = file.Directory;
         while (directory != null)
         {
             foreach (var solutionSuffix in solutionSuffixes)
             {
-                var solutionFile = directory.GetFiles(solutionSuffix);
-                if (solutionFile.Length < 1)
+                var solutionFiles = directory.GetFiles().Where(f => f.FullName.EndsWith(solutionSuffix));
+                if (!solutionFiles.Any())
                 {
                     continue;
                 }
