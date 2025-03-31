@@ -25,6 +25,8 @@ public class Regression
         var previous = new Version(baselineFile.Version);
         autoVersion.Execute();
 
+        autoVersion.GetHashCode();
+        
         var updatedFile = GetTestFile();
         var current = new Version(updatedFile.Version);
         Assert.Equal(previous.Patch + 1, current.Patch);

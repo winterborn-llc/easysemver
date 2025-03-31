@@ -68,13 +68,18 @@ internal class CsProjFileActual
         var methods = type.GetMethods();
         foreach (var method in methods)
         {
-            AddMethodToSignature(projectClass, method);
+            AddMethodToSignature(projectClass, type, method);
         }
     }
 
-    private static void AddMethodToSignature(ProjectClass projectClass, MethodInfo method)
+    private static void AddMethodToSignature(ProjectClass projectClass, Type type, MethodInfo method)
     {
         if (!method.IsPublic)
+        {
+            return;
+        }
+
+        if (method.DeclaringType != type)
         {
             return;
         }

@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <AssemblyVersion>9.0.1</AssemblyVersion>
+    <AssemblyVersion>11.0.1</AssemblyVersion>
     <TargetFramework>net9.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
@@ -70,40 +70,6 @@
                      }
                   ]
                ]
-            },
-            "GetType": {
-               "MethodName": "GetType",
-               "MethodType": "Type",
-               "Overrides": [
-                  []
-               ]
-            },
-            "ToString": {
-               "MethodName": "ToString",
-               "MethodType": "String",
-               "Overrides": [
-                  []
-               ]
-            },
-            "Equals": {
-               "MethodName": "Equals",
-               "MethodType": "Boolean",
-               "Overrides": [
-                  [
-                     {
-                        "ParameterName": "obj",
-                        "ParameterType": "Object",
-                        "IsRequired": true
-                     }
-                  ]
-               ]
-            },
-            "GetHashCode": {
-               "MethodName": "GetHashCode",
-               "MethodType": "Int32",
-               "Overrides": [
-                  []
-               ]
             }
          },
          "Properties": {
@@ -121,40 +87,6 @@
             "TestProgramInvocation": {
                "MethodName": "TestProgramInvocation",
                "MethodType": "Void",
-               "Overrides": [
-                  []
-               ]
-            },
-            "GetType": {
-               "MethodName": "GetType",
-               "MethodType": "Type",
-               "Overrides": [
-                  []
-               ]
-            },
-            "ToString": {
-               "MethodName": "ToString",
-               "MethodType": "String",
-               "Overrides": [
-                  []
-               ]
-            },
-            "Equals": {
-               "MethodName": "Equals",
-               "MethodType": "Boolean",
-               "Overrides": [
-                  [
-                     {
-                        "ParameterName": "obj",
-                        "ParameterType": "Object",
-                        "IsRequired": true
-                     }
-                  ]
-               ]
-            },
-            "GetHashCode": {
-               "MethodName": "GetHashCode",
-               "MethodType": "Int32",
                "Overrides": [
                   []
                ]

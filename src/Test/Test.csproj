@@ -5,8 +5,8 @@
     <Nullable>enable</Nullable>
     <IsPackable>false</IsPackable>
     <LangVersion>13</LangVersion>
-    <AssemblyVersion>9.0.1</AssemblyVersion>
-    <FileVersion>9.0.1</FileVersion>
+    <AssemblyVersion>11.0.1</AssemblyVersion>
+    <FileVersion>11.0.1</FileVersion>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.13.0" />
@@ -56,40 +56,6 @@
                "Overrides": [
                   []
                ]
-            },
-            "GetType": {
-               "MethodName": "GetType",
-               "MethodType": "Type",
-               "Overrides": [
-                  []
-               ]
-            },
-            "ToString": {
-               "MethodName": "ToString",
-               "MethodType": "String",
-               "Overrides": [
-                  []
-               ]
-            },
-            "Equals": {
-               "MethodName": "Equals",
-               "MethodType": "Boolean",
-               "Overrides": [
-                  [
-                     {
-                        "ParameterName": "obj",
-                        "ParameterType": "Object",
-                        "IsRequired": true
-                     }
-                  ]
-               ]
-            },
-            "GetHashCode": {
-               "MethodName": "GetHashCode",
-               "MethodType": "Int32",
-               "Overrides": [
-                  []
-               ]
             }
          },
          "Properties": {}
@@ -100,40 +66,6 @@
             "IAmInTheSignature": {
                "MethodName": "IAmInTheSignature",
                "MethodType": "Void",
-               "Overrides": [
-                  []
-               ]
-            },
-            "GetType": {
-               "MethodName": "GetType",
-               "MethodType": "Type",
-               "Overrides": [
-                  []
-               ]
-            },
-            "ToString": {
-               "MethodName": "ToString",
-               "MethodType": "String",
-               "Overrides": [
-                  []
-               ]
-            },
-            "Equals": {
-               "MethodName": "Equals",
-               "MethodType": "Boolean",
-               "Overrides": [
-                  [
-                     {
-                        "ParameterName": "obj",
-                        "ParameterType": "Object",
-                        "IsRequired": true
-                     }
-                  ]
-               ]
-            },
-            "GetHashCode": {
-               "MethodName": "GetHashCode",
-               "MethodType": "Int32",
                "Overrides": [
                   []
                ]
@@ -173,40 +105,6 @@
                      }
                   ]
                ]
-            },
-            "GetType": {
-               "MethodName": "GetType",
-               "MethodType": "Type",
-               "Overrides": [
-                  []
-               ]
-            },
-            "ToString": {
-               "MethodName": "ToString",
-               "MethodType": "String",
-               "Overrides": [
-                  []
-               ]
-            },
-            "Equals": {
-               "MethodName": "Equals",
-               "MethodType": "Boolean",
-               "Overrides": [
-                  [
-                     {
-                        "ParameterName": "obj",
-                        "ParameterType": "Object",
-                        "IsRequired": true
-                     }
-                  ]
-               ]
-            },
-            "GetHashCode": {
-               "MethodName": "GetHashCode",
-               "MethodType": "Int32",
-               "Overrides": [
-                  []
-               ]
             }
          },
          "Properties": {}
@@ -241,40 +139,6 @@
                "Overrides": [
                   []
                ]
-            },
-            "GetType": {
-               "MethodName": "GetType",
-               "MethodType": "Type",
-               "Overrides": [
-                  []
-               ]
-            },
-            "ToString": {
-               "MethodName": "ToString",
-               "MethodType": "String",
-               "Overrides": [
-                  []
-               ]
-            },
-            "Equals": {
-               "MethodName": "Equals",
-               "MethodType": "Boolean",
-               "Overrides": [
-                  [
-                     {
-                        "ParameterName": "obj",
-                        "ParameterType": "Object",
-                        "IsRequired": true
-                     }
-                  ]
-               ]
-            },
-            "GetHashCode": {
-               "MethodName": "GetHashCode",
-               "MethodType": "Int32",
-               "Overrides": [
-                  []
-               ]
             }
          },
          "Properties": {}
@@ -299,40 +163,6 @@
             "MethodOverrideAdded": {
                "MethodName": "MethodOverrideAdded",
                "MethodType": "Void",
-               "Overrides": [
-                  []
-               ]
-            },
-            "GetType": {
-               "MethodName": "GetType",
-               "MethodType": "Type",
-               "Overrides": [
-                  []
-               ]
-            },
-            "ToString": {
-               "MethodName": "ToString",
-               "MethodType": "String",
-               "Overrides": [
-                  []
-               ]
-            },
-            "Equals": {
-               "MethodName": "Equals",
-               "MethodType": "Boolean",
-               "Overrides": [
-                  [
-                     {
-                        "ParameterName": "obj",
-                        "ParameterType": "Object",
-                        "IsRequired": true
-                     }
-                  ]
-               ]
-            },
-            "GetHashCode": {
-               "MethodName": "GetHashCode",
-               "MethodType": "Int32",
                "Overrides": [
                   []
                ]
@@ -363,40 +193,6 @@
                "Overrides": [
                   []
                ]
-            },
-            "GetType": {
-               "MethodName": "GetType",
-               "MethodType": "Type",
-               "Overrides": [
-                  []
-               ]
-            },
-            "ToString": {
-               "MethodName": "ToString",
-               "MethodType": "String",
-               "Overrides": [
-                  []
-               ]
-            },
-            "Equals": {
-               "MethodName": "Equals",
-               "MethodType": "Boolean",
-               "Overrides": [
-                  [
-                     {
-                        "ParameterName": "obj",
-                        "ParameterType": "Object",
-                        "IsRequired": true
-                     }
-                  ]
-               ]
-            },
-            "GetHashCode": {
-               "MethodName": "GetHashCode",
-               "MethodType": "Int32",
-               "Overrides": [
-                  []
-               ]
             }
          },
          "Properties": {}
@@ -421,40 +217,6 @@
             "EvaluateMethodNoLongerExists": {
                "MethodName": "EvaluateMethodNoLongerExists",
                "MethodType": "Void",
-               "Overrides": [
-                  []
-               ]
-            },
-            "GetType": {
-               "MethodName": "GetType",
-               "MethodType": "Type",
-               "Overrides": [
-                  []
-               ]
-            },
-            "ToString": {
-               "MethodName": "ToString",
-               "MethodType": "String",
-               "Overrides": [
-                  []
-               ]
-            },
-            "Equals": {
-               "MethodName": "Equals",
-               "MethodType": "Boolean",
-               "Overrides": [
-                  [
-                     {
-                        "ParameterName": "obj",
-                        "ParameterType": "Object",
-                        "IsRequired": true
-                     }
-                  ]
-               ]
-            },
-            "GetHashCode": {
-               "MethodName": "GetHashCode",
-               "MethodType": "Int32",
                "Overrides": [
                   []
                ]
@@ -485,40 +247,6 @@
                "Overrides": [
                   []
                ]
-            },
-            "GetType": {
-               "MethodName": "GetType",
-               "MethodType": "Type",
-               "Overrides": [
-                  []
-               ]
-            },
-            "ToString": {
-               "MethodName": "ToString",
-               "MethodType": "String",
-               "Overrides": [
-                  []
-               ]
-            },
-            "Equals": {
-               "MethodName": "Equals",
-               "MethodType": "Boolean",
-               "Overrides": [
-                  [
-                     {
-                        "ParameterName": "obj",
-                        "ParameterType": "Object",
-                        "IsRequired": true
-                     }
-                  ]
-               ]
-            },
-            "GetHashCode": {
-               "MethodName": "GetHashCode",
-               "MethodType": "Int32",
-               "Overrides": [
-                  []
-               ]
             }
          },
          "Properties": {}
@@ -543,40 +271,6 @@
             "ProjectClassAdded": {
                "MethodName": "ProjectClassAdded",
                "MethodType": "Void",
-               "Overrides": [
-                  []
-               ]
-            },
-            "GetType": {
-               "MethodName": "GetType",
-               "MethodType": "Type",
-               "Overrides": [
-                  []
-               ]
-            },
-            "ToString": {
-               "MethodName": "ToString",
-               "MethodType": "String",
-               "Overrides": [
-                  []
-               ]
-            },
-            "Equals": {
-               "MethodName": "Equals",
-               "MethodType": "Boolean",
-               "Overrides": [
-                  [
-                     {
-                        "ParameterName": "obj",
-                        "ParameterType": "Object",
-                        "IsRequired": true
-                     }
-                  ]
-               ]
-            },
-            "GetHashCode": {
-               "MethodName": "GetHashCode",
-               "MethodType": "Int32",
                "Overrides": [
                   []
                ]
@@ -607,40 +301,6 @@
                "Overrides": [
                   []
                ]
-            },
-            "GetType": {
-               "MethodName": "GetType",
-               "MethodType": "Type",
-               "Overrides": [
-                  []
-               ]
-            },
-            "ToString": {
-               "MethodName": "ToString",
-               "MethodType": "String",
-               "Overrides": [
-                  []
-               ]
-            },
-            "Equals": {
-               "MethodName": "Equals",
-               "MethodType": "Boolean",
-               "Overrides": [
-                  [
-                     {
-                        "ParameterName": "obj",
-                        "ParameterType": "Object",
-                        "IsRequired": true
-                     }
-                  ]
-               ]
-            },
-            "GetHashCode": {
-               "MethodName": "GetHashCode",
-               "MethodType": "Int32",
-               "Overrides": [
-                  []
-               ]
             }
          },
          "Properties": {}
@@ -665,40 +325,6 @@
             "ProjectsNoLongerExist": {
                "MethodName": "ProjectsNoLongerExist",
                "MethodType": "Void",
-               "Overrides": [
-                  []
-               ]
-            },
-            "GetType": {
-               "MethodName": "GetType",
-               "MethodType": "Type",
-               "Overrides": [
-                  []
-               ]
-            },
-            "ToString": {
-               "MethodName": "ToString",
-               "MethodType": "String",
-               "Overrides": [
-                  []
-               ]
-            },
-            "Equals": {
-               "MethodName": "Equals",
-               "MethodType": "Boolean",
-               "Overrides": [
-                  [
-                     {
-                        "ParameterName": "obj",
-                        "ParameterType": "Object",
-                        "IsRequired": true
-                     }
-                  ]
-               ]
-            },
-            "GetHashCode": {
-               "MethodName": "GetHashCode",
-               "MethodType": "Int32",
                "Overrides": [
                   []
                ]
@@ -729,40 +355,6 @@
                "Overrides": [
                   []
                ]
-            },
-            "GetType": {
-               "MethodName": "GetType",
-               "MethodType": "Type",
-               "Overrides": [
-                  []
-               ]
-            },
-            "ToString": {
-               "MethodName": "ToString",
-               "MethodType": "String",
-               "Overrides": [
-                  []
-               ]
-            },
-            "Equals": {
-               "MethodName": "Equals",
-               "MethodType": "Boolean",
-               "Overrides": [
-                  [
-                     {
-                        "ParameterName": "obj",
-                        "ParameterType": "Object",
-                        "IsRequired": true
-                     }
-                  ]
-               ]
-            },
-            "GetHashCode": {
-               "MethodName": "GetHashCode",
-               "MethodType": "Int32",
-               "Overrides": [
-                  []
-               ]
             }
          },
          "Properties": {}
@@ -787,40 +379,6 @@
             "PropertyMadeEditable": {
                "MethodName": "PropertyMadeEditable",
                "MethodType": "Void",
-               "Overrides": [
-                  []
-               ]
-            },
-            "GetType": {
-               "MethodName": "GetType",
-               "MethodType": "Type",
-               "Overrides": [
-                  []
-               ]
-            },
-            "ToString": {
-               "MethodName": "ToString",
-               "MethodType": "String",
-               "Overrides": [
-                  []
-               ]
-            },
-            "Equals": {
-               "MethodName": "Equals",
-               "MethodType": "Boolean",
-               "Overrides": [
-                  [
-                     {
-                        "ParameterName": "obj",
-                        "ParameterType": "Object",
-                        "IsRequired": true
-                     }
-                  ]
-               ]
-            },
-            "GetHashCode": {
-               "MethodName": "GetHashCode",
-               "MethodType": "Int32",
                "Overrides": [
                   []
                ]
@@ -851,40 +409,6 @@
                "Overrides": [
                   []
                ]
-            },
-            "GetType": {
-               "MethodName": "GetType",
-               "MethodType": "Type",
-               "Overrides": [
-                  []
-               ]
-            },
-            "ToString": {
-               "MethodName": "ToString",
-               "MethodType": "String",
-               "Overrides": [
-                  []
-               ]
-            },
-            "Equals": {
-               "MethodName": "Equals",
-               "MethodType": "Boolean",
-               "Overrides": [
-                  [
-                     {
-                        "ParameterName": "obj",
-                        "ParameterType": "Object",
-                        "IsRequired": true
-                     }
-                  ]
-               ]
-            },
-            "GetHashCode": {
-               "MethodName": "GetHashCode",
-               "MethodType": "Int32",
-               "Overrides": [
-                  []
-               ]
             }
          },
          "Properties": {}
@@ -909,40 +433,6 @@
             "PropertyMadeReadable": {
                "MethodName": "PropertyMadeReadable",
                "MethodType": "Void",
-               "Overrides": [
-                  []
-               ]
-            },
-            "GetType": {
-               "MethodName": "GetType",
-               "MethodType": "Type",
-               "Overrides": [
-                  []
-               ]
-            },
-            "ToString": {
-               "MethodName": "ToString",
-               "MethodType": "String",
-               "Overrides": [
-                  []
-               ]
-            },
-            "Equals": {
-               "MethodName": "Equals",
-               "MethodType": "Boolean",
-               "Overrides": [
-                  [
-                     {
-                        "ParameterName": "obj",
-                        "ParameterType": "Object",
-                        "IsRequired": true
-                     }
-                  ]
-               ]
-            },
-            "GetHashCode": {
-               "MethodName": "GetHashCode",
-               "MethodType": "Int32",
                "Overrides": [
                   []
                ]
@@ -973,40 +463,6 @@
                "Overrides": [
                   []
                ]
-            },
-            "GetType": {
-               "MethodName": "GetType",
-               "MethodType": "Type",
-               "Overrides": [
-                  []
-               ]
-            },
-            "ToString": {
-               "MethodName": "ToString",
-               "MethodType": "String",
-               "Overrides": [
-                  []
-               ]
-            },
-            "Equals": {
-               "MethodName": "Equals",
-               "MethodType": "Boolean",
-               "Overrides": [
-                  [
-                     {
-                        "ParameterName": "obj",
-                        "ParameterType": "Object",
-                        "IsRequired": true
-                     }
-                  ]
-               ]
-            },
-            "GetHashCode": {
-               "MethodName": "GetHashCode",
-               "MethodType": "Int32",
-               "Overrides": [
-                  []
-               ]
             }
          },
          "Properties": {}
@@ -1031,40 +487,6 @@
             "PropertyTypesChanged": {
                "MethodName": "PropertyTypesChanged",
                "MethodType": "Void",
-               "Overrides": [
-                  []
-               ]
-            },
-            "GetType": {
-               "MethodName": "GetType",
-               "MethodType": "Type",
-               "Overrides": [
-                  []
-               ]
-            },
-            "ToString": {
-               "MethodName": "ToString",
-               "MethodType": "String",
-               "Overrides": [
-                  []
-               ]
-            },
-            "Equals": {
-               "MethodName": "Equals",
-               "MethodType": "Boolean",
-               "Overrides": [
-                  [
-                     {
-                        "ParameterName": "obj",
-                        "ParameterType": "Object",
-                        "IsRequired": true
-                     }
-                  ]
-               ]
-            },
-            "GetHashCode": {
-               "MethodName": "GetHashCode",
-               "MethodType": "Int32",
                "Overrides": [
                   []
                ]
