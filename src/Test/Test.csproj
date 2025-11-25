@@ -1,12 +1,12 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net9.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <IsPackable>false</IsPackable>
-    <LangVersion>13</LangVersion>
-    <AssemblyVersion>11.0.1</AssemblyVersion>
-    <FileVersion>11.0.1</FileVersion>
+    <LangVersion>14</LangVersion>
+    <AssemblyVersion>12.0.9</AssemblyVersion>
+    <FileVersion>12.0.9</FileVersion>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.13.0" />

@@ -33,6 +33,7 @@ internal static class ExtendString
 
         throw new InvalidCastException($"Unable to create an instance of '{typeof(T).Name}' from the json: {json}");
     }
+    
     internal static bool IsNullOrWhitespace([NotNullWhen(false)] this string? text)
     {
         return string.IsNullOrWhiteSpace(text);
@@ -65,55 +66,7 @@ internal static class ExtendString
 
         return null;
     }
-    
-    internal static string EscapeJsonForXml(this string json)
-    {
-        if (string.IsNullOrEmpty(json))
-        {
-            return json;
-        }
 
-        var escapes = new Dictionary<string, string>
-        {
-            { "&", "&amp;" },
-            { "<", "&lt;" },
-            { ">", "&gt;" },
-            { "\"", "&quot;" },
-            { "'", "&apos;" }
-        };
-
-        foreach (var (key, value) in escapes)
-        {
-            json = json.Replace(key, value);
-        }
-
-        return json;
-    }
-
-    internal static string UnescapeXmlToJson(this string xml)
-    {
-        if (string.IsNullOrEmpty(xml))
-        {
-            return xml;
-        }
-
-        var escapes = new Dictionary<string, string>
-        {
-            { "<", "&lt;" },
-            { ">", "&gt;" },
-            { "\"", "&quot;" },
-            { "'", "&apos;" },
-            { "&", "&amp;" }
-        };
-
-        foreach (var (key, value) in escapes)
-        {
-            xml = xml.Replace(value, key);
-        }
-
-        return xml;
-    }
-    
     internal static string GetSolutionDirectory(this string projectFilePath)
     {
         var solutionSuffixes = new[] { ".sln", ".slnx" };

@@ -1,10 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <AssemblyVersion>11.0.1</AssemblyVersion>
-    <TargetFramework>net9.0</TargetFramework>
+    <AssemblyVersion>12.0.9</AssemblyVersion>
+    <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <LangVersion>13</LangVersion>
+    <LangVersion>14</LangVersion>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\AutoVersion\AutoVersion.csproj" />
@@ -30,57 +30,6 @@
     <LatestAutoVersionSignature>{
    "Name": "IntegrationTest.csproj",
    "Classes": [
-      {
-         "Name": "IntegrationTest.Class1",
-         "Methods": {
-            "get_Property1": {
-               "MethodName": "get_Property1",
-               "MethodType": "String",
-               "Overrides": [
-                  []
-               ]
-            },
-            "set_Property1": {
-               "MethodName": "set_Property1",
-               "MethodType": "Void",
-               "Overrides": [
-                  [
-                     {
-                        "ParameterName": "value",
-                        "ParameterType": "String",
-                        "IsRequired": true
-                     }
-                  ]
-               ]
-            },
-            "Method1": {
-               "MethodName": "Method1",
-               "MethodType": "Void",
-               "Overrides": [
-                  [
-                     {
-                        "ParameterName": "param1",
-                        "ParameterType": "String",
-                        "IsRequired": true
-                     },
-                     {
-                        "ParameterName": "param2",
-                        "ParameterType": "Int32",
-                        "IsRequired": true
-                     }
-                  ]
-               ]
-            }
-         },
-         "Properties": {
-            "Property1": {
-               "Name": "Property1",
-               "Type": "String",
-               "IsReadable": true,
-               "IsWritable": true
-            }
-         }
-      },
       {
          "Name": "IntegrationTest.Regression",
          "Methods": {
