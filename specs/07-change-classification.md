@@ -26,7 +26,7 @@ bool AreDifferencesPresent(ISwiftSignaturesToCompare signatures);
 ```
 
 Rules are registered in a static list per language (`CompareSignatures`, `CompareSwiftSignatures`
-— 40 and 38 today). Adding a detection capability means a rule class + registration + a test
+— 41 and 38 classes today). Adding a detection capability means a rule class + registration + a test
 class (TST-01), with no change to any aggregation logic.
 
 **CLS-01a — Neutral unit-existence rules.** ✅ *(§7)*
@@ -118,7 +118,7 @@ Added when the C# model grew to the full topology; each is a class in
 ℹ️ R41 is one requirement implemented as two classes, one per direction, so that each has a
 single declared impact and its own test class.
 
-All 40 live rules are covered by dedicated test classes asserting impact, a no-change negative
+All 41 live rule classes are covered by dedicated test classes asserting impact, a no-change negative
 case, and a positive case; directional pairs additionally assert the non-firing direction
 ([11-testing.md](11-testing.md)).
 

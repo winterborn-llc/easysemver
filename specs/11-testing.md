@@ -5,7 +5,7 @@ Test projects: [`src/Test`](../src/Test) (unit, xUnit) and
 both via `InternalsVisibleTo`
 ([`AssemblySettings.cs`](../src/EasySemVer/Settings/AssemblySettings.cs)).
 
-**TST-01 — Every classification rule is tested.** ✅ 78/78
+**TST-01 — Every classification rule is tested.** ✅ 81/81 (41 C#, 38 Swift, 2 neutral)
 Each evaluator SHALL have a dedicated test class asserting at minimum:
 1. the declared `EvaluationImpact` (locks the rule's severity),
 2. a no-difference case returns `false`,

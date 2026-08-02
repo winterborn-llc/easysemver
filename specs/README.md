@@ -57,7 +57,7 @@ Statuses were verified on **2026-08-02** on macOS with .NET SDK 10.0.100 and Swi
 
 - `dotnet build` — succeeds, one warning: `NU5129` (gap **G-04**).
 - `dotnet test` (unit project `Test`) — **464/464 pass**.
-- `dotnet test` (project `IntegrationTest`, C# tests) — **3/3 pass**, including
-  `Regression.TestProgramInvocation`. G-01 is dead.
-- The Swift-traited integration tests shell out to `swift` and are gated on a toolchain being
-  present; skip them with `dotnet test --filter Toolchain!=Swift`.
+- `dotnet test` (project `IntegrationTest`) — **10/10 pass**: 3 C#, 4 SwiftPM, 3 Xcode,
+  including `Regression.TestProgramInvocation`. G-01 is dead.
+- The Swift-traited integration tests shell out to `swift` and `xcodebuild`; skip them on a
+  machine without a toolchain with `dotnet test --filter Toolchain!=Swift`.
