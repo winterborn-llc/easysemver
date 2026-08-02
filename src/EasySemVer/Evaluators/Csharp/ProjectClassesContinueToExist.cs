@@ -13,7 +13,8 @@ public class ProjectClassesContinueToExist : IEvaluateCsharpSignatures
     {
         foreach (var olderClass in signatures.Older.Classes)
         {
-            var newerClass = CsharpSignaturesToCompare.FindClass(signatures.Newer, olderClass.Name);
+            var newerClass = CsharpSignaturesToCompare.FindType(
+                signatures.Newer, olderClass.Name, olderClass.Kind);
             if (newerClass != null)
             {
                 continue;

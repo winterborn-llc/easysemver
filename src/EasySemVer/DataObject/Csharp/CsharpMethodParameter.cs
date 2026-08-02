@@ -7,6 +7,9 @@ namespace Winterborn.Library.EasySemVer.DataObject.Csharp;
 [XmlType("Parameter")]
 public class CsharpMethodParameter : ICsharpMethodParameter
 {
+    /// <summary>The value <see cref="RefKind"/> carries when a parameter is passed by value.</summary>
+    internal const string NoRefKind = "None";
+
     private string DebugText
     {
         get
@@ -25,4 +28,10 @@ public class CsharpMethodParameter : ICsharpMethodParameter
 
     [XmlAttribute("required")]
     public bool IsRequired { get; set; } = true;
+
+    [XmlAttribute("refKind")]
+    public string RefKind { get; set; } = NoRefKind;
+
+    [XmlAttribute("params")]
+    public bool IsParams { get; set; }
 }

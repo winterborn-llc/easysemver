@@ -27,7 +27,35 @@ internal static class CompareSignatures
         new PropertyAdded(),
         new PropertyReadabilityEnhanced(),
         new PropertyReadabilityReduced(),
-        new PropertyType()
+        new PropertyType(),
+
+        // CSX-05: the fidelity expansion. Everything below here was invisible under G-15.
+        new TypeRemoved(),
+        new TypeAdded(),
+        new InterfaceRequirementAdded(),
+        new InterfaceRequirementAddedWithDefault(),
+        new EnumMemberRemoved(),
+        new EnumMemberAdded(),
+        new EnumMemberValueChanged(),
+        new EnumUnderlyingTypeChanged(),
+        new DelegateSignatureChanged(),
+        new RecordPositionalParametersChanged(),
+        new FieldContractReduced(),
+        new FieldAdded(),
+        new EventContractReduced(),
+        new EventAdded(),
+        new TypeInheritanceRestricted(),
+        new TypeInheritanceRelaxed(),
+        new ImplementedInterfaceRemoved(),
+        new ImplementedInterfaceAdded(),
+        new MemberOverridabilityReduced(),
+        new ParameterModifierChanged(),
+        new MemberStaticnessChanged(),
+        new GenericConstraintTightened(),
+        new GenericConstraintLoosened(),
+        new NestedTypeRemoved(),
+        new NestedTypeAdded(),
+        new PropertySetterBecameInitOnly()
     ];
 
     internal static VersionType GetChangeType(

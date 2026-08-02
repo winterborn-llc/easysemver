@@ -1,14 +1,10 @@
 using Winterborn.Library.EasySemVer.DataObject;
-using Winterborn.Library.EasySemVer.DataObject.Csharp;
-using Winterborn.Library.EasySemVer.Evaluation;
-using Winterborn.Library.EasySemVer.Evaluation.Csharp;
-using Winterborn.Library.EasySemVer.Evaluators;
 using Winterborn.Library.EasySemVer.Evaluators.Csharp;
-using Winterborn.Library.EasySemVer.Interfaces;
 using Winterborn.Library.EasySemVer.Interfaces.Csharp;
 
 namespace Test.Evaluators.Csharp;
 
+/// <summary>R13.</summary>
 public class TestPropertyType
 {
     private static IEvaluateCsharpSignatures Evaluator => new PropertyType();
@@ -20,96 +16,22 @@ public class TestPropertyType
     }
 
     [Fact]
-    public void PropertyTypesSame()
+    public void PropertyTypeIsUnchanged()
     {
-        var signatures = new CsharpSignaturesToCompare(
-            older: new CsharpProject("Test")
-            {
-                Classes =
-                [
-                    new CsharpClass
-                    {
-                        Name = "TestClass",
-                        Properties =
-                        {
-                            new CsharpProperty
-                            {
-                                Name = "TestProperty",
-                                Type = "string"
-                            }
-                        }
-                    }
-                ]
-            }
-            ,
-            newer: new CsharpProject("Test")
-            {
-                Classes =
-                [
-                    new CsharpClass
-                    {
-                        Name = "TestClass",
-                        Properties =
-                        {
-                            new CsharpProperty
-                            {
-                                Name = "TestProperty",
-                                Type = "string"
-                            }
-                        }
-                    }
-                ]
-            }
-        );
+        var signatures = Build.Compare(
+            Build.Class().WithProperties(Build.Property(type: "string")),
+            Build.Class().WithProperties(Build.Property(type: "string")));
 
-        var result = Evaluator.AreDifferencesPresent(signatures);
-        Assert.False(result);
+        Assert.False(Evaluator.AreDifferencesPresent(signatures));
     }
 
     [Fact]
-    public void PropertyTypesChanged()
+    public void PropertyTypeChanged()
     {
-        var signatures = new CsharpSignaturesToCompare(
-            older: new CsharpProject("Test")
-            {
-                Classes =
-                [
-                    new CsharpClass
-                    {
-                        Name = "TestClass",
-                        Properties =
-                        {
-                            new CsharpProperty
-                            {
-                                Name = "TestProperty",
-                                Type = "string"
-                            }
-                        }
-                    }
-                ]
-            }
-            ,
-            newer: new CsharpProject("Test")
-            {
-                Classes =
-                [
-                    new CsharpClass
-                    {
-                        Name = "TestClass",
-                        Properties =
-                        {
-                            new CsharpProperty
-                            {
-                                Name = "TestProperty",
-                                Type = "NotAString"
-                            }
-                        }
-                    }
-                ]
-            }
-        );
+        var signatures = Build.Compare(
+            Build.Class().WithProperties(Build.Property(type: "string")),
+            Build.Class().WithProperties(Build.Property(type: "int")));
 
-        var result = Evaluator.AreDifferencesPresent(signatures);
-        Assert.True(result);
+        Assert.True(Evaluator.AreDifferencesPresent(signatures));
     }
 }

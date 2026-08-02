@@ -1,14 +1,10 @@
 using Winterborn.Library.EasySemVer.DataObject;
-using Winterborn.Library.EasySemVer.DataObject.Csharp;
-using Winterborn.Library.EasySemVer.Evaluation;
-using Winterborn.Library.EasySemVer.Evaluation.Csharp;
-using Winterborn.Library.EasySemVer.Evaluators;
 using Winterborn.Library.EasySemVer.Evaluators.Csharp;
-using Winterborn.Library.EasySemVer.Interfaces;
 using Winterborn.Library.EasySemVer.Interfaces.Csharp;
 
 namespace Test.Evaluators.Csharp;
 
+/// <summary>R15.</summary>
 public class TestMethodAdded
 {
     private static IEvaluateCsharpSignatures Evaluator => new MethodAdded();
@@ -20,256 +16,35 @@ public class TestMethodAdded
     }
 
     [Fact]
-    public void MethodsAreNotChanged()
+    public void MethodsAreUnchanged()
     {
-        var signatures = new CsharpSignaturesToCompare(
-            older: new CsharpProject("Test")
-            {
-                Classes =
-                [
-                    new CsharpClass
-                    {
-                        Name = "TestClass",
-                        Methods =
-                        {
-                            new CsharpMethod
-                            {
-                                MethodName = "TestMethod1",
-                                MethodType = "string",
-                                Overrides = new CsharpMethodOverrides
-                                {
-                                    new CsharpMethodOverride
-                                    {
-                                        new CsharpMethodParameter
-                                        {
-                                            ParameterName = "input",
-                                            ParameterType = "string",
-                                            IsRequired = true
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                ]
-            }
-            ,
-            newer: new CsharpProject("Test")
-            {
-                Classes =
-                [
-                    new CsharpClass
-                    {
-                        Name = "TestClass",
-                        Methods =
-                        {
-                            new CsharpMethod
-                            {
-                                MethodName = "TestMethod1",
-                                MethodType = "string",
-                                Overrides = new CsharpMethodOverrides
-                                {
-                                    new CsharpMethodOverride
-                                    {
-                                        new CsharpMethodParameter
-                                        {
-                                            ParameterName = "input",
-                                            ParameterType = "string",
-                                            IsRequired = true
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                ]
-            }
-        );
+        var signatures = Build.Compare(
+            Build.Class().WithMethods(Build.Method("One")),
+            Build.Class().WithMethods(Build.Method("One")));
 
-        var result = Evaluator.AreDifferencesPresent(signatures);
-        Assert.False(result);
+        Assert.False(Evaluator.AreDifferencesPresent(signatures));
     }
 
     [Fact]
-    public void MethodIsAddedToExistingClass()
+    public void MethodIsAddedToExistingType()
     {
-        var signatures = new CsharpSignaturesToCompare(
-            older: new CsharpProject("Test")
-            {
-                Classes =
-                [
-                    new CsharpClass
-                    {
-                        Name = "TestClass",
-                        Methods =
-                        {
-                            new CsharpMethod
-                            {
-                                MethodName = "TestMethod1",
-                                MethodType = "string",
-                                Overrides = new CsharpMethodOverrides
-                                {
-                                    new CsharpMethodOverride
-                                    {
-                                        new CsharpMethodParameter
-                                        {
-                                            ParameterName = "input",
-                                            ParameterType = "string",
-                                            IsRequired = true
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                ]
-            }
-            ,
-            newer: new CsharpProject("Test")
-            {
-                Classes =
-                [
-                    new CsharpClass
-                    {
-                        Name = "TestClass",
-                        Methods =
-                        {
-                            new CsharpMethod
-                            {
-                                MethodName = "TestMethod1",
-                                MethodType = "string",
-                                Overrides = new CsharpMethodOverrides
-                                {
-                                    new CsharpMethodOverride
-                                    {
-                                        new CsharpMethodParameter
-                                        {
-                                            ParameterName = "input",
-                                            ParameterType = "string",
-                                            IsRequired = true
-                                        }
-                                    }
-                                }
-                            },
-                            new CsharpMethod
-                            {
-                                MethodName = "TestMethod2",
-                                MethodType = "string",
-                                Overrides = new CsharpMethodOverrides
-                                {
-                                    new CsharpMethodOverride
-                                    {
-                                        new CsharpMethodParameter
-                                        {
-                                            ParameterName = "input",
-                                            ParameterType = "string",
-                                            IsRequired = true
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                ]
-            }
-        );
+        var signatures = Build.Compare(
+            Build.Class().WithMethods(Build.Method("One")),
+            Build.Class().WithMethods(Build.Method("One"), Build.Method("Two")));
 
-        var result = Evaluator.AreDifferencesPresent(signatures);
-        Assert.True(result);
+        Assert.True(Evaluator.AreDifferencesPresent(signatures));
     }
 
+    /// <summary>CLS-02 - members of a brand-new type are R05's concern, not this rule's.</summary>
     [Fact]
-    public void MethodOnBrandNewClassIsNotCounted()
+    public void MethodOnBrandNewTypeIsNotCounted()
     {
-        var signatures = new CsharpSignaturesToCompare(
-            older: new CsharpProject("Test")
-            {
-                Classes =
-                [
-                    new CsharpClass
-                    {
-                        Name = "TestClass",
-                        Methods =
-                        {
-                            new CsharpMethod
-                            {
-                                MethodName = "TestMethod1",
-                                MethodType = "string",
-                                Overrides = new CsharpMethodOverrides
-                                {
-                                    new CsharpMethodOverride
-                                    {
-                                        new CsharpMethodParameter
-                                        {
-                                            ParameterName = "input",
-                                            ParameterType = "string",
-                                            IsRequired = true
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                ]
-            }
-            ,
-            newer: new CsharpProject("Test")
-            {
-                Classes =
-                [
-                    new CsharpClass
-                    {
-                        Name = "TestClass",
-                        Methods =
-                        {
-                            new CsharpMethod
-                            {
-                                MethodName = "TestMethod1",
-                                MethodType = "string",
-                                Overrides = new CsharpMethodOverrides
-                                {
-                                    new CsharpMethodOverride
-                                    {
-                                        new CsharpMethodParameter
-                                        {
-                                            ParameterName = "input",
-                                            ParameterType = "string",
-                                            IsRequired = true
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    new CsharpClass
-                    {
-                        Name = "BrandNewClass",
-                        Methods =
-                        {
-                            new CsharpMethod
-                            {
-                                MethodName = "BrandNewMethod",
-                                MethodType = "string",
-                                Overrides = new CsharpMethodOverrides
-                                {
-                                    new CsharpMethodOverride
-                                    {
-                                        new CsharpMethodParameter
-                                        {
-                                            ParameterName = "input",
-                                            ParameterType = "string",
-                                            IsRequired = true
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                ]
-            }
-        );
+        var signatures = Build.Compare(
+            Build.Project(Build.Class().WithMethods(Build.Method("One"))),
+            Build.Project(
+                Build.Class().WithMethods(Build.Method("One")),
+                Build.Class("Test.BrandNew").WithMethods(Build.Method("Two"))));
 
-        var result = Evaluator.AreDifferencesPresent(signatures);
-        Assert.False(result);
+        Assert.False(Evaluator.AreDifferencesPresent(signatures));
     }
 }

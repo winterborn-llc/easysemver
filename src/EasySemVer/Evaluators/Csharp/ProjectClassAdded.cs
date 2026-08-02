@@ -13,7 +13,8 @@ public class ProjectClassAdded : IEvaluateCsharpSignatures
     {
         foreach (var newerClass in signatures.Newer.Classes)
         {
-            var olderClass = CsharpSignaturesToCompare.FindClass(signatures.Older, newerClass.Name);
+            var olderClass = CsharpSignaturesToCompare.FindType(
+                signatures.Older, newerClass.Name, newerClass.Kind);
             if (olderClass != null)
             {
                 continue;

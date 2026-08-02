@@ -1,0 +1,35 @@
+using Winterborn.Library.EasySemVer.DataObject;
+using Winterborn.Library.EasySemVer.Evaluation.Csharp;
+using Winterborn.Library.EasySemVer.Interfaces.Csharp;
+
+namespace Winterborn.Library.EasySemVer.Evaluators.Csharp;
+
+/// <summary>
+/// R41 (removal half) - a public nested type is gone. Nested types are recorded flat under their
+/// Outer.Inner name, so this is the same lookup as a top-level type with a declaring type set.
+/// </summary>
+public class NestedTypeRemoved : IEvaluateCsharpSignatures
+{
+    public VersionType EvaluationImpact => VersionType.Major;
+
+    public bool AreDifferencesPresent(ICsharpSignaturesToCompare signatures)
+    {
+        foreach (var olderType in signatures.Older.Types)
+        {
+            if (olderType.DeclaringType.Length < 1)
+            {
+                continue;
+            }
+
+            var newerType = CsharpSignaturesToCompare.FindTypeOfAnyKind(signatures.Newer, olderType.Name);
+            if (newerType != null)
+            {
+                continue;
+            }
+
+            return true;
+        }
+
+        return false;
+    }
+}

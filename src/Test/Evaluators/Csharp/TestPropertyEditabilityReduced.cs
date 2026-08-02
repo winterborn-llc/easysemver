@@ -1,14 +1,10 @@
 using Winterborn.Library.EasySemVer.DataObject;
-using Winterborn.Library.EasySemVer.DataObject.Csharp;
-using Winterborn.Library.EasySemVer.Evaluation;
-using Winterborn.Library.EasySemVer.Evaluation.Csharp;
-using Winterborn.Library.EasySemVer.Evaluators;
 using Winterborn.Library.EasySemVer.Evaluators.Csharp;
-using Winterborn.Library.EasySemVer.Interfaces;
 using Winterborn.Library.EasySemVer.Interfaces.Csharp;
 
 namespace Test.Evaluators.Csharp;
 
+/// <summary>R09 - a property stopped being writable.</summary>
 public class TestPropertyEditabilityReduced
 {
     private static IEvaluateCsharpSignatures Evaluator => new PropertyEditabilityReduced();
@@ -20,100 +16,27 @@ public class TestPropertyEditabilityReduced
     }
 
     [Fact]
-    public void PropertiesTheSame()
+    public void AccessorIsUnchanged()
     {
-        var signatures = new CsharpSignaturesToCompare(
-            older: new CsharpProject("TestProject")
-            {
-                Classes =
-                [
-                    new CsharpClass
-                    {
-                        Name = "TestClass",
-                        Properties =
-                        {
-                            new CsharpProperty
-                            {
-                                Name = "TestProperty",
-                                Type = "string",
-                                IsWritable = true
-                            }
-                        }
-                    }
-                ]
-            }
-            ,
-            newer: new CsharpProject("TestProject")
-            {
-                Classes =
-                [
-                    new CsharpClass
-                    {
-                        Name = "TestClass",
-                        Properties =
-                        {
-                            new CsharpProperty
-                            {
-                                Name = "TestProperty",
-                                Type = "string",
-                                IsWritable = true
-                            }
-                        }
-                    }
-                ]
-            }
-        );
-
-        var result = Evaluator.AreDifferencesPresent(signatures);
-        Assert.False(result);
+        Assert.False(Evaluator.AreDifferencesPresent(BuildComparison(false, false)));
     }
 
     [Fact]
-    public void PropertyMadeReadOnly()
+    public void AccessorChangesInTheFiringDirection()
     {
-        var signatures = new CsharpSignaturesToCompare(
-            older: new CsharpProject("TestProject")
-            {
-                Classes =
-                [
-                    new CsharpClass
-                    {
-                        Name = "TestClass",
-                        Properties =
-                        {
-                            new CsharpProperty
-                            {
-                                Name = "TestProperty",
-                                Type = "string",
-                                IsWritable = true
-                            }
-                        }
-                    }
-                ]
-            }
-            ,
-            newer: new CsharpProject("TestProject")
-            {
-                Classes =
-                [
-                    new CsharpClass
-                    {
-                        Name = "TestClass",
-                        Properties =
-                        {
-                            new CsharpProperty
-                            {
-                                Name = "TestProperty",
-                                Type = "string",
-                                IsWritable = false
-                            }
-                        }
-                    }
-                ]
-            }
-        );
+        Assert.True(Evaluator.AreDifferencesPresent(BuildComparison(true, false)));
+    }
 
-        var result = Evaluator.AreDifferencesPresent(signatures);
-        Assert.True(result);
+    [Fact]
+    public void TheOppositeDirectionDoesNotFire()
+    {
+        Assert.False(Evaluator.AreDifferencesPresent(BuildComparison(false, true)));
+    }
+
+    private static ICsharpSignaturesToCompare BuildComparison(bool wasPresent, bool isPresent)
+    {
+        return Build.Compare(
+            Build.Class().WithProperties(Build.Property(isWritable: wasPresent)),
+            Build.Class().WithProperties(Build.Property(isWritable: isPresent)));
     }
 }

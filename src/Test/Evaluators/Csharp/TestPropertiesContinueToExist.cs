@@ -1,14 +1,10 @@
 using Winterborn.Library.EasySemVer.DataObject;
-using Winterborn.Library.EasySemVer.DataObject.Csharp;
-using Winterborn.Library.EasySemVer.Evaluation;
-using Winterborn.Library.EasySemVer.Evaluation.Csharp;
-using Winterborn.Library.EasySemVer.Evaluators;
 using Winterborn.Library.EasySemVer.Evaluators.Csharp;
-using Winterborn.Library.EasySemVer.Interfaces;
 using Winterborn.Library.EasySemVer.Interfaces.Csharp;
 
 namespace Test.Evaluators.Csharp;
 
+/// <summary>R10.</summary>
 public class TestPropertiesContinueToExist
 {
     private static IEvaluateCsharpSignatures Evaluator => new PropertiesContinueToExist();
@@ -20,96 +16,22 @@ public class TestPropertiesContinueToExist
     }
 
     [Fact]
-    public void PropertiesTheSame()
+    public void PropertiesAreUnchanged()
     {
-        var signatures = new CsharpSignaturesToCompare(
-            older: new CsharpProject("TestProject")
-            {
-                Classes =
-                [
-                    new CsharpClass
-                    {
-                        Name = "TestClass",
-                        Properties =
-                        {
-                            new CsharpProperty
-                            {
-                                Name = "TestProperty",
-                                Type = "string"
-                            }
-                        }
-                    }
-                ]
-            }
-            ,
-            newer: new CsharpProject("TestProject")
-            {
-                Classes =
-                [
-                    new CsharpClass
-                    {
-                        Name = "TestClass",
-                        Properties =
-                        {
-                            new CsharpProperty
-                            {
-                                Name = "TestProperty",
-                                Type = "string"
-                            }
-                        }
-                    }
-                ]
-            }
-        );
+        var signatures = Build.Compare(
+            Build.Class().WithProperties(Build.Property("One"), Build.Property("Two")),
+            Build.Class().WithProperties(Build.Property("One"), Build.Property("Two")));
 
-        var result = Evaluator.AreDifferencesPresent(signatures);
-        Assert.False(result);
+        Assert.False(Evaluator.AreDifferencesPresent(signatures));
     }
 
     [Fact]
-    public void PropertyRemoved()
+    public void PropertyIsRemoved()
     {
-        var signatures = new CsharpSignaturesToCompare(
-            older: new CsharpProject("TestProject")
-            {
-                Classes =
-                [
-                    new CsharpClass
-                    {
-                        Name = "TestClass",
-                        Properties =
-                        {
-                            new CsharpProperty
-                            {
-                                Name = "TestProperty",
-                                Type = "string"
-                            }
-                        }
-                    }
-                ]
-            }
-            ,
-            newer: new CsharpProject("TestProject")
-            {
-                Classes =
-                [
-                    new CsharpClass
-                    {
-                        Name = "TestClass",
-                        Properties =
-                        {
-                            new CsharpProperty
-                            {
-                                Name = "NotTheSameProperty",
-                                Type = "string"
-                            }
-                        }
-                    }
-                ]
-            }
-        );
+        var signatures = Build.Compare(
+            Build.Class().WithProperties(Build.Property("One"), Build.Property("Two")),
+            Build.Class().WithProperties(Build.Property("One")));
 
-        var result = Evaluator.AreDifferencesPresent(signatures);
-        Assert.True(result);
+        Assert.True(Evaluator.AreDifferencesPresent(signatures));
     }
 }

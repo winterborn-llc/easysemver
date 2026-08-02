@@ -1,36 +1,64 @@
 using Winterborn.Library.EasySemVer.DataObject;
-using Winterborn.Library.EasySemVer.DataObject.Csharp;
 using Winterborn.Library.EasySemVer.Interfaces.Csharp;
 
 namespace Winterborn.Library.EasySemVer.Evaluators.Csharp;
 
-internal class MethodReturnType : IEvaluateCsharpSignatures
+/// <summary>
+/// R03 - a method's return type changed. Checked per overload as well as per method name, so a
+/// change on anything but the first overload can no longer hide (CSX-04, closes G-14).
+/// </summary>
+public class MethodReturnType : IEvaluateCsharpSignatures
 {
     public VersionType EvaluationImpact => VersionType.Major;
 
     public bool AreDifferencesPresent(ICsharpSignaturesToCompare signatures)
     {
-        var classes = signatures.ClassHistory;
-        foreach (var classPair in classes)
+        foreach (var typePair in signatures.ClassHistory)
         {
-            var oldClass = classPair.Older;
-            var newClass = classPair.Newer;
-            foreach (var oldMethodName in oldClass.Methods.Keys)
+            var oldType = typePair.Older;
+            var newType = typePair.Newer;
+            foreach (var oldMethodName in oldType.Methods.Keys)
             {
-                var oldMethod = oldClass.Methods[oldMethodName];
-                if (!newClass.Methods.Contains(oldMethodName))
+                if (!newType.Methods.Contains(oldMethodName))
                 {
                     continue;
                 }
-                
-                var newMethod = newClass.Methods[oldMethodName];
-                if (oldMethod.MethodType == newMethod.MethodType)
+
+                var oldMethod = oldType.Methods[oldMethodName];
+                var newMethod = newType.Methods[oldMethodName];
+                if (oldMethod.MethodType != newMethod.MethodType)
                 {
-                    continue;
+                    return true;
                 }
-                    
-                return true;
+
+                if (DidAnyOverloadChangeReturnType(oldMethod, newMethod))
+                {
+                    return true;
+                }
             }
+        }
+
+        return false;
+    }
+
+    private static bool DidAnyOverloadChangeReturnType(
+        ICsharpMethod oldMethod,
+        ICsharpMethod newMethod)
+    {
+        foreach (var oldOverride in oldMethod.Overrides)
+        {
+            var newOverride = Overloads.FindMatch(oldOverride, newMethod);
+            if (newOverride == null)
+            {
+                continue;
+            }
+
+            if (newOverride.ReturnType == oldOverride.ReturnType)
+            {
+                continue;
+            }
+
+            return true;
         }
 
         return false;

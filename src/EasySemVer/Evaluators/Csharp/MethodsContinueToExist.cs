@@ -27,8 +27,8 @@ public class MethodsContinueToExist : IEvaluateCsharpSignatures
     }
 
     internal static bool DoAllMethodsStillExist(
-        ICsharpClass oldClass, 
-        ICsharpClass newClass)
+        ICsharpType oldClass,
+        ICsharpType newClass)
     {
         foreach (var oldMethodName in oldClass.Methods.Keys)
         {

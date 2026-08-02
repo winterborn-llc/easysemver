@@ -1,14 +1,10 @@
 using Winterborn.Library.EasySemVer.DataObject;
-using Winterborn.Library.EasySemVer.DataObject.Csharp;
-using Winterborn.Library.EasySemVer.Evaluation;
-using Winterborn.Library.EasySemVer.Evaluation.Csharp;
-using Winterborn.Library.EasySemVer.Evaluators;
 using Winterborn.Library.EasySemVer.Evaluators.Csharp;
-using Winterborn.Library.EasySemVer.Interfaces;
 using Winterborn.Library.EasySemVer.Interfaces.Csharp;
 
 namespace Test.Evaluators.Csharp;
 
+/// <summary>R05.</summary>
 public class TestProjectClassAdded
 {
     private static IEvaluateCsharpSignatures Evaluator => new ProjectClassAdded();
@@ -20,68 +16,31 @@ public class TestProjectClassAdded
     }
 
     [Fact]
-    public void ProjectsSame()
+    public void ClassesAreUnchanged()
     {
-        var signatures = new CsharpSignaturesToCompare(
-            older: new CsharpProject("Test")
-            {
-                Classes =
-                [
-                    new CsharpClass
-                    {
-                        Name = "TestClass"
-                    }
-                ]
-            }
-            ,
-            newer: new CsharpProject("Test")
-            {
-                Classes =
-                [
-                    new CsharpClass
-                    {
-                        Name = "TestClass"
-                    }
-                ]
-            }
-        );
+        var signatures = Build.Compare(Build.Project(Build.Class()), Build.Project(Build.Class()));
 
-        var result = Evaluator.AreDifferencesPresent(signatures);
-        Assert.False(result);
+        Assert.False(Evaluator.AreDifferencesPresent(signatures));
     }
 
     [Fact]
-    public void ProjectClassAdded()
+    public void ClassIsAdded()
     {
-        var signatures = new CsharpSignaturesToCompare(
-            older: new CsharpProject("Test")
-            {
-                Classes =
-                [
-                    new CsharpClass
-                    {
-                        Name = "TestClass"
-                    }
-                ]
-            }
-            ,
-            newer: new CsharpProject("Test")
-            {
-                Classes =
-                [
-                    new CsharpClass
-                    {
-                        Name = "TestClass"
-                    },
-                    new CsharpClass
-                    {
-                        Name = "NewTestClass"
-                    }
-                ]
-            }
-        );
+        var signatures = Build.Compare(
+            Build.Project(Build.Class()),
+            Build.Project(Build.Class(), Build.Class("Test.Another")));
 
-        var result = Evaluator.AreDifferencesPresent(signatures);
-        Assert.True(result);
+        Assert.True(Evaluator.AreDifferencesPresent(signatures));
+    }
+
+    /// <summary>A new interface is R19's business, not this rule's.</summary>
+    [Fact]
+    public void AddedInterfaceIsNotAClass()
+    {
+        var signatures = Build.Compare(
+            Build.Project(Build.Class()),
+            Build.Project(Build.Class(), Build.Interface("Test.IThing")));
+
+        Assert.False(Evaluator.AreDifferencesPresent(signatures));
     }
 }

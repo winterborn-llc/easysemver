@@ -1,14 +1,10 @@
 using Winterborn.Library.EasySemVer.DataObject;
-using Winterborn.Library.EasySemVer.DataObject.Csharp;
-using Winterborn.Library.EasySemVer.Evaluation;
-using Winterborn.Library.EasySemVer.Evaluation.Csharp;
-using Winterborn.Library.EasySemVer.Evaluators;
 using Winterborn.Library.EasySemVer.Evaluators.Csharp;
-using Winterborn.Library.EasySemVer.Interfaces;
 using Winterborn.Library.EasySemVer.Interfaces.Csharp;
 
 namespace Test.Evaluators.Csharp;
 
+/// <summary>R03, including the per-overload return type that closes G-14 (CSX-04).</summary>
 public class TestMethodReturnType
 {
     private static IEvaluateCsharpSignatures Evaluator => new MethodReturnType();
@@ -20,143 +16,45 @@ public class TestMethodReturnType
     }
 
     [Fact]
-    public void ReturnTypeIsNotChanged()
+    public void ReturnTypesAreUnchanged()
     {
-        var signatures = new CsharpSignaturesToCompare(
-            older: new CsharpProject("Test")
-            {
-                Classes =
-                [
-                    new CsharpClass
-                    {
-                        Name = "TestClass",
-                        Methods =
-                        {
-                            new CsharpMethod
-                            {
-                                MethodName = "TestMethod1",
-                                MethodType = "string",
-                                Overrides = new CsharpMethodOverrides
-                                {
-                                    new CsharpMethodOverride
-                                    {
-                                        new CsharpMethodParameter
-                                        {
-                                            ParameterName = "input",
-                                            ParameterType = "string",
-                                            IsRequired = true
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                ]
-            }
-            ,
-            newer: new CsharpProject("Test")
-            {
-                Classes =
-                [
-                    new CsharpClass
-                    {
-                        Name = "TestClass",
-                        Methods =
-                        {
-                            new CsharpMethod
-                            {
-                                MethodName = "TestMethod1",
-                                MethodType = "string",
-                                Overrides = new CsharpMethodOverrides
-                                {
-                                    new CsharpMethodOverride
-                                    {
-                                        new CsharpMethodParameter
-                                        {
-                                            ParameterName = "input",
-                                            ParameterType = "string",
-                                            IsRequired = true
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                ]
-            }
-        );
+        var signatures = Build.Compare(
+            Build.Class().WithMethods(Build.Method(returns: "string")),
+            Build.Class().WithMethods(Build.Method(returns: "string")));
 
-        var result = Evaluator.AreDifferencesPresent(signatures);
-        Assert.False(result);
+        Assert.False(Evaluator.AreDifferencesPresent(signatures));
     }
 
     [Fact]
-    public void ReturnTypeIsChanged()
+    public void ReturnTypeChanged()
     {
-        var signatures = new CsharpSignaturesToCompare(
-            older: new CsharpProject("Test")
-            {
-                Classes =
-                [
-                    new CsharpClass
-                    {
-                        Name = "TestClass",
-                        Methods =
-                        {
-                            new CsharpMethod
-                            {
-                                MethodName = "TestMethod1",
-                                MethodType = "string",
-                                Overrides = new CsharpMethodOverrides
-                                {
-                                    new CsharpMethodOverride
-                                    {
-                                        new CsharpMethodParameter
-                                        {
-                                            ParameterName = "input",
-                                            ParameterType = "string",
-                                            IsRequired = true
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                ]
-            },
-            newer: new CsharpProject("Test")
-            {
-                Classes =
-                [
-                    new CsharpClass
-                    {
-                        Name = "TestClass",
-                        Methods =
-                        {
-                            new CsharpMethod
-                            {
-                                MethodName = "TestMethod1",
-                                MethodType = "ChangedFromString",
-                                Overrides = new CsharpMethodOverrides
-                                {
-                                    new CsharpMethodOverride
-                                    {
-                                        new CsharpMethodParameter
-                                        {
-                                            ParameterName = "input",
-                                            ParameterType = "string",
-                                            IsRequired = true
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                ]
-            }
-        );
+        var signatures = Build.Compare(
+            Build.Class().WithMethods(Build.Method(returns: "string")),
+            Build.Class().WithMethods(Build.Method(returns: "int")));
 
-        var result = Evaluator.AreDifferencesPresent(signatures);
-        Assert.True(result);
+        Assert.True(Evaluator.AreDifferencesPresent(signatures));
+    }
+
+    /// <summary>
+    /// G-14 - a return-type change on the second overload used to be invisible, because the type
+    /// was recorded once per method name.
+    /// </summary>
+    [Fact]
+    public void ReturnTypeChangedOnSecondOverloadOnly()
+    {
+        var older = Build.Class().WithMethods(Build.Method(
+            overrides:
+            [
+                new() { ReturnType = "string" },
+                new(Build.Parameter()) { ReturnType = "string" }
+            ]));
+        var newer = Build.Class().WithMethods(Build.Method(
+            overrides:
+            [
+                new() { ReturnType = "string" },
+                new(Build.Parameter()) { ReturnType = "int" }
+            ]));
+
+        Assert.True(Evaluator.AreDifferencesPresent(Build.Compare(older, newer)));
     }
 }

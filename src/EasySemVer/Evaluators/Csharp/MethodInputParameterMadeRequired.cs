@@ -45,7 +45,7 @@ internal class MethodInputParameterMadeRequired : IEvaluateCsharpSignatures
     {
         foreach (var newOverride in newMethod.Overrides)
         {
-            if (newOverride.Count != oldOverride.Count)
+            if (newOverride.Parameters.Count != oldOverride.Parameters.Count)
             {
                 continue;
             }
@@ -70,10 +70,10 @@ internal class MethodInputParameterMadeRequired : IEvaluateCsharpSignatures
         ICsharpMethodOverride oldOverride,
         ICsharpMethodOverride newOverride)
     {
-        for (var i = 0; i < oldOverride.Count; i++)
+        for (var i = 0; i < oldOverride.Parameters.Count; i++)
         {
-            var oldParam = oldOverride[i];
-            var newParam = newOverride[i];
+            var oldParam = oldOverride.Parameters[i];
+            var newParam = newOverride.Parameters[i];
             if (oldParam.ParameterName != newParam.ParameterName)
             {
                 return false;
@@ -92,10 +92,10 @@ internal class MethodInputParameterMadeRequired : IEvaluateCsharpSignatures
         ICsharpMethodOverride oldOverride,
         ICsharpMethodOverride newOverride)
     {
-        for (var i = 0; i < oldOverride.Count; i++)
+        for (var i = 0; i < oldOverride.Parameters.Count; i++)
         {
-            var oldParam = oldOverride[i];
-            var newParam = newOverride[i];
+            var oldParam = oldOverride.Parameters[i];
+            var newParam = newOverride.Parameters[i];
             if (oldParam.IsRequired)
             {
                 continue;

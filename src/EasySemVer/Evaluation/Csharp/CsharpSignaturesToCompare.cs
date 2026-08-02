@@ -15,29 +15,55 @@ internal class CsharpSignaturesToCompare : ICsharpSignaturesToCompare
     {
         this.Older = older;
         this.Newer = newer;
-        this.ClassHistory = this.GetClassesInBoth();
+        this.ClassHistory = this.GetTypesInBoth();
     }
 
-    private ICsharpClassHistory[] GetClassesInBoth()
+    /// <summary>
+    /// CLS-02 - pair up the types that exist on both sides before any member rule runs, so a
+    /// removed type is never also counted as "everything in it was removed". Pairing is by
+    /// (name, kind): a struct that became a class is not the same type (R03's Swift twin S03).
+    /// </summary>
+    private ICsharpClassHistory[] GetTypesInBoth()
     {
         var history = new List<ICsharpClassHistory>();
-        foreach (var olderClass in this.Older.Classes)
+        foreach (var olderType in this.Older.Types)
         {
-            var newerClass = FindClass(this.Newer, olderClass.Name);
-            if (newerClass == null)
+            var newerType = FindType(this.Newer, olderType.Name, olderType.Kind);
+            if (newerType == null)
             {
                 continue;
             }
 
-            history.Add(new CsharpClassHistory(olderClass, newerClass));
+            history.Add(new CsharpClassHistory(olderType, newerType));
         }
 
         return history.ToArray();
     }
 
-    internal static ICsharpClass? FindClass(ICsharpProject project, string name)
+    internal static ICsharpType? FindType(ICsharpProject project, string name, string kind)
     {
-        foreach (var candidate in project.Classes)
+        foreach (var candidate in project.Types)
+        {
+            if (candidate.Name != name)
+            {
+                continue;
+            }
+
+            if (candidate.Kind != kind)
+            {
+                continue;
+            }
+
+            return candidate;
+        }
+
+        return null;
+    }
+
+    /// <summary>Whether a type of this name exists at all, regardless of kind.</summary>
+    internal static ICsharpType? FindTypeOfAnyKind(ICsharpProject project, string name)
+    {
+        foreach (var candidate in project.Types)
         {
             if (candidate.Name != name)
             {
