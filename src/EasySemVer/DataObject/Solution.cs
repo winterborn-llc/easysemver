@@ -1,9 +1,6 @@
-using Newtonsoft.Json;
 using Winterborn.Library.EasySemVer.Interfaces;
+using Winterborn.Library.EasySemVer.Interfaces.Csharp;
 
 namespace Winterborn.Library.EasySemVer.DataObject;
 
-[JsonConverter(typeof(Project))]
-[JsonArray(ItemConverterType = typeof(Project))]
-//[JsonObject(ItemConverterType = typeof(Project))]
-public class Solution : List<IProject>, ISolution;
+public class Solution : List<ICsharpProject>, ISolution;

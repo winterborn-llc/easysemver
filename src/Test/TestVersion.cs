@@ -1,4 +1,5 @@
 using Winterborn.Library.EasySemVer.DataObject;
+using Winterborn.Library.EasySemVer.DataObject.Csharp;
 using Version = Winterborn.Library.EasySemVer.DataObject.Version;
 
 namespace Test;

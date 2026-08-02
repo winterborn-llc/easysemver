@@ -1,9 +1,14 @@
 using Winterborn.Library.EasySemVer.CodeReader;
+using Winterborn.Library.EasySemVer.CodeReader.Csharp;
 using Winterborn.Library.EasySemVer.DataObject;
+using Winterborn.Library.EasySemVer.DataObject.Csharp;
 using Winterborn.Library.EasySemVer.Evaluation;
+using Winterborn.Library.EasySemVer.Evaluation.Csharp;
 using Winterborn.Library.EasySemVer.Evaluators;
+using Winterborn.Library.EasySemVer.Evaluators.Csharp;
 using Winterborn.Library.EasySemVer.Extensions;
 using Winterborn.Library.EasySemVer.Interfaces;
+using Winterborn.Library.EasySemVer.Interfaces.Csharp;
 using Winterborn.Library.EasySemVer.Settings;
 using Version = Winterborn.Library.EasySemVer.DataObject.Version;
 
@@ -31,7 +36,7 @@ public static class Program
         var oldSignature = GetOlderSignature(solutionDirectory);
         var newSignature = GetNewerSignature(solutionDirectory);
         var csProjFiles = CsProjFile.GetSolutionProjectFiles(solutionDirectory);
-        var signatures = new SignaturesToCompare(solutionDirectory, oldSignature, newSignature);
+        var signatures = new CsharpSignaturesToCompare(solutionDirectory, oldSignature, newSignature);
         var startingVersion = Version.GetVersionFromProjectFiles(csProjFiles);
         var changeType = CompareSignatures.GetChangeType(signatures);
         var newVersion = new Version(startingVersion);
@@ -63,7 +68,7 @@ public static class Program
     private static ISolution GetNewerSignature(string solutionDirectory)
     {
         var files = CsProjFile.GetSolutionProjectFilePaths(solutionDirectory);
-        var newSignature = SolutionBuilder.GetSolutionSignatureFromAnalyzer(files);
+        var newSignature = CsharpUnitBuilder.GetSolutionSignatureFromAnalyzer(files);
         return newSignature;
     }
     

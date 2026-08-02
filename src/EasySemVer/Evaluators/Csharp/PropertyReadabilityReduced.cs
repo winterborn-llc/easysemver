@@ -1,0 +1,44 @@
+using Winterborn.Library.EasySemVer.DataObject;
+using Winterborn.Library.EasySemVer.DataObject.Csharp;
+using Winterborn.Library.EasySemVer.Interfaces;
+using Winterborn.Library.EasySemVer.Interfaces.Csharp;
+
+namespace Winterborn.Library.EasySemVer.Evaluators.Csharp;
+
+public class PropertyReadabilityReduced : IEvaluateCsharpSignatures
+{
+    public VersionType EvaluationImpact => VersionType.Major;
+
+    public bool AreDifferencesPresent(ICsharpSignaturesToCompare signatures)
+    {
+        var classes = signatures.ClassHistory;
+        foreach (var classPair in classes)
+        {
+            var oldClass = classPair.Older;
+            var newClass = classPair.Newer;
+            foreach (var oldPropertyName in oldClass.Properties.Keys)
+            {
+                var oldProperty = classPair.Older.Properties[oldPropertyName];
+                if (!newClass.Properties.Contains(oldPropertyName))
+                {
+                    continue;
+                }
+                
+                var newProperty = classPair.Newer.Properties[oldPropertyName];
+                if (newProperty.IsReadable)
+                {
+                    continue;
+                }
+
+                if (!oldProperty.IsReadable)
+                {
+                    continue;
+                }
+                    
+                return true;
+            }
+        }
+
+        return false;
+    }
+}

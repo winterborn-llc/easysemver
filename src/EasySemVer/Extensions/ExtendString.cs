@@ -41,34 +41,6 @@ internal static class ExtendString
         return string.IsNullOrWhiteSpace(text);
     }
     
-    internal static string? GetXmlNodeValue(this string xml, string nodeName)
-    {
-        var xmlDoc = new XmlDocument();
-        xmlDoc.LoadXml(xml);
-        return GetXmlNodeValue(xmlDoc, nodeName);
-    }
-
-    private static string? GetXmlNodeValue(XmlNode node, string nodeName)
-    {
-        if (node.Name == nodeName)
-        {
-            return node.Value;
-        }
-        
-        foreach (XmlNode sub in node.ChildNodes)
-        {
-            var output = GetXmlNodeValue(sub, nodeName);
-            if (output.IsNullOrWhitespace())
-            {
-                continue;
-            }
-
-            return output;
-        }
-
-        return null;
-    }
-
     internal static string GetSolutionDirectory(this string projectFilePath)
     {
         var solutionSuffixes = new[] { ".sln", ".slnx" };

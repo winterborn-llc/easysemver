@@ -1,5 +1,6 @@
 using Winterborn.Library.EasySemVer;
 using Winterborn.Library.EasySemVer.CodeReader;
+using Winterborn.Library.EasySemVer.CodeReader.Csharp;
 using Winterborn.Library.EasySemVer.Extensions;
 using Xunit;
 using Version = Winterborn.Library.EasySemVer.DataObject.Version;

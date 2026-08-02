@@ -1,4 +1,5 @@
 using Winterborn.Library.EasySemVer.CodeReader;
+using Winterborn.Library.EasySemVer.CodeReader.Csharp;
 
 namespace Test;
 
@@ -7,7 +8,7 @@ public class TestExtractingVersionFromCsProjFile
     [Fact]
     public void TestProjectWithNoVersions()
     {
-        const string sourceXml = @"<Project Sdk=""Microsoft.NET.Sdk"">
+        const string sourceXml = @"<CsharpProject Sdk=""Microsoft.NET.Sdk"">
     <PropertyGroup>
         <TargetFramework>net6.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
@@ -33,7 +34,7 @@ public class TestExtractingVersionFromCsProjFile
         <PackagePath></PackagePath>
       </EmbeddedResource>
     </ItemGroup>
-</Project>";
+</CsharpProject>";
         
         var version = new CsProjFileVersion(sourceXml).Version;
         Assert.Equal("0.0.0", version);
@@ -42,7 +43,7 @@ public class TestExtractingVersionFromCsProjFile
     [Fact]
     public void TestMajorUpdate()
     {
-        const string sourceXml = @"<Project Sdk=""Microsoft.NET.Sdk"">
+        const string sourceXml = @"<CsharpProject Sdk=""Microsoft.NET.Sdk"">
     <PropertyGroup>
         <TargetFramework>net6.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
@@ -71,7 +72,7 @@ public class TestExtractingVersionFromCsProjFile
         <PackagePath></PackagePath>
       </EmbeddedResource>
     </ItemGroup>
-</Project>";
+</CsharpProject>";
         
         var version = new CsProjFileVersion(sourceXml).Version;
         Assert.Equal("1.0.3", version);
