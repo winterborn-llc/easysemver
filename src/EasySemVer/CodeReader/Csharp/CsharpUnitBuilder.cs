@@ -4,39 +4,30 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Winterborn.Library.EasySemVer.DataObject;
 using Winterborn.Library.EasySemVer.DataObject.Csharp;
+using Winterborn.Library.EasySemVer.Evaluation;
 using Winterborn.Library.EasySemVer.Extensions;
-using Winterborn.Library.EasySemVer.Interfaces;
 using Winterborn.Library.EasySemVer.Interfaces.Csharp;
-using CsharpProject = Winterborn.Library.EasySemVer.DataObject.Csharp.CsharpProject;
-using Solution = Winterborn.Library.EasySemVer.DataObject.Solution;
 
 namespace Winterborn.Library.EasySemVer.CodeReader.Csharp;
 
-internal class CsharpUnitBuilder
+/// <summary>
+/// Builds one .csproj's public API surface from source with Roslyn (SIG-01). One unit in, one
+/// <see cref="CsharpProject"/> out - nothing here knows about folders, baselines, or versions.
+/// </summary>
+internal static class CsharpUnitBuilder
 {
-    public static ISolution GetSolutionSignatureFromAnalyzer(params string[] projectPaths)
+    internal static CsharpProject GetProjectSignature(string projectPath)
     {
-        var solution = new Solution();
-        foreach (var projectPath in projectPaths)
-        {
-            var project = GetProjectSignature(projectPath);
-            solution.Add(project);
-        }
-
-        return solution;
-    }
-    
-    public static ICsharpProject GetProjectSignature(string projectPath)
-    {
-        Console.WriteLine($"Loading project: {projectPath}");
         
         var projectDef = new CsharpProject(Path.GetFileNameWithoutExtension(projectPath));
 
-        // 1. Load all .cs files
+        // 1. Load all .cs files. DSC-06 goes through the shared scanner so build output and
+        // package caches stay out of the signature exactly as they stay out of discovery
+        // (FLD-04, was G-10) - an obj/ full of generated partials is not this project's API.
         var csProjFile = new FileInfo(projectPath);
         var projectDirectory = csProjFile.Directory
                                ?? throw new DirectoryNotFoundException($"Project {projectPath} has no containing directory");
-        var csFiles = Directory.EnumerateFiles(projectDirectory.FullName, "*.cs", SearchOption.AllDirectories);
+        var csFiles = FolderScanner.FindFiles(projectDirectory.FullName, "*.cs");
 
         var syntaxTrees = csFiles
             .Select(f => CSharpSyntaxTree.ParseText(File.ReadAllText(f), path: f))
@@ -44,7 +35,7 @@ internal class CsharpUnitBuilder
 
         if (!syntaxTrees.Any())
         {
-            Console.WriteLine("No .cs files found.");
+            Log.WriteLine($"No .cs files found under {projectDirectory.Name}");
             return projectDef;
         }
 
@@ -63,8 +54,11 @@ internal class CsharpUnitBuilder
             references: references,
             options: new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
 
-        // 4. Walk symbols like before
-        var types = compilation.GlobalNamespace.GetNamespaceTypes();
+        // 4. Walk the symbols this project actually declares. The compilation's global namespace
+        // is the merged view across every reference, so walking it would pull public types out of
+        // System.Console.dll and friends into this project's signature (Internal.Console was
+        // showing up in real baselines); the source assembly's namespace is just ours.
+        var types = compilation.Assembly.GlobalNamespace.GetNamespaceTypes();
         foreach (var type in types)
         {
             AppendTypesRecursive(projectDef, type);
@@ -73,7 +67,7 @@ internal class CsharpUnitBuilder
         return projectDef;
     }
 
-    private static void AppendTypesRecursive(ICsharpProject project, INamespaceOrTypeSymbol symbol)
+    private static void AppendTypesRecursive(CsharpProject project, INamespaceOrTypeSymbol symbol)
     {
         if (symbol is not INamedTypeSymbol typeSymbol)
         {
@@ -130,7 +124,7 @@ internal class CsharpUnitBuilder
         return true;
     }
 
-    private static ICsharpClass GetClass(INamedTypeSymbol type)
+    private static CsharpClass GetClass(INamedTypeSymbol type)
     {
         if (type.TypeKind != TypeKind.Class)
         {
@@ -144,14 +138,14 @@ internal class CsharpUnitBuilder
         var projectClass = new CsharpClass
         {
             Name = type.GetFullyQualifiedName(),
-            Properties = PrintProperties(members),
+            Properties = GetProperties(members),
             Methods = GetMethods(members)
         };
 
         return projectClass;
     }
 
-    private static ICsharpPropertyList PrintProperties(IEnumerable<ISymbol> members)
+    private static CsharpPropertyList GetProperties(IEnumerable<ISymbol> members)
     {
         var properties = new CsharpPropertyList();
         foreach (var member in members)
@@ -195,7 +189,7 @@ internal class CsharpUnitBuilder
         };
     }
     
-    private static ICsharpMethodList GetMethods(IEnumerable<ISymbol> members)
+    private static CsharpMethodList GetMethods(IEnumerable<ISymbol> members)
     {
         var list = new CsharpMethodList();
         foreach (var member in members)
@@ -219,10 +213,25 @@ internal class CsharpUnitBuilder
             }
 
             var overrideDef = new CsharpMethodOverride(methodDefinition.Inputs.ToArray());
-            list[method.Name].Overrides.Add(overrideDef);
+            GetMethod(list, method.Name).Overrides.Add(overrideDef);
         }
 
         return list;
+    }
+
+    private static CsharpMethod GetMethod(CsharpMethodList list, string name)
+    {
+        foreach (var method in list)
+        {
+            if (method.MethodName != name)
+            {
+                continue;
+            }
+
+            return method;
+        }
+
+        throw new KeyNotFoundException($"No method named '{name}' is present.");
     }
 
     private static bool ShouldWeIncludeMethod([NotNullWhen(true)]IMethodSymbol? method, [NotNullWhen(true)] ISymbol? member)
@@ -255,7 +264,7 @@ internal class CsharpUnitBuilder
         return true;
     }
 
-    private static ICsharpMethodDefinition GetMethodDefinition(IMethodSymbol? method)
+    private static CsharpMethodDefinition GetMethodDefinition(IMethodSymbol? method)
     {
         if (method == null)
         {

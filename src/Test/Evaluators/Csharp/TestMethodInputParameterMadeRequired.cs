@@ -22,9 +22,9 @@ public class TestMethodInputParameterMadeRequired
     [Fact]
     public void MethodInputParameterRequirednessIsNotChanged()
     {
-        var signatures = new CsharpSignaturesToCompare("",
-            older: BuildSolution(isSecondParameterRequired: false),
-            newer: BuildSolution(isSecondParameterRequired: false));
+        var signatures = new CsharpSignaturesToCompare(
+            older: BuildProject(isSecondParameterRequired: false),
+            newer: BuildProject(isSecondParameterRequired: false));
 
         var result = Evaluator.AreDifferencesPresent(signatures);
         Assert.False(result);
@@ -33,9 +33,9 @@ public class TestMethodInputParameterMadeRequired
     [Fact]
     public void OptionalParameterMadeRequired()
     {
-        var signatures = new CsharpSignaturesToCompare("",
-            older: BuildSolution(isSecondParameterRequired: false),
-            newer: BuildSolution(isSecondParameterRequired: true));
+        var signatures = new CsharpSignaturesToCompare(
+            older: BuildProject(isSecondParameterRequired: false),
+            newer: BuildProject(isSecondParameterRequired: true));
 
         var result = Evaluator.AreDifferencesPresent(signatures);
         Assert.True(result);
@@ -44,54 +44,51 @@ public class TestMethodInputParameterMadeRequired
     [Fact]
     public void RequiredParameterMadeOptionalIsNotBreaking()
     {
-        var signatures = new CsharpSignaturesToCompare("",
-            older: BuildSolution(isSecondParameterRequired: true),
-            newer: BuildSolution(isSecondParameterRequired: false));
+        var signatures = new CsharpSignaturesToCompare(
+            older: BuildProject(isSecondParameterRequired: true),
+            newer: BuildProject(isSecondParameterRequired: false));
 
         var result = Evaluator.AreDifferencesPresent(signatures);
         Assert.False(result);
     }
 
-    private static Solution BuildSolution(bool isSecondParameterRequired)
+    private static CsharpProject BuildProject(bool isSecondParameterRequired)
     {
-        return new Solution
+        return new CsharpProject("Test")
         {
-            new CsharpProject("Test")
-            {
-                Classes =
-                [
-                    new CsharpClass
+            Classes =
+            [
+                new CsharpClass
+                {
+                    Name = "TestClass",
+                    Methods =
                     {
-                        Name = "TestClass",
-                        Methods =
+                        new CsharpMethod
                         {
-                            new CsharpMethod
+                            MethodName = "TestMethod1",
+                            MethodType = "string",
+                            Overrides = new CsharpMethodOverrides
                             {
-                                MethodName = "TestMethod1",
-                                MethodType = "string",
-                                Overrides = new CsharpMethodOverrides
+                                new CsharpMethodOverride
                                 {
-                                    new CsharpMethodOverride
+                                    new CsharpMethodParameter
                                     {
-                                        new CsharpMethodParameter
-                                        {
-                                            ParameterName = "input",
-                                            ParameterType = "string",
-                                            IsRequired = true
-                                        },
-                                        new CsharpMethodParameter
-                                        {
-                                            ParameterName = "output",
-                                            ParameterType = "string",
-                                            IsRequired = isSecondParameterRequired
-                                        }
+                                        ParameterName = "input",
+                                        ParameterType = "string",
+                                        IsRequired = true
+                                    },
+                                    new CsharpMethodParameter
+                                    {
+                                        ParameterName = "output",
+                                        ParameterType = "string",
+                                        IsRequired = isSecondParameterRequired
                                     }
                                 }
                             }
                         }
                     }
-                ]
-            }
+                }
+            ]
         };
     }
 }

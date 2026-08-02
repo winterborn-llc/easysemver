@@ -22,51 +22,45 @@ public class TestPropertyEditabilityReduced
     [Fact]
     public void PropertiesTheSame()
     {
-        var signatures = new CsharpSignaturesToCompare("",
-            older: new Solution
+        var signatures = new CsharpSignaturesToCompare(
+            older: new CsharpProject("TestProject")
             {
-                new CsharpProject("TestProject")
-                {
-                    Classes =
-                    [
-                        new CsharpClass
+                Classes =
+                [
+                    new CsharpClass
+                    {
+                        Name = "TestClass",
+                        Properties =
                         {
-                            Name = "TestClass",
-                            Properties =
+                            new CsharpProperty
                             {
-                                new CsharpProperty
-                                {
-                                    Name = "TestProperty",
-                                    Type = "string",
-                                    IsWritable = true
-                                }
+                                Name = "TestProperty",
+                                Type = "string",
+                                IsWritable = true
                             }
                         }
-                    ]
-                }
+                    }
+                ]
             }
             ,
-            newer: new Solution
+            newer: new CsharpProject("TestProject")
             {
-                new CsharpProject("TestProject")
-                {
-                    Classes =
-                    [
-                        new CsharpClass
+                Classes =
+                [
+                    new CsharpClass
+                    {
+                        Name = "TestClass",
+                        Properties =
                         {
-                            Name = "TestClass",
-                            Properties =
+                            new CsharpProperty
                             {
-                                new CsharpProperty
-                                {
-                                    Name = "TestProperty",
-                                    Type = "string",
-                                    IsWritable = true
-                                }
+                                Name = "TestProperty",
+                                Type = "string",
+                                IsWritable = true
                             }
                         }
-                    ]
-                }
+                    }
+                ]
             }
         );
 
@@ -77,51 +71,45 @@ public class TestPropertyEditabilityReduced
     [Fact]
     public void PropertyMadeReadOnly()
     {
-        var signatures = new CsharpSignaturesToCompare("",
-            older: new Solution
+        var signatures = new CsharpSignaturesToCompare(
+            older: new CsharpProject("TestProject")
             {
-                new CsharpProject("TestProject")
-                {
-                    Classes =
-                    [
-                        new CsharpClass
+                Classes =
+                [
+                    new CsharpClass
+                    {
+                        Name = "TestClass",
+                        Properties =
                         {
-                            Name = "TestClass",
-                            Properties =
+                            new CsharpProperty
                             {
-                                new CsharpProperty
-                                {
-                                    Name = "TestProperty",
-                                    Type = "string",
-                                    IsWritable = true
-                                }
+                                Name = "TestProperty",
+                                Type = "string",
+                                IsWritable = true
                             }
                         }
-                    ]
-                }
+                    }
+                ]
             }
             ,
-            newer: new Solution
+            newer: new CsharpProject("TestProject")
             {
-                new CsharpProject("TestProject")
-                {
-                    Classes =
-                    [
-                        new CsharpClass
+                Classes =
+                [
+                    new CsharpClass
+                    {
+                        Name = "TestClass",
+                        Properties =
                         {
-                            Name = "TestClass",
-                            Properties =
+                            new CsharpProperty
                             {
-                                new CsharpProperty
-                                {
-                                    Name = "TestProperty",
-                                    Type = "string",
-                                    IsWritable = false
-                                }
+                                Name = "TestProperty",
+                                Type = "string",
+                                IsWritable = false
                             }
                         }
-                    ]
-                }
+                    }
+                ]
             }
         );
 

@@ -1,14 +1,33 @@
-using Winterborn.Library.EasySemVer.Interfaces;
+using System.Xml.Serialization;
 using Winterborn.Library.EasySemVer.Interfaces.Csharp;
 
 namespace Winterborn.Library.EasySemVer.DataObject.Csharp;
 
 [DebuggerDisplay("{Name}")]
-internal class CsharpClass : ICsharpClass
+public class CsharpClass : ICsharpClass
 {
-    public string Name { get; init; } = string.Empty;
+    [XmlAttribute("name")]
+    public string Name { get; set; } = string.Empty;
 
-    public ICsharpMethodList Methods { get; init; } = new CsharpMethodList();
+    [XmlArray("Methods")]
+    [XmlArrayItem("Method")]
+    public CsharpMethodList Methods { get; set; } = [];
 
-    public ICsharpPropertyList Properties { get; init; } = new CsharpPropertyList();
+    [XmlArray("Properties")]
+    [XmlArrayItem("Property")]
+    public CsharpPropertyList Properties { get; set; } = [];
+
+    ICsharpMethodList ICsharpClass.Methods => this.Methods;
+
+    ICsharpPropertyList ICsharpClass.Properties => this.Properties;
+
+    internal void SortForPersistence()
+    {
+        this.Methods.Sort((left, right) => string.CompareOrdinal(left.MethodName, right.MethodName));
+        this.Properties.Sort((left, right) => string.CompareOrdinal(left.Name, right.Name));
+        foreach (var method in this.Methods)
+        {
+            method.SortForPersistence();
+        }
+    }
 }

@@ -22,49 +22,43 @@ public class TestPropertyAdded
     [Fact]
     public void PropertiesTheSame()
     {
-        var signatures = new CsharpSignaturesToCompare("",
-            older: new Solution
+        var signatures = new CsharpSignaturesToCompare(
+            older: new CsharpProject("TestProject")
             {
-                new CsharpProject("TestProject")
-                {
-                    Classes =
-                    [
-                        new CsharpClass
+                Classes =
+                [
+                    new CsharpClass
+                    {
+                        Name = "TestClass",
+                        Properties =
                         {
-                            Name = "TestClass",
-                            Properties =
+                            new CsharpProperty
                             {
-                                new CsharpProperty
-                                {
-                                    Name = "TestProperty",
-                                    Type = "string"
-                                }
+                                Name = "TestProperty",
+                                Type = "string"
                             }
                         }
-                    ]
-                }
+                    }
+                ]
             }
             ,
-            newer: new Solution
+            newer: new CsharpProject("TestProject")
             {
-                new CsharpProject("TestProject")
-                {
-                    Classes =
-                    [
-                        new CsharpClass
+                Classes =
+                [
+                    new CsharpClass
+                    {
+                        Name = "TestClass",
+                        Properties =
                         {
-                            Name = "TestClass",
-                            Properties =
+                            new CsharpProperty
                             {
-                                new CsharpProperty
-                                {
-                                    Name = "TestProperty",
-                                    Type = "string"
-                                }
+                                Name = "TestProperty",
+                                Type = "string"
                             }
                         }
-                    ]
-                }
+                    }
+                ]
             }
         );
 
@@ -75,54 +69,48 @@ public class TestPropertyAdded
     [Fact]
     public void PropertyIsAddedToExistingClass()
     {
-        var signatures = new CsharpSignaturesToCompare("",
-            older: new Solution
+        var signatures = new CsharpSignaturesToCompare(
+            older: new CsharpProject("TestProject")
             {
-                new CsharpProject("TestProject")
-                {
-                    Classes =
-                    [
-                        new CsharpClass
+                Classes =
+                [
+                    new CsharpClass
+                    {
+                        Name = "TestClass",
+                        Properties =
                         {
-                            Name = "TestClass",
-                            Properties =
+                            new CsharpProperty
                             {
-                                new CsharpProperty
-                                {
-                                    Name = "TestProperty",
-                                    Type = "string"
-                                }
+                                Name = "TestProperty",
+                                Type = "string"
                             }
                         }
-                    ]
-                }
+                    }
+                ]
             }
             ,
-            newer: new Solution
+            newer: new CsharpProject("TestProject")
             {
-                new CsharpProject("TestProject")
-                {
-                    Classes =
-                    [
-                        new CsharpClass
+                Classes =
+                [
+                    new CsharpClass
+                    {
+                        Name = "TestClass",
+                        Properties =
                         {
-                            Name = "TestClass",
-                            Properties =
+                            new CsharpProperty
                             {
-                                new CsharpProperty
-                                {
-                                    Name = "TestProperty",
-                                    Type = "string"
-                                },
-                                new CsharpProperty
-                                {
-                                    Name = "BrandNewProperty",
-                                    Type = "string"
-                                }
+                                Name = "TestProperty",
+                                Type = "string"
+                            },
+                            new CsharpProperty
+                            {
+                                Name = "BrandNewProperty",
+                                Type = "string"
                             }
                         }
-                    ]
-                }
+                    }
+                ]
             }
         );
 
@@ -133,61 +121,55 @@ public class TestPropertyAdded
     [Fact]
     public void PropertyOnBrandNewClassIsNotCounted()
     {
-        var signatures = new CsharpSignaturesToCompare("",
-            older: new Solution
+        var signatures = new CsharpSignaturesToCompare(
+            older: new CsharpProject("TestProject")
             {
-                new CsharpProject("TestProject")
-                {
-                    Classes =
-                    [
-                        new CsharpClass
+                Classes =
+                [
+                    new CsharpClass
+                    {
+                        Name = "TestClass",
+                        Properties =
                         {
-                            Name = "TestClass",
-                            Properties =
+                            new CsharpProperty
                             {
-                                new CsharpProperty
-                                {
-                                    Name = "TestProperty",
-                                    Type = "string"
-                                }
+                                Name = "TestProperty",
+                                Type = "string"
                             }
                         }
-                    ]
-                }
+                    }
+                ]
             }
             ,
-            newer: new Solution
+            newer: new CsharpProject("TestProject")
             {
-                new CsharpProject("TestProject")
-                {
-                    Classes =
-                    [
-                        new CsharpClass
+                Classes =
+                [
+                    new CsharpClass
+                    {
+                        Name = "TestClass",
+                        Properties =
                         {
-                            Name = "TestClass",
-                            Properties =
+                            new CsharpProperty
                             {
-                                new CsharpProperty
-                                {
-                                    Name = "TestProperty",
-                                    Type = "string"
-                                }
-                            }
-                        },
-                        new CsharpClass
-                        {
-                            Name = "BrandNewClass",
-                            Properties =
-                            {
-                                new CsharpProperty
-                                {
-                                    Name = "BrandNewProperty",
-                                    Type = "string"
-                                }
+                                Name = "TestProperty",
+                                Type = "string"
                             }
                         }
-                    ]
-                }
+                    },
+                    new CsharpClass
+                    {
+                        Name = "BrandNewClass",
+                        Properties =
+                        {
+                            new CsharpProperty
+                            {
+                                Name = "BrandNewProperty",
+                                Type = "string"
+                            }
+                        }
+                    }
+                ]
             }
         );
 

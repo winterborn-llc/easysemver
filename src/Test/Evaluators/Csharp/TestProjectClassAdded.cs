@@ -22,33 +22,27 @@ public class TestProjectClassAdded
     [Fact]
     public void ProjectsSame()
     {
-        var signatures = new CsharpSignaturesToCompare("",
-            older: new Solution
+        var signatures = new CsharpSignaturesToCompare(
+            older: new CsharpProject("Test")
             {
-                new CsharpProject("Test")
-                {
-                    Classes =
-                    [
-                        new CsharpClass
-                        {
-                            Name = "TestClass"
-                        }
-                    ]
-                }
+                Classes =
+                [
+                    new CsharpClass
+                    {
+                        Name = "TestClass"
+                    }
+                ]
             }
             ,
-            newer: new Solution
+            newer: new CsharpProject("Test")
             {
-                new CsharpProject("Test")
-                {
-                    Classes =
-                    [
-                        new CsharpClass
-                        {
-                            Name = "TestClass"
-                        }
-                    ]
-                }
+                Classes =
+                [
+                    new CsharpClass
+                    {
+                        Name = "TestClass"
+                    }
+                ]
             }
         );
 
@@ -59,37 +53,31 @@ public class TestProjectClassAdded
     [Fact]
     public void ProjectClassAdded()
     {
-        var signatures = new CsharpSignaturesToCompare("",
-            older: new Solution
+        var signatures = new CsharpSignaturesToCompare(
+            older: new CsharpProject("Test")
             {
-                new CsharpProject("Test")
-                {
-                    Classes =
-                    [
-                        new CsharpClass
-                        {
-                            Name = "TestClass"
-                        }
-                    ]
-                }
+                Classes =
+                [
+                    new CsharpClass
+                    {
+                        Name = "TestClass"
+                    }
+                ]
             }
             ,
-            newer: new Solution
+            newer: new CsharpProject("Test")
             {
-                new CsharpProject("Test")
-                {
-                    Classes =
-                    [
-                        new CsharpClass
-                        {
-                            Name = "TestClass"
-                        },
-                        new CsharpClass
-                        {
-                            Name = "NewTestClass"
-                        }
-                    ]
-                }
+                Classes =
+                [
+                    new CsharpClass
+                    {
+                        Name = "TestClass"
+                    },
+                    new CsharpClass
+                    {
+                        Name = "NewTestClass"
+                    }
+                ]
             }
         );
 

@@ -1,24 +1,28 @@
-using Winterborn.Library.EasySemVer.Interfaces;
+using System.Xml.Serialization;
 using Winterborn.Library.EasySemVer.Interfaces.Csharp;
 
 namespace Winterborn.Library.EasySemVer.DataObject.Csharp;
 
 [DebuggerDisplay("{DebugText}")]
-internal class CsharpMethodParameter : ICsharpMethodParameter
+[XmlType("Parameter")]
+public class CsharpMethodParameter : ICsharpMethodParameter
 {
     private string DebugText
     {
         get
         {
-            var prefix = this.IsRequired ? "[" : "";
-            var suffix = this.IsRequired ? "]" : "";
+            var prefix = this.IsRequired ? "[" : string.Empty;
+            var suffix = this.IsRequired ? "]" : string.Empty;
             return $"{prefix}{this.ParameterType} {this.ParameterName}{suffix}";
         }
     }
-    
-    public string ParameterName { get; init; } = string.Empty;
 
-    public string ParameterType { get; init; } = string.Empty;
+    [XmlAttribute("name")]
+    public string ParameterName { get; set; } = string.Empty;
 
-    public bool IsRequired { get; init; } = true;
+    [XmlAttribute("type")]
+    public string ParameterType { get; set; } = string.Empty;
+
+    [XmlAttribute("required")]
+    public bool IsRequired { get; set; } = true;
 }

@@ -2,9 +2,9 @@
   <PropertyGroup>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <PackageVersion>12.0.15</PackageVersion>
-    <AssemblyVersion>12.0.15</AssemblyVersion>
-    <FileVersion>12.0.15</FileVersion>
+    <PackageVersion>14.0.1</PackageVersion>
+    <AssemblyVersion>14.0.1</AssemblyVersion>
+    <FileVersion>14.0.1</FileVersion>
     <Title>EasySemVer by Winterborn</Title>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <RootNamespace>Winterborn.Library.EasySemVer</RootNamespace>
@@ -33,11 +33,9 @@
     <None Include="Resources\Winterborn.EasySemVer.targets" PackagePath="buildTransitive/" Pack="true" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.CodeAnalysis.Common" 
-                      Version="5.0.0" />
+    <PackageReference Include="Microsoft.CodeAnalysis.Common" Version="5.0.0" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="5.0.0" />
-    <PackageReference Include="Microsoft.CodeAnalysis.Workspaces.MSBuild" 
-                      Version="5.0.0" />
+    <PackageReference Include="Microsoft.CodeAnalysis.Workspaces.MSBuild" Version="5.0.0" />
   </ItemGroup>
   <ItemGroup>
     <None Remove="Resources/logo.png" />

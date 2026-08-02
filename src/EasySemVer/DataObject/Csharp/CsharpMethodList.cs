@@ -1,24 +1,64 @@
-using Winterborn.Library.EasySemVer.Interfaces;
+using System.Collections;
 using Winterborn.Library.EasySemVer.Interfaces.Csharp;
 
 namespace Winterborn.Library.EasySemVer.DataObject.Csharp;
 
-public class CsharpMethodList : List<ICsharpMethod>, ICsharpMethodList
+/// <summary>
+/// A plain <see cref="List{T}"/> of concrete methods so XmlSerializer can round-trip it, with the
+/// by-name lookups the rules use layered on top. Lookups scan rather than caching a dictionary:
+/// a cache built in <c>Add</c> would silently go stale when the serializer populates the list
+/// through the base class.
+/// </summary>
+public class CsharpMethodList : List<CsharpMethod>, ICsharpMethodList
 {
-    private readonly Dictionary<string,ICsharpMethod> _map = new();
-
-    public new void Add(ICsharpMethod method)
-    {
-        this._map.Add(method.MethodName, method);
-        base.Add(method);
-    }
-    
     public bool Contains(string name)
     {
-        return this._map.ContainsKey(name);
+        return Find(this, name) != null;
     }
 
-    public ICsharpMethod this[string name] => this._map[name];
+    public ICsharpMethod this[string name] =>
+        Find(this, name)
+        ?? throw new KeyNotFoundException($"No method named '{name}' is present.");
 
-    public string[] Keys => this._map.Keys.ToArray();
+    public string[] Keys
+    {
+        get
+        {
+            var keys = new List<string>();
+            foreach (var method in (List<CsharpMethod>)this)
+            {
+                keys.Add(method.MethodName);
+            }
+
+            return keys.ToArray();
+        }
+    }
+
+    private static CsharpMethod? Find(List<CsharpMethod> methods, string name)
+    {
+        foreach (var method in methods)
+        {
+            if (method.MethodName != name)
+            {
+                continue;
+            }
+
+            return method;
+        }
+
+        return null;
+    }
+
+    IEnumerator<ICsharpMethod> IEnumerable<ICsharpMethod>.GetEnumerator()
+    {
+        foreach (var method in (List<CsharpMethod>)this)
+        {
+            yield return method;
+        }
+    }
+
+    IEnumerator IEnumerable.GetEnumerator()
+    {
+        return this.GetEnumerator();
+    }
 }

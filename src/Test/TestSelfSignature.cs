@@ -1,5 +1,5 @@
-using Winterborn.Library.EasySemVer.CodeReader;
 using Winterborn.Library.EasySemVer.CodeReader.Csharp;
+using Winterborn.Library.EasySemVer.Interfaces.Csharp;
 
 namespace Test;
 
@@ -16,7 +16,7 @@ public class TestSelfSignature
         }
         
         var csProjFile = new CsProjFile(csprojFileInfo.FullName);
-        var project = csProjFile.GetProject();
+        ICsharpProject project = csProjFile.GetProject();
         Assert.NotNull(project);
         var signatureOfThisClass = project.Classes.FirstOrDefault(s => s.Name == $"{typeof(TestSelfSignature).Namespace}.{nameof(TestSelfSignature)}");
         Assert.NotNull(signatureOfThisClass);

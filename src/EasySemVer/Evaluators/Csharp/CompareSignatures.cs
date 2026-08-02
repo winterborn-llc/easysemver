@@ -1,12 +1,14 @@
 using Winterborn.Library.EasySemVer.DataObject;
-using Winterborn.Library.EasySemVer.DataObject.Csharp;
-using Winterborn.Library.EasySemVer.Evaluation;
 using Winterborn.Library.EasySemVer.Evaluation.Csharp;
-using Winterborn.Library.EasySemVer.Interfaces;
+using Winterborn.Library.EasySemVer.Extensions;
 using Winterborn.Library.EasySemVer.Interfaces.Csharp;
 
 namespace Winterborn.Library.EasySemVer.Evaluators.Csharp;
 
+/// <summary>
+/// The C# rule list and its aggregation. Runs over one paired unit at a time (NCL-03); unit
+/// existence is the neutral core's concern, so the old R07/R14 are gone from here.
+/// </summary>
 internal static class CompareSignatures
 {
     private static readonly IEvaluateCsharpSignatures[] Evaluators =
@@ -19,67 +21,38 @@ internal static class CompareSignatures
         new MethodOverrideAdded(),
         new ProjectClassAdded(),
         new ProjectClassesContinueToExist(),
-        new ProjectsContinueToExist(),
         new PropertyEditabilityEnhanced(),
         new PropertyEditabilityReduced(),
         new PropertiesContinueToExist(),
         new PropertyAdded(),
         new PropertyReadabilityEnhanced(),
         new PropertyReadabilityReduced(),
-        new PropertyType(),
-        new ProjectAdded()
+        new PropertyType()
     ];
-    
-    internal static VersionType GetChangeType(ICsharpSignaturesToCompare? signatures)
+
+    internal static VersionType GetChangeType(
+        string unitId,
+        ICsharpProject? older,
+        ICsharpProject? newer)
     {
-        var changeType = CalculateChangeType(signatures?.Older, signatures?.Newer);
-        Log.WriteLine($"Change Type: {changeType.ToString()}");
-        return changeType;
-    }
-    
-    private static VersionType CalculateChangeType(
-        ISolution? oldSignature, 
-        ISolution? newSignature)
-    {
-        if (oldSignature is null || newSignature is null)
+        if (older is null || newer is null)
         {
             return VersionType.Minor;
         }
-        
+
+        var signatures = new CsharpSignaturesToCompare(older, newer);
         var changeType = VersionType.Patch;
-        var signatures = new CsharpSignaturesToCompare("", oldSignature, newSignature);
-        foreach(var evaluator in Evaluators)
+        foreach (var evaluator in Evaluators)
         {
             if (!evaluator.AreDifferencesPresent(signatures))
             {
                 continue;
             }
-            
-            Log.WriteLine($"Yay differences: {evaluator.GetType().Name}");
-            if (changeType == VersionType.Patch && evaluator.EvaluationImpact == VersionType.Minor)
-            {
-                changeType = evaluator.EvaluationImpact;
-                continue;
-            }
-            
-            if (changeType == VersionType.Patch && evaluator.EvaluationImpact == VersionType.Major)
-            {
-                changeType = evaluator.EvaluationImpact;
-                continue;
-            }
-            
-            if (changeType == VersionType.Minor && evaluator.EvaluationImpact == VersionType.Major)
-            {
-                changeType = evaluator.EvaluationImpact;
-                continue;
-            }
-            
-            if (changeType == VersionType.Major)
-            {
-                return VersionType.Major;
-            }
+
+            Log.WriteLine($"{evaluator.GetType().Name}: {evaluator.EvaluationImpact} in {unitId}");
+            changeType = changeType.GetHigherImpact(evaluator.EvaluationImpact);
         }
-        
+
         return changeType;
     }
 }

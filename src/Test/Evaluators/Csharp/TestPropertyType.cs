@@ -22,49 +22,43 @@ public class TestPropertyType
     [Fact]
     public void PropertyTypesSame()
     {
-        var signatures = new CsharpSignaturesToCompare("",
-            older: new Solution
+        var signatures = new CsharpSignaturesToCompare(
+            older: new CsharpProject("Test")
             {
-                new CsharpProject("Test")
-                {
-                    Classes =
-                    [
-                        new CsharpClass
+                Classes =
+                [
+                    new CsharpClass
+                    {
+                        Name = "TestClass",
+                        Properties =
                         {
-                            Name = "TestClass",
-                            Properties =
+                            new CsharpProperty
                             {
-                                new CsharpProperty
-                                {
-                                    Name = "TestProperty",
-                                    Type = "string"
-                                }
+                                Name = "TestProperty",
+                                Type = "string"
                             }
                         }
-                    ]
-                }
+                    }
+                ]
             }
             ,
-            newer: new Solution
+            newer: new CsharpProject("Test")
             {
-                new CsharpProject("Test")
-                {
-                    Classes =
-                    [
-                        new CsharpClass
+                Classes =
+                [
+                    new CsharpClass
+                    {
+                        Name = "TestClass",
+                        Properties =
                         {
-                            Name = "TestClass",
-                            Properties =
+                            new CsharpProperty
                             {
-                                new CsharpProperty
-                                {
-                                    Name = "TestProperty",
-                                    Type = "string"
-                                }
+                                Name = "TestProperty",
+                                Type = "string"
                             }
                         }
-                    ]
-                }
+                    }
+                ]
             }
         );
 
@@ -75,49 +69,43 @@ public class TestPropertyType
     [Fact]
     public void PropertyTypesChanged()
     {
-        var signatures = new CsharpSignaturesToCompare("",
-            older: new Solution
+        var signatures = new CsharpSignaturesToCompare(
+            older: new CsharpProject("Test")
             {
-                new CsharpProject("Test")
-                {
-                    Classes =
-                    [
-                        new CsharpClass
+                Classes =
+                [
+                    new CsharpClass
+                    {
+                        Name = "TestClass",
+                        Properties =
                         {
-                            Name = "TestClass",
-                            Properties =
+                            new CsharpProperty
                             {
-                                new CsharpProperty
-                                {
-                                    Name = "TestProperty",
-                                    Type = "string"
-                                }
+                                Name = "TestProperty",
+                                Type = "string"
                             }
                         }
-                    ]
-                }
+                    }
+                ]
             }
             ,
-            newer: new Solution
+            newer: new CsharpProject("Test")
             {
-                new CsharpProject("Test")
-                {
-                    Classes =
-                    [
-                        new CsharpClass
+                Classes =
+                [
+                    new CsharpClass
+                    {
+                        Name = "TestClass",
+                        Properties =
                         {
-                            Name = "TestClass",
-                            Properties =
+                            new CsharpProperty
                             {
-                                new CsharpProperty
-                                {
-                                    Name = "TestProperty",
-                                    Type = "NotAString"
-                                }
+                                Name = "TestProperty",
+                                Type = "NotAString"
                             }
                         }
-                    ]
-                }
+                    }
+                ]
             }
         );
 

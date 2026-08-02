@@ -1,24 +1,59 @@
-using Winterborn.Library.EasySemVer.Interfaces;
+using System.Collections;
 using Winterborn.Library.EasySemVer.Interfaces.Csharp;
 
 namespace Winterborn.Library.EasySemVer.DataObject.Csharp;
 
-public class CsharpPropertyList : List<ICsharpProperty>, ICsharpPropertyList
+/// <inheritdoc cref="CsharpMethodList"/>
+public class CsharpPropertyList : List<CsharpProperty>, ICsharpPropertyList
 {
-    private readonly Dictionary<string,ICsharpProperty> _map = new();
-
-    public new void Add(ICsharpProperty property)
-    {
-        this._map.Add(property.Name, property);
-        base.Add(property);
-    }
-    
     public bool Contains(string name)
     {
-        return this._map.ContainsKey(name);
+        return Find(this, name) != null;
     }
 
-    public ICsharpProperty this[string name] => this._map[name];
+    public ICsharpProperty this[string name] =>
+        Find(this, name)
+        ?? throw new KeyNotFoundException($"No property named '{name}' is present.");
 
-    public string[] Keys => this._map.Keys.ToArray();
+    public string[] Keys
+    {
+        get
+        {
+            var keys = new List<string>();
+            foreach (var property in (List<CsharpProperty>)this)
+            {
+                keys.Add(property.Name);
+            }
+
+            return keys.ToArray();
+        }
+    }
+
+    private static CsharpProperty? Find(List<CsharpProperty> properties, string name)
+    {
+        foreach (var property in properties)
+        {
+            if (property.Name != name)
+            {
+                continue;
+            }
+
+            return property;
+        }
+
+        return null;
+    }
+
+    IEnumerator<ICsharpProperty> IEnumerable<ICsharpProperty>.GetEnumerator()
+    {
+        foreach (var property in (List<CsharpProperty>)this)
+        {
+            yield return property;
+        }
+    }
+
+    IEnumerator IEnumerable.GetEnumerator()
+    {
+        return this.GetEnumerator();
+    }
 }

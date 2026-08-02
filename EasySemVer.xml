@@ -1,0 +1,1359 @@
+<?xml version="1.0" encoding="utf-8"?>
+<EasySemVer formatVersion="2">
+   <Unit language="Csharp" unitId="EasySemVer" unitKind="csproj" path="src/EasySemVer/EasySemVer.csproj">
+      <CsharpProject name="EasySemVer">
+         <Classes>
+            <Class name="Winterborn.Library.EasySemVer.CodeReader.Csharp.CsProjFile">
+               <Methods>
+                  <Method name=".ctor" returns="void">
+                     <Overrides>
+                        <Override>
+                           <Parameter name="projectFilePath" type="string" required="true" />
+                        </Override>
+                     </Overrides>
+                  </Method>
+                  <Method name="GetProject" returns="Winterborn.Library.EasySemVer.DataObject.Csharp.CsharpProject">
+                     <Overrides>
+                        <Override />
+                     </Overrides>
+                  </Method>
+                  <Method name="Save" returns="void">
+                     <Overrides>
+                        <Override>
+                           <Parameter name="version" type="Winterborn.Library.EasySemVer.DataObject.Version" required="true" />
+                        </Override>
+                     </Overrides>
+                  </Method>
+               </Methods>
+               <Properties>
+                  <Property name="ProjectFilePath" type="string" readable="true" writable="false" />
+                  <Property name="ProjectName" type="string" readable="true" writable="false" />
+                  <Property name="ProjectXml" type="string" readable="true" writable="true" />
+                  <Property name="Version" type="Winterborn.Library.EasySemVer.DataObject.Version" readable="true" writable="true" />
+               </Properties>
+            </Class>
+            <Class name="Winterborn.Library.EasySemVer.DataObject.Csharp.CsharpClass">
+               <Methods>
+                  <Method name=".ctor" returns="void">
+                     <Overrides>
+                        <Override />
+                     </Overrides>
+                  </Method>
+               </Methods>
+               <Properties>
+                  <Property name="Methods" type="Winterborn.Library.EasySemVer.DataObject.Csharp.CsharpMethodList" readable="true" writable="true" />
+                  <Property name="Name" type="string" readable="true" writable="true" />
+                  <Property name="Properties" type="Winterborn.Library.EasySemVer.DataObject.Csharp.CsharpPropertyList" readable="true" writable="true" />
+               </Properties>
+            </Class>
+            <Class name="Winterborn.Library.EasySemVer.DataObject.Csharp.CsharpMethod">
+               <Methods>
+                  <Method name=".ctor" returns="void">
+                     <Overrides>
+                        <Override />
+                     </Overrides>
+                  </Method>
+               </Methods>
+               <Properties>
+                  <Property name="MethodName" type="string" readable="true" writable="true" />
+                  <Property name="MethodType" type="string" readable="true" writable="true" />
+                  <Property name="Overrides" type="Winterborn.Library.EasySemVer.DataObject.Csharp.CsharpMethodOverrides" readable="true" writable="true" />
+               </Properties>
+            </Class>
+            <Class name="Winterborn.Library.EasySemVer.DataObject.Csharp.CsharpMethodList">
+               <Methods>
+                  <Method name=".ctor" returns="void">
+                     <Overrides>
+                        <Override />
+                     </Overrides>
+                  </Method>
+                  <Method name="Contains" returns="bool">
+                     <Overrides>
+                        <Override>
+                           <Parameter name="name" type="string" required="true" />
+                        </Override>
+                     </Overrides>
+                  </Method>
+               </Methods>
+               <Properties>
+                  <Property name="Keys" type="string[]" readable="true" writable="false" />
+                  <Property name="this[]" type="Winterborn.Library.EasySemVer.Interfaces.Csharp.ICsharpMethod" readable="true" writable="false" />
+               </Properties>
+            </Class>
+            <Class name="Winterborn.Library.EasySemVer.DataObject.Csharp.CsharpMethodOverride">
+               <Methods>
+                  <Method name=".ctor" returns="void">
+                     <Overrides>
+                        <Override />
+                        <Override>
+                           <Parameter name="inputs" type="Winterborn.Library.EasySemVer.DataObject.Csharp.CsharpMethodParameter[]" required="true" />
+                        </Override>
+                     </Overrides>
+                  </Method>
+               </Methods>
+               <Properties />
+            </Class>
+            <Class name="Winterborn.Library.EasySemVer.DataObject.Csharp.CsharpMethodOverrides">
+               <Methods>
+                  <Method name=".ctor" returns="void">
+                     <Overrides>
+                        <Override />
+                     </Overrides>
+                  </Method>
+                  <Method name="Contains" returns="bool">
+                     <Overrides>
+                        <Override>
+                           <Parameter name="methodSignature" type="string" required="true" />
+                        </Override>
+                     </Overrides>
+                  </Method>
+               </Methods>
+               <Properties />
+            </Class>
+            <Class name="Winterborn.Library.EasySemVer.DataObject.Csharp.CsharpMethodParameter">
+               <Methods>
+                  <Method name=".ctor" returns="void">
+                     <Overrides>
+                        <Override />
+                     </Overrides>
+                  </Method>
+               </Methods>
+               <Properties>
+                  <Property name="IsRequired" type="bool" readable="true" writable="true" />
+                  <Property name="ParameterName" type="string" readable="true" writable="true" />
+                  <Property name="ParameterType" type="string" readable="true" writable="true" />
+               </Properties>
+            </Class>
+            <Class name="Winterborn.Library.EasySemVer.DataObject.Csharp.CsharpProject">
+               <Methods>
+                  <Method name=".ctor" returns="void">
+                     <Overrides>
+                        <Override />
+                        <Override>
+                           <Parameter name="name" type="string" required="true" />
+                        </Override>
+                     </Overrides>
+                  </Method>
+               </Methods>
+               <Properties>
+                  <Property name="Classes" type="Winterborn.Library.EasySemVer.DataObject.Csharp.CsharpClass&gt;" readable="true" writable="true" />
+                  <Property name="Name" type="string" readable="true" writable="true" />
+               </Properties>
+            </Class>
+            <Class name="Winterborn.Library.EasySemVer.DataObject.Csharp.CsharpProperty">
+               <Methods>
+                  <Method name=".ctor" returns="void">
+                     <Overrides>
+                        <Override />
+                     </Overrides>
+                  </Method>
+               </Methods>
+               <Properties>
+                  <Property name="IsReadable" type="bool" readable="true" writable="true" />
+                  <Property name="IsWritable" type="bool" readable="true" writable="true" />
+                  <Property name="Name" type="string" readable="true" writable="true" />
+                  <Property name="Type" type="string" readable="true" writable="true" />
+               </Properties>
+            </Class>
+            <Class name="Winterborn.Library.EasySemVer.DataObject.Csharp.CsharpPropertyList">
+               <Methods>
+                  <Method name=".ctor" returns="void">
+                     <Overrides>
+                        <Override />
+                     </Overrides>
+                  </Method>
+                  <Method name="Contains" returns="bool">
+                     <Overrides>
+                        <Override>
+                           <Parameter name="name" type="string" required="true" />
+                        </Override>
+                     </Overrides>
+                  </Method>
+               </Methods>
+               <Properties>
+                  <Property name="Keys" type="string[]" readable="true" writable="false" />
+                  <Property name="this[]" type="Winterborn.Library.EasySemVer.Interfaces.Csharp.ICsharpProperty" readable="true" writable="false" />
+               </Properties>
+            </Class>
+            <Class name="Winterborn.Library.EasySemVer.DataObject.PackageableUnit">
+               <Methods>
+                  <Method name=".ctor" returns="void">
+                     <Overrides>
+                        <Override />
+                     </Overrides>
+                  </Method>
+                  <Method name="GetSortKey" returns="string">
+                     <Overrides>
+                        <Override>
+                           <Parameter name="unit" type="Winterborn.Library.EasySemVer.Interfaces.IPackageableUnit" required="true" />
+                        </Override>
+                     </Overrides>
+                  </Method>
+               </Methods>
+               <Properties>
+                  <Property name="DisplayName" type="string" readable="true" writable="true" />
+                  <Property name="Language" type="Winterborn.Library.EasySemVer.DataObject.Language" readable="true" writable="true" />
+                  <Property name="RelativePath" type="string" readable="true" writable="true" />
+                  <Property name="Signature" type="object" readable="true" writable="true" />
+                  <Property name="UnitId" type="string" readable="true" writable="true" />
+                  <Property name="UnitKind" type="string" readable="true" writable="true" />
+                  <Property name="VersionSources" type="Winterborn.Library.EasySemVer.Interfaces.IVersionSource&gt;" readable="true" writable="true" />
+               </Properties>
+            </Class>
+            <Class name="Winterborn.Library.EasySemVer.DataObject.ProcessResult">
+               <Methods>
+                  <Method name=".ctor" returns="void">
+                     <Overrides>
+                        <Override />
+                     </Overrides>
+                  </Method>
+               </Methods>
+               <Properties>
+                  <Property name="CommandLine" type="string" readable="true" writable="true" />
+                  <Property name="DidTimeOut" type="bool" readable="true" writable="true" />
+                  <Property name="ExitCode" type="int" readable="true" writable="true" />
+                  <Property name="FailureDescription" type="string" readable="true" writable="false" />
+                  <Property name="IsSuccess" type="bool" readable="true" writable="false" />
+                  <Property name="StandardError" type="string" readable="true" writable="true" />
+                  <Property name="StandardOutput" type="string" readable="true" writable="true" />
+                  <Property name="WasExecutableFound" type="bool" readable="true" writable="true" />
+               </Properties>
+            </Class>
+            <Class name="Winterborn.Library.EasySemVer.DataObject.Version">
+               <Methods>
+                  <Method name=".ctor" returns="void">
+                     <Overrides>
+                        <Override>
+                           <Parameter name="text" type="string" required="false" />
+                        </Override>
+                     </Overrides>
+                  </Method>
+                  <Method name="Equals" returns="bool">
+                     <Overrides>
+                        <Override>
+                           <Parameter name="obj" type="object" required="false" />
+                        </Override>
+                     </Overrides>
+                  </Method>
+                  <Method name="GetHashCode" returns="int">
+                     <Overrides>
+                        <Override />
+                     </Overrides>
+                  </Method>
+                  <Method name="Increment" returns="void">
+                     <Overrides>
+                        <Override>
+                           <Parameter name="type" type="Winterborn.Library.EasySemVer.DataObject.VersionType" required="true" />
+                        </Override>
+                     </Overrides>
+                  </Method>
+                  <Method name="ToString" returns="string">
+                     <Overrides>
+                        <Override />
+                     </Overrides>
+                  </Method>
+                  <Method name="TryParse" returns="bool">
+                     <Overrides>
+                        <Override>
+                           <Parameter name="text" type="string" required="false" />
+                           <Parameter name="version" type="Winterborn.Library.EasySemVer.DataObject.Version" required="false" />
+                        </Override>
+                     </Overrides>
+                  </Method>
+                  <Method name="op_Equality" returns="bool">
+                     <Overrides>
+                        <Override>
+                           <Parameter name="v1" type="Winterborn.Library.EasySemVer.DataObject.Version" required="false" />
+                           <Parameter name="v2" type="Winterborn.Library.EasySemVer.DataObject.Version" required="false" />
+                        </Override>
+                     </Overrides>
+                  </Method>
+                  <Method name="op_GreaterThan" returns="bool">
+                     <Overrides>
+                        <Override>
+                           <Parameter name="v1" type="Winterborn.Library.EasySemVer.DataObject.Version" required="false" />
+                           <Parameter name="v2" type="Winterborn.Library.EasySemVer.DataObject.Version" required="false" />
+                        </Override>
+                     </Overrides>
+                  </Method>
+                  <Method name="op_GreaterThanOrEqual" returns="bool">
+                     <Overrides>
+                        <Override>
+                           <Parameter name="v1" type="Winterborn.Library.EasySemVer.DataObject.Version" required="false" />
+                           <Parameter name="v2" type="Winterborn.Library.EasySemVer.DataObject.Version" required="false" />
+                        </Override>
+                     </Overrides>
+                  </Method>
+                  <Method name="op_Implicit" returns="string">
+                     <Overrides>
+                        <Override>
+                           <Parameter name="version" type="Winterborn.Library.EasySemVer.DataObject.Version" required="true" />
+                        </Override>
+                        <Override>
+                           <Parameter name="versionString" type="string" required="true" />
+                        </Override>
+                     </Overrides>
+                  </Method>
+                  <Method name="op_Inequality" returns="bool">
+                     <Overrides>
+                        <Override>
+                           <Parameter name="v1" type="Winterborn.Library.EasySemVer.DataObject.Version" required="false" />
+                           <Parameter name="v2" type="Winterborn.Library.EasySemVer.DataObject.Version" required="false" />
+                        </Override>
+                     </Overrides>
+                  </Method>
+                  <Method name="op_LessThan" returns="bool">
+                     <Overrides>
+                        <Override>
+                           <Parameter name="v1" type="Winterborn.Library.EasySemVer.DataObject.Version" required="false" />
+                           <Parameter name="v2" type="Winterborn.Library.EasySemVer.DataObject.Version" required="false" />
+                        </Override>
+                     </Overrides>
+                  </Method>
+                  <Method name="op_LessThanOrEqual" returns="bool">
+                     <Overrides>
+                        <Override>
+                           <Parameter name="v1" type="Winterborn.Library.EasySemVer.DataObject.Version" required="false" />
+                           <Parameter name="v2" type="Winterborn.Library.EasySemVer.DataObject.Version" required="false" />
+                        </Override>
+                     </Overrides>
+                  </Method>
+               </Methods>
+               <Properties>
+                  <Property name="Major" type="int?" readable="true" writable="false" />
+                  <Property name="Minor" type="int?" readable="true" writable="false" />
+                  <Property name="Patch" type="int?" readable="true" writable="false" />
+               </Properties>
+            </Class>
+            <Class name="Winterborn.Library.EasySemVer.Evaluators.Csharp.MethodAdded">
+               <Methods>
+                  <Method name=".ctor" returns="void">
+                     <Overrides>
+                        <Override />
+                     </Overrides>
+                  </Method>
+                  <Method name="AreDifferencesPresent" returns="bool">
+                     <Overrides>
+                        <Override>
+                           <Parameter name="signatures" type="Winterborn.Library.EasySemVer.Interfaces.Csharp.ICsharpSignaturesToCompare" required="true" />
+                        </Override>
+                     </Overrides>
+                  </Method>
+               </Methods>
+               <Properties>
+                  <Property name="EvaluationImpact" type="Winterborn.Library.EasySemVer.DataObject.VersionType" readable="true" writable="false" />
+               </Properties>
+            </Class>
+            <Class name="Winterborn.Library.EasySemVer.Evaluators.Csharp.MethodsContinueToExist">
+               <Methods>
+                  <Method name=".ctor" returns="void">
+                     <Overrides>
+                        <Override />
+                     </Overrides>
+                  </Method>
+                  <Method name="AreDifferencesPresent" returns="bool">
+                     <Overrides>
+                        <Override>
+                           <Parameter name="signatures" type="Winterborn.Library.EasySemVer.Interfaces.Csharp.ICsharpSignaturesToCompare" required="true" />
+                        </Override>
+                     </Overrides>
+                  </Method>
+               </Methods>
+               <Properties>
+                  <Property name="EvaluationImpact" type="Winterborn.Library.EasySemVer.DataObject.VersionType" readable="true" writable="false" />
+               </Properties>
+            </Class>
+            <Class name="Winterborn.Library.EasySemVer.Evaluators.Csharp.ProjectClassAdded">
+               <Methods>
+                  <Method name=".ctor" returns="void">
+                     <Overrides>
+                        <Override />
+                     </Overrides>
+                  </Method>
+                  <Method name="AreDifferencesPresent" returns="bool">
+                     <Overrides>
+                        <Override>
+                           <Parameter name="signatures" type="Winterborn.Library.EasySemVer.Interfaces.Csharp.ICsharpSignaturesToCompare" required="true" />
+                        </Override>
+                     </Overrides>
+                  </Method>
+               </Methods>
+               <Properties>
+                  <Property name="EvaluationImpact" type="Winterborn.Library.EasySemVer.DataObject.VersionType" readable="true" writable="false" />
+               </Properties>
+            </Class>
+            <Class name="Winterborn.Library.EasySemVer.Evaluators.Csharp.ProjectClassesContinueToExist">
+               <Methods>
+                  <Method name=".ctor" returns="void">
+                     <Overrides>
+                        <Override />
+                     </Overrides>
+                  </Method>
+                  <Method name="AreDifferencesPresent" returns="bool">
+                     <Overrides>
+                        <Override>
+                           <Parameter name="signatures" type="Winterborn.Library.EasySemVer.Interfaces.Csharp.ICsharpSignaturesToCompare" required="true" />
+                        </Override>
+                     </Overrides>
+                  </Method>
+               </Methods>
+               <Properties>
+                  <Property name="EvaluationImpact" type="Winterborn.Library.EasySemVer.DataObject.VersionType" readable="true" writable="false" />
+               </Properties>
+            </Class>
+            <Class name="Winterborn.Library.EasySemVer.Evaluators.Csharp.PropertiesContinueToExist">
+               <Methods>
+                  <Method name=".ctor" returns="void">
+                     <Overrides>
+                        <Override />
+                     </Overrides>
+                  </Method>
+                  <Method name="AreDifferencesPresent" returns="bool">
+                     <Overrides>
+                        <Override>
+                           <Parameter name="signatures" type="Winterborn.Library.EasySemVer.Interfaces.Csharp.ICsharpSignaturesToCompare" required="true" />
+                        </Override>
+                     </Overrides>
+                  </Method>
+               </Methods>
+               <Properties>
+                  <Property name="EvaluationImpact" type="Winterborn.Library.EasySemVer.DataObject.VersionType" readable="true" writable="false" />
+               </Properties>
+            </Class>
+            <Class name="Winterborn.Library.EasySemVer.Evaluators.Csharp.PropertyAdded">
+               <Methods>
+                  <Method name=".ctor" returns="void">
+                     <Overrides>
+                        <Override />
+                     </Overrides>
+                  </Method>
+                  <Method name="AreDifferencesPresent" returns="bool">
+                     <Overrides>
+                        <Override>
+                           <Parameter name="signatures" type="Winterborn.Library.EasySemVer.Interfaces.Csharp.ICsharpSignaturesToCompare" required="true" />
+                        </Override>
+                     </Overrides>
+                  </Method>
+               </Methods>
+               <Properties>
+                  <Property name="EvaluationImpact" type="Winterborn.Library.EasySemVer.DataObject.VersionType" readable="true" writable="false" />
+               </Properties>
+            </Class>
+            <Class name="Winterborn.Library.EasySemVer.Evaluators.Csharp.PropertyEditabilityEnhanced">
+               <Methods>
+                  <Method name=".ctor" returns="void">
+                     <Overrides>
+                        <Override />
+                     </Overrides>
+                  </Method>
+                  <Method name="AreDifferencesPresent" returns="bool">
+                     <Overrides>
+                        <Override>
+                           <Parameter name="signatures" type="Winterborn.Library.EasySemVer.Interfaces.Csharp.ICsharpSignaturesToCompare" required="true" />
+                        </Override>
+                     </Overrides>
+                  </Method>
+               </Methods>
+               <Properties>
+                  <Property name="EvaluationImpact" type="Winterborn.Library.EasySemVer.DataObject.VersionType" readable="true" writable="false" />
+               </Properties>
+            </Class>
+            <Class name="Winterborn.Library.EasySemVer.Evaluators.Csharp.PropertyEditabilityReduced">
+               <Methods>
+                  <Method name=".ctor" returns="void">
+                     <Overrides>
+                        <Override />
+                     </Overrides>
+                  </Method>
+                  <Method name="AreDifferencesPresent" returns="bool">
+                     <Overrides>
+                        <Override>
+                           <Parameter name="signatures" type="Winterborn.Library.EasySemVer.Interfaces.Csharp.ICsharpSignaturesToCompare" required="true" />
+                        </Override>
+                     </Overrides>
+                  </Method>
+               </Methods>
+               <Properties>
+                  <Property name="EvaluationImpact" type="Winterborn.Library.EasySemVer.DataObject.VersionType" readable="true" writable="false" />
+               </Properties>
+            </Class>
+            <Class name="Winterborn.Library.EasySemVer.Evaluators.Csharp.PropertyReadabilityEnhanced">
+               <Methods>
+                  <Method name=".ctor" returns="void">
+                     <Overrides>
+                        <Override />
+                     </Overrides>
+                  </Method>
+                  <Method name="AreDifferencesPresent" returns="bool">
+                     <Overrides>
+                        <Override>
+                           <Parameter name="signatures" type="Winterborn.Library.EasySemVer.Interfaces.Csharp.ICsharpSignaturesToCompare" required="true" />
+                        </Override>
+                     </Overrides>
+                  </Method>
+               </Methods>
+               <Properties>
+                  <Property name="EvaluationImpact" type="Winterborn.Library.EasySemVer.DataObject.VersionType" readable="true" writable="false" />
+               </Properties>
+            </Class>
+            <Class name="Winterborn.Library.EasySemVer.Evaluators.Csharp.PropertyReadabilityReduced">
+               <Methods>
+                  <Method name=".ctor" returns="void">
+                     <Overrides>
+                        <Override />
+                     </Overrides>
+                  </Method>
+                  <Method name="AreDifferencesPresent" returns="bool">
+                     <Overrides>
+                        <Override>
+                           <Parameter name="signatures" type="Winterborn.Library.EasySemVer.Interfaces.Csharp.ICsharpSignaturesToCompare" required="true" />
+                        </Override>
+                     </Overrides>
+                  </Method>
+               </Methods>
+               <Properties>
+                  <Property name="EvaluationImpact" type="Winterborn.Library.EasySemVer.DataObject.VersionType" readable="true" writable="false" />
+               </Properties>
+            </Class>
+            <Class name="Winterborn.Library.EasySemVer.Evaluators.Csharp.PropertyType">
+               <Methods>
+                  <Method name=".ctor" returns="void">
+                     <Overrides>
+                        <Override />
+                     </Overrides>
+                  </Method>
+                  <Method name="AreDifferencesPresent" returns="bool">
+                     <Overrides>
+                        <Override>
+                           <Parameter name="signatures" type="Winterborn.Library.EasySemVer.Interfaces.Csharp.ICsharpSignaturesToCompare" required="true" />
+                        </Override>
+                     </Overrides>
+                  </Method>
+               </Methods>
+               <Properties>
+                  <Property name="EvaluationImpact" type="Winterborn.Library.EasySemVer.DataObject.VersionType" readable="true" writable="false" />
+               </Properties>
+            </Class>
+            <Class name="Winterborn.Library.EasySemVer.Evaluators.UnitAdded">
+               <Methods>
+                  <Method name=".ctor" returns="void">
+                     <Overrides>
+                        <Override />
+                     </Overrides>
+                  </Method>
+                  <Method name="AreDifferencesPresent" returns="bool">
+                     <Overrides>
+                        <Override>
+                           <Parameter name="units" type="Winterborn.Library.EasySemVer.Interfaces.IUnitsToCompare" required="true" />
+                        </Override>
+                     </Overrides>
+                  </Method>
+               </Methods>
+               <Properties>
+                  <Property name="EvaluationImpact" type="Winterborn.Library.EasySemVer.DataObject.VersionType" readable="true" writable="false" />
+               </Properties>
+            </Class>
+            <Class name="Winterborn.Library.EasySemVer.Evaluators.UnitRemoved">
+               <Methods>
+                  <Method name=".ctor" returns="void">
+                     <Overrides>
+                        <Override />
+                     </Overrides>
+                  </Method>
+                  <Method name="AreDifferencesPresent" returns="bool">
+                     <Overrides>
+                        <Override>
+                           <Parameter name="units" type="Winterborn.Library.EasySemVer.Interfaces.IUnitsToCompare" required="true" />
+                        </Override>
+                     </Overrides>
+                  </Method>
+               </Methods>
+               <Properties>
+                  <Property name="EvaluationImpact" type="Winterborn.Library.EasySemVer.DataObject.VersionType" readable="true" writable="false" />
+               </Properties>
+            </Class>
+            <Class name="Winterborn.Library.EasySemVer.Program">
+               <Methods>
+                  <Method name="Main" returns="int">
+                     <Overrides>
+                        <Override>
+                           <Parameter name="args" type="string[]" required="true" />
+                        </Override>
+                     </Overrides>
+                  </Method>
+               </Methods>
+               <Properties />
+            </Class>
+         </Classes>
+      </CsharpProject>
+   </Unit>
+   <Unit language="Csharp" unitId="IntegrationTest" unitKind="csproj" path="src/IntegrationTest/IntegrationTest.csproj">
+      <CsharpProject name="IntegrationTest">
+         <Classes>
+            <Class name="IntegrationTest.Regression">
+               <Methods>
+                  <Method name=".ctor" returns="void">
+                     <Overrides>
+                        <Override />
+                     </Overrides>
+                  </Method>
+                  <Method name="BaselineIsDeterministicAndCarriesNoAbsolutePaths" returns="void">
+                     <Overrides>
+                        <Override />
+                     </Overrides>
+                  </Method>
+                  <Method name="FolderWithNoSolutionFileIsVersioned" returns="void">
+                     <Overrides>
+                        <Override />
+                     </Overrides>
+                  </Method>
+                  <Method name="TestProgramInvocation" returns="void">
+                     <Overrides>
+                        <Override />
+                     </Overrides>
+                  </Method>
+               </Methods>
+               <Properties />
+            </Class>
+         </Classes>
+      </CsharpProject>
+   </Unit>
+   <Unit language="Csharp" unitId="Test" unitKind="csproj" path="src/Test/Test.csproj">
+      <CsharpProject name="Test">
+         <Classes>
+            <Class name="Test.Evaluators.Csharp.TestMethodAdded">
+               <Methods>
+                  <Method name=".ctor" returns="void">
+                     <Overrides>
+                        <Override />
+                     </Overrides>
+                  </Method>
+                  <Method name="ChangeTypeIsExpected" returns="void">
+                     <Overrides>
+                        <Override />
+                     </Overrides>
+                  </Method>
+                  <Method name="MethodIsAddedToExistingClass" returns="void">
+                     <Overrides>
+                        <Override />
+                     </Overrides>
+                  </Method>
+                  <Method name="MethodOnBrandNewClassIsNotCounted" returns="void">
+                     <Overrides>
+                        <Override />
+                     </Overrides>
+                  </Method>
+                  <Method name="MethodsAreNotChanged" returns="void">
+                     <Overrides>
+                        <Override />
+                     </Overrides>
+                  </Method>
+               </Methods>
+               <Properties />
+            </Class>
+            <Class name="Test.Evaluators.Csharp.TestMethodInputParameterMadeRequired">
+               <Methods>
+                  <Method name=".ctor" returns="void">
+                     <Overrides>
+                        <Override />
+                     </Overrides>
+                  </Method>
+                  <Method name="ChangeTypeIsExpected" returns="void">
+                     <Overrides>
+                        <Override />
+                     </Overrides>
+                  </Method>
+                  <Method name="MethodInputParameterRequirednessIsNotChanged" returns="void">
+                     <Overrides>
+                        <Override />
+                     </Overrides>
+                  </Method>
+                  <Method name="OptionalParameterMadeRequired" returns="void">
+                     <Overrides>
+                        <Override />
+                     </Overrides>
+                  </Method>
+                  <Method name="RequiredParameterMadeOptionalIsNotBreaking" returns="void">
+                     <Overrides>
+                        <Override />
+                     </Overrides>
+                  </Method>
+               </Methods>
+               <Properties />
+            </Class>
+            <Class name="Test.Evaluators.Csharp.TestMethodInputParameterOverrideRemoved">
+               <Methods>
+                  <Method name=".ctor" returns="void">
+                     <Overrides>
+                        <Override />
+                     </Overrides>
+                  </Method>
+                  <Method name="ChangeTypeIsExpected" returns="void">
+                     <Overrides>
+                        <Override />
+                     </Overrides>
+                  </Method>
+                  <Method name="MethodInputParameterIsRenamed" returns="void">
+                     <Overrides>
+                        <Override />
+                     </Overrides>
+                  </Method>
+                  <Method name="MethodInputParameterOverrideIsNotChanged" returns="void">
+                     <Overrides>
+                        <Override />
+                     </Overrides>
+                  </Method>
+                  <Method name="MethodInputParameterOverrideTypeChanged" returns="void">
+                     <Overrides>
+                        <Override />
+                     </Overrides>
+                  </Method>
+               </Methods>
+               <Properties />
+            </Class>
+            <Class name="Test.Evaluators.Csharp.TestMethodOverrideAdded">
+               <Methods>
+                  <Method name=".ctor" returns="void">
+                     <Overrides>
+                        <Override />
+                     </Overrides>
+                  </Method>
+                  <Method name="ChangeTypeIsExpected" returns="void">
+                     <Overrides>
+                        <Override />
+                     </Overrides>
+                  </Method>
+                  <Method name="MethodOverrideAdded" returns="void">
+                     <Overrides>
+                        <Override />
+                     </Overrides>
+                  </Method>
+                  <Method name="MethodOverrideIsNotChanged" returns="void">
+                     <Overrides>
+                        <Override />
+                     </Overrides>
+                  </Method>
+               </Methods>
+               <Properties />
+            </Class>
+            <Class name="Test.Evaluators.Csharp.TestMethodReturnType">
+               <Methods>
+                  <Method name=".ctor" returns="void">
+                     <Overrides>
+                        <Override />
+                     </Overrides>
+                  </Method>
+                  <Method name="ChangeTypeIsExpected" returns="void">
+                     <Overrides>
+                        <Override />
+                     </Overrides>
+                  </Method>
+                  <Method name="ReturnTypeIsChanged" returns="void">
+                     <Overrides>
+                        <Override />
+                     </Overrides>
+                  </Method>
+                  <Method name="ReturnTypeIsNotChanged" returns="void">
+                     <Overrides>
+                        <Override />
+                     </Overrides>
+                  </Method>
+               </Methods>
+               <Properties />
+            </Class>
+            <Class name="Test.Evaluators.Csharp.TestMethodsContinueToExist">
+               <Methods>
+                  <Method name=".ctor" returns="void">
+                     <Overrides>
+                        <Override />
+                     </Overrides>
+                  </Method>
+                  <Method name="EvaluateMethodNoLongerExists" returns="void">
+                     <Overrides>
+                        <Override />
+                     </Overrides>
+                  </Method>
+                  <Method name="EvaluateMethodStillExists" returns="void">
+                     <Overrides>
+                        <Override />
+                     </Overrides>
+                  </Method>
+                  <Method name="TestChangeType" returns="void">
+                     <Overrides>
+                        <Override />
+                     </Overrides>
+                  </Method>
+               </Methods>
+               <Properties />
+            </Class>
+            <Class name="Test.Evaluators.Csharp.TestProjectClassAdded">
+               <Methods>
+                  <Method name=".ctor" returns="void">
+                     <Overrides>
+                        <Override />
+                     </Overrides>
+                  </Method>
+                  <Method name="ChangeTypeIsExpected" returns="void">
+                     <Overrides>
+                        <Override />
+                     </Overrides>
+                  </Method>
+                  <Method name="ProjectClassAdded" returns="void">
+                     <Overrides>
+                        <Override />
+                     </Overrides>
+                  </Method>
+                  <Method name="ProjectsSame" returns="void">
+                     <Overrides>
+                        <Override />
+                     </Overrides>
+                  </Method>
+               </Methods>
+               <Properties />
+            </Class>
+            <Class name="Test.Evaluators.Csharp.TestProjectClassesContinueToExist">
+               <Methods>
+                  <Method name=".ctor" returns="void">
+                     <Overrides>
+                        <Override />
+                     </Overrides>
+                  </Method>
+                  <Method name="ChangeTypeIsExpected" returns="void">
+                     <Overrides>
+                        <Override />
+                     </Overrides>
+                  </Method>
+                  <Method name="ClassNotFound" returns="void">
+                     <Overrides>
+                        <Override />
+                     </Overrides>
+                  </Method>
+                  <Method name="ProjectsSame" returns="void">
+                     <Overrides>
+                        <Override />
+                     </Overrides>
+                  </Method>
+               </Methods>
+               <Properties />
+            </Class>
+            <Class name="Test.Evaluators.Csharp.TestPropertiesContinueToExist">
+               <Methods>
+                  <Method name=".ctor" returns="void">
+                     <Overrides>
+                        <Override />
+                     </Overrides>
+                  </Method>
+                  <Method name="ChangeTypeIsExpected" returns="void">
+                     <Overrides>
+                        <Override />
+                     </Overrides>
+                  </Method>
+                  <Method name="PropertiesTheSame" returns="void">
+                     <Overrides>
+                        <Override />
+                     </Overrides>
+                  </Method>
+                  <Method name="PropertyRemoved" returns="void">
+                     <Overrides>
+                        <Override />
+                     </Overrides>
+                  </Method>
+               </Methods>
+               <Properties />
+            </Class>
+            <Class name="Test.Evaluators.Csharp.TestPropertyAdded">
+               <Methods>
+                  <Method name=".ctor" returns="void">
+                     <Overrides>
+                        <Override />
+                     </Overrides>
+                  </Method>
+                  <Method name="ChangeTypeIsExpected" returns="void">
+                     <Overrides>
+                        <Override />
+                     </Overrides>
+                  </Method>
+                  <Method name="PropertiesTheSame" returns="void">
+                     <Overrides>
+                        <Override />
+                     </Overrides>
+                  </Method>
+                  <Method name="PropertyIsAddedToExistingClass" returns="void">
+                     <Overrides>
+                        <Override />
+                     </Overrides>
+                  </Method>
+                  <Method name="PropertyOnBrandNewClassIsNotCounted" returns="void">
+                     <Overrides>
+                        <Override />
+                     </Overrides>
+                  </Method>
+               </Methods>
+               <Properties />
+            </Class>
+            <Class name="Test.Evaluators.Csharp.TestPropertyEditabilityEnhanced">
+               <Methods>
+                  <Method name=".ctor" returns="void">
+                     <Overrides>
+                        <Override />
+                     </Overrides>
+                  </Method>
+                  <Method name="ChangeTypeIsExpected" returns="void">
+                     <Overrides>
+                        <Override />
+                     </Overrides>
+                  </Method>
+                  <Method name="PropertiesTheSame" returns="void">
+                     <Overrides>
+                        <Override />
+                     </Overrides>
+                  </Method>
+                  <Method name="PropertyMadeEditable" returns="void">
+                     <Overrides>
+                        <Override />
+                     </Overrides>
+                  </Method>
+               </Methods>
+               <Properties />
+            </Class>
+            <Class name="Test.Evaluators.Csharp.TestPropertyEditabilityReduced">
+               <Methods>
+                  <Method name=".ctor" returns="void">
+                     <Overrides>
+                        <Override />
+                     </Overrides>
+                  </Method>
+                  <Method name="ChangeTypeIsExpected" returns="void">
+                     <Overrides>
+                        <Override />
+                     </Overrides>
+                  </Method>
+                  <Method name="PropertiesTheSame" returns="void">
+                     <Overrides>
+                        <Override />
+                     </Overrides>
+                  </Method>
+                  <Method name="PropertyMadeReadOnly" returns="void">
+                     <Overrides>
+                        <Override />
+                     </Overrides>
+                  </Method>
+               </Methods>
+               <Properties />
+            </Class>
+            <Class name="Test.Evaluators.Csharp.TestPropertyReadabilityEnhanced">
+               <Methods>
+                  <Method name=".ctor" returns="void">
+                     <Overrides>
+                        <Override />
+                     </Overrides>
+                  </Method>
+                  <Method name="ChangeTypeIsExpected" returns="void">
+                     <Overrides>
+                        <Override />
+                     </Overrides>
+                  </Method>
+                  <Method name="PropertiesTheSame" returns="void">
+                     <Overrides>
+                        <Override />
+                     </Overrides>
+                  </Method>
+                  <Method name="PropertyMadeReadable" returns="void">
+                     <Overrides>
+                        <Override />
+                     </Overrides>
+                  </Method>
+               </Methods>
+               <Properties />
+            </Class>
+            <Class name="Test.Evaluators.Csharp.TestPropertyReadabilityReduced">
+               <Methods>
+                  <Method name=".ctor" returns="void">
+                     <Overrides>
+                        <Override />
+                     </Overrides>
+                  </Method>
+                  <Method name="ChangeTypeIsExpected" returns="void">
+                     <Overrides>
+                        <Override />
+                     </Overrides>
+                  </Method>
+                  <Method name="PropertiesTheSame" returns="void">
+                     <Overrides>
+                        <Override />
+                     </Overrides>
+                  </Method>
+                  <Method name="PropertyMadeUnReadable" returns="void">
+                     <Overrides>
+                        <Override />
+                     </Overrides>
+                  </Method>
+               </Methods>
+               <Properties />
+            </Class>
+            <Class name="Test.Evaluators.Csharp.TestPropertyType">
+               <Methods>
+                  <Method name=".ctor" returns="void">
+                     <Overrides>
+                        <Override />
+                     </Overrides>
+                  </Method>
+                  <Method name="ChangeTypeIsExpected" returns="void">
+                     <Overrides>
+                        <Override />
+                     </Overrides>
+                  </Method>
+                  <Method name="PropertyTypesChanged" returns="void">
+                     <Overrides>
+                        <Override />
+                     </Overrides>
+                  </Method>
+                  <Method name="PropertyTypesSame" returns="void">
+                     <Overrides>
+                        <Override />
+                     </Overrides>
+                  </Method>
+               </Methods>
+               <Properties />
+            </Class>
+            <Class name="Test.Evaluators.TestChangeClassifier">
+               <Methods>
+                  <Method name=".ctor" returns="void">
+                     <Overrides>
+                        <Override />
+                     </Overrides>
+                  </Method>
+                  <Method name="LanguageRulesOnlySeePairedUnits" returns="void">
+                     <Overrides>
+                        <Override />
+                     </Overrides>
+                  </Method>
+                  <Method name="NothingChangedIsPatch" returns="void">
+                     <Overrides>
+                        <Override />
+                     </Overrides>
+                  </Method>
+                  <Method name="NullSignatureIsMinor" returns="void">
+                     <Overrides>
+                        <Override />
+                     </Overrides>
+                  </Method>
+                  <Method name="OnlyAddingAUnitIsMinor" returns="void">
+                     <Overrides>
+                        <Override />
+                     </Overrides>
+                  </Method>
+                  <Method name="SwiftUnitRemovedAndCsharpUnitAddedIsMajor" returns="void">
+                     <Overrides>
+                        <Override />
+                     </Overrides>
+                  </Method>
+               </Methods>
+               <Properties />
+            </Class>
+            <Class name="Test.Evaluators.TestUnitAdded">
+               <Methods>
+                  <Method name=".ctor" returns="void">
+                     <Overrides>
+                        <Override />
+                     </Overrides>
+                  </Method>
+                  <Method name="ChangeTypeIsExpected" returns="void">
+                     <Overrides>
+                        <Override />
+                     </Overrides>
+                  </Method>
+                  <Method name="CsharpUnitIsAdded" returns="void">
+                     <Overrides>
+                        <Override />
+                     </Overrides>
+                  </Method>
+                  <Method name="FirstRunHasNoBaselineAtAll" returns="void">
+                     <Overrides>
+                        <Override />
+                     </Overrides>
+                  </Method>
+                  <Method name="RemovingAUnitDoesNotFire" returns="void">
+                     <Overrides>
+                        <Override />
+                     </Overrides>
+                  </Method>
+                  <Method name="UnitsAreUnchanged" returns="void">
+                     <Overrides>
+                        <Override />
+                     </Overrides>
+                  </Method>
+               </Methods>
+               <Properties />
+            </Class>
+            <Class name="Test.Evaluators.TestUnitRemoved">
+               <Methods>
+                  <Method name=".ctor" returns="void">
+                     <Overrides>
+                        <Override />
+                     </Overrides>
+                  </Method>
+                  <Method name="ChangeTypeIsExpected" returns="void">
+                     <Overrides>
+                        <Override />
+                     </Overrides>
+                  </Method>
+                  <Method name="CsharpUnitIsRemoved" returns="void">
+                     <Overrides>
+                        <Override />
+                     </Overrides>
+                  </Method>
+                  <Method name="SameNameInAnotherLanguageIsNotTheSameUnit" returns="void">
+                     <Overrides>
+                        <Override />
+                     </Overrides>
+                  </Method>
+                  <Method name="SwiftUnitIsRemoved" returns="void">
+                     <Overrides>
+                        <Override />
+                     </Overrides>
+                  </Method>
+                  <Method name="UnitsAreUnchanged" returns="void">
+                     <Overrides>
+                        <Override />
+                     </Overrides>
+                  </Method>
+               </Methods>
+               <Properties />
+            </Class>
+            <Class name="Test.Persistence.TestBaselineFile">
+               <Methods>
+                  <Method name=".ctor" returns="void">
+                     <Overrides>
+                        <Override />
+                     </Overrides>
+                  </Method>
+                  <Method name="MissingFileIsAnEmptyBaseline" returns="void">
+                     <Overrides>
+                        <Override />
+                     </Overrides>
+                  </Method>
+                  <Method name="PopulatedUnitArrayRoundTripsToIdenticalXml" returns="void">
+                     <Overrides>
+                        <Override />
+                     </Overrides>
+                  </Method>
+                  <Method name="RootCarriesTheFormatVersion" returns="void">
+                     <Overrides>
+                        <Override />
+                     </Overrides>
+                  </Method>
+                  <Method name="RoundTripPreservesTheSignatureItself" returns="void">
+                     <Overrides>
+                        <Override />
+                     </Overrides>
+                  </Method>
+                  <Method name="UnitsAreWrittenSortedByLanguageAndId" returns="void">
+                     <Overrides>
+                        <Override />
+                     </Overrides>
+                  </Method>
+                  <Method name="UnreadableFileOnDiskDegradesToEmpty" returns="void">
+                     <Overrides>
+                        <Override />
+                     </Overrides>
+                  </Method>
+                  <Method name="UnusableBaselineIsRejected" returns="void">
+                     <Overrides>
+                        <Override>
+                           <Parameter name="xml" type="string" required="true" />
+                        </Override>
+                     </Overrides>
+                  </Method>
+                  <Method name="WriteLeavesOnlyTheBaselineBehind" returns="void">
+                     <Overrides>
+                        <Override />
+                     </Overrides>
+                  </Method>
+               </Methods>
+               <Properties />
+            </Class>
+            <Class name="Test.TestExtractingVersionFromCsProjFile">
+               <Methods>
+                  <Method name=".ctor" returns="void">
+                     <Overrides>
+                        <Override />
+                     </Overrides>
+                  </Method>
+                  <Method name="TestMajorUpdate" returns="void">
+                     <Overrides>
+                        <Override />
+                     </Overrides>
+                  </Method>
+                  <Method name="TestProjectWithNoVersions" returns="void">
+                     <Overrides>
+                        <Override />
+                     </Overrides>
+                  </Method>
+               </Methods>
+               <Properties />
+            </Class>
+            <Class name="Test.TestFolderDiscovery">
+               <Methods>
+                  <Method name=".ctor" returns="void">
+                     <Overrides>
+                        <Override />
+                     </Overrides>
+                  </Method>
+                  <Method name="DiscoveryIsOrdered" returns="void">
+                     <Overrides>
+                        <Override />
+                     </Overrides>
+                  </Method>
+                  <Method name="Dispose" returns="void">
+                     <Overrides>
+                        <Override />
+                     </Overrides>
+                  </Method>
+                  <Method name="ExcludedDirectoriesAreSkipped" returns="void">
+                     <Overrides>
+                        <Override>
+                           <Parameter name="ghostPath" type="string" required="true" />
+                        </Override>
+                     </Overrides>
+                  </Method>
+                  <Method name="FolderWithNoUnitsYieldsNothing" returns="void">
+                     <Overrides>
+                        <Override />
+                     </Overrides>
+                  </Method>
+                  <Method name="ProjectIsFoundWithNoSolutionFilePresent" returns="void">
+                     <Overrides>
+                        <Override />
+                     </Overrides>
+                  </Method>
+                  <Method name="RelativePathsUseForwardSlashes" returns="void">
+                     <Overrides>
+                        <Override />
+                     </Overrides>
+                  </Method>
+                  <Method name="ScannerFindsDirectoryBundlesAsLeaves" returns="void">
+                     <Overrides>
+                        <Override />
+                     </Overrides>
+                  </Method>
+               </Methods>
+               <Properties />
+            </Class>
+            <Class name="Test.TestRunOptions">
+               <Methods>
+                  <Method name=".ctor" returns="void">
+                     <Overrides>
+                        <Override />
+                     </Overrides>
+                  </Method>
+                  <Method name="DryRunFlagIsNotMistakenForTheFolder" returns="void">
+                     <Overrides>
+                        <Override />
+                     </Overrides>
+                  </Method>
+                  <Method name="DryRunIsOffByDefault" returns="void">
+                     <Overrides>
+                        <Override />
+                     </Overrides>
+                  </Method>
+                  <Method name="MissingDirectoryIsAnError" returns="void">
+                     <Overrides>
+                        <Override />
+                     </Overrides>
+                  </Method>
+                  <Method name="NoArgumentsMeansTheCurrentDirectory" returns="void">
+                     <Overrides>
+                        <Override />
+                     </Overrides>
+                  </Method>
+                  <Method name="SingleArgumentIsTheFolderRoot" returns="void">
+                     <Overrides>
+                        <Override />
+                     </Overrides>
+                  </Method>
+                  <Method name="TwoDirectoriesIsAnError" returns="void">
+                     <Overrides>
+                        <Override />
+                     </Overrides>
+                  </Method>
+               </Methods>
+               <Properties />
+            </Class>
+            <Class name="Test.TestSelfSignature">
+               <Methods>
+                  <Method name=".ctor" returns="void">
+                     <Overrides>
+                        <Override />
+                     </Overrides>
+                  </Method>
+                  <Method name="InTheSignature" returns="void">
+                     <Overrides>
+                        <Override />
+                     </Overrides>
+                  </Method>
+               </Methods>
+               <Properties />
+            </Class>
+            <Class name="Test.TestVersion">
+               <Methods>
+                  <Method name=".ctor" returns="void">
+                     <Overrides>
+                        <Override />
+                     </Overrides>
+                  </Method>
+                  <Method name="CanExtractPartsFromVersionString" returns="void">
+                     <Overrides>
+                        <Override />
+                     </Overrides>
+                  </Method>
+                  <Method name="EmptyVersionComparesAsZero" returns="void">
+                     <Overrides>
+                        <Override />
+                     </Overrides>
+                  </Method>
+                  <Method name="ParseableVersionsComeBackFromTryParse" returns="void">
+                     <Overrides>
+                        <Override />
+                     </Overrides>
+                  </Method>
+                  <Method name="ShortVersionsCanBeIncremented" returns="void">
+                     <Overrides>
+                        <Override>
+                           <Parameter name="given" type="string" required="true" />
+                           <Parameter name="incrementer" type="VersionType" required="true" />
+                           <Parameter name="expected" type="string" required="true" />
+                        </Override>
+                     </Overrides>
+                  </Method>
+                  <Method name="ShortVersionsNormaliseToThreeSegments" returns="void">
+                     <Overrides>
+                        <Override>
+                           <Parameter name="given" type="string" required="false" />
+                           <Parameter name="expected" type="string" required="true" />
+                        </Override>
+                     </Overrides>
+                  </Method>
+                  <Method name="UnparseableVersionsAreRejectedWithoutThrowing" returns="void">
+                     <Overrides>
+                        <Override>
+                           <Parameter name="given" type="string" required="true" />
+                        </Override>
+                     </Overrides>
+                  </Method>
+                  <Method name="VerifyIncrementingLogic" returns="void">
+                     <Overrides>
+                        <Override>
+                           <Parameter name="given" type="string" required="true" />
+                           <Parameter name="expected" type="string" required="true" />
+                           <Parameter name="incrementer" type="VersionType" required="true" />
+                        </Override>
+                     </Overrides>
+                  </Method>
+               </Methods>
+               <Properties />
+            </Class>
+         </Classes>
+      </CsharpProject>
+   </Unit>
+</EasySemVer>

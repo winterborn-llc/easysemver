@@ -2,7 +2,10 @@ namespace Winterborn.Library.EasySemVer.Interfaces.Csharp;
 
 public interface ICsharpClass
 {
-    public string Name { get; init; }
-    public ICsharpMethodList Methods { get; init; }
-    public ICsharpPropertyList Properties { get; init; }
+    /// <summary>Namespace-qualified name, "global::" stripped (SIG-04).</summary>
+    public string Name { get; }
+
+    public ICsharpMethodList Methods { get; }
+
+    public ICsharpPropertyList Properties { get; }
 }

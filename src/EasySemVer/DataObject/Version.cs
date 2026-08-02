@@ -1,65 +1,74 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Text;
-using Winterborn.Library.EasySemVer.CodeReader;
-using Winterborn.Library.EasySemVer.CodeReader.Csharp;
 using Winterborn.Library.EasySemVer.Extensions;
 
 namespace Winterborn.Library.EasySemVer.DataObject;
 
-//Interfaces
-//Version
-//Revisions
-//Versions
-
+/// <summary>
+/// A dotted sequence of non-negative integers, canonically MAJOR.MINOR.PATCH (VER-01). Short
+/// inputs are normalised to three segments on parse rather than crashing <see cref="Increment"/>:
+/// with several ecosystems feeding seeds, a two-segment MARKETING_VERSION is routine input now
+/// (MVR-02, was G-11).
+/// </summary>
 [DebuggerDisplay("{ToString()}")]
 public class Version
 {
+    private const int SegmentCount = 3;
+
     private const int IndexOfMajor = 0;
     private const int IndexOfMinor = 1;
     private const int IndexOfPatch = 2;
-    
-    public int? Major => this.List.Count > 0 ? this.List[0] : null;
-    public int? Minor => this.List.Count > 1 ? this.List[1] : null;
-    public int? Patch => this.List.Count > 2 ? this.List[2] : null;
-    
+
+    public int? Major => this.List.Count > IndexOfMajor ? this.List[IndexOfMajor] : null;
+
+    public int? Minor => this.List.Count > IndexOfMinor ? this.List[IndexOfMinor] : null;
+
+    public int? Patch => this.List.Count > IndexOfPatch ? this.List[IndexOfPatch] : null;
+
     private IList<int> List { get; }
 
     public Version(string? text = "0.0.0")
     {
         this.List = new List<int>();
-        if (text.IsNullOrWhitespace())
+        if (!text.IsNullOrWhitespace())
         {
-            return;
-        }
-        
-        var parts = text.Split('.');
-        foreach (var part in parts)
-        {
-            if (int.TryParse(part, out var value))
+            var parts = text.Split('.');
+            foreach (var part in parts)
             {
+                if (!int.TryParse(part, out var value))
+                {
+                    throw new InvalidProgramException($"Invalid version format: {text}");
+                }
+
                 this.List.Add(value);
-                continue;
             }
-            
-            throw new InvalidProgramException($"Invalid version format: {text}");
-        }
-    }
-    
-    internal static Version GetVersionFromProjectFiles(params CsProjFile[] csProjFiles)
-    {
-        var startingVersion = new Version("0.0.0");
-        foreach (var csProjFile in csProjFiles)
-        {
-            if (csProjFile.Version <= startingVersion)
-            {
-                continue;
-            }
-            
-            startingVersion = csProjFile.Version;
         }
 
-        return startingVersion;
+        // A blank version behaves as 0.0.0 rather than being unusable (MVR-02).
+        while (this.List.Count < SegmentCount)
+        {
+            this.List.Add(0);
+        }
     }
-    
+
+    /// <summary>
+    /// MVR-03 - a version source with an unparseable value is skipped with a warning, never a
+    /// reason to fail the run.
+    /// </summary>
+    public static bool TryParse(string? text, [NotNullWhen(true)] out Version? version)
+    {
+        try
+        {
+            version = new Version(text);
+            return true;
+        }
+        catch (InvalidProgramException)
+        {
+            version = null;
+            return false;
+        }
+    }
+
     public override string ToString()
     {
         var builder = new StringBuilder();
@@ -68,11 +77,11 @@ public class Version
         {
             builder.Append($".{this.List[i]}");
         }
-        
+
         var value = builder.ToString();
         return value;
     }
-    
+
     public void Increment(VersionType type)
     {
         var index = GetIndexFromChangeType(type);
@@ -85,7 +94,7 @@ public class Version
         {
             throw new OverflowException($"The major version has exceeded the maximum size of {int.MaxValue}.");
         }
-        
+
         this.IncrementCounterAt(index);
         this.ResetSubsequentCounters(index);
     }
@@ -104,7 +113,7 @@ public class Version
 
     private void IncrementCounterAt(int indexToIncrement)
     {
-        while (this.List.Count < indexToIncrement)
+        while (this.List.Count <= indexToIncrement)
         {
             this.List.Add(0);
         }
@@ -131,13 +140,13 @@ public class Version
         {
             return false;
         }
-        
+
         var version = obj as Version;
         if (version == null)
         {
             return false;
         }
-        
+
         return this == version;
     }
 
@@ -150,20 +159,20 @@ public class Version
     {
         return new Version(versionString);
     }
-    
+
     public static bool operator >(Version? v1, Version? v2)
     {
         return Compare(v1, v2) > 0;
     }
-    
+
     public static bool operator >=(Version? v1, Version? v2)
     {
-        return Compare(v1, v2) > 0 || Compare(v1, v2) == 0;
+        return Compare(v1, v2) >= 0;
     }
-    
+
     public static bool operator <=(Version? v1, Version? v2)
     {
-        return Compare(v1, v2) < 0 || Compare(v1, v2) == 0;
+        return Compare(v1, v2) <= 0;
     }
 
     public static bool operator <(Version? v1, Version? v2)
@@ -183,31 +192,31 @@ public class Version
 
     private static int Compare(Version? v1, Version? v2)
     {
-        if (v1?.ToString() == null && v2?.ToString() == null)
+        if (v1 is null && v2 is null)
         {
             return 0;
         }
-        
-        if (v1?.ToString() != null && v2?.ToString() == null)
+
+        if (v2 is null)
         {
             return 1;
         }
-        
-        if (v1?.ToString() == null && v2?.ToString() != null)
+
+        if (v1 is null)
         {
             return -1;
         }
-        
-        if (v1!.Major != v2!.Major)
+
+        if (v1.Major != v2.Major)
         {
             return v1.Major.GetValueOrDefault().CompareTo(v2.Major.GetValueOrDefault());
         }
-        
+
         if (v1.Minor != v2.Minor)
         {
             return v1.Minor.GetValueOrDefault().CompareTo(v2.Minor.GetValueOrDefault());
         }
-        
+
         return v1.Patch.GetValueOrDefault().CompareTo(v2.Patch.GetValueOrDefault());
     }
 }

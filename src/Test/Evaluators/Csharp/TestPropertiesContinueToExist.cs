@@ -22,49 +22,43 @@ public class TestPropertiesContinueToExist
     [Fact]
     public void PropertiesTheSame()
     {
-        var signatures = new CsharpSignaturesToCompare("",
-            older: new Solution
+        var signatures = new CsharpSignaturesToCompare(
+            older: new CsharpProject("TestProject")
             {
-                new CsharpProject("TestProject")
-                {
-                    Classes =
-                    [
-                        new CsharpClass
+                Classes =
+                [
+                    new CsharpClass
+                    {
+                        Name = "TestClass",
+                        Properties =
                         {
-                            Name = "TestClass",
-                            Properties =
+                            new CsharpProperty
                             {
-                                new CsharpProperty
-                                {
-                                    Name = "TestProperty",
-                                    Type = "string"
-                                }
+                                Name = "TestProperty",
+                                Type = "string"
                             }
                         }
-                    ]
-                }
+                    }
+                ]
             }
             ,
-            newer: new Solution
+            newer: new CsharpProject("TestProject")
             {
-                new CsharpProject("TestProject")
-                {
-                    Classes =
-                    [
-                        new CsharpClass
+                Classes =
+                [
+                    new CsharpClass
+                    {
+                        Name = "TestClass",
+                        Properties =
                         {
-                            Name = "TestClass",
-                            Properties =
+                            new CsharpProperty
                             {
-                                new CsharpProperty
-                                {
-                                    Name = "TestProperty",
-                                    Type = "string"
-                                }
+                                Name = "TestProperty",
+                                Type = "string"
                             }
                         }
-                    ]
-                }
+                    }
+                ]
             }
         );
 
@@ -75,49 +69,43 @@ public class TestPropertiesContinueToExist
     [Fact]
     public void PropertyRemoved()
     {
-        var signatures = new CsharpSignaturesToCompare("",
-            older: new Solution
+        var signatures = new CsharpSignaturesToCompare(
+            older: new CsharpProject("TestProject")
             {
-                new CsharpProject("TestProject")
-                {
-                    Classes =
-                    [
-                        new CsharpClass
+                Classes =
+                [
+                    new CsharpClass
+                    {
+                        Name = "TestClass",
+                        Properties =
                         {
-                            Name = "TestClass",
-                            Properties =
+                            new CsharpProperty
                             {
-                                new CsharpProperty
-                                {
-                                    Name = "TestProperty",
-                                    Type = "string"
-                                }
+                                Name = "TestProperty",
+                                Type = "string"
                             }
                         }
-                    ]
-                }
+                    }
+                ]
             }
             ,
-            newer: new Solution
+            newer: new CsharpProject("TestProject")
             {
-                new CsharpProject("TestProject")
-                {
-                    Classes =
-                    [
-                        new CsharpClass
+                Classes =
+                [
+                    new CsharpClass
+                    {
+                        Name = "TestClass",
+                        Properties =
                         {
-                            Name = "TestClass",
-                            Properties =
+                            new CsharpProperty
                             {
-                                new CsharpProperty
-                                {
-                                    Name = "NotTheSameProperty",
-                                    Type = "string"
-                                }
+                                Name = "NotTheSameProperty",
+                                Type = "string"
                             }
                         }
-                    ]
-                }
+                    }
+                ]
             }
         );
 

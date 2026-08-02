@@ -1,14 +1,27 @@
-using Winterborn.Library.EasySemVer.Interfaces;
+using System.Xml.Serialization;
+using Winterborn.Library.EasySemVer.Extensions;
 using Winterborn.Library.EasySemVer.Interfaces.Csharp;
 
 namespace Winterborn.Library.EasySemVer.DataObject.Csharp;
 
 [DebuggerDisplay("{MethodType} {MethodName}")]
-internal class CsharpMethod : ICsharpMethod
+public class CsharpMethod : ICsharpMethod
 {
-    public string MethodName { get; init; } = string.Empty;
-    
-    public string MethodType { get; init; } = string.Empty;
+    [XmlAttribute("name")]
+    public string MethodName { get; set; } = string.Empty;
 
-    public ICsharpMethodOverrides Overrides { get; init; } = new CsharpMethodOverrides();
+    [XmlAttribute("returns")]
+    public string MethodType { get; set; } = string.Empty;
+
+    [XmlArray("Overrides")]
+    [XmlArrayItem("Override")]
+    public CsharpMethodOverrides Overrides { get; set; } = [];
+
+    ICsharpMethodOverrides ICsharpMethod.Overrides => this.Overrides;
+
+    internal void SortForPersistence()
+    {
+        this.Overrides.Sort((left, right) =>
+            string.CompareOrdinal(left.GetMethodSignature(), right.GetMethodSignature()));
+    }
 }

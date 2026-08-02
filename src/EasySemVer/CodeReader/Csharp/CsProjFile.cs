@@ -1,29 +1,24 @@
 using System.Xml;
-using Winterborn.Library.EasySemVer.Extensions;
-using Winterborn.Library.EasySemVer.Interfaces;
-using Winterborn.Library.EasySemVer.Interfaces.Csharp;
+using Winterborn.Library.EasySemVer.DataObject.Csharp;
 using Winterborn.Library.EasySemVer.Settings;
 using Version = Winterborn.Library.EasySemVer.DataObject.Version;
 
 namespace Winterborn.Library.EasySemVer.CodeReader.Csharp;
 
+/// <summary>
+/// One .csproj on disk: its version properties, and the ability to write them back. Discovering
+/// which .csproj files exist is the provider's job (FLD-03), not this type's.
+/// </summary>
 [DebuggerDisplay("{ProjectName}")]
 public class CsProjFile
 {
-    public Version Version { get; set; }
+    public Version Version { get; private set; }
 
     public string ProjectName { get; }
-
-    public string SolutionDirectory { get; }
 
     public string ProjectFilePath { get; }
 
     public string ProjectXml { get; private set; }
-
-    public ICsharpProject GetProject()
-    {
-        return CsharpUnitBuilder.GetProjectSignature(this.ProjectFilePath);
-    }
 
     public CsProjFile(string projectFilePath)
     {
@@ -35,11 +30,10 @@ public class CsProjFile
         this.ProjectFilePath = projectFilePath;
         this.ProjectName = new FileInfo(projectFilePath).Name;
         this.ProjectXml = File.ReadAllText(this.ProjectFilePath);
-        this.SolutionDirectory = projectFilePath.GetSolutionDirectory();
-        var csProjVersion = new CsProjFileVersion(this.ProjectXml);
-        this.Version = csProjVersion.Version;
+        this.Version = new CsProjFileVersion(this.ProjectXml).Version;
     }
 
+    /// <summary>SYN-02/SYN-03 - update every occurrence that already exists; never add one.</summary>
     public void Save(Version version)
     {
         this.Version = version;
@@ -47,50 +41,16 @@ public class CsProjFile
         File.WriteAllText(this.ProjectFilePath, this.ProjectXml);
     }
 
-    public FileInfo[] GetCsFiles()
+    public CsharpProject GetProject()
     {
-        var csFile = new FileInfo(this.ProjectFilePath);
-        var csDirectory = csFile.Directory;
-        var csFiles = csDirectory!.GetFiles("*.cs", SearchOption.AllDirectories);
-        return csFiles;
-    }
-    
-    internal static string[] GetSolutionProjectFilePaths(string startingDirectory)
-    {
-        var paths = new List<string>();
-        var csProjFiles = GetSolutionProjectFiles(startingDirectory);
-        foreach (var csProjFile in csProjFiles)
-        {
-            paths.Add(csProjFile.ProjectFilePath);
-        }
-        
-        return paths.ToArray();
-    }
-    
-    internal static CsProjFile[] GetSolutionProjectFiles(string startingDirectory)
-    {
-        if (startingDirectory.IsNullOrWhitespace())
-        {
-            startingDirectory = Environment.CurrentDirectory.GetSolutionDirectory();
-        }
-        
-        var csProjFiles = new List<CsProjFile>();
-        var projectFilePaths = Directory.GetFiles(startingDirectory, "*.csproj", SearchOption.AllDirectories);
-        foreach (var projectFilePath in projectFilePaths)
-        {
-            Console.WriteLine($"Processing project file: {projectFilePath}");
-            var csProjFile = new CsProjFile(projectFilePath);
-            csProjFiles.Add(csProjFile);
-        }
-        
-        return csProjFiles.ToArray();
+        return CsharpUnitBuilder.GetProjectSignature(this.ProjectFilePath);
     }
 
     private static string UpdateXmlForVersion(string projectXml, Version newVersion)
     {
         var xmlDoc = new XmlDocument();
         xmlDoc.LoadXml(projectXml);
-        
+
         foreach (var propertyPreference in MagicValues.VersionPropertyNames)
         {
             var elements = xmlDoc.GetElementsByTagName(propertyPreference);
@@ -103,7 +63,7 @@ public class CsProjFile
         var xml = CleanXmlContent(xmlDoc.InnerXml);
         return xml;
     }
-    
+
     private static string CleanXmlContent(string inputXml)
     {
         var xmlDoc = new XmlDocument();

@@ -22,73 +22,67 @@ public class TestMethodAdded
     [Fact]
     public void MethodsAreNotChanged()
     {
-        var signatures = new CsharpSignaturesToCompare("",
-            older: new Solution
+        var signatures = new CsharpSignaturesToCompare(
+            older: new CsharpProject("Test")
             {
-                new CsharpProject("Test")
-                {
-                    Classes =
-                    [
-                        new CsharpClass
+                Classes =
+                [
+                    new CsharpClass
+                    {
+                        Name = "TestClass",
+                        Methods =
                         {
-                            Name = "TestClass",
-                            Methods =
+                            new CsharpMethod
                             {
-                                new CsharpMethod
+                                MethodName = "TestMethod1",
+                                MethodType = "string",
+                                Overrides = new CsharpMethodOverrides
                                 {
-                                    MethodName = "TestMethod1",
-                                    MethodType = "string",
-                                    Overrides = new CsharpMethodOverrides
+                                    new CsharpMethodOverride
                                     {
-                                        new CsharpMethodOverride
+                                        new CsharpMethodParameter
                                         {
-                                            new CsharpMethodParameter
-                                            {
-                                                ParameterName = "input",
-                                                ParameterType = "string",
-                                                IsRequired = true
-                                            }
+                                            ParameterName = "input",
+                                            ParameterType = "string",
+                                            IsRequired = true
                                         }
                                     }
                                 }
                             }
                         }
-                    ]
-                }
+                    }
+                ]
             }
             ,
-            newer: new Solution
+            newer: new CsharpProject("Test")
             {
-                new CsharpProject("Test")
-                {
-                    Classes =
-                    [
-                        new CsharpClass
+                Classes =
+                [
+                    new CsharpClass
+                    {
+                        Name = "TestClass",
+                        Methods =
                         {
-                            Name = "TestClass",
-                            Methods =
+                            new CsharpMethod
                             {
-                                new CsharpMethod
+                                MethodName = "TestMethod1",
+                                MethodType = "string",
+                                Overrides = new CsharpMethodOverrides
                                 {
-                                    MethodName = "TestMethod1",
-                                    MethodType = "string",
-                                    Overrides = new CsharpMethodOverrides
+                                    new CsharpMethodOverride
                                     {
-                                        new CsharpMethodOverride
+                                        new CsharpMethodParameter
                                         {
-                                            new CsharpMethodParameter
-                                            {
-                                                ParameterName = "input",
-                                                ParameterType = "string",
-                                                IsRequired = true
-                                            }
+                                            ParameterName = "input",
+                                            ParameterType = "string",
+                                            IsRequired = true
                                         }
                                     }
                                 }
                             }
                         }
-                    ]
-                }
+                    }
+                ]
             }
         );
 
@@ -99,90 +93,84 @@ public class TestMethodAdded
     [Fact]
     public void MethodIsAddedToExistingClass()
     {
-        var signatures = new CsharpSignaturesToCompare("",
-            older: new Solution
+        var signatures = new CsharpSignaturesToCompare(
+            older: new CsharpProject("Test")
             {
-                new CsharpProject("Test")
-                {
-                    Classes =
-                    [
-                        new CsharpClass
+                Classes =
+                [
+                    new CsharpClass
+                    {
+                        Name = "TestClass",
+                        Methods =
                         {
-                            Name = "TestClass",
-                            Methods =
+                            new CsharpMethod
                             {
-                                new CsharpMethod
+                                MethodName = "TestMethod1",
+                                MethodType = "string",
+                                Overrides = new CsharpMethodOverrides
                                 {
-                                    MethodName = "TestMethod1",
-                                    MethodType = "string",
-                                    Overrides = new CsharpMethodOverrides
+                                    new CsharpMethodOverride
                                     {
-                                        new CsharpMethodOverride
+                                        new CsharpMethodParameter
                                         {
-                                            new CsharpMethodParameter
-                                            {
-                                                ParameterName = "input",
-                                                ParameterType = "string",
-                                                IsRequired = true
-                                            }
+                                            ParameterName = "input",
+                                            ParameterType = "string",
+                                            IsRequired = true
                                         }
                                     }
                                 }
                             }
                         }
-                    ]
-                }
+                    }
+                ]
             }
             ,
-            newer: new Solution
+            newer: new CsharpProject("Test")
             {
-                new CsharpProject("Test")
-                {
-                    Classes =
-                    [
-                        new CsharpClass
+                Classes =
+                [
+                    new CsharpClass
+                    {
+                        Name = "TestClass",
+                        Methods =
                         {
-                            Name = "TestClass",
-                            Methods =
+                            new CsharpMethod
                             {
-                                new CsharpMethod
+                                MethodName = "TestMethod1",
+                                MethodType = "string",
+                                Overrides = new CsharpMethodOverrides
                                 {
-                                    MethodName = "TestMethod1",
-                                    MethodType = "string",
-                                    Overrides = new CsharpMethodOverrides
+                                    new CsharpMethodOverride
                                     {
-                                        new CsharpMethodOverride
+                                        new CsharpMethodParameter
                                         {
-                                            new CsharpMethodParameter
-                                            {
-                                                ParameterName = "input",
-                                                ParameterType = "string",
-                                                IsRequired = true
-                                            }
+                                            ParameterName = "input",
+                                            ParameterType = "string",
+                                            IsRequired = true
                                         }
                                     }
-                                },
-                                new CsharpMethod
+                                }
+                            },
+                            new CsharpMethod
+                            {
+                                MethodName = "TestMethod2",
+                                MethodType = "string",
+                                Overrides = new CsharpMethodOverrides
                                 {
-                                    MethodName = "TestMethod2",
-                                    MethodType = "string",
-                                    Overrides = new CsharpMethodOverrides
+                                    new CsharpMethodOverride
                                     {
-                                        new CsharpMethodOverride
+                                        new CsharpMethodParameter
                                         {
-                                            new CsharpMethodParameter
-                                            {
-                                                ParameterName = "input",
-                                                ParameterType = "string",
-                                                IsRequired = true
-                                            }
+                                            ParameterName = "input",
+                                            ParameterType = "string",
+                                            IsRequired = true
                                         }
                                     }
                                 }
                             }
                         }
-                    ]
-                }
+                    }
+                ]
             }
         );
 
@@ -193,97 +181,91 @@ public class TestMethodAdded
     [Fact]
     public void MethodOnBrandNewClassIsNotCounted()
     {
-        var signatures = new CsharpSignaturesToCompare("",
-            older: new Solution
+        var signatures = new CsharpSignaturesToCompare(
+            older: new CsharpProject("Test")
             {
-                new CsharpProject("Test")
-                {
-                    Classes =
-                    [
-                        new CsharpClass
+                Classes =
+                [
+                    new CsharpClass
+                    {
+                        Name = "TestClass",
+                        Methods =
                         {
-                            Name = "TestClass",
-                            Methods =
+                            new CsharpMethod
                             {
-                                new CsharpMethod
+                                MethodName = "TestMethod1",
+                                MethodType = "string",
+                                Overrides = new CsharpMethodOverrides
                                 {
-                                    MethodName = "TestMethod1",
-                                    MethodType = "string",
-                                    Overrides = new CsharpMethodOverrides
+                                    new CsharpMethodOverride
                                     {
-                                        new CsharpMethodOverride
+                                        new CsharpMethodParameter
                                         {
-                                            new CsharpMethodParameter
-                                            {
-                                                ParameterName = "input",
-                                                ParameterType = "string",
-                                                IsRequired = true
-                                            }
+                                            ParameterName = "input",
+                                            ParameterType = "string",
+                                            IsRequired = true
                                         }
                                     }
                                 }
                             }
                         }
-                    ]
-                }
+                    }
+                ]
             }
             ,
-            newer: new Solution
+            newer: new CsharpProject("Test")
             {
-                new CsharpProject("Test")
-                {
-                    Classes =
-                    [
-                        new CsharpClass
+                Classes =
+                [
+                    new CsharpClass
+                    {
+                        Name = "TestClass",
+                        Methods =
                         {
-                            Name = "TestClass",
-                            Methods =
+                            new CsharpMethod
                             {
-                                new CsharpMethod
+                                MethodName = "TestMethod1",
+                                MethodType = "string",
+                                Overrides = new CsharpMethodOverrides
                                 {
-                                    MethodName = "TestMethod1",
-                                    MethodType = "string",
-                                    Overrides = new CsharpMethodOverrides
+                                    new CsharpMethodOverride
                                     {
-                                        new CsharpMethodOverride
+                                        new CsharpMethodParameter
                                         {
-                                            new CsharpMethodParameter
-                                            {
-                                                ParameterName = "input",
-                                                ParameterType = "string",
-                                                IsRequired = true
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        },
-                        new CsharpClass
-                        {
-                            Name = "BrandNewClass",
-                            Methods =
-                            {
-                                new CsharpMethod
-                                {
-                                    MethodName = "BrandNewMethod",
-                                    MethodType = "string",
-                                    Overrides = new CsharpMethodOverrides
-                                    {
-                                        new CsharpMethodOverride
-                                        {
-                                            new CsharpMethodParameter
-                                            {
-                                                ParameterName = "input",
-                                                ParameterType = "string",
-                                                IsRequired = true
-                                            }
+                                            ParameterName = "input",
+                                            ParameterType = "string",
+                                            IsRequired = true
                                         }
                                     }
                                 }
                             }
                         }
-                    ]
-                }
+                    },
+                    new CsharpClass
+                    {
+                        Name = "BrandNewClass",
+                        Methods =
+                        {
+                            new CsharpMethod
+                            {
+                                MethodName = "BrandNewMethod",
+                                MethodType = "string",
+                                Overrides = new CsharpMethodOverrides
+                                {
+                                    new CsharpMethodOverride
+                                    {
+                                        new CsharpMethodParameter
+                                        {
+                                            ParameterName = "input",
+                                            ParameterType = "string",
+                                            IsRequired = true
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                ]
             }
         );
 

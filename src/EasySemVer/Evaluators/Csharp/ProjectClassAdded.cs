@@ -1,36 +1,25 @@
 using Winterborn.Library.EasySemVer.DataObject;
-using Winterborn.Library.EasySemVer.DataObject.Csharp;
-using Winterborn.Library.EasySemVer.Interfaces;
+using Winterborn.Library.EasySemVer.Evaluation.Csharp;
 using Winterborn.Library.EasySemVer.Interfaces.Csharp;
 
 namespace Winterborn.Library.EasySemVer.Evaluators.Csharp;
 
+/// <summary>R05 - the unit gained a public class the baseline did not have.</summary>
 public class ProjectClassAdded : IEvaluateCsharpSignatures
 {
     public VersionType EvaluationImpact => VersionType.Minor;
 
     public bool AreDifferencesPresent(ICsharpSignaturesToCompare signatures)
     {
-        var oldSignature = signatures.Older;
-        var newSignature = signatures.Newer;
-        foreach (var newProject in newSignature)
+        foreach (var newerClass in signatures.Newer.Classes)
         {
-            var oldProject = oldSignature.FirstOrDefault(p => p.Name == newProject.Name);
-            if (oldProject == null)
+            var olderClass = CsharpSignaturesToCompare.FindClass(signatures.Older, newerClass.Name);
+            if (olderClass != null)
             {
                 continue;
             }
 
-            foreach (var newClass in newProject.Classes)
-            {
-                var oldClass = oldProject.Classes.FirstOrDefault(p => p.Name == newClass.Name);
-                if (oldClass != null)
-                {
-                    continue;
-                }
-
-                return true;
-            }
+            return true;
         }
 
         return false;

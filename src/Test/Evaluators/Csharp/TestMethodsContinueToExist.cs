@@ -22,59 +22,53 @@ public class TestMethodsContinueToExist
     [Fact]
     public void EvaluateMethodStillExists()
     {
-        var signatures = new CsharpSignaturesToCompare("",
-            older: new Solution
+        var signatures = new CsharpSignaturesToCompare(
+            older: new CsharpProject("Test")
             {
-                new CsharpProject("Test")
-                {
-                    Classes =
-                    [
-                        new CsharpClass
+                Classes =
+                [
+                    new CsharpClass
+                    {
+                        Name = "TestClass",
+                        Methods =
                         {
-                            Name = "TestClass",
-                            Methods =
+                            new CsharpMethod
                             {
-                                new CsharpMethod
-                                {
-                                    MethodName = "TestMethod1",
-                                    MethodType = "void"
-                                },
-                                new CsharpMethod
-                                {
-                                    MethodName = "TestMethod2",
-                                    MethodType = "void"
-                                }
+                                MethodName = "TestMethod1",
+                                MethodType = "void"
+                            },
+                            new CsharpMethod
+                            {
+                                MethodName = "TestMethod2",
+                                MethodType = "void"
                             }
                         }
-                    ]
-                }
+                    }
+                ]
             }
             ,
-            newer: new Solution
+            newer: new CsharpProject("Test")
             {
-                new CsharpProject("Test")
-                {
-                    Classes =
-                    [
-                        new CsharpClass
+                Classes =
+                [
+                    new CsharpClass
+                    {
+                        Name = "TestClass",
+                        Methods =
                         {
-                            Name = "TestClass",
-                            Methods =
+                            new CsharpMethod
                             {
-                                new CsharpMethod
-                                {
-                                    MethodName = "TestMethod1",
-                                    MethodType = "void"
-                                },
-                                new CsharpMethod
-                                {
-                                    MethodName = "TestMethod2",
-                                    MethodType = "void"
-                                }
+                                MethodName = "TestMethod1",
+                                MethodType = "void"
+                            },
+                            new CsharpMethod
+                            {
+                                MethodName = "TestMethod2",
+                                MethodType = "void"
                             }
                         }
-                    ]
-                }
+                    }
+                ]
             }
         );
 
@@ -85,59 +79,53 @@ public class TestMethodsContinueToExist
     [Fact]
     public void EvaluateMethodNoLongerExists()
     {
-        var signatures = new CsharpSignaturesToCompare("",
-            older: new Solution
+        var signatures = new CsharpSignaturesToCompare(
+            older: new CsharpProject("Test")
             {
-                new CsharpProject("Test")
-                {
-                    Classes =
-                    [
-                        new CsharpClass
+                Classes =
+                [
+                    new CsharpClass
+                    {
+                        Name = "TestClass",
+                        Methods =
                         {
-                            Name = "TestClass",
-                            Methods =
+                            new CsharpMethod
                             {
-                                new CsharpMethod
-                                {
-                                    MethodName = "TestMethod1",
-                                    MethodType = "void"
-                                },
-                                new CsharpMethod
-                                {
-                                    MethodName = "TestMethod2",
-                                    MethodType = "void"
-                                }
+                                MethodName = "TestMethod1",
+                                MethodType = "void"
+                            },
+                            new CsharpMethod
+                            {
+                                MethodName = "TestMethod2",
+                                MethodType = "void"
                             }
                         }
-                    ]
-                }
+                    }
+                ]
             }
             ,
-            newer: new Solution
+            newer: new CsharpProject("Test")
             {
-                new CsharpProject("Test")
-                {
-                    Classes =
-                    [
-                        new CsharpClass
+                Classes =
+                [
+                    new CsharpClass
+                    {
+                        Name = "TestClass",
+                        Methods =
                         {
-                            Name = "TestClass",
-                            Methods =
+                            new CsharpMethod
                             {
-                                new CsharpMethod
-                                {
-                                    MethodName = "TestMethod1",
-                                    MethodType = "void"
-                                },
-                                new CsharpMethod
-                                {
-                                    MethodName = "TestMethod3",
-                                    MethodType = "void"
-                                }
+                                MethodName = "TestMethod1",
+                                MethodType = "void"
+                            },
+                            new CsharpMethod
+                            {
+                                MethodName = "TestMethod3",
+                                MethodType = "void"
                             }
                         }
-                    ]
-                }
+                    }
+                ]
             }
         );
 
