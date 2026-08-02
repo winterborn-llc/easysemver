@@ -10,42 +10,36 @@ Sources: [`Program.cs`](../src/EasySemVer/Program.cs),
 **CLI-01 — Deliverable is a console executable.** ✅
 The tool SHALL build as a console executable (`OutputType=Exe`) with assembly name
 `Winterborn.Library.EasySemVer`, multi-targeting `net8.0`, `net9.0`, and `net10.0`
-(`LangVersion` 14). `Program.Main(params string[] args)` is public so tests can invoke a run
-in-process.
+(`LangVersion` 14). `public static int Main(params string[] args)` is public so tests can invoke
+a run in-process, and returns its exit code rather than calling `Environment.Exit` — see ERR-03.
 
-**CLI-02 — At most one argument.** ✅
-The tool SHALL accept zero or one command-line argument. Two or more arguments SHALL fail the
-run with the message that a single directory parameter is required.
+**CLI-02 — At most one directory argument.** ✅
+The tool SHALL accept zero or one directory argument, plus any recognised flags. Two or more
+directories SHALL fail the run with the message that a single directory parameter is required.
 
 **CLI-03 — Zero arguments → current directory.** ✅
 With no arguments, the starting directory SHALL be the process's current working directory.
 This is the primary mode when invoked from an MSBuild target, whose working directory is the
 project directory.
 
-**CLI-04 — One argument = starting directory.** ⚠️ Deviation
-The single argument SHALL specify the starting directory for solution discovery.
-*Deviation:* the current implementation validates and then ignores the argument's value —
-[`GetDirectoryToUse`](../src/EasySemVer/Program.cs) assigns
-`Environment.CurrentDirectory` instead of `args[0]`, and its existence check therefore also
-tests the wrong path. Passing an argument behaves identically to passing none. (Gap **G-06**.)
+**CLI-04 — The directory argument is the folder root.** ✅ *(replaced by FLD-01; G-06 resolved)*
+The single directory argument SHALL be the folder root, resolved to a full path. It is used, not
+merely validated. Implemented in [`RunOptions.Parse`](../src/EasySemVer/Settings/RunOptions.cs).
 
-**CLI-05 — Solution root discovery.** ✅
-From the starting directory, the tool SHALL walk up the directory tree (starting directory
-included) and select the first directory whose *top level* contains at least one `*.sln`
-file. If no ancestor contains one, the run SHALL fail with an explanatory error.
-ℹ️ Note: this search recognizes only `.sln`, while the helper used elsewhere
-([`ExtendString.GetSolutionDirectory`](../src/EasySemVer/Extensions/ExtendString.cs)) also
-recognizes `.slnx` — see gap **G-09**.
+**CLI-05 — No solution-root discovery.** ✅ *(retired by FLD-02; G-09 resolved)*
+The tool SHALL NOT search ancestors for a `.sln`/`.slnx` and SHALL NOT require one to exist. A
+folder containing no solution file is a valid, ordinary input. Both walk-up helpers are deleted.
 
 **CLI-06 — Exit codes.** ✅
 The process SHALL exit `0` on success. Any unhandled error SHALL print the full exception to
 stdout and exit `1`. (See [10-logging-and-error-handling.md](10-logging-and-error-handling.md)
 for why exit 1 is a deliberate build-failure signal.)
 
-**CLI-07 — No dry-run / no-op mode.** ✅ (by design, see OVR-03)
-Every successful invocation increments the version by at least Patch and rewrites state.
-There is no flag to preview the classification without applying it. ℹ️ A future CLI surface
-may want `--dry-run`; nothing in the current contract reserves flags.
+**CLI-07 — `--dry-run` previews without writing.** ✅ *(added per §20 O-04)*
+`--dry-run` SHALL run discovery, extraction, classification and version resolution, log the
+verdict and the version it would produce, and write nothing: no baseline, no version stamps. A
+dry run is not a release, so it does not conflict with OVR-03. Without the flag, every successful
+invocation increments by at least Patch and rewrites state.
 
 ## MSBuild integration
 
@@ -63,9 +57,9 @@ projects run the tool automatically. The shipped
 
 *Deviations:* (a) the package does not actually pack anything into `tools/`, so the resolved
 path never exists (**G-03**); (b) the targets filename does not match the package ID, so
-NuGet does not auto-import it (`NU5129`, **G-04**); (c) the argument passed
-(`$(SolutionDir)`) is currently ignored per CLI-04 — the run still works only because Exec's
-working directory is inside the solution.
+NuGet does not auto-import it (`NU5129`, **G-04**). The argument it passes is now honoured
+(CLI-04), so once (a) and (b) are fixed the mechanism works. Until then the README documents
+direct invocation instead. See §20 **O-05**.
 
 **MSB-02 — Documented UsingTask hook (legacy).** ❌
 [README.md](../README.md) documents integration via

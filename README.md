@@ -1,62 +1,134 @@
-# Auto-Version from the Winterborn
-This is intended to be a lightweight utility for synchronizing and incrementing the various version counters across a C# solution.
+# EasySemVer from Winterborn
 
-## Configuration Step 1
-Add the package to any one project in your solution. It does not matter which project you add it to as long as the project you select will be built whenever you want the versions updated.
-The process will update the versions of all projects in the solution.
+EasySemVer computes and applies Semantic Versioning for **a folder** by watching what happens to
+the public API surface inside it. Point it at a directory; it finds every packageable unit in the
+tree — C# `.csproj` projects, SwiftPM targets, Xcode targets — reads every version already
+written anywhere in it, diffs each unit's API against the previous run, and moves one
+folder-wide version by Major, Minor or Patch accordingly.
 
-```xml
-<ItemGroup>
-    <PackageReference 
-            Include="Winterborn.Library.EasySemVer"
-            Version="5.1.4"/>
-</ItemGroup>
+```bash
+easysemver /path/to/your/folder
 ```
 
-## Configuration Step 2
-After adding the package to your project, you must configure it to execute a post-build process. This must be post-build so the dlls exist and can be inspected. This requires opening the `.csproj` file and directly modifying the xml.
+With no argument it uses the current working directory. Add `--dry-run` to classify and report
+without writing anything.
 
-Once it's opened, find the `ItemGroup` that includes the package import for `Winterborn.Library.EasySemVer`.
+## What it does, in order
 
-You must add the attribute `GeneratePathProperty` to the `EasySemVer` package reference and set it to true.
+1. Walks the folder once and discovers every packageable unit.
+2. Extracts each unit's API signature **in its own language's terms** — a Swift protocol is a
+   protocol, not "an interface"; a C# record is a record.
+3. Reads the baseline (`EasySemVer.xml` at the folder root) written by the previous run.
+4. Runs the classification rules and takes the highest impact anything reported.
+5. Seeds from the highest version found in any version location in any unit, increments it, and
+   writes that one version into every location that already exists.
+
+Every successful run increments by at least a Patch: the tool assumes it runs for builds that are
+releases. Gate it accordingly — see *Wiring it into a build* below.
+
+## The baseline file
+
+`EasySemVer.xml` lives at the folder root and **should be committed**. It is what makes the diff
+meaningful across machines and across time, and it is why runs should be gated on release builds
+rather than every developer build.
+
+It is a flat array of packageable units, each carrying its own language's signature:
 
 ```xml
-<ItemGroup>
-    <PackageReference 
-            Include="Winterborn.Library.EasySemVer" 
-            GeneratePathProperty="true" 
-            Version="5.1.4" />
-</ItemGroup>
+<EasySemVer formatVersion="2">
+   <Unit language="Csharp" unitId="Widgets" unitKind="csproj" path="src/Widgets/Widgets.csproj">
+      <CsharpProject name="Widgets"> … </CsharpProject>
+   </Unit>
+   <Unit language="Swift" unitId="Sources/Gadgets:Gadgets" unitKind="swiftpm-target" path="Sources/Gadgets">
+      <SwiftModule name="Gadgets"> … </SwiftModule>
+   </Unit>
+</EasySemVer>
 ```
 
-## Configure Step 3
-Now that we have the package ready to be used, we need tell our build process how to use it. This is also done by directly modifying the xml of our project's `.csproj` file.
+Two runs over unchanged source on two machines produce byte-identical files: there are no
+absolute paths, timestamps, machine names or toolchain versions in it. A missing or unreadable
+baseline is never fatal — it is treated as "no history", and the next successful run heals it.
 
-We need to add an XML block to add our build step. The example below should work perfectly.
+## Version locations
+
+The starting version is the **highest** value found across all of these. The new version is
+written back to every one of them that already exists. EasySemVer never creates a version
+property; seeding one is how a team opts in.
+
+| Language | Location | Read | Write |
+|----------|----------|:----:|:-----:|
+| C# | `.csproj` `AssemblyVersion`, `PackageVersion`, `FileVersion` | ✅ | ✅ |
+| Swift / Xcode | `MARKETING_VERSION` in `project.pbxproj` | ✅ | ✅ |
+| Swift / Xcode | `CFBundleShortVersionString` in `Info.plist` | ✅ | ✅ |
+| Swift | `s.version` in a `.podspec` | ✅ | ✅ |
+| Swift | a `*Version.swift` constant, e.g. `static let version = "1.2.3"` | ✅ | ✅ |
+| any | git tags matching `v?MAJOR.MINOR.PATCH` | ✅ | ❌ never |
+
+`CURRENT_PROJECT_VERSION` and `CFBundleVersion` are build counters, not versions, and are left
+alone entirely. Git tags are read as a seed but never written: creating a tag is an
+outward-facing act EasySemVer will not take on your behalf.
+
+## What counts as a change
+
+Roughly seventy rules, each one a small class with its own test. The full tables are in
+[specs/07](specs/07-change-classification.md) for C# and
+[specs/12 §13](specs/12-multi-language-swift-and-folder-model.md) for Swift, but the shape is:
+
+- **Major** — anything a caller could be relying on that no longer works: a type or member
+  removed, a signature or return type changed, a parameter made required, a property setter
+  withdrawn, an interface gaining an undefaulted requirement, an enum member renamed or
+  revalued, a class sealed, a conformance dropped.
+- **Minor** — anything additive: a new unit, type, member or overload; a constraint loosened; a
+  setter gained; an interface requirement that ships with a default implementation.
+- **Patch** — everything else, including implementation-only changes and a declaration merely
+  being marked deprecated.
+
+One rule differs deliberately between the two languages: **adding a case to a public Swift enum
+is Major**, because a client switching exhaustively over it stops compiling. Adding a member to a
+C# enum is Minor, because C# has no such requirement.
+
+## Excluded directories
+
+Discovery skips, at any depth: any directory whose name begins with `.` (so `.git`, `.build`,
+`.swiftpm`, `.packages`), plus `bin`, `obj`, `build`, `DerivedData`, `Pods`, `Carthage`,
+`node_modules` and `Packages`. This is not politeness — an unexcluded dependency checkout would
+pull other people's source into your signature and make every dependency update a Major change.
+
+## Swift prerequisites
+
+Swift signatures come from the Swift toolchain's own symbol graph. There is no hand-rolled Swift
+parser in this tool.
+
+- A folder containing a `Package.swift` needs a **Swift toolchain** on the path.
+- A folder containing an `.xcodeproj` needs **Xcode** configured, and pays a full `xcodebuild` on
+  every versioned run.
+- If Swift units are present and their signatures cannot be extracted — no toolchain, a failed
+  build, a timeout — **the run fails with exit 1 and writes nothing**. There is no skip-and-warn:
+  a partial baseline would silently under-report the next change.
+
+A folder with no Swift in it needs none of this.
+
+## Wiring it into a build
+
+⚠️ **The MSBuild integration is not currently consumable.** The packaged targets file resolves
+`tools/EasySemVer.exe`, which the package does not pack, and its filename does not match the
+package ID, so NuGet never imports it. Until that is fixed, invoke the executable directly — from
+CI, from a release script, or from an `Exec` task you write yourself:
 
 ```xml
-<Project Sdk="Microsoft.NET.Sdk">
-    <UsingTask TaskName="EasySemVer" AssemblyFile="$(OutDir)Winterborn.Library.EasySemVer.dll" />
-    <Target Name="RunCustomTask" AfterTargets="PostBuildEvent">
-        <EasySemVer />
-    </Target>
-</Project>
+<Target Name="EasySemVer" BeforeTargets="Build" Condition="'$(Configuration)' == 'Release'">
+    <Exec Command="easysemver &quot;$(MSBuildProjectDirectory)&quot;" />
+</Target>
 ```
 
-###### About The Settings
+Conditioning on `Release` keeps day-to-day builds from bumping versions and causing merge
+conflicts in the baseline. Timing does not otherwise matter: signatures are read from **source**,
+not from compiled assemblies, so the run works equally well before or after the build.
 
-* `<UsingTask TaskName="Winterborn.Library.EasySemVer"` tells us what class we're going to be loading from our assembly
-* `$(PkgWinterborn_EasySemVer)` is the macro that was automatically generated when we added the `GeneratePathProperty` attribute to our package import. This property tells us where on disk the specified NuGet package is stored. We needed to know that in order to tell the build system where to find the code for our custom task.
-* `<Target Name="IncrementTheVersion"` merely names our step
-* `<Target AfterTargets="PostBuildEvent"` tells MSBuild when to run this task. Ultimately this isn't important aside from determining whether the value will be incremented before or after we build. As long as we're consistent, it doesn't matter which we choose.
-* `<EasySemVer />` this invokes our custom build task
+## Seeding versions
 
-## Configuration Step 4
-The utility will only override version settings that have already been provided to the `.csproj` file, it will not add them. So, be sure to add seed values to any versions you want to have synchronized and automatically incremented. 
-
-You do not need to add all of these for the process to work.
-
-If any of these versions don't match, the utility will take the highest of these versions from across all projects and start keeping the values in sync going forward.
+EasySemVer only updates version properties that already exist. Add seed values to whichever ones
+you want kept in sync; you do not need all of them.
 
 ```xml
 <PropertyGroup>
@@ -66,14 +138,15 @@ If any of these versions don't match, the utility will take the highest of these
 </PropertyGroup>
 ```
 
-## Configure Step 5
-To avoid merge conflicts for developers and to still use the utility for published versions, you can add a condition to the csproj file's build step to only run the utility when the configuration is set to "Release" or your equivalent.
+If they disagree, the highest wins and everything converges on it from the next run onwards.
 
-```xml
-<Project Sdk="Microsoft.NET.Sdk">
-    <UsingTask TaskName="EasySemVer" AssemblyFile="$(OutDir)Winterborn.Library.EasySemVer.dll" />
-    <Target Name="IncrementTheVersion" Condition="'$(Configuration)' == 'Release'" AfterTargets="PostBuildEvent">
-        <EasySemVer />
-    </Target>
-</Project>
-```
+## Exit codes
+
+`0` on success. `1` on any failure, with the exception printed — deliberate, so that a versioning
+failure on a release build is impossible to miss.
+
+## Specifications
+
+[`specs/`](specs/) holds the full requirement set: invocation, discovery, extraction,
+persistence, classification, the version model, synchronization, logging and testing, plus a
+[known-gaps list](specs/99-known-gaps.md).

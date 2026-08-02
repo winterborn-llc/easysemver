@@ -4,28 +4,21 @@ Sources: [`Log.cs`](../src/EasySemVer/Log.cs), [`Program.cs`](../src/EasySemVer/
 
 ## Logging
 
-**LOG-01 — Timestamped stdout.** ⚠️
-Diagnostic output SHALL go to stdout with lines prefixed
-`yyyy-MM-dd HH:mm:ss.fff` (so MSBuild logs interleave meaningfully).
-*Deviation:* only messages routed through `Log` get the prefix; several hot paths
-(`CsProjFile.GetSolutionProjectFiles`, `SolutionBuilder`, baseline-corruption warning,
-top-level exception dump) use bare `Console.WriteLine`. One logging surface should win.
-(Gap **G-12**.)
+**LOG-01 — Timestamped stdout.** ✅ *(ERR-M2; G-12 resolved)*
+Diagnostic output SHALL go to stdout with lines prefixed `yyyy-MM-dd HH:mm:ss.fff` (so build logs
+interleave meaningfully). Every path routes through `Log`; there are no bare `Console.WriteLine`
+calls left in the tool.
 
-**LOG-02 — Nested-progress indentation.** ❌
-`Log` exposes `Indent`/`Outdent`/`ResetIndent` so nested phases can be visually grouped
-(3 spaces per level, continuation lines aligned past the timestamp column).
-*Current state:* the semantics are inverted (`Indent()` *decreases* the level, `Outdent()`
-increases it), the indented message string is computed and then discarded (the raw message is
-written instead), and no call sites use the API yet. Effectively unimplemented. (Gap **G-12**.)
+**LOG-02 — Nested-progress indentation.** ✅ *(ERR-M2; G-12 resolved)*
+`Log` exposes `Indent`/`Outdent`/`ResetIndent` so nested phases are visually grouped: three
+spaces per level, with continuation lines of a multi-line message — a stack trace, a tool's
+stderr — aligned past the timestamp column so they stay attached to their entry. `Indent`
+increases the level and `Outdent` decreases it, and the indented string is the one written.
 
-**LOG-03 — Progress events.** ✅
-A run SHALL log at minimum: the starting/solution directory ("Auto Versioning: …"), each
-project file processed, each project loaded for signature extraction, each classification
-rule that fired ("Yay differences: <RuleName>"), and the final change type
-("Change Type: Major|Minor|Patch").
-ℹ️ The "Auto Versioning" line currently prints the *starting* path rather than the resolved
-solution root (minor inaccuracy, part of **G-12**'s cleanup).
+**LOG-03 — Progress events.** ✅ *(ERR-M3)*
+A run SHALL log at minimum: the folder root, the unit count per language, each unit as it is
+read, each firing rule with its unit and impact, the aggregate change type, the seed version, the
+new version, and each file written. A build-log reader can act on all of it.
 
 ## Error handling
 
@@ -38,9 +31,12 @@ deliberate: a versioning failure on a release build must be impossible to miss.
 The only errors deliberately absorbed are baseline-read failures (PER-03/PER-04): missing or
 corrupt history downgrades to "first run," never blocks a release.
 
-**ERR-03 — In-process embedding caveat.** ℹ️
-`Program.Main` catches and calls `Environment.Exit(1)`, which terminates the *host* process —
-this is what crashes the xUnit test host today (see [11-testing.md](11-testing.md)). If
-in-process invocation is a supported scenario (the integration test says it is), the
-exit-code decision should move to the outermost shell (e.g. `Main` returns `int`), with
-`Execute` throwing. Worth fixing alongside G-01.
+**ERR-03 — In-process embedding.** ✅ **Resolved**
+`Program.Main` returns `int` rather than calling `Environment.Exit`, so invoking a run in-process
+— which the integration tests do — no longer takes the calling host down with it. The runtime
+uses the returned value as the process exit code, so the CLI contract (CLI-06) is unchanged.
+
+**ERR-04 — Swift extraction failure is loud and fatal.** ✅ *(SWE-05)*
+A Swift extraction failure SHALL name the unit, the exact command that was run, and the tool's
+own stderr, so the failure can be reproduced from the build log alone. It is fatal by design
+(D-03): no baseline, no version stamp, no partial state.

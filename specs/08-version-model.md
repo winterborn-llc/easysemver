@@ -2,21 +2,23 @@
 
 The version value type and how the run's starting version is determined.
 Sources: [`Version.cs`](../src/EasySemVer/DataObject/Version.cs),
-[`CsProjFileVersion.cs`](../src/EasySemVer/CodeReader/CsProjFileVersion.cs); tests in
+[`CsProjFileVersion.cs`](../src/EasySemVer/CodeReader/Csharp/CsProjFileVersion.cs),
+[`CodeReader/Swift/`](../src/EasySemVer/CodeReader/Swift) for the Swift and Xcode sources; tests in
 [`TestVersion.cs`](../src/Test/TestVersion.cs) and
 [`TestExtractingVersionFromCsProjFile.cs`](../src/Test/TestExtractingVersionFromCsProjFile.cs).
 
 **VER-01 — Format.** ✅
 A version SHALL be a dot-separated sequence of non-negative integers, canonically three
 segments `MAJOR.MINOR.PATCH`. The parser accepts any segment count; any non-numeric segment
-SHALL fail the run with a parse error identifying the input. Pre-release/build-metadata
-suffixes (`-beta`, `+sha`) are **not** supported (parse error by the same rule).
+SHALL be rejected. Pre-release/build-metadata suffixes (`-beta`, `+sha`) are **not** supported.
+ℹ️ `Version.TryParse` is the form the version sources use, so an unparseable value in one
+location is skipped with a warning rather than failing the run (MVR-03).
 
-**VER-02 — Defaults and blanks.** ⚠️
-The default version is `0.0.0`. A `null`/blank input SHALL produce an empty version.
-*Deviation:* an empty version is unusable — `ToString()` and comparisons against it throw
-(index out of range). Callers today always construct from a non-blank string or the default,
-so this is latent. (Gap **G-11**.)
+**VER-02 — Defaults, blanks and short versions.** ✅ *(MVR-02; G-11 resolved)*
+The default version is `0.0.0`. A `null`/blank input SHALL behave as `0.0.0`, and a version with
+fewer than three segments SHALL be normalized to three on parse (`"1.0"` → `1.0.0`) rather than
+crashing `Increment`. With several ecosystems feeding seeds, two-segment values
+(`MARKETING_VERSION = 1.2`) are routine input, not a latent edge.
 
 **VER-03 — Ordering and equality.** ✅
 Versions SHALL compare by Major, then Minor, then Patch, with absent segments treated as `0`
@@ -34,22 +36,30 @@ next-more-significant segment instead (one level of rollover):
 `1.0.2147483647 + Patch → 1.1.0`, `1.2147483647.123 + Minor → 2.0.0`.
 If Major itself is at `int.MaxValue`, the run SHALL fail with an overflow error.
 
-**VER-06 — Seed version resolution.** ✅ (tested; README step 4)
-The run's starting version SHALL be the **highest** version present anywhere in the solution:
+**VER-06 — Seed version resolution.** ✅ *(generalized by MVR-03)*
+The run's starting version SHALL be the **highest** version present in **any** version source in
+**any** unit, in any language:
 
-- Per project: for each of `AssemblyVersion`, `PackageVersion`, `FileVersion`, read the
-  **first** occurrence of that element in the `.csproj` XML (anywhere in the document —
-  PropertyGroup conditions are not evaluated); blank/absent values are skipped; the
-  project's version is the highest of the values found, or `0.0.0` if none.
-- Per solution: the highest of the per-project versions (`0.0.0` if no project declares any).
+| Language | Source | Read | Write |
+|----------|--------|:----:|:-----:|
+| C# | `.csproj` `AssemblyVersion`, `PackageVersion`, `FileVersion` — first occurrence of each element anywhere in the document; highest of the three | ✅ | ✅ |
+| Swift/Xcode | `MARKETING_VERSION` in `project.pbxproj`; highest if several configurations set it | ✅ | ✅ |
+| Swift/Xcode | `CFBundleShortVersionString` in `Info.plist` | ✅ | ✅ |
+| Swift | `s.version` in a `.podspec` | ✅ | ✅ |
+| Swift | a `*Version.swift` constant | ✅ | ✅ |
+| any | git tags matching `v?MAJOR.MINOR.PATCH` | ✅ | ❌ never (§20 O-02) |
 
-This is the mechanism that re-synchronizes drifted projects: whatever the highest counter in
-the solution is, everyone gets `highest + increment` (see
-[09-version-synchronization.md](09-version-synchronization.md)).
+Blank, absent and unparseable values are skipped with a warning, never fatal. This is the
+mechanism that re-synchronizes drifted counters: whatever the highest is, everyone gets
+`highest + increment` (see [09-version-synchronization.md](09-version-synchronization.md)).
 
-**VER-07 — Robustness edges.** ⚠️
-Versions with fewer than three segments parse successfully (VER-01) but crash `Increment`
-when the target segment index exceeds the list (e.g. `"1.0" + Patch`). Versions with more
-than three segments are tolerated: extra segments ride along and are zeroed when a
-more-significant segment is bumped. Seeds SHOULD be written as exactly three segments until
-G-11 is fixed.
+ℹ️ Two deliberate departures from the table as originally specified, both reported at the time:
+`MARKETING_VERSION` is read from the pbxproj literal rather than through
+`xcodebuild -showBuildSettings -json`, because only a literal can be written back (MVR-04) and
+that avoids an extra xcodebuild per project; and build counters `CURRENT_PROJECT_VERSION` /
+`CFBundleVersion` are neither read nor written (MVR-06, §20 O-01).
+
+**VER-07 — Robustness edges.** ✅ *(G-11 resolved)*
+Versions with fewer than three segments are normalized on parse and increment correctly.
+Versions with more than three segments are tolerated: extra segments ride along and are zeroed
+when a more-significant segment is bumped.
