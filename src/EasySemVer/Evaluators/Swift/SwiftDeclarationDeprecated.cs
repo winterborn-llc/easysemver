@@ -1,0 +1,32 @@
+using Winterborn.Library.EasySemVer.DataObject;
+using Winterborn.Library.EasySemVer.DataObject.Swift;
+using Winterborn.Library.EasySemVer.Evaluation.Swift;
+using Winterborn.Library.EasySemVer.Interfaces.Swift;
+
+namespace Winterborn.Library.EasySemVer.Evaluators.Swift;
+
+/// <summary>S26 - a declaration was marked deprecated. Nothing stops compiling, so on its own this is a Patch; anything else that changed alongside it will out-rank it (CLS-03).</summary>
+public class SwiftDeclarationDeprecated : IEvaluateSwiftSignatures
+{
+    public VersionType EvaluationImpact => VersionType.Patch;
+
+    public bool AreDifferencesPresent(ISwiftSignaturesToCompare signatures)
+    {
+        foreach (var pair in SwiftMembers.GetPairedDeclarations(signatures))
+        {
+            if (SwiftAvailabilityFacts.IsDeprecated(pair.Older))
+            {
+                continue;
+            }
+
+            if (!SwiftAvailabilityFacts.IsDeprecated(pair.Newer))
+            {
+                continue;
+            }
+
+            return true;
+        }
+
+        return false;
+    }
+}

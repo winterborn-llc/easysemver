@@ -1,0 +1,83 @@
+import Foundation
+
+public protocol Movable {
+    associatedtype Distance
+    var speed: Int { get }
+    func move(to point: Point, animated: Bool) throws
+}
+
+extension Movable {
+    public func describe() -> String { "movable" }
+}
+
+public struct Point: Equatable {
+    public var x: Int
+    public var y: Int
+    public init(x: Int, y: Int = 0) { self.x = x; self.y = y }
+    public func offset(by delta: Int) -> Point { Point(x: x + delta, y: y) }
+}
+
+public enum Colour {
+    case red
+    case green(shade: Int, Double)
+}
+
+public enum Size: String {
+    case small
+    case large
+}
+
+@frozen public struct Frozen { public let v: Int }
+
+open class Gadget: NSObject, Movable {
+    public typealias Distance = Int
+    public var speed: Int { 1 }
+    public final var name: String = ""
+    public init(name: String) { self.name = name }
+    public func move(to point: Point, animated: Bool) throws { }
+    @objc public func ping() { }
+    public static func make() async throws -> Gadget { Gadget(name: "") }
+    public subscript(index: Int) -> String { "" }
+}
+
+public actor Counter {
+    public var count: Int = 0
+    public func increment() { count += 1 }
+}
+
+public func topLevel<T: Equatable>(_ value: T) -> T { value }
+
+public var globalThing: Int = 3
+
+public typealias Alias = Point
+
+@available(macOS 12.0, *)
+public struct NewThing {
+    public init() {}
+}
+
+@available(*, deprecated, renamed: "NewThing")
+public struct OldThing {
+    public init() {}
+}
+
+extension String {
+    public func widgetize() -> String { self }
+}
+
+infix operator <~> : AdditionPrecedence
+public func <~> (lhs: Point, rhs: Point) -> Bool { lhs == rhs }
+
+public struct Mutator {
+    public var total: Int = 0
+    public mutating func add(_ v: Int = 5, into out: inout Int, extra: Int...) { }
+}
+
+public protocol Defaulted {
+    func required1()
+    func withDefault()
+}
+
+extension Defaulted {
+    public func withDefault() { }
+}

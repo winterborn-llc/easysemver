@@ -1,0 +1,48 @@
+using Winterborn.Library.EasySemVer.DataObject;
+using Winterborn.Library.EasySemVer.DataObject.Swift;
+using Winterborn.Library.EasySemVer.Evaluators.Swift;
+using Winterborn.Library.EasySemVer.Interfaces.Swift;
+using Test.Swift;
+
+namespace Test.Evaluators.Swift;
+
+/// <summary>S21 - directional against S20.</summary>
+public class TestSwiftProtocolRequirementAddedWithDefault
+{
+    private static IEvaluateSwiftSignatures Evaluator => new SwiftProtocolRequirementAddedWithDefault();
+
+    [Fact]
+    public void ChangeTypeIsExpected()
+    {
+        Assert.Equal(VersionType.Minor, Evaluator.EvaluationImpact);
+    }
+
+    [Fact]
+    public void ProtocolIsUnchanged()
+    {
+        var signatures = BuildSwift.Compare(BuildSwift.Protocol(), BuildSwift.Protocol());
+
+        Assert.False(Evaluator.AreDifferencesPresent(signatures));
+    }
+
+    [Fact]
+    public void RequirementWithDefaultIsAdded()
+    {
+        var defaulted = BuildSwift.Function();
+        defaulted.HasDefaultImplementation = true;
+
+        var signatures = BuildSwift.Compare(BuildSwift.Protocol(), BuildSwift.Protocol().WithFunctions(defaulted));
+
+        Assert.True(Evaluator.AreDifferencesPresent(signatures));
+    }
+
+    [Fact]
+    public void RequirementWithoutDefaultDoesNotFire()
+    {
+        var signatures = BuildSwift.Compare(
+            BuildSwift.Protocol(),
+            BuildSwift.Protocol().WithFunctions(BuildSwift.Function()));
+
+        Assert.False(Evaluator.AreDifferencesPresent(signatures));
+    }
+}

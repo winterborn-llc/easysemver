@@ -13,7 +13,8 @@ internal static class LanguageProviders
     {
         return
         [
-            new CsharpLanguageProvider()
+            new CsharpLanguageProvider(),
+            new SwiftLanguageProvider(runProcess)
         ];
     }
 

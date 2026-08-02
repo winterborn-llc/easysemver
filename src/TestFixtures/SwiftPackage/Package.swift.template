@@ -1,0 +1,12 @@
+// swift-tools-version:5.9
+// Checked in with a .template suffix on purpose: a real Package.swift here would make this
+// repository itself a multi-language tree, so every run of EasySemVer over the repo - including
+// the integration regression test - would need a Swift toolchain and an extra `swift build`.
+// The tests copy this tree to a temporary directory and rename the manifest before building.
+import PackageDescription
+
+let package = Package(
+    name: "Widgets",
+    products: [.library(name: "Widgets", targets: ["Widgets"])],
+    targets: [.target(name: "Widgets")]
+)
