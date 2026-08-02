@@ -79,6 +79,19 @@ public class TestXcodeVersionSources : IDisposable
         Assert.Contains("CURRENT_PROJECT_VERSION = 87;", File.ReadAllText(path));
     }
 
+    /// <summary>Xcode writes the value bare or quoted depending on how it was edited.</summary>
+    [Fact]
+    public void QuotedMarketingVersionIsAlsoALiteral()
+    {
+        var path = this.Write("project.pbxproj", "{ MARKETING_VERSION = \"1.4.2\"; }");
+        var source = new MarketingVersionSource(path, "project.pbxproj");
+
+        Assert.Equal("1.4.2", source.Read()!.ToString());
+
+        source.Write(new Version("2.0.0"));
+        Assert.Contains("MARKETING_VERSION = \"2.0.0\";", File.ReadAllText(path));
+    }
+
     [Fact]
     public void ProjectWithoutALiteralVersionIsNotAVersionSource()
     {

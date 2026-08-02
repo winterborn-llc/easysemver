@@ -17,7 +17,8 @@ namespace Winterborn.Library.EasySemVer.CodeReader.Swift;
 /// </summary>
 internal partial class MarketingVersionSource(string pbxprojPath, string relativePath) : IVersionSource
 {
-    [GeneratedRegex(@"(?<prefix>MARKETING_VERSION\s*=\s*)(?<version>[0-9][0-9.]*)(?<suffix>\s*;)")]
+    // Xcode writes the value bare or quoted depending on how it was edited; both are literals.
+    [GeneratedRegex(@"(?<prefix>MARKETING_VERSION\s*=\s*""?)(?<version>[0-9][0-9.]*)(?<suffix>""?\s*;)")]
     private static partial Regex MarketingVersion();
 
     internal static bool HasLiteralVersion(string pbxprojText)

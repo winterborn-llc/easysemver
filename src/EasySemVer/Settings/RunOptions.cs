@@ -27,6 +27,11 @@ internal class RunOptions
                 continue;
             }
 
+            if (arg.StartsWith("--", StringComparison.Ordinal))
+            {
+                throw new InvalidOperationException($"EasySemVer does not recognise the option {arg}");
+            }
+
             directories.Add(arg);
         }
 

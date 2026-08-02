@@ -50,6 +50,12 @@ public class TestRunOptions
     }
 
     [Fact]
+    public void UnknownOptionIsRejected()
+    {
+        Assert.Throws<InvalidOperationException>(() => RunOptions.Parse("--dryrun"));
+    }
+
+    [Fact]
     public void DryRunFlagIsNotMistakenForTheFolder()
     {
         var options = RunOptions.Parse("--dry-run");
