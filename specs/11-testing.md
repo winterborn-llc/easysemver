@@ -94,6 +94,15 @@ copies the tree to a temporary directory. A real `Package.swift` in this reposit
 the repository itself a multi-language tree, so every run — including TST-05 — would require a
 Swift toolchain and an `swift build`.
 
+**TST-M6a — Xcode extraction, live.** ✅
+[`XcodeRegression`](../src/IntegrationTest/XcodeRegression.cs) exercises the Xcode path end to
+end against [`src/TestFixtures/XcodeProject/`](../src/TestFixtures/XcodeProject): target
+discovery via `xcodebuild -list -json`, symbol-graph extraction, `MARKETING_VERSION` read and
+written back, `CURRENT_PROJECT_VERSION` left untouched, and a byte-identical baseline on a second
+run. Same `Toolchain=Swift` trait.
+ℹ️ The project bundle is checked in as `App.xcodeproj.template` and renamed by the fixture, for
+the same reason the SwiftPM manifest is.
+
 **TST-M7 — Failure path.** ✅
 [`TestSwiftExtractionFailure`](../src/Test/Swift/TestSwiftExtractionFailure.cs) stubs the process
 runner with "command not found", "non-zero exit" and "timed out", and asserts that the run fails,
@@ -112,5 +121,9 @@ baseline file and every file on disk are left byte-identical.
 |-------|--------|
 | `dotnet build` | ✅ success — one warning, `NU5129` (PKG-05, gap G-04) |
 | `Test` (unit) | ✅ **464/464 passed** |
-| `IntegrationTest` (C#) | ✅ **3/3 passed** |
-| `IntegrationTest` (Swift-traited) | see the run report; these shell out to `swift` and are sensitive to machine load |
+| `IntegrationTest` | ✅ **10/10 passed** (3 C#, 4 SwiftPM, 3 Xcode) |
+
+ℹ️ The Swift-traited tests shell out to `swift` and `xcodebuild` and are therefore sensitive to
+machine load: on a box already saturated with another Swift build they will hit the five-minute
+manifest timeout and fail. On an idle machine the SwiftPM suite takes about 90 seconds (most of
+it `--build-tests`) and the Xcode suite about 10.

@@ -1,0 +1,82 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 54;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		AA00000000000001 /* Widget.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA00000000000002 /* Widget.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		AA00000000000002 /* Widget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Widget.swift; sourceTree = "<group>"; };
+		AA00000000000003 /* libApp.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libApp.a; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		AA00000000000004 /* Frameworks */ = {isa = PBXFrameworksBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0; };
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		AA00000000000005 = {isa = PBXGroup; children = (AA00000000000006 /* App */, AA00000000000007 /* Products */); sourceTree = "<group>"; };
+		AA00000000000006 /* App */ = {isa = PBXGroup; children = (AA00000000000002 /* Widget.swift */); path = App; sourceTree = "<group>"; };
+		AA00000000000007 /* Products */ = {isa = PBXGroup; children = (AA00000000000003 /* libApp.a */); name = Products; sourceTree = "<group>"; };
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		AA00000000000008 /* App */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = AA00000000000009 /* Build configuration list for PBXNativeTarget "App" */;
+			buildPhases = (AA0000000000000A /* Sources */, AA00000000000004 /* Frameworks */);
+			buildRules = ();
+			dependencies = ();
+			name = App;
+			productName = App;
+			productReference = AA00000000000003 /* libApp.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		AA0000000000000B /* Project object */ = {
+			isa = PBXProject;
+			attributes = { BuildIndependentTargetsInParallel = 1; LastUpgradeCheck = 1500; };
+			buildConfigurationList = AA0000000000000C /* Build configuration list for PBXProject "App" */;
+			compatibilityVersion = "Xcode 12.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (en, Base);
+			mainGroup = AA00000000000005;
+			productRefGroup = AA00000000000007 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (AA00000000000008 /* App */);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		AA0000000000000A /* Sources */ = {isa = PBXSourcesBuildPhase; buildActionMask = 2147483647; files = (AA00000000000001 /* Widget.swift in Sources */); runOnlyForDeploymentPostprocessing = 0; };
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		AA0000000000000D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = { SDKROOT = macosx; SWIFT_VERSION = 5.0; };
+			name = Debug;
+		};
+		AA0000000000000E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = { MARKETING_VERSION = 3.2.1; CURRENT_PROJECT_VERSION = 42; PRODUCT_NAME = "$(TARGET_NAME)"; };
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		AA0000000000000C /* Build configuration list for PBXProject "App" */ = {isa = XCConfigurationList; buildConfigurations = (AA0000000000000D /* Debug */); defaultConfigurationIsVisible = 0; defaultConfigurationName = Debug; };
+		AA00000000000009 /* Build configuration list for PBXNativeTarget "App" */ = {isa = XCConfigurationList; buildConfigurations = (AA0000000000000E /* Debug */); defaultConfigurationIsVisible = 0; defaultConfigurationName = Debug; };
+/* End XCConfigurationList section */
+	};
+	rootObject = AA0000000000000B /* Project object */;
+}

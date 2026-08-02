@@ -726,6 +726,18 @@ proves this makes the tool impractical in a real build hook, the recommended fal
 per-unit opt-out (`.easysemver` config marking a unit version-sync-only) rather than silently
 skipping. Report the measured cost from the fixture project when P5 lands.
 
+> **Measured, P5:** against
+> [`src/TestFixtures/XcodeProject`](../src/TestFixtures/XcodeProject) — one static-library target,
+> one Swift file — a full run takes **4.1 s**: ~1.0 s for `xcodebuild -list -json` and ~3.1 s for
+> the symbol-graph build. That is the floor, not the typical case: it is what `xcodebuild` costs
+> before compiling anything of consequence, and a real app target's build time is added to it in
+> full. On the same machine a one-target SwiftPM package costs ~1.3 s, rising to ~16 s once
+> `--build-tests` compiles the test target as well (which UNI-03 requires).
+>
+> No opt-out was added: nothing measured here proves the tool impractical, and adding a config
+> file to skip units is a bigger decision than a timing number justifies. The recommendation
+> stands if a real Xcode project proves otherwise.
+
 **O-04 — `--dry-run`.** CLI-07 currently states, by design, that there is no preview mode. With
 Xcode builds in the loop and a 60-rule set, a mode that classifies and reports without writing
 becomes valuable both for users and for the test suite. Recommend adding it; it does not

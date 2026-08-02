@@ -4613,6 +4613,47 @@
                <Fields />
                <Events />
             </Class>
+            <Class name="IntegrationTest.XcodeRegression" declaringType="" static="false" abstract="false" sealed="false" base="">
+               <Implements />
+               <GenericParameters />
+               <Methods>
+                  <Method name=".ctor" returns="void">
+                     <Overrides>
+                        <Override returns="void" static="false" virtual="false" abstract="false" override="false" sealed="false" hasDefaultImplementation="false">
+                           <GenericParameters />
+                           <Parameters />
+                        </Override>
+                     </Overrides>
+                  </Method>
+                  <Method name="ExtractedModuleCarriesTheTargetsSwiftSurface" returns="void">
+                     <Overrides>
+                        <Override returns="void" static="false" virtual="false" abstract="false" override="false" sealed="false" hasDefaultImplementation="false">
+                           <GenericParameters />
+                           <Parameters />
+                        </Override>
+                     </Overrides>
+                  </Method>
+                  <Method name="SecondRunOverAnUnchangedXcodeTreeIsAPatch" returns="void">
+                     <Overrides>
+                        <Override returns="void" static="false" virtual="false" abstract="false" override="false" sealed="false" hasDefaultImplementation="false">
+                           <GenericParameters />
+                           <Parameters />
+                        </Override>
+                     </Overrides>
+                  </Method>
+                  <Method name="XcodeTargetIsDiscoveredExtractedAndVersioned" returns="void">
+                     <Overrides>
+                        <Override returns="void" static="false" virtual="false" abstract="false" override="false" sealed="false" hasDefaultImplementation="false">
+                           <GenericParameters />
+                           <Parameters />
+                        </Override>
+                     </Overrides>
+                  </Method>
+               </Methods>
+               <Properties />
+               <Fields />
+               <Events />
+            </Class>
          </Classes>
          <Interfaces />
          <Structs />
