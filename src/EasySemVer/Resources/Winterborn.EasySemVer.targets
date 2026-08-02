@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <!-- Resolve the exe relative to this targets file -->
+        <EasySemVerExePath Condition="'$(EasySemVerExePath)'==''">
+            $(MSBuildThisFileDirectory)..\tools\EasySemVer.exe
+        </EasySemVerExePath>
+    </PropertyGroup>
+
+    <Target Name="RunEasySemVerExe"
+            BeforeTargets="BeforeBuild">
+        <Message Importance="High"
+                 Text="Running EasySemVer: $(EasySemVerExePath) --project &quot;$(MSBuildProjectFullPath)&quot;" />
+        <Exec Command="&quot;$(EasySemVerExePath)&quot; &quot;$(SolutionDir)&quot;" />
+    </Target>
+</Project>

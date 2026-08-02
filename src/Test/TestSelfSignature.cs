@@ -1,12 +1,11 @@
-using Yamamari.Library.AutoVersion;
-using Yamamari.Library.AutoVersion.SignatureStructure;
+using Winterborn.Library.EasySemVer.CodeReader;
 
 namespace Test;
 
 public class TestSelfSignature
 {
     [Fact]
-    public void IAmInTheSignature()
+    public void InTheSignature()
     {
         var csProjDirectory = GetParentDirectoryContaining("Test.csproj");
         var csprojFileInfo = csProjDirectory.GetFiles().FirstOrDefault(f => f.Name.EndsWith("Test.csproj"));
@@ -16,17 +15,15 @@ public class TestSelfSignature
         }
         
         var csProjFile = new CsProjFile(csprojFileInfo.FullName);
-        var signature = SignatureBuilder.GetSignatureFor(csProjFile);
-        Assert.NotNull(signature);
-        var project = signature.FirstOrDefault();
+        var project = csProjFile.GetProject();
         Assert.NotNull(project);
         var signatureOfThisClass = project.Classes.FirstOrDefault(s => s.Name == $"{typeof(TestSelfSignature).Namespace}.{nameof(TestSelfSignature)}");
         Assert.NotNull(signatureOfThisClass);
         Assert.NotEmpty(signatureOfThisClass.Methods);
-        var thisMethodsSignature = signatureOfThisClass.Methods.FirstOrDefault(m => m.Value.MethodName == nameof(IAmInTheSignature)); 
-        Assert.NotNull(thisMethodsSignature.Value);
-        Assert.Equal("Void", thisMethodsSignature.Value.MethodType);
-        Assert.Single(thisMethodsSignature.Value.Overrides);
+        var thisMethodsSignature = signatureOfThisClass.Methods.FirstOrDefault(m => m.MethodName == nameof(InTheSignature)); 
+        Assert.NotNull(thisMethodsSignature);
+        Assert.Equal("void", thisMethodsSignature.MethodType);
+        Assert.Single(thisMethodsSignature.Overrides);
     }
 
     private static DirectoryInfo GetParentDirectoryContaining(params string[] fileSuffixes)
@@ -53,14 +50,12 @@ public class TestSelfSignature
         
         if (directory == null)
         {
-            Assert.Fail($"Unable to find the csproj file for this test");
-            return directory;
+            Assert.Fail("Unable to find the csproj file for this test");
         }
         
         if (targetFileInfo == null)
         {
-            Assert.Fail($"Unable to access csproj file for this test");
-            return directory;
+            Assert.Fail("Unable to access csproj file for this test");
         }
 
         return directory;

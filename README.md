@@ -1,4 +1,4 @@
-# Auto-Version by Yamamari
+# Auto-Version from the Winterborn
 This is intended to be a lightweight utility for synchronizing and incrementing the various version counters across a C# solution.
 
 ## Configuration Step 1
@@ -8,7 +8,7 @@ The process will update the versions of all projects in the solution.
 ```xml
 <ItemGroup>
     <PackageReference 
-            Include="Yamamari.AutoVersion"
+            Include="Winterborn.Library.EasySemVer"
             Version="5.1.4"/>
 </ItemGroup>
 ```
@@ -16,14 +16,14 @@ The process will update the versions of all projects in the solution.
 ## Configuration Step 2
 After adding the package to your project, you must configure it to execute a post-build process. This must be post-build so the dlls exist and can be inspected. This requires opening the `.csproj` file and directly modifying the xml.
 
-Once it's opened, find the `ItemGroup` that includes the package import for `Yamamari.AutoVersion`.
+Once it's opened, find the `ItemGroup` that includes the package import for `Winterborn.Library.EasySemVer`.
 
-You must add the attribute `GeneratePathProperty` to the `AutoVersion` package reference and set it to true.
+You must add the attribute `GeneratePathProperty` to the `EasySemVer` package reference and set it to true.
 
 ```xml
 <ItemGroup>
     <PackageReference 
-            Include="Yamamari.AutoVersion" 
+            Include="Winterborn.Library.EasySemVer" 
             GeneratePathProperty="true" 
             Version="5.1.4" />
 </ItemGroup>
@@ -36,20 +36,20 @@ We need to add an XML block to add our build step. The example below should work
 
 ```xml
 <Project Sdk="Microsoft.NET.Sdk">
-    <UsingTask TaskName="AutoVersion" AssemblyFile="$(OutDir)AutoVersion.dll" />
+    <UsingTask TaskName="EasySemVer" AssemblyFile="$(OutDir)Winterborn.Library.EasySemVer.dll" />
     <Target Name="RunCustomTask" AfterTargets="PostBuildEvent">
-        <AutoVersion />
+        <EasySemVer />
     </Target>
 </Project>
 ```
 
 ###### About The Settings
 
-* `<UsingTask TaskName="AutoVersion"` tells us what class we're going to be loading from our assembly
-* `$(PkgYamamari_AutoVersion)` is the macro that was automatically generated when we added the `GeneratePathProperty` attribute to our package import. This property tells us where on disk the specified NuGet package is stored. We needed to know that in order to tell the build system where to find the code for our custom task.
+* `<UsingTask TaskName="Winterborn.Library.EasySemVer"` tells us what class we're going to be loading from our assembly
+* `$(PkgWinterborn_EasySemVer)` is the macro that was automatically generated when we added the `GeneratePathProperty` attribute to our package import. This property tells us where on disk the specified NuGet package is stored. We needed to know that in order to tell the build system where to find the code for our custom task.
 * `<Target Name="IncrementTheVersion"` merely names our step
 * `<Target AfterTargets="PostBuildEvent"` tells MSBuild when to run this task. Ultimately this isn't important aside from determining whether the value will be incremented before or after we build. As long as we're consistent, it doesn't matter which we choose.
-* `<AutoVersion />` this invokes our custom build task
+* `<EasySemVer />` this invokes our custom build task
 
 ## Configuration Step 4
 The utility will only override version settings that have already been provided to the `.csproj` file, it will not add them. So, be sure to add seed values to any versions you want to have synchronized and automatically incremented. 
@@ -71,9 +71,9 @@ To avoid merge conflicts for developers and to still use the utility for publish
 
 ```xml
 <Project Sdk="Microsoft.NET.Sdk">
-    <UsingTask TaskName="AutoVersion" AssemblyFile="$(OutDir)AutoVersion.dll" />
+    <UsingTask TaskName="EasySemVer" AssemblyFile="$(OutDir)Winterborn.Library.EasySemVer.dll" />
     <Target Name="IncrementTheVersion" Condition="'$(Configuration)' == 'Release'" AfterTargets="PostBuildEvent">
-        <AutoVersion />
+        <EasySemVer />
     </Target>
 </Project>
 ```

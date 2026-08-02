@@ -1,4 +1,4 @@
-using Yamamari.Library.AutoVersion;
+using Winterborn.Library.EasySemVer.CodeReader;
 
 namespace Test;
 

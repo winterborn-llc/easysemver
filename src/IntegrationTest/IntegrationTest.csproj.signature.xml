@@ -1,0 +1,14 @@
+<Signature project="IntegrationTest.csproj">
+    <Classes>
+        <Class name="IntegrationTest.Regression">
+            <Methods>
+                <Method
+                    Name="TestProgramInvocation"
+                    Type="Void">
+                    <Overrides />
+                </Method>
+            </Methods>
+            <Properties />
+        </Class>
+    </Classes>
+</Signature>

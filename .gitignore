@@ -356,3 +356,7 @@ src/Test/.DS_Store
 src/VersionCounter/.DS_Store
 src/.idea/.idea.Yamamari.Library.VersionCounter/.idea/workspace.xml
 src/VersionCounter/.DS_Store
+
+# Local NuGet package cache used by this repo
+/.packages/
+/\\.packages/

@@ -1,5 +1,5 @@
-using Yamamari.Library.AutoVersion;
-using Version = Yamamari.Library.AutoVersion.Version;
+using Winterborn.Library.EasySemVer.DataObject;
+using Version = Winterborn.Library.EasySemVer.DataObject.Version;
 
 namespace Test;
 

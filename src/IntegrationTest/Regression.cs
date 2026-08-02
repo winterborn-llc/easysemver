@@ -1,7 +1,8 @@
+using Winterborn.Library.EasySemVer;
+using Winterborn.Library.EasySemVer.CodeReader;
+using Winterborn.Library.EasySemVer.Extensions;
 using Xunit;
-using Yamamari.Library.AutoVersion;
-using Yamamari.Library.AutoVersion.Extensions;
-using Version = Yamamari.Library.AutoVersion.Version;
+using Version = Winterborn.Library.EasySemVer.DataObject.Version;
 
 namespace IntegrationTest;
 
@@ -14,8 +15,7 @@ public class Regression
     public void TestProgramInvocation()
     {
         // Set the baseline and ensure the file exists.
-        var autoVersion = GetAutoVersion();
-        autoVersion.Execute();
+        Program.Main();
         
         // Get the current version from disk
         // Run the increment process
@@ -23,25 +23,17 @@ public class Regression
 
         var baselineFile = GetTestFile();
         var previous = new Version(baselineFile.Version);
-        autoVersion.Execute();
-
-        autoVersion.GetHashCode();
+        Program.Main();
         
         var updatedFile = GetTestFile();
         var current = new Version(updatedFile.Version);
         Assert.Equal(previous.Patch + 1, current.Patch);
     }
 
-    private static AutoVersion GetAutoVersion()
-    {
-        var autoVersion = new AutoVersion();
-        return autoVersion;
-    }
-
     private static CsProjFile GetTestFile()
     {
         var solutionDirectory = Environment.CurrentDirectory.GetSolutionDirectory();
-        var testFile = AutoVersion.GetProjectFiles(solutionDirectory).FirstOrDefault(p => p.ProjectName == "Test.csproj");
+        var testFile = CsProjFile.GetSolutionProjectFiles(solutionDirectory).FirstOrDefault(p => p.ProjectName == "Test.csproj");
         if (testFile == null)
         {
             Assert.Fail("Unable to load the test project file.");

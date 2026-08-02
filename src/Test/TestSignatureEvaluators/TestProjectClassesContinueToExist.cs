@@ -1,28 +1,29 @@
-using Yamamari.Library.AutoVersion;
-using Yamamari.Library.AutoVersion.SignatureEvaluation;
-using Yamamari.Library.AutoVersion.SignatureStructure;
+using Winterborn.Library.EasySemVer.DataObject;
+using Winterborn.Library.EasySemVer.Evaluation;
+using Winterborn.Library.EasySemVer.Evaluators;
+using Winterborn.Library.EasySemVer.Interfaces;
 
 namespace Test.TestSignatureEvaluators;
 
 public class TestProjectClassesContinueToExist
 {
     private static IEvaluateSignatures Evaluator => new ProjectClassesContinueToExist();
-    
+
     [Fact]
     public void ChangeTypeIsExpected()
     {
         Assert.Equal(VersionType.Major, Evaluator.EvaluationImpact);
     }
-    
+
     [Fact]
     public void ProjectsSame()
     {
-        var signatures = new Signatures(
-            older:
-            [
+        var signatures = new SignaturesToCompare("",
+            older: new Solution
+            {
                 new Project("Test")
                 {
-                    Classes = 
+                    Classes =
                     [
                         new ProjectClass
                         {
@@ -30,13 +31,13 @@ public class TestProjectClassesContinueToExist
                         }
                     ]
                 }
-            ]
+            }
             ,
-            newer:
-            [
+            newer: new Solution
+            {
                 new Project("Test")
                 {
-                    Classes = 
+                    Classes =
                     [
                         new ProjectClass
                         {
@@ -48,22 +49,22 @@ public class TestProjectClassesContinueToExist
                         }
                     ]
                 }
-            ]
+            }
         );
-        
+
         var result = Evaluator.AreDifferencesPresent(signatures);
         Assert.False(result);
     }
-    
+
     [Fact]
     public void ClassNotFound()
     {
-        var signatures = new Signatures(
-            older:
-            [
+        var signatures = new SignaturesToCompare("",
+            older: new Solution
+            {
                 new Project("Test")
                 {
-                    Classes = 
+                    Classes =
                     [
                         new ProjectClass
                         {
@@ -71,13 +72,13 @@ public class TestProjectClassesContinueToExist
                         }
                     ]
                 }
-            ]
+            }
             ,
-            newer:
-            [
+            newer: new Solution
+            {
                 new Project("Test")
                 {
-                    Classes = 
+                    Classes =
                     [
                         new ProjectClass
                         {
@@ -85,9 +86,9 @@ public class TestProjectClassesContinueToExist
                         }
                     ]
                 }
-            ]
+            }
         );
-        
+
         var result = Evaluator.AreDifferencesPresent(signatures);
         Assert.True(result);
     }

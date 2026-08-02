@@ -1,0 +1,49 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <PackageVersion>12.0.15</PackageVersion>
+    <AssemblyVersion>12.0.15</AssemblyVersion>
+    <FileVersion>12.0.15</FileVersion>
+    <Title>EasySemVer by Winterborn</Title>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <RootNamespace>Winterborn.Library.EasySemVer</RootNamespace>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageIcon>Resources/logo.png</PackageIcon>
+    <PackageProjectUrl>https://github.com/winterborn-llc/easysemver</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/winterborn-llc/easysemver</RepositoryUrl>
+    <RepositoryType>Git</RepositoryType>
+    <PackageId>Winterborn.Library.EasySemVer</PackageId>
+    <EnableDynamicLoading>True</EnableDynamicLoading>
+    <CustomTasksAssembly>$(OutDir)Winterborn.Library.EasySemVer.dll</CustomTasksAssembly>
+    <LangVersion>14</LangVersion>
+    <TargetFrameworks>net10.0;net8.0;net9.0</TargetFrameworks>
+    <OutputType>Exe</OutputType>
+    <AssemblyName>Winterborn.Library.EasySemVer</AssemblyName>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="..\..\README.md">
+      <Link>Resources/README.md</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Winterborn.EasySemVer.targets" PackagePath="buildTransitive/" Pack="true" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.CodeAnalysis.Common" 
+                      Version="5.0.0" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="5.0.0" />
+    <PackageReference Include="Microsoft.CodeAnalysis.Workspaces.MSBuild" 
+                      Version="5.0.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="Resources/logo.png" />
+    <None Include="Resources/logo.png" Pack="true" PackagePath="Resources/" />
+    <EmbeddedResource Include="Resources/logo.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+  </ItemGroup>
+</Project>

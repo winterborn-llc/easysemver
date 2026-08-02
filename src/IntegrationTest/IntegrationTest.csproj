@@ -1,13 +1,13 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <AssemblyVersion>12.0.13</AssemblyVersion>
+    <AssemblyVersion>12.0.15</AssemblyVersion>
     <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <LangVersion>14</LangVersion>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\AutoVersion\AutoVersion.csproj" />
+    <ProjectReference Include="..\EasySemVer\EasySemVer.csproj" />
   </ItemGroup>
   <ItemGroup>
     <AssemblyAttribute Include="System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverageAttribute" />
@@ -26,24 +26,4 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
   </ItemGroup>
-  <PropertyGroup>
-    <LatestAutoVersionSignature>{
-   "Name": "IntegrationTest.csproj",
-   "Classes": [
-      {
-         "Name": "IntegrationTest.Regression",
-         "Methods": {
-            "TestProgramInvocation": {
-               "MethodName": "TestProgramInvocation",
-               "MethodType": "Void",
-               "Overrides": [
-                  []
-               ]
-            }
-         },
-         "Properties": {}
-      }
-   ]
-}</LatestAutoVersionSignature>
-  </PropertyGroup>
 </Project>
