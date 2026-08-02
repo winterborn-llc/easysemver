@@ -24,6 +24,11 @@ internal class SwiftSymbolGraphExtractor(IRunProcess runProcess)
                 "swift",
                 [
                     "build",
+
+                    // Test targets are units too (UNI-03), and a plain `swift build` does not
+                    // build them - so without this a package with tests fails SWE-05 for a
+                    // target that was never compiled.
+                    "--build-tests",
                     "--package-path", packageDirectory,
                     "-Xswiftc", "-emit-symbol-graph",
                     "-Xswiftc", "-emit-symbol-graph-dir",

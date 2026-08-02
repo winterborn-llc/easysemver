@@ -42,6 +42,7 @@ public class SwiftRegression
         Assert.Contains("language=\"Swift\"", baseline);
         Assert.Contains("unitKind=\"swiftpm-target\"", baseline);
         Assert.Contains("<SwiftModule name=\"Widgets\"", baseline);
+        Assert.Contains("<SwiftModule name=\"WidgetsTests\"", baseline);
 
         // MVR-05: the one new version reaches both ecosystems' version locations. The podspec
         // seeds 2.3.4, which is higher than the csproj's 1.0.0, and a first run is Minor.
@@ -87,10 +88,19 @@ public class SwiftRegression
         using var fixture = new SwiftPackageFixture();
 
         var provider = new SwiftLanguageProvider(new ProcessRunner());
-        var unit = Assert.Single(provider.Discover(fixture.FolderRoot));
-        Assert.Equal("SwiftPackage:Widgets", unit.UnitId);
+        var units = provider.Discover(fixture.FolderRoot);
 
-        provider.Extract(unit);
+        // UNI-03: test targets are units too, and a plain `swift build` does not build them.
+        Assert.Equal(
+            ["SwiftPackage:Widgets", "SwiftPackage:WidgetsTests"],
+            units.Select(u => u.UnitId).Order());
+
+        foreach (var discovered in units)
+        {
+            provider.Extract(discovered);
+        }
+
+        var unit = units.First(u => u.UnitId == "SwiftPackage:Widgets");
 
         var module = Assert.IsAssignableFrom<ISwiftModule>(unit.Signature);
         Assert.Equal("Widgets", module.Name);
