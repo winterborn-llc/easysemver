@@ -49,6 +49,69 @@ reviewable, which is the whole point of the mode. Findings are ordered by unit a
 so that identical input produces identical output, for the same reason BAS-04 sorts a baseline.
 A run without the flag keeps the quieter one-line-per-firing-rule summary (LOG-03).
 
+## Machine-readable report
+
+**REP-01 — `--json <path>` writes the run's verdict as a file.** ⚠️ *specified, not implemented*
+`easysemver <folder> --json <path>` SHALL write a JSON document describing the run to
+`<path>`. It SHALL NOT write JSON to stdout and SHALL NOT move the human log anywhere: LOG-01
+keeps stdout, unconditionally. A workflow that wants the verdict reads the file; nothing has to
+parse a log, and no existing stream contract changes.
+
+**REP-02 — The document.** ⚠️
+```json
+{
+  "formatVersion": 1,
+  "dryRun": false,
+  "changeType": "major",
+  "oldVersion": { "version": "2.3.4", "major": 2, "minor": 3, "patch": 4 },
+  "newVersion": { "version": "3.0.0", "major": 3, "minor": 0, "patch": 0 }
+}
+```
+- `changeType` is `"major" | "minor" | "patch"`, lower case. So are all enum-valued fields: this
+  is a wire format, not a dump of a C# enum, and lower case removes a class of casing bugs in
+  shell and YAML comparisons.
+- Both version objects share one shape. `version` is the canonical string and the full truth;
+  `major`/`minor`/`patch` are numbers and are the *first three* segments, which matters because a
+  version may legitimately carry more (VER-07). The decomposition is there because consumers
+  routinely want the parts — a Docker tag set of `3`, `3.0`, `3.0.0` from one run.
+- `dryRun` is the only signal that a report describes a preview rather than something that
+  happened, so it is always present.
+
+**REP-03 — `formatVersion` has its own lifecycle.** ⚠️
+It starts at `1` and is versioned independently of the baseline's `formatVersion` (currently 3).
+The two documents have different audiences and different failure modes — a JSON consumer breaking
+is not a versioning run breaking — so sharing a number would couple them for no reason.
+
+**REP-04 — Fields may be added; nothing may be removed or retyped.** ⚠️
+Adding a field is backwards-compatible and SHALL NOT bump `formatVersion`. Removing one, renaming
+one, or changing its type SHALL bump it. This is what makes REP-05's minimalism safe rather than
+short-sighted: the document can grow into whatever a real consumer turns out to need.
+
+**REP-05 — Only what a consumer demonstrably needs.** ℹ️
+Discovered units, individual findings, and the list of files written were all specified, weighed
+and deliberately **left out**. They belong in the log, which already renders them (CLI-08), and
+no consumer for them existed at the time of writing. Per REP-04 any of them can be added later
+without breaking a reader, whereas shipping them now would have committed the contract to a
+shape nobody had asked for. Do not re-add them by reflex; add them when something needs them.
+
+**REP-06 — The verdict is stated, never inferred.** ℹ️
+`changeType` is not redundant with the two versions, and a consumer SHALL NOT derive it by
+comparing them. VER-05's overflow rollover makes that inference wrong: `1.0.2147483647 + Patch`
+becomes `1.1.0`, which reads as a Minor bump, and `1.2147483647.123 + Minor` becomes `2.0.0`,
+which reads as Major. The field is the only place the classification itself appears.
+
+**REP-07 — Determinism, and no machine-specific content.** ⚠️
+The document SHALL contain no absolute paths, timestamps, durations, machine names or tool
+versions. Two runs over unchanged source on two machines SHALL produce byte-identical JSON, for
+the same reason a baseline must (BAS-04) — so that diffing two reports shows only real change.
+ℹ️ The folder root is deliberately absent: the caller passed it, so restating it would buy
+nothing and would be the one field that broke this property.
+
+**REP-08 — A failed run writes no report.** ⚠️
+If the run fails, `<path>` SHALL NOT be written or modified. This matches BAS-06 — a failed run
+writes nothing at all — and the exit code (CLI-06) remains the failure channel. A half-truthful
+report is worse than no report.
+
 ## Invocation surfaces
 
 **INV-01 — The CLI is the product.** ✅ *(replaces MSB-01/MSB-02)*
@@ -84,6 +147,6 @@ whether EasySemVer runs before or after a build. The increment is relative to th
 baseline, not to build artifacts.
 
 **INV-05 — GitHub Action.** ⚠️ *planned, not implemented*
-The intended third surface is a GitHub Action wrapping the CLI. Nothing of it exists yet, and it
-implies at least one capability the tool does not have: a machine-readable verdict, so a workflow
-can consume the computed version and change type as step outputs rather than scraping the log.
+The intended third surface is a GitHub Action wrapping the CLI. Nothing of it exists yet. The one
+capability it depends on is specified above as REP-01…REP-08: a machine-readable verdict the
+Action can turn into step outputs, so that no workflow ever has to scrape a log.
