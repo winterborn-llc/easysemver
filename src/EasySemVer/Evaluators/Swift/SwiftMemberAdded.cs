@@ -8,6 +8,8 @@ namespace Winterborn.Library.EasySemVer.Evaluators.Swift;
 /// <summary>S17 - a public member was added to an existing type.</summary>
 public class SwiftMemberAdded : IEvaluateSwiftSignatures
 {
+    public string RuleId => "S17";
+
     public VersionType EvaluationImpact => VersionType.Minor;
 
     public string ChangeDescription => "was added";

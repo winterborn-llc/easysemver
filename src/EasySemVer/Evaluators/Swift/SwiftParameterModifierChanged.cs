@@ -8,6 +8,8 @@ namespace Winterborn.Library.EasySemVer.Evaluators.Swift;
 /// <summary>S33 - a parameter's inout, variadic or ownership modifier changed. The call site has to change with it, in either direction.</summary>
 public class SwiftParameterModifierChanged : IEvaluateSwiftSignatures
 {
+    public string RuleId => "S33";
+
     public VersionType EvaluationImpact => VersionType.Major;
 
     public string ChangeDescription => "changed a parameter modifier";

@@ -9,6 +9,8 @@ namespace Winterborn.Library.EasySemVer.Evaluators.Csharp;
 /// </summary>
 public class FieldContractReduced : IEvaluateCsharpSignatures
 {
+    public string RuleId => "R28";
+
     public VersionType EvaluationImpact => VersionType.Major;
 
     public string ChangeDescription => "was removed, retyped, or made readonly";

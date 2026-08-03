@@ -7,6 +7,8 @@ namespace Winterborn.Library.EasySemVer.Evaluators.Csharp;
 /// <summary>R41 (addition half) - a public nested type appeared.</summary>
 public class NestedTypeAdded : IEvaluateCsharpSignatures
 {
+    public string RuleId => "R41";
+
     public VersionType EvaluationImpact => VersionType.Minor;
 
     public string ChangeDescription => "was added";

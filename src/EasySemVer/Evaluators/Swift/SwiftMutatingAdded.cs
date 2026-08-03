@@ -8,6 +8,8 @@ namespace Winterborn.Library.EasySemVer.Evaluators.Swift;
 /// <summary>S29 - mutating was added to a member of a value type, so a let binding can no longer call it.</summary>
 public class SwiftMutatingAdded : IEvaluateSwiftSignatures
 {
+    public string RuleId => "S29";
+
     public VersionType EvaluationImpact => VersionType.Major;
 
     public string ChangeDescription => "became mutating";

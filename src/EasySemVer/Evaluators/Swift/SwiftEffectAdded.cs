@@ -8,6 +8,8 @@ namespace Winterborn.Library.EasySemVer.Evaluators.Swift;
 /// <summary>S23 - throws or async was added to an existing declaration, so every call site has to change.</summary>
 public class SwiftEffectAdded : IEvaluateSwiftSignatures
 {
+    public string RuleId => "S23";
+
     public VersionType EvaluationImpact => VersionType.Major;
 
     public string ChangeDescription => "gained a throws or async effect";

@@ -8,6 +8,8 @@ namespace Winterborn.Library.EasySemVer.Evaluators.Swift;
 /// <summary>S15 - @frozen was added, which only promises callers more.</summary>
 public class SwiftFrozenAdded : IEvaluateSwiftSignatures
 {
+    public string RuleId => "S15";
+
     public VersionType EvaluationImpact => VersionType.Minor;
 
     public string ChangeDescription => "became @frozen";

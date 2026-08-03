@@ -4,9 +4,11 @@ using Winterborn.Library.EasySemVer.Interfaces.Csharp;
 
 namespace Winterborn.Library.EasySemVer.Evaluators.Csharp;
 
-/// <summary>R16 - an existing method gained an overload.</summary>
+/// <summary>R04 - an existing method gained an overload.</summary>
 internal class MethodOverrideAdded : IEvaluateCsharpSignatures
 {
+    public string RuleId => "R04";
+
     public VersionType EvaluationImpact => VersionType.Minor;
 
     public string ChangeDescription => "was added as an overload";

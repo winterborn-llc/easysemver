@@ -8,6 +8,8 @@ namespace Winterborn.Library.EasySemVer.Evaluators.Swift;
 /// <summary>S09 - a protocol conformance was removed from a public type.</summary>
 public class SwiftConformanceRemoved : IEvaluateSwiftSignatures
 {
+    public string RuleId => "S09";
+
     public VersionType EvaluationImpact => VersionType.Major;
 
     public string ChangeDescription => "no longer conforms to a protocol it used to";

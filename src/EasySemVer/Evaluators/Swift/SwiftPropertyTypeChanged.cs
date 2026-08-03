@@ -8,6 +8,8 @@ namespace Winterborn.Library.EasySemVer.Evaluators.Swift;
 /// <summary>S37 - a property's type changed.</summary>
 public class SwiftPropertyTypeChanged : IEvaluateSwiftSignatures
 {
+    public string RuleId => "S37";
+
     public VersionType EvaluationImpact => VersionType.Major;
 
     public string ChangeDescription => "changed its type";

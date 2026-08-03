@@ -8,6 +8,8 @@ namespace Winterborn.Library.EasySemVer.Evaluators.Swift;
 /// <summary>S38 - an operator declaration or its precedence group changed.</summary>
 public class SwiftOperatorChanged : IEvaluateSwiftSignatures
 {
+    public string RuleId => "S38";
+
     public VersionType EvaluationImpact => VersionType.Major;
 
     public string ChangeDescription => "was removed, or changed kind or precedence group";

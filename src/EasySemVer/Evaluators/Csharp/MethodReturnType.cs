@@ -10,6 +10,8 @@ namespace Winterborn.Library.EasySemVer.Evaluators.Csharp;
 /// </summary>
 public class MethodReturnType : IEvaluateCsharpSignatures
 {
+    public string RuleId => "R03";
+
     public VersionType EvaluationImpact => VersionType.Major;
 
     public string ChangeDescription => "changed its return type";

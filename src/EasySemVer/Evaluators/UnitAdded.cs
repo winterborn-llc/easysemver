@@ -10,6 +10,8 @@ namespace Winterborn.Library.EasySemVer.Evaluators;
 /// </summary>
 public class UnitAdded : IEvaluateUnitExistence
 {
+    public string RuleId => "NCL-02";
+
     public VersionType EvaluationImpact => VersionType.Minor;
 
     public string ChangeDescription => "was added";

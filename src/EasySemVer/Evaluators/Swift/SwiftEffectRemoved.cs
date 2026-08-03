@@ -8,6 +8,8 @@ namespace Winterborn.Library.EasySemVer.Evaluators.Swift;
 /// <summary>S24 - throws or async was removed, which existing call sites tolerate.</summary>
 public class SwiftEffectRemoved : IEvaluateSwiftSignatures
 {
+    public string RuleId => "S24";
+
     public VersionType EvaluationImpact => VersionType.Minor;
 
     public string ChangeDescription => "lost a throws or async effect";

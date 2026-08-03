@@ -6,6 +6,8 @@ namespace Winterborn.Library.EasySemVer.Evaluators.Csharp;
 /// <summary>R08 - a read-only property gained a setter.</summary>
 public class PropertyEditabilityEnhanced : IEvaluateCsharpSignatures
 {
+    public string RuleId => "R08";
+
     public VersionType EvaluationImpact => VersionType.Minor;
 
     public string ChangeDescription => "became writable";

@@ -8,6 +8,8 @@ namespace Winterborn.Library.EasySemVer.Evaluators.Swift;
 /// <summary>S01 - a public type is gone from the module.</summary>
 public class SwiftTypeRemoved : IEvaluateSwiftSignatures
 {
+    public string RuleId => "S01";
+
     public VersionType EvaluationImpact => VersionType.Major;
 
     public string ChangeDescription => "was removed";

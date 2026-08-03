@@ -3,10 +3,12 @@ using Winterborn.Library.EasySemVer.Interfaces.Csharp;
 
 namespace Winterborn.Library.EasySemVer.Evaluators.Csharp;
 
-/// <summary>R12 - a property's type changed.</summary>
+/// <summary>R13 - a property's type changed.</summary>
 [DebuggerDisplay("{EvaluationImpact}")]
 public class PropertyType : IEvaluateCsharpSignatures
 {
+    public string RuleId => "R13";
+
     public VersionType EvaluationImpact => VersionType.Major;
 
     public string ChangeDescription => "changed its type";

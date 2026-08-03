@@ -20,6 +20,13 @@ public class ChangeFinding
     public string RuleName { get; init; } = string.Empty;
 
     /// <summary>
+    /// The rule's identifier from the specs - "R02", "S18", "NCL-01". Published in the JSON
+    /// report (REP-02) where <see cref="RuleName"/> is not, because a class name is an
+    /// implementation detail a consumer should not be keyed to.
+    /// </summary>
+    public string RuleId { get; init; } = string.Empty;
+
+    /// <summary>
     /// What the change is about, named the way the language names it: a namespace-qualified type
     /// or member for C# (SIG-04), a declaration path including argument labels for Swift
     /// (SWE-03). Unit-level findings name the unit itself.

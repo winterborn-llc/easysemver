@@ -8,6 +8,8 @@ namespace Winterborn.Library.EasySemVer.Evaluators.Swift;
 /// <summary>S04 - a class went from open to public, withdrawing subclassing and overriding.</summary>
 public class SwiftClassSubclassingWithdrawn : IEvaluateSwiftSignatures
 {
+    public string RuleId => "S04";
+
     public VersionType EvaluationImpact => VersionType.Major;
 
     public string ChangeDescription => "is no longer open, so it can no longer be subclassed";

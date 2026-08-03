@@ -8,6 +8,8 @@ namespace Winterborn.Library.EasySemVer.Evaluators.Swift;
 /// <summary>S11 - a generic parameter count changed.</summary>
 public class SwiftGenericParameterCountChanged : IEvaluateSwiftSignatures
 {
+    public string RuleId => "S11";
+
     public VersionType EvaluationImpact => VersionType.Major;
 
     public string ChangeDescription => "changed its number of generic parameters";

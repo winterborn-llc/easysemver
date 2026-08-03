@@ -8,6 +8,8 @@ namespace Winterborn.Library.EasySemVer.Evaluators.Swift;
 /// <summary>S16 - a public member of an existing type is gone.</summary>
 public class SwiftMemberRemoved : IEvaluateSwiftSignatures
 {
+    public string RuleId => "S16";
+
     public VersionType EvaluationImpact => VersionType.Major;
 
     public string ChangeDescription => "was removed";

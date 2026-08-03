@@ -8,6 +8,8 @@ namespace Winterborn.Library.EasySemVer.Evaluators.Swift;
 /// <summary>S35 - a property's setter is gone, so it is get-only now.</summary>
 public class SwiftPropertySetterRemoved : IEvaluateSwiftSignatures
 {
+    public string RuleId => "S35";
+
     public VersionType EvaluationImpact => VersionType.Major;
 
     public string ChangeDescription => "lost its setter";

@@ -8,6 +8,8 @@ namespace Winterborn.Library.EasySemVer.Evaluators.Swift;
 /// <summary>S31 - a default argument value was removed, so calls that omitted it stop compiling.</summary>
 public class SwiftDefaultArgumentRemoved : IEvaluateSwiftSignatures
 {
+    public string RuleId => "S31";
+
     public VersionType EvaluationImpact => VersionType.Major;
 
     public string ChangeDescription => "lost a default argument value";

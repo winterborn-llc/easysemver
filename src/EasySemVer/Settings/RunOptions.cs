@@ -1,10 +1,12 @@
 namespace Winterborn.Library.EasySemVer.Settings;
 
 /// <summary>The parsed command line (§4).</summary>
-[DebuggerDisplay("{FolderRoot} dry-run={IsDryRun}")]
+[DebuggerDisplay("{FolderRoot} dry-run={IsDryRun} json={JsonReportPath}")]
 internal class RunOptions
 {
     private const string DryRunFlag = "--dry-run";
+
+    private const string JsonFlag = "--json";
 
     /// <summary>FLD-01 - the folder handed to the CLI is the root, full stop.</summary>
     internal string FolderRoot { get; private init; } = string.Empty;
@@ -15,15 +17,37 @@ internal class RunOptions
     /// </summary>
     internal bool IsDryRun { get; private init; }
 
+    /// <summary>
+    /// REP-01 - where to write the machine-readable report, or empty for none. It is always a
+    /// file: the report never goes to stdout, so LOG-01 keeps stdout unconditionally and nothing
+    /// has to disentangle a report from a log.
+    /// </summary>
+    internal string JsonReportPath { get; private init; } = string.Empty;
+
     internal static RunOptions Parse(params string[] args)
     {
         var isDryRun = false;
+        var jsonReportPath = string.Empty;
         var directories = new List<string>();
+        var isReadingJsonPath = false;
         foreach (var arg in args)
         {
+            if (isReadingJsonPath)
+            {
+                jsonReportPath = arg;
+                isReadingJsonPath = false;
+                continue;
+            }
+
             if (string.Equals(arg, DryRunFlag, StringComparison.OrdinalIgnoreCase))
             {
                 isDryRun = true;
+                continue;
+            }
+
+            if (string.Equals(arg, JsonFlag, StringComparison.OrdinalIgnoreCase))
+            {
+                isReadingJsonPath = true;
                 continue;
             }
 
@@ -33,6 +57,11 @@ internal class RunOptions
             }
 
             directories.Add(arg);
+        }
+
+        if (isReadingJsonPath)
+        {
+            throw new InvalidOperationException($"{JsonFlag} requires a file path");
         }
 
         // CLI-02: at most one directory.
@@ -52,7 +81,8 @@ internal class RunOptions
         return new RunOptions
         {
             FolderRoot = new DirectoryInfo(folderRoot).FullName,
-            IsDryRun = isDryRun
+            IsDryRun = isDryRun,
+            JsonReportPath = jsonReportPath
         };
     }
 }

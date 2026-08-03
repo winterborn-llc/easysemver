@@ -12,6 +12,8 @@ namespace Winterborn.Library.EasySemVer.Evaluators.Csharp;
 /// </summary>
 public class TypeRemoved : IEvaluateCsharpSignatures
 {
+    public string RuleId => "R18";
+
     public VersionType EvaluationImpact => VersionType.Major;
 
     public string ChangeDescription => "was removed";

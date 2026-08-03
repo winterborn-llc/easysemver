@@ -10,6 +10,8 @@ namespace Winterborn.Library.EasySemVer.Evaluators;
 /// </summary>
 public class UnitRemoved : IEvaluateUnitExistence
 {
+    public string RuleId => "NCL-01";
+
     public VersionType EvaluationImpact => VersionType.Major;
 
     public string ChangeDescription => "was removed";

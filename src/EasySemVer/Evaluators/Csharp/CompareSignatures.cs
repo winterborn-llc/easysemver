@@ -74,6 +74,7 @@ internal static class CompareSignatures
                     Language = unit.Language,
                     UnitId = unit.UnitId,
                     RuleName = nameof(CompareSignatures),
+                    RuleId = "CLS-04",
                     Symbol = unit.UnitId,
                     Description = "has no comparable baseline signature, so it is treated as additive",
                     Impact = VersionType.Minor
@@ -92,6 +93,7 @@ internal static class CompareSignatures
                     Language = unit.Language,
                     UnitId = unit.UnitId,
                     RuleName = evaluator.GetType().Name,
+                    RuleId = evaluator.RuleId,
                     Symbol = symbol,
                     Description = evaluator.ChangeDescription,
                     Impact = evaluator.EvaluationImpact

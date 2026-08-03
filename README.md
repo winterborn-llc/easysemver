@@ -11,7 +11,20 @@ easysemver /path/to/your/folder
 ```
 
 With no argument it uses the current working directory. Add `--dry-run` to classify and report
-without writing anything.
+without writing anything, and `--json <path>` to drop the verdict somewhere a script can read it:
+
+```json
+{
+  "formatVersion": 1,
+  "dryRun": false,
+  "changeType": "major",
+  "oldVersion": { "version": "2.3.4", "major": 2, "minor": 3, "patch": 4 },
+  "newVersion": { "version": "3.0.0", "major": 3, "minor": 0, "patch": 0 }
+}
+```
+
+The report is always a file — never stdout — so the log stream stays exactly where it was. A run
+that fails leaves no report behind.
 
 ## Installing
 

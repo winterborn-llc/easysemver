@@ -6,6 +6,8 @@ namespace Winterborn.Library.EasySemVer.Evaluators.Csharp;
 /// <summary>R09 - a property lost its setter.</summary>
 public class PropertyEditabilityReduced : IEvaluateCsharpSignatures
 {
+    public string RuleId => "R09";
+
     public VersionType EvaluationImpact => VersionType.Major;
 
     public string ChangeDescription => "is no longer writable";

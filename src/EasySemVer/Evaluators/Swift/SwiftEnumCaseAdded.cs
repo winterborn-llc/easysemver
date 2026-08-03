@@ -8,6 +8,8 @@ namespace Winterborn.Library.EasySemVer.Evaluators.Swift;
 /// <summary>S18 - an enum case was added. Major, not Minor: a client switching exhaustively stops compiling, which is every client of a package built without library evolution (SCL-01).</summary>
 public class SwiftEnumCaseAdded : IEvaluateSwiftSignatures
 {
+    public string RuleId => "S18";
+
     public VersionType EvaluationImpact => VersionType.Major;
 
     public string ChangeDescription => "was added, so an exhaustive switch no longer compiles";

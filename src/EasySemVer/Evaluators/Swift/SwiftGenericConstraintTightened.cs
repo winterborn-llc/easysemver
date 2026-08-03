@@ -8,6 +8,8 @@ namespace Winterborn.Library.EasySemVer.Evaluators.Swift;
 /// <summary>S12 - a generic constraint was added or tightened.</summary>
 public class SwiftGenericConstraintTightened : IEvaluateSwiftSignatures
 {
+    public string RuleId => "S12";
+
     public VersionType EvaluationImpact => VersionType.Major;
 
     public string ChangeDescription => "tightened its generic constraints";

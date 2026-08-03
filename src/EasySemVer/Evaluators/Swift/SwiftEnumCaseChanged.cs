@@ -8,6 +8,8 @@ namespace Winterborn.Library.EasySemVer.Evaluators.Swift;
 /// <summary>S19 - an enum case was removed or renamed, or its associated values or raw value changed.</summary>
 public class SwiftEnumCaseChanged : IEvaluateSwiftSignatures
 {
+    public string RuleId => "S19";
+
     public VersionType EvaluationImpact => VersionType.Major;
 
     public string ChangeDescription => "was removed, or changed its raw or associated values";

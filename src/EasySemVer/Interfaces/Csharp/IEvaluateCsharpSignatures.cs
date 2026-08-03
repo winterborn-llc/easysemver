@@ -8,6 +8,14 @@ namespace Winterborn.Library.EasySemVer.Interfaces.Csharp;
 /// </summary>
 public interface IEvaluateCsharpSignatures
 {
+    /// <summary>
+    /// The rule's identifier from specs/07 - "R02", "S18", "NCL-01". Published in the JSON report
+    /// (REP-02), so it is a contract: an id is never reused and never silently changes. It is
+    /// carried rather than derived from the class name precisely so that renaming the class
+    /// cannot break a consumer.
+    /// </summary>
+    public string RuleId { get; }
+
     public VersionType EvaluationImpact { get; }
 
     /// <summary>The phrase completing "&lt;symbol&gt; ..." in the report, such as "was removed".</summary>

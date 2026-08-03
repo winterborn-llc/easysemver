@@ -8,6 +8,8 @@ namespace Winterborn.Library.EasySemVer.Evaluators.Swift;
 /// <summary>S06 - a class gained final, so existing subclasses stop compiling.</summary>
 public class SwiftClassMadeFinal : IEvaluateSwiftSignatures
 {
+    public string RuleId => "S06";
+
     public VersionType EvaluationImpact => VersionType.Major;
 
     public string ChangeDescription => "became final";

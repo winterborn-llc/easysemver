@@ -8,6 +8,8 @@ namespace Winterborn.Library.EasySemVer.Evaluators.Swift;
 /// <summary>S25 - a declaration became unavailable or gained an obsoleted availability.</summary>
 public class SwiftDeclarationWithdrawn : IEvaluateSwiftSignatures
 {
+    public string RuleId => "S25";
+
     public VersionType EvaluationImpact => VersionType.Major;
 
     public string ChangeDescription => "became unavailable or obsoleted";

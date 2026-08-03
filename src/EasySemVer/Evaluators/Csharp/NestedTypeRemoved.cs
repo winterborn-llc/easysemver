@@ -10,6 +10,8 @@ namespace Winterborn.Library.EasySemVer.Evaluators.Csharp;
 /// </summary>
 public class NestedTypeRemoved : IEvaluateCsharpSignatures
 {
+    public string RuleId => "R41";
+
     public VersionType EvaluationImpact => VersionType.Major;
 
     public string ChangeDescription => "was removed";

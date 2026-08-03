@@ -3,9 +3,11 @@ using Winterborn.Library.EasySemVer.Interfaces.Csharp;
 
 namespace Winterborn.Library.EasySemVer.Evaluators.Csharp;
 
-/// <summary>R18 - a write-only property gained a getter.</summary>
+/// <summary>R11 - a write-only property gained a getter.</summary>
 public class PropertyReadabilityEnhanced : IEvaluateCsharpSignatures
 {
+    public string RuleId => "R11";
+
     public VersionType EvaluationImpact => VersionType.Minor;
 
     public string ChangeDescription => "became readable";

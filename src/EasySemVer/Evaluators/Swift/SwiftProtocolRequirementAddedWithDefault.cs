@@ -8,6 +8,8 @@ namespace Winterborn.Library.EasySemVer.Evaluators.Swift;
 /// <summary>S21 - a protocol gained a requirement that an extension already satisfies.</summary>
 public class SwiftProtocolRequirementAddedWithDefault : IEvaluateSwiftSignatures
 {
+    public string RuleId => "S21";
+
     public VersionType EvaluationImpact => VersionType.Minor;
 
     public string ChangeDescription => "was added as a protocol requirement with a default";

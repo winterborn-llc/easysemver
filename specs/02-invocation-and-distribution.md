@@ -49,15 +49,20 @@ reviewable, which is the whole point of the mode. Findings are ordered by unit a
 so that identical input produces identical output, for the same reason BAS-04 sorts a baseline.
 A run without the flag keeps the quieter one-line-per-firing-rule summary (LOG-03).
 
+**CLI-09 — `--json <path>` requires a path.** ✅
+`--json` SHALL consume the following argument as its path and SHALL fail if none follows. The
+path is not mistaken for the folder argument whichever order the two are given in, and an
+unrecognised `--option` is still rejected by name.
+
 ## Machine-readable report
 
-**REP-01 — `--json <path>` writes the run's verdict as a file.** ⚠️ *specified, not implemented*
+**REP-01 — `--json <path>` writes the run's verdict as a file.** ✅
 `easysemver <folder> --json <path>` SHALL write a JSON document describing the run to
 `<path>`. It SHALL NOT write JSON to stdout and SHALL NOT move the human log anywhere: LOG-01
 keeps stdout, unconditionally. A workflow that wants the verdict reads the file; nothing has to
 parse a log, and no existing stream contract changes.
 
-**REP-02 — The document.** ⚠️
+**REP-02 — The document.** ✅
 ```json
 {
   "formatVersion": 1,
@@ -77,12 +82,12 @@ parse a log, and no existing stream contract changes.
 - `dryRun` is the only signal that a report describes a preview rather than something that
   happened, so it is always present.
 
-**REP-03 — `formatVersion` has its own lifecycle.** ⚠️
+**REP-03 — `formatVersion` has its own lifecycle.** ✅
 It starts at `1` and is versioned independently of the baseline's `formatVersion` (currently 3).
 The two documents have different audiences and different failure modes — a JSON consumer breaking
 is not a versioning run breaking — so sharing a number would couple them for no reason.
 
-**REP-04 — Fields may be added; nothing may be removed or retyped.** ⚠️
+**REP-04 — Fields may be added; nothing may be removed or retyped.** ✅
 Adding a field is backwards-compatible and SHALL NOT bump `formatVersion`. Removing one, renaming
 one, or changing its type SHALL bump it. This is what makes REP-05's minimalism safe rather than
 short-sighted: the document can grow into whatever a real consumer turns out to need.
@@ -100,14 +105,14 @@ comparing them. VER-05's overflow rollover makes that inference wrong: `1.0.2147
 becomes `1.1.0`, which reads as a Minor bump, and `1.2147483647.123 + Minor` becomes `2.0.0`,
 which reads as Major. The field is the only place the classification itself appears.
 
-**REP-07 — Determinism, and no machine-specific content.** ⚠️
+**REP-07 — Determinism, and no machine-specific content.** ✅
 The document SHALL contain no absolute paths, timestamps, durations, machine names or tool
 versions. Two runs over unchanged source on two machines SHALL produce byte-identical JSON, for
 the same reason a baseline must (BAS-04) — so that diffing two reports shows only real change.
 ℹ️ The folder root is deliberately absent: the caller passed it, so restating it would buy
 nothing and would be the one field that broke this property.
 
-**REP-08 — A failed run writes no report.** ⚠️
+**REP-08 — A failed run writes no report.** ✅
 If the run fails, `<path>` SHALL NOT be written or modified. This matches BAS-06 — a failed run
 writes nothing at all — and the exit code (CLI-06) remains the failure channel. A half-truthful
 report is worse than no report.
@@ -147,6 +152,6 @@ whether EasySemVer runs before or after a build. The increment is relative to th
 baseline, not to build artifacts.
 
 **INV-05 — GitHub Action.** ⚠️ *planned, not implemented*
-The intended third surface is a GitHub Action wrapping the CLI. Nothing of it exists yet. The one
-capability it depends on is specified above as REP-01…REP-08: a machine-readable verdict the
-Action can turn into step outputs, so that no workflow ever has to scrape a log.
+The intended third surface is a GitHub Action wrapping the CLI. Nothing of it exists yet, but the
+capability it depends on now does: REP-01…REP-08 give it a machine-readable verdict to turn into
+step outputs, so no workflow ever has to scrape a log.

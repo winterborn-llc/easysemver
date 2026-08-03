@@ -6,6 +6,8 @@ namespace Winterborn.Library.EasySemVer.Evaluators.Csharp;
 /// <summary>R22 - an enum member was removed or renamed. Either way callers stop compiling.</summary>
 public class EnumMemberRemoved : IEvaluateCsharpSignatures
 {
+    public string RuleId => "R22";
+
     public VersionType EvaluationImpact => VersionType.Major;
 
     public string ChangeDescription => "was removed";

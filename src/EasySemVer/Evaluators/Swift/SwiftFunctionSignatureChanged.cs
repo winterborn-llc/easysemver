@@ -8,6 +8,8 @@ namespace Winterborn.Library.EasySemVer.Evaluators.Swift;
 /// <summary>S22 - a function's parameter labels, types, order, count, or return type changed.</summary>
 public class SwiftFunctionSignatureChanged : IEvaluateSwiftSignatures
 {
+    public string RuleId => "S22";
+
     public VersionType EvaluationImpact => VersionType.Major;
 
     public string ChangeDescription => "changed its signature";

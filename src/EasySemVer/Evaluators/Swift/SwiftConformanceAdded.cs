@@ -8,6 +8,8 @@ namespace Winterborn.Library.EasySemVer.Evaluators.Swift;
 /// <summary>S10 - a protocol conformance was added.</summary>
 public class SwiftConformanceAdded : IEvaluateSwiftSignatures
 {
+    public string RuleId => "S10";
+
     public VersionType EvaluationImpact => VersionType.Minor;
 
     public string ChangeDescription => "conforms to a protocol it did not before";

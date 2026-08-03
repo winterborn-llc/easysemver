@@ -3,9 +3,11 @@ using Winterborn.Library.EasySemVer.Interfaces.Csharp;
 
 namespace Winterborn.Library.EasySemVer.Evaluators.Csharp;
 
-/// <summary>R17 - a type that exists on both sides gained a property.</summary>
+/// <summary>R16 - a type that exists on both sides gained a property.</summary>
 public class PropertyAdded : IEvaluateCsharpSignatures
 {
+    public string RuleId => "R16";
+
     public VersionType EvaluationImpact => VersionType.Minor;
 
     public string ChangeDescription => "was added";

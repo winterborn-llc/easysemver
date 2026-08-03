@@ -6,6 +6,7 @@ both via `InternalsVisibleTo`
 ([`AssemblySettings.cs`](../src/EasySemVer/Settings/AssemblySettings.cs)).
 
 **TST-01 — Every classification rule is tested.** ✅ 81/81 (41 C#, 38 Swift, 2 neutral)
+Each also carries the spec id it implements, asserted by TST-M10.
 Each evaluator SHALL have a dedicated test class asserting at minimum:
 1. the declared `EvaluationImpact` (locks the rule's severity),
 2. a no-difference case returns `false`,
@@ -119,6 +120,27 @@ that the message names the unit, the exact command and the tool's stderr, and th
 baseline file and every file on disk are left byte-identical.
 `SwiftRegression.MissingToolchainFailsTheRun` asserts the same against a real empty `PATH`.
 
+**TST-M10 — Rule identifiers are pinned to the specs.** ✅
+[`TestRuleIds`](../src/Test/TestRuleIds.cs) SHALL read the rule tables at run time rather than
+restating them, and assert: every rule carries a well-formed id; no id is claimed by two rules
+except where the spec defines one requirement with two directions (R41); every id a rule claims
+has a row in its table; and every live row has a rule behind it, with retired rows (R07, R14)
+recognised as retired rather than missing.
+ℹ️ This was not hypothetical. Six C# rules carried an id in their documentation that disagreed
+with specs/07 — `MethodOverrideAdded` claimed R16 where the table says R04, `PropertyAdded`
+claimed R17 where it says R16, and four more — and were corrected when the ids became a published
+contract.
+
+**TST-M11 — The JSON report's contract.** ✅
+[`TestJsonChangeReport`](../src/Test/Reporting/TestJsonChangeReport.cs) SHALL assert the exact
+property set and order, that the deliberately omitted fields stay omitted (REP-05), lower-case
+enum values, both version objects sharing one shape, a four-segment version keeping its string
+intact (VER-07), determinism, and that nothing machine-specific reaches the document (REP-07).
+[`JsonReportRegression`](../src/IntegrationTest/JsonReportRegression.cs) SHALL assert the same
+through a whole run, including that the version it reports is the one that reached the disk, that
+two dry runs produce byte-identical reports, and that a failed run leaves no report behind
+(REP-08) — the last of which is only observable end to end.
+
 **TST-M9 — Hygiene.** ✅ **Resolved** *(was G-18)*
 `Experimental.cs` and its hard-coded `/Users/andrew/…` path are deleted, as are the
 `Test.csproj` content references to the non-existent `SampleCsProj.xml` / `TargetCsProj.xml`.
@@ -129,8 +151,8 @@ baseline file and every file on disk are left byte-identical.
 | Suite | Result |
 |-------|--------|
 | `dotnet build` | ✅ success — one warning, `NU5129` (PKG-05, gap G-04) |
-| `Test` (unit) | ✅ **464/464 passed** |
-| `IntegrationTest` | ✅ **10/10 passed** (3 C#, 4 SwiftPM, 3 Xcode) |
+| `Test` (unit) | ✅ **502/502 passed** |
+| `IntegrationTest` | ✅ **18/18 passed** (3 C#, 5 JSON report, 4 SwiftPM, 3 Xcode, 3 others) |
 
 ℹ️ The Swift-traited tests shell out to `swift` and `xcodebuild` and are therefore sensitive to
 machine load: on a box already saturated with another Swift build they will hit the five-minute

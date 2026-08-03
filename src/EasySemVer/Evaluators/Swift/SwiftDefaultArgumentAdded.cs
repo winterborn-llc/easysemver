@@ -8,6 +8,8 @@ namespace Winterborn.Library.EasySemVer.Evaluators.Swift;
 /// <summary>S32 - a default argument value was added.</summary>
 public class SwiftDefaultArgumentAdded : IEvaluateSwiftSignatures
 {
+    public string RuleId => "S32";
+
     public VersionType EvaluationImpact => VersionType.Minor;
 
     public string ChangeDescription => "gained a default argument value";

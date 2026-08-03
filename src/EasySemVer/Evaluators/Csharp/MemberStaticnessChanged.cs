@@ -9,6 +9,8 @@ namespace Winterborn.Library.EasySemVer.Evaluators.Csharp;
 /// </summary>
 public class MemberStaticnessChanged : IEvaluateCsharpSignatures
 {
+    public string RuleId => "R38";
+
     public VersionType EvaluationImpact => VersionType.Major;
 
     public string ChangeDescription => "moved between static and instance";

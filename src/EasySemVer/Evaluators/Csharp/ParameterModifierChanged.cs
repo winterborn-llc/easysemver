@@ -9,6 +9,8 @@ namespace Winterborn.Library.EasySemVer.Evaluators.Csharp;
 /// </summary>
 public class ParameterModifierChanged : IEvaluateCsharpSignatures
 {
+    public string RuleId => "R37";
+
     public VersionType EvaluationImpact => VersionType.Major;
 
     public string ChangeDescription => "changed a parameter modifier";

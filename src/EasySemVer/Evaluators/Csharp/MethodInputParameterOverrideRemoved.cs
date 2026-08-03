@@ -7,6 +7,8 @@ namespace Winterborn.Library.EasySemVer.Evaluators.Csharp;
 /// <summary>R02 - an overload the baseline recorded has no match in the new signature.</summary>
 internal class MethodInputParameterOverrideRemoved : IEvaluateCsharpSignatures
 {
+    public string RuleId => "R02";
+
     public VersionType EvaluationImpact => VersionType.Major;
 
     public string ChangeDescription => "no longer has a matching overload";

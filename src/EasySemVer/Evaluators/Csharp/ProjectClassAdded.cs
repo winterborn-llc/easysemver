@@ -7,6 +7,8 @@ namespace Winterborn.Library.EasySemVer.Evaluators.Csharp;
 /// <summary>R05 - the unit gained a public class the baseline did not have.</summary>
 public class ProjectClassAdded : IEvaluateCsharpSignatures
 {
+    public string RuleId => "R05";
+
     public VersionType EvaluationImpact => VersionType.Minor;
 
     public string ChangeDescription => "was added";

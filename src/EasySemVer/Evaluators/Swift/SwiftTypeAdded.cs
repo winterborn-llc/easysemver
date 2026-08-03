@@ -8,6 +8,8 @@ namespace Winterborn.Library.EasySemVer.Evaluators.Swift;
 /// <summary>S02 - a public type appeared.</summary>
 public class SwiftTypeAdded : IEvaluateSwiftSignatures
 {
+    public string RuleId => "S02";
+
     public VersionType EvaluationImpact => VersionType.Minor;
 
     public string ChangeDescription => "was added";

@@ -3,9 +3,11 @@ using Winterborn.Library.EasySemVer.Interfaces.Csharp;
 
 namespace Winterborn.Library.EasySemVer.Evaluators.Csharp;
 
-/// <summary>R11 - a property lost its getter.</summary>
+/// <summary>R12 - a property lost its getter.</summary>
 public class PropertyReadabilityReduced : IEvaluateCsharpSignatures
 {
+    public string RuleId => "R12";
+
     public VersionType EvaluationImpact => VersionType.Major;
 
     public string ChangeDescription => "is no longer readable";

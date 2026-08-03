@@ -34,7 +34,10 @@ internal static class VersioningRun
 
         if (options.IsDryRun)
         {
-            Log.WriteLine("Dry run: nothing written");
+            // Not "nothing written": a --json report is still produced, carrying dryRun: true. What
+            // a dry run does not write is the tree - no baseline, no stamped version.
+            Log.WriteLine("Dry run: no baseline written and no version stamped");
+            WriteJsonReport(options, report, startingVersion, newVersion);
             Log.Outdent();
             return;
         }
@@ -42,7 +45,29 @@ internal static class VersioningRun
         // PER-06: the baseline is written before any version is stamped.
         BaselineFile.Write(options.FolderRoot, units, providers);
         WriteVersions(units, providers, newVersion);
+
+        // REP-08: last, so that a report exists only if everything it describes actually happened.
+        WriteJsonReport(options, report, startingVersion, newVersion);
         Log.Outdent();
+    }
+
+    private static void WriteJsonReport(
+        RunOptions options,
+        ChangeReport report,
+        Version oldVersion,
+        Version newVersion)
+    {
+        if (options.JsonReportPath.Length < 1)
+        {
+            return;
+        }
+
+        JsonChangeReport.Write(
+            options.JsonReportPath,
+            report,
+            oldVersion,
+            newVersion,
+            options.IsDryRun);
     }
 
     private static IReadOnlyList<IPackageableUnit> Discover(

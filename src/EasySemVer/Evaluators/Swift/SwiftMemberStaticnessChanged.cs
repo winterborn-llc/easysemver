@@ -8,6 +8,8 @@ namespace Winterborn.Library.EasySemVer.Evaluators.Swift;
 /// <summary>S34 - a member moved between static and instance, in either direction.</summary>
 public class SwiftMemberStaticnessChanged : IEvaluateSwiftSignatures
 {
+    public string RuleId => "S34";
+
     public VersionType EvaluationImpact => VersionType.Major;
 
     public string ChangeDescription => "moved between static and instance";

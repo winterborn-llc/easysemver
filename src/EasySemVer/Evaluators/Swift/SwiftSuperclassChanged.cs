@@ -8,6 +8,8 @@ namespace Winterborn.Library.EasySemVer.Evaluators.Swift;
 /// <summary>S08 - a superclass was changed or removed.</summary>
 public class SwiftSuperclassChanged : IEvaluateSwiftSignatures
 {
+    public string RuleId => "S08";
+
     public VersionType EvaluationImpact => VersionType.Major;
 
     public string ChangeDescription => "changed or lost its superclass";

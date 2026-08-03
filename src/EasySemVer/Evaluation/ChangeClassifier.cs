@@ -43,6 +43,7 @@ internal static class ChangeClassifier
                     Language = unit.Language,
                     UnitId = unit.UnitId,
                     RuleName = rule.GetType().Name,
+                    RuleId = rule.RuleId,
 
                     // A unit-level finding names where the unit lives rather than repeating the
                     // unit id the report has already grouped it under. BAS-04 keeps it relative.

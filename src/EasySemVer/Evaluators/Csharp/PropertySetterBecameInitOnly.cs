@@ -9,6 +9,8 @@ namespace Winterborn.Library.EasySemVer.Evaluators.Csharp;
 /// </summary>
 public class PropertySetterBecameInitOnly : IEvaluateCsharpSignatures
 {
+    public string RuleId => "R42";
+
     public VersionType EvaluationImpact => VersionType.Major;
 
     public string ChangeDescription => "can now only be set during initialization";

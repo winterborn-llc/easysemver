@@ -78,7 +78,7 @@ internal static class TextChangeReport
                 continue;
             }
 
-            Log.WriteLine($"{finding.RuleName}: {finding.Impact} in {finding.UnitId}");
+            Log.WriteLine($"{finding.RuleId} {finding.RuleName}: {finding.Impact} in {finding.UnitId}");
         }
     }
 

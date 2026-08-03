@@ -6,6 +6,8 @@ namespace Winterborn.Library.EasySemVer.Evaluators.Csharp;
 /// <summary>R25 - an enum's underlying type changed, breaking every cast and every layout.</summary>
 public class EnumUnderlyingTypeChanged : IEvaluateCsharpSignatures
 {
+    public string RuleId => "R25";
+
     public VersionType EvaluationImpact => VersionType.Major;
 
     public string ChangeDescription => "changed its underlying type";

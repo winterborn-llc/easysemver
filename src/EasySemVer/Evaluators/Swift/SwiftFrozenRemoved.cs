@@ -8,6 +8,8 @@ namespace Winterborn.Library.EasySemVer.Evaluators.Swift;
 /// <summary>S14 - @frozen was removed from a public struct or enum, so its layout is no longer guaranteed.</summary>
 public class SwiftFrozenRemoved : IEvaluateSwiftSignatures
 {
+    public string RuleId => "S14";
+
     public VersionType EvaluationImpact => VersionType.Major;
 
     public string ChangeDescription => "is no longer @frozen";

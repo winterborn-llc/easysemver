@@ -8,6 +8,8 @@ namespace Winterborn.Library.EasySemVer.Evaluators.Swift;
 /// <summary>S05 - a class went from public to open.</summary>
 public class SwiftClassSubclassingOffered : IEvaluateSwiftSignatures
 {
+    public string RuleId => "S05";
+
     public VersionType EvaluationImpact => VersionType.Minor;
 
     public string ChangeDescription => "became open, so it can now be subclassed";

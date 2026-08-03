@@ -8,6 +8,8 @@ namespace Winterborn.Library.EasySemVer.Evaluators.Swift;
 /// <summary>S36 - a property gained a setter.</summary>
 public class SwiftPropertySetterAdded : IEvaluateSwiftSignatures
 {
+    public string RuleId => "S36";
+
     public VersionType EvaluationImpact => VersionType.Minor;
 
     public string ChangeDescription => "gained a setter";

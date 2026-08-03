@@ -8,6 +8,8 @@ namespace Winterborn.Library.EasySemVer.Evaluators.Csharp;
 /// <summary>R19 - a public interface, struct, record, enum or delegate appeared.</summary>
 public class TypeAdded : IEvaluateCsharpSignatures
 {
+    public string RuleId => "R19";
+
     public VersionType EvaluationImpact => VersionType.Minor;
 
     public string ChangeDescription => "was added";

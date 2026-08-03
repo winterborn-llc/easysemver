@@ -8,6 +8,8 @@ namespace Winterborn.Library.EasySemVer.Evaluators.Swift;
 /// <summary>S30 - mutating was removed.</summary>
 public class SwiftMutatingRemoved : IEvaluateSwiftSignatures
 {
+    public string RuleId => "S30";
+
     public VersionType EvaluationImpact => VersionType.Minor;
 
     public string ChangeDescription => "is no longer mutating";

@@ -8,6 +8,8 @@ namespace Winterborn.Library.EasySemVer.Evaluators.Swift;
 /// <summary>S13 - a generic constraint was removed or loosened.</summary>
 public class SwiftGenericConstraintLoosened : IEvaluateSwiftSignatures
 {
+    public string RuleId => "S13";
+
     public VersionType EvaluationImpact => VersionType.Minor;
 
     public string ChangeDescription => "loosened its generic constraints";

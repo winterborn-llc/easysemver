@@ -8,6 +8,8 @@ namespace Winterborn.Library.EasySemVer.Evaluators.Swift;
 /// <summary>S28 - ObjC exposure was added.</summary>
 public class SwiftObjCExposureAdded : IEvaluateSwiftSignatures
 {
+    public string RuleId => "S28";
+
     public VersionType EvaluationImpact => VersionType.Minor;
 
     public string ChangeDescription => "gained Objective-C exposure";

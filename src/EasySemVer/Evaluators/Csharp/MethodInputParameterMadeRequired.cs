@@ -4,9 +4,11 @@ using Winterborn.Library.EasySemVer.Interfaces.Csharp;
 
 namespace Winterborn.Library.EasySemVer.Evaluators.Csharp;
 
-/// <summary>R04 - a parameter that used to be optional now has to be passed.</summary>
+/// <summary>R17 - a parameter that used to be optional now has to be passed.</summary>
 internal class MethodInputParameterMadeRequired : IEvaluateCsharpSignatures
 {
+    public string RuleId => "R17";
+
     public VersionType EvaluationImpact => VersionType.Major;
 
     public string ChangeDescription => "made an optional parameter required";

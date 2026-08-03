@@ -120,12 +120,13 @@ public class SwiftRegression
     {
         using var fixture = new SwiftPackageFixture();
         var before = File.ReadAllText(fixture.PodspecPath);
+        var reportPath = Path.Combine(fixture.FolderRoot, "report.json");
 
         var originalPath = Environment.GetEnvironmentVariable("PATH");
         try
         {
             Environment.SetEnvironmentVariable("PATH", "/nonexistent-for-easysemver");
-            Assert.Equal(1, Program.Main(fixture.FolderRoot));
+            Assert.Equal(1, Program.Main(fixture.FolderRoot, "--json", reportPath));
         }
         finally
         {
@@ -134,5 +135,9 @@ public class SwiftRegression
 
         Assert.False(File.Exists(Path.Combine(fixture.FolderRoot, "EasySemVer.xml")));
         Assert.Equal(before, File.ReadAllText(fixture.PodspecPath));
+
+        // REP-08: the failure happened after classification, which is the case that could have
+        // produced a plausible-looking but untrue report.
+        Assert.False(File.Exists(reportPath));
     }
 }

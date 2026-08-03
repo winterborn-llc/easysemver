@@ -9,6 +9,8 @@ namespace Winterborn.Library.EasySemVer.Evaluators.Csharp;
 /// </summary>
 public class InterfaceRequirementAdded : IEvaluateCsharpSignatures
 {
+    public string RuleId => "R20";
+
     public VersionType EvaluationImpact => VersionType.Major;
 
     public string ChangeDescription => "was added as an interface requirement with no default";
