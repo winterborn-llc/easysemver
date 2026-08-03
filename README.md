@@ -13,6 +13,19 @@ easysemver /path/to/your/folder
 With no argument it uses the current working directory. Add `--dry-run` to classify and report
 without writing anything.
 
+## Installing
+
+**As a .NET tool**, if you already have a .NET SDK:
+
+```bash
+dotnet tool install -g Winterborn.Library.EasySemVer
+```
+
+**As a standalone binary**, if you don't — a Swift-only repository, for instance. Grab the archive
+for your platform from the [releases page](https://github.com/winterborn-llc/easysemver/releases);
+it bundles its own runtime and needs nothing else installed. Archives are published for
+`linux-x64`, `linux-arm64`, `osx-x64`, `osx-arm64` and `win-x64`.
+
 ## What it does, in order
 
 1. Walks the folder once and discovers every packageable unit.
@@ -110,10 +123,17 @@ A folder with no Swift in it needs none of this.
 
 ## Wiring it into a build
 
-⚠️ **The MSBuild integration is not currently consumable.** The packaged targets file resolves
-`tools/EasySemVer.exe`, which the package does not pack, and its filename does not match the
-package ID, so NuGet never imports it. Until that is fixed, invoke the executable directly — from
-CI, from a release script, or from an `Exec` task you write yourself:
+EasySemVer is a command; wire it in with whatever your build already uses. It deliberately ships
+no MSBuild integration of its own — a tool whose unit of work is *a folder* does not belong
+bolted to one arbitrary project inside it.
+
+From a release script or CI step:
+
+```bash
+easysemver "$GITHUB_WORKSPACE"
+```
+
+Or from MSBuild, if that is where your release process lives:
 
 ```xml
 <Target Name="EasySemVer" BeforeTargets="Build" Condition="'$(Configuration)' == 'Release'">

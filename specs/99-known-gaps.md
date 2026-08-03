@@ -11,20 +11,7 @@ resolving.
 
 ## Major
 
-**G-02 — Documented MSBuild integration cannot work.** (Code-read) — *partially addressed*
-The README no longer documents the `UsingTask` + `<EasySemVer />` route, because the assembly
-contains no MSBuild `Task` class (it was deleted with the old `AutoVersion` project). The README
-now documents direct invocation instead and states plainly that the packaged integration is not
-consumable. A task wrapper is still not present. *Violates:* MSB-02. *See:* 12 §20 **O-05**.
-
-**G-03 — Packaged targets point at an executable that isn't packed.** (Code-read)
-`Winterborn.EasySemVer.targets` resolves `..\tools\EasySemVer.exe`, but the `.csproj` packs no
-`tools/` folder. *Violates:* PKG-04. *See:* 12 §20 **O-05**.
-
-**G-04 — Targets file not auto-imported (`NU5129`).** (Verified at build)
-The buildTransitive targets file must be named `Winterborn.Library.EasySemVer.targets` (matching
-the package ID) for NuGet to import it into consumers. This is the one remaining build warning.
-*Violates:* PKG-05. *See:* 12 §20 **O-05**.
+*None.*
 
 ## Minor
 
@@ -36,9 +23,28 @@ names may lack namespaces. Stable run-to-run, so diffs work, but theoretically c
 ## Informative / hygiene
 
 **G-17 — Stale documentation.** ✅ Resolved by the doc-12 rewrite of
-[README.md](../README.md): folder-based usage, the version-source table, Swift prerequisites, and
-an explicit warning about the MSBuild route replaced the "Auto-Version" content, the stale
-package version, the post-build rationale and the `UsingTask` instructions.
+[README.md](../README.md): folder-based usage, the version-source table and Swift prerequisites
+replaced the "Auto-Version" content, the stale package version, the post-build rationale and the
+`UsingTask` instructions. The warning about the MSBuild route that briefly replaced them is gone
+too, now that the route itself is (G-02/G-03/G-04 withdrawn).
+
+## Withdrawn
+
+Requirements that were dropped rather than met, because the shape of the product changed. IDs are
+never reused.
+
+**G-02 — Documented MSBuild integration cannot work.** ⊘ Withdrawn
+**G-03 — Packaged targets point at an executable that isn't packed.** ⊘ Withdrawn
+**G-04 — Targets file not auto-imported (`NU5129`).** ⊘ Withdrawn
+
+All three were defects in one mechanism: consuming EasySemVer as a `PackageReference` that hooks
+itself into a consuming build. On 2026-08-02 that mechanism was withdrawn — EasySemVer is a CLI,
+distributed as a `dotnet tool` and as self-contained binaries, with a GitHub Action planned
+(**INV-01**, **PKG-01/PKG-02**). A tool whose unit of work is *a folder* does not belong bolted
+to one arbitrary project inside it.
+
+Deleting `Winterborn.EasySemVer.targets` also removed the `NU5129` warning, so the build is now
+warning-free. **§20 O-05 is closed by withdrawal, not by repair.**
 
 ## Resolved
 

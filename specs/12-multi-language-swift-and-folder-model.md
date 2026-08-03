@@ -750,6 +750,17 @@ NuGet never imports it. A folder-based CLI makes the packaged-targets route the 
 Out of scope for this spec, but flag it in the final summary — the tool is not consumable until
 it is fixed.
 
+> **Closed by withdrawal, 2026-08-02.** The owner's answer was that the shape of the product had
+> changed: EasySemVer is a CLI, distributed as a `dotnet tool` and as self-contained per-platform
+> binaries, with a GitHub Action as the intended third surface. The packaged-targets route was
+> therefore deleted rather than repaired, and G-02/G-03/G-04 are recorded as **withdrawn**, not
+> fixed. See [INV-01](02-invocation-and-distribution.md) and
+> [PKG-01/PKG-02](03-packaging-and-distribution.md).
+>
+> Note the one capability the Action will need that does not exist yet: a machine-readable
+> verdict, so a workflow can take the computed version and change type as step outputs instead of
+> scraping the log (INV-05).
+
 **O-06 — Non-Swift Apple-adjacent surface.** Objective-C headers in a mixed target are visible
 to Swift symbol graphs only through the generated interface. If a discovered Xcode target is
 pure Objective-C, it has no Swift symbol graph. Recommend treating it as a version-sync-only

@@ -19,8 +19,8 @@ folder-based, multi-language system that exists today.
 | Doc | Scope |
 |-----|-------|
 | [01-overview.md](01-overview.md) | Product intent, core concepts, processing pipeline, non-goals |
-| [02-invocation-and-msbuild-integration.md](02-invocation-and-msbuild-integration.md) | CLI contract, exit codes, MSBuild hook-in |
-| [03-packaging-and-distribution.md](03-packaging-and-distribution.md) | NuGet package contents, CI/publishing |
+| [02-invocation-and-distribution.md](02-invocation-and-distribution.md) | CLI contract, exit codes, how the tool is invoked |
+| [03-packaging-and-distribution.md](03-packaging-and-distribution.md) | The `dotnet tool` package, the standalone binaries, CI/publishing |
 | [04-folder-discovery.md](04-folder-discovery.md) | Finding the folder root, the packageable units in it, and their source |
 | [05-signature-extraction.md](05-signature-extraction.md) | The per-language API-surface models and how each is extracted |
 | [06-signature-persistence.md](06-signature-persistence.md) | The `EasySemVer.xml` baseline file: format, read/write rules |
