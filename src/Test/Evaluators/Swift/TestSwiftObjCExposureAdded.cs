@@ -22,7 +22,7 @@ public class TestSwiftObjCExposureAdded
     {
         var signatures = BuildSwift.Compare(BuildSwift.Struct(), BuildSwift.Struct());
 
-        Assert.False(Evaluator.AreDifferencesPresent(signatures));
+        Assert.Empty(Evaluator.FindDifferences(signatures));
     }
 
     [Fact]
@@ -30,7 +30,7 @@ public class TestSwiftObjCExposureAdded
     {
         var signatures = BuildSwift.Compare(BuildSwift.Struct(), BuildSwift.Struct().WithObjC());
 
-        Assert.True(Evaluator.AreDifferencesPresent(signatures));
+        Assert.Equal([BuildSwift.DefaultTypeName], Evaluator.FindDifferences(signatures));
     }
 
     [Fact]
@@ -38,6 +38,6 @@ public class TestSwiftObjCExposureAdded
     {
         var signatures = BuildSwift.Compare(BuildSwift.Struct().WithObjC(), BuildSwift.Struct());
 
-        Assert.False(Evaluator.AreDifferencesPresent(signatures));
+        Assert.Empty(Evaluator.FindDifferences(signatures));
     }
 }

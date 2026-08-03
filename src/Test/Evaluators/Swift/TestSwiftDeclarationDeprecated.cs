@@ -20,7 +20,7 @@ public class TestSwiftDeclarationDeprecated
     [Fact]
     public void AvailabilityIsUnchanged()
     {
-        Assert.False(Evaluator.AreDifferencesPresent(
+        Assert.Empty(Evaluator.FindDifferences(
             BuildSwift.Compare(BuildSwift.Struct(), BuildSwift.Struct())));
     }
 
@@ -31,7 +31,7 @@ public class TestSwiftDeclarationDeprecated
             BuildSwift.Struct(),
             BuildSwift.Struct().WithAvailability(BuildSwift.Available(isDeprecated: true)));
 
-        Assert.True(Evaluator.AreDifferencesPresent(signatures));
+        Assert.Equal([BuildSwift.DefaultTypeName], Evaluator.FindDifferences(signatures));
     }
 
     [Fact]
@@ -41,7 +41,7 @@ public class TestSwiftDeclarationDeprecated
             BuildSwift.Struct().WithAvailability(BuildSwift.Available(isDeprecated: true)),
             BuildSwift.Struct().WithAvailability(BuildSwift.Available(isDeprecated: true)));
 
-        Assert.False(Evaluator.AreDifferencesPresent(signatures));
+        Assert.Empty(Evaluator.FindDifferences(signatures));
     }
 
     [Fact]
@@ -52,6 +52,6 @@ public class TestSwiftDeclarationDeprecated
             BuildSwift.Struct().WithFunctions(
                 BuildSwift.Function().WithAvailability(BuildSwift.Available(isDeprecated: true))));
 
-        Assert.True(Evaluator.AreDifferencesPresent(signatures));
+        Assert.Equal(["TestType.move()"], Evaluator.FindDifferences(signatures));
     }
 }

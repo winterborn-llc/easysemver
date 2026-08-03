@@ -24,7 +24,7 @@ public class TestSwiftFunctionSignatureChanged
             BuildSwift.Struct().WithFunctions(BuildSwift.Function().WithParameters(BuildSwift.Parameter())),
             BuildSwift.Struct().WithFunctions(BuildSwift.Function().WithParameters(BuildSwift.Parameter())));
 
-        Assert.False(Evaluator.AreDifferencesPresent(signatures));
+        Assert.Empty(Evaluator.FindDifferences(signatures));
     }
 
     [Fact]
@@ -34,7 +34,7 @@ public class TestSwiftFunctionSignatureChanged
             BuildSwift.Struct().WithFunctions(BuildSwift.Function(returns: "Int")),
             BuildSwift.Struct().WithFunctions(BuildSwift.Function(returns: "String")));
 
-        Assert.True(Evaluator.AreDifferencesPresent(signatures));
+        Assert.Equal(["TestType.move()"], Evaluator.FindDifferences(signatures));
     }
 
     [Fact]
@@ -44,7 +44,7 @@ public class TestSwiftFunctionSignatureChanged
             BuildSwift.Struct().WithFunctions(BuildSwift.Function().WithParameters(BuildSwift.Parameter(type: "Int"))),
             BuildSwift.Struct().WithFunctions(BuildSwift.Function().WithParameters(BuildSwift.Parameter(type: "Double"))));
 
-        Assert.True(Evaluator.AreDifferencesPresent(signatures));
+        Assert.NotEmpty(Evaluator.FindDifferences(signatures));
     }
 
     [Fact]
@@ -55,6 +55,6 @@ public class TestSwiftFunctionSignatureChanged
             BuildSwift.Struct().WithFunctions(BuildSwift.Function()
                 .WithParameters(BuildSwift.Parameter(), BuildSwift.Parameter("animated", "Bool"))));
 
-        Assert.True(Evaluator.AreDifferencesPresent(signatures));
+        Assert.NotEmpty(Evaluator.FindDifferences(signatures));
     }
 }

@@ -1,18 +1,19 @@
 using Winterborn.Library.EasySemVer.DataObject;
-using Winterborn.Library.EasySemVer.DataObject.Csharp;
 using Winterborn.Library.EasySemVer.Extensions;
 using Winterborn.Library.EasySemVer.Interfaces.Csharp;
 
 namespace Winterborn.Library.EasySemVer.Evaluators.Csharp;
 
+/// <summary>R16 - an existing method gained an overload.</summary>
 internal class MethodOverrideAdded : IEvaluateCsharpSignatures
 {
     public VersionType EvaluationImpact => VersionType.Minor;
 
-    public bool AreDifferencesPresent(ICsharpSignaturesToCompare signatures)
+    public string ChangeDescription => "was added as an overload";
+
+    public IEnumerable<string> FindDifferences(ICsharpSignaturesToCompare signatures)
     {
-        var classes = signatures.ClassHistory;
-        foreach (var classPair in classes)
+        foreach (var classPair in signatures.ClassHistory)
         {
             var oldClass = classPair.Older;
             var newClass = classPair.Newer;
@@ -22,22 +23,20 @@ internal class MethodOverrideAdded : IEvaluateCsharpSignatures
                 {
                     continue;
                 }
-                
-                var newMethod = newClass.Methods[newMethodName];   
+
+                var newMethod = newClass.Methods[newMethodName];
                 var oldMethod = oldClass.Methods[newMethodName];
-                foreach(var newOverride in newMethod.Overrides)
+                foreach (var newOverride in newMethod.Overrides)
                 {
                     var newOverrideSignature = newOverride.GetMethodSignature();
                     if (oldMethod.Overrides.Contains(newOverrideSignature))
                     {
                         continue;
                     }
-                    
-                    return true;
+
+                    yield return $"{newClass.Name}.{newMethodName}({newOverrideSignature})";
                 }
             }
         }
-        
-        return false;
     }
 }

@@ -23,7 +23,7 @@ public class TestTypeRemoved
             Build.Project(Build.Interface(), Build.Enum("Test.Colour")),
             Build.Project(Build.Interface(), Build.Enum("Test.Colour")));
 
-        Assert.False(Evaluator.AreDifferencesPresent(signatures));
+        Assert.Empty(Evaluator.FindDifferences(signatures));
     }
 
     [Theory]
@@ -34,7 +34,7 @@ public class TestTypeRemoved
             Build.Project(Build.Class(), removed),
             Build.Project(Build.Class()));
 
-        Assert.True(Evaluator.AreDifferencesPresent(signatures));
+        Assert.Equal([removed.Name], Evaluator.FindDifferences(signatures));
     }
 
     /// <summary>A removed class is R06's concern; this rule must not double-count it.</summary>
@@ -45,7 +45,7 @@ public class TestTypeRemoved
             Build.Project(Build.Class(), Build.Class("Test.Another")),
             Build.Project(Build.Class()));
 
-        Assert.False(Evaluator.AreDifferencesPresent(signatures));
+        Assert.Empty(Evaluator.FindDifferences(signatures));
     }
 
     /// <summary>Pairing is by (name, kind), so a struct that became a class reads as removed.</summary>
@@ -56,7 +56,7 @@ public class TestTypeRemoved
             Build.Project(Build.Struct("Test.Point")),
             Build.Project(Build.Class("Test.Point")));
 
-        Assert.True(Evaluator.AreDifferencesPresent(signatures));
+        Assert.Equal(["Test.Point"], Evaluator.FindDifferences(signatures));
     }
 
     public static TheoryData<CsharpType> EveryNonClassKind() =>

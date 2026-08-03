@@ -22,7 +22,7 @@ public class TestFieldAdded
             Build.Class().WithFields(Build.Field()),
             Build.Class().WithFields(Build.Field()));
 
-        Assert.False(Evaluator.AreDifferencesPresent(signatures));
+        Assert.Empty(Evaluator.FindDifferences(signatures));
     }
 
     [Fact]
@@ -32,6 +32,6 @@ public class TestFieldAdded
             Build.Class(),
             Build.Class().WithFields(Build.Field()));
 
-        Assert.True(Evaluator.AreDifferencesPresent(signatures));
+        Assert.Equal(["Test.TestType.TestField"], Evaluator.FindDifferences(signatures));
     }
 }

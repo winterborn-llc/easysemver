@@ -10,7 +10,9 @@ public class SwiftClassSubclassingWithdrawn : IEvaluateSwiftSignatures
 {
     public VersionType EvaluationImpact => VersionType.Major;
 
-    public bool AreDifferencesPresent(ISwiftSignaturesToCompare signatures)
+    public string ChangeDescription => "is no longer open, so it can no longer be subclassed";
+
+    public IEnumerable<string> FindDifferences(ISwiftSignaturesToCompare signatures)
     {
         foreach (var typePair in signatures.TypeHistory)
         {
@@ -24,9 +26,7 @@ public class SwiftClassSubclassingWithdrawn : IEvaluateSwiftSignatures
                 continue;
             }
 
-            return true;
+            yield return typePair.Newer.Name;
         }
-
-        return false;
     }
 }

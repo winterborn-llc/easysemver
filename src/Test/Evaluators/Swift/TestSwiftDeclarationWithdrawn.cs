@@ -20,7 +20,7 @@ public class TestSwiftDeclarationWithdrawn
     [Fact]
     public void AvailabilityIsUnchanged()
     {
-        Assert.False(Evaluator.AreDifferencesPresent(
+        Assert.Empty(Evaluator.FindDifferences(
             BuildSwift.Compare(BuildSwift.Struct(), BuildSwift.Struct())));
     }
 
@@ -31,7 +31,7 @@ public class TestSwiftDeclarationWithdrawn
             BuildSwift.Struct(),
             BuildSwift.Struct().WithAvailability(BuildSwift.Available(isUnavailable: true)));
 
-        Assert.True(Evaluator.AreDifferencesPresent(signatures));
+        Assert.Equal([BuildSwift.DefaultTypeName], Evaluator.FindDifferences(signatures));
     }
 
     [Fact]
@@ -41,7 +41,7 @@ public class TestSwiftDeclarationWithdrawn
             BuildSwift.Struct(),
             BuildSwift.Struct().WithAvailability(BuildSwift.Available(obsoleted: "2.0")));
 
-        Assert.True(Evaluator.AreDifferencesPresent(signatures));
+        Assert.NotEmpty(Evaluator.FindDifferences(signatures));
     }
 
     [Fact]
@@ -51,6 +51,6 @@ public class TestSwiftDeclarationWithdrawn
             BuildSwift.Struct(),
             BuildSwift.Struct().WithAvailability(BuildSwift.Available(isDeprecated: true)));
 
-        Assert.False(Evaluator.AreDifferencesPresent(signatures));
+        Assert.Empty(Evaluator.FindDifferences(signatures));
     }
 }

@@ -8,25 +8,27 @@ public class EventContractReduced : IEvaluateCsharpSignatures
 {
     public VersionType EvaluationImpact => VersionType.Major;
 
-    public bool AreDifferencesPresent(ICsharpSignaturesToCompare signatures)
+    public string ChangeDescription => "was removed or changed its handler type";
+
+    public IEnumerable<string> FindDifferences(ICsharpSignaturesToCompare signatures)
     {
         foreach (var typePair in signatures.ClassHistory)
         {
             foreach (var olderEvent in typePair.Older.Events)
             {
+                var symbol = $"{typePair.Older.Name}.{olderEvent.Name}";
                 var newerEvent = Events.Find(typePair.Newer, olderEvent.Name);
                 if (newerEvent == null)
                 {
-                    return true;
+                    yield return symbol;
+                    continue;
                 }
 
                 if (newerEvent.HandlerType != olderEvent.HandlerType)
                 {
-                    return true;
+                    yield return symbol;
                 }
             }
         }
-
-        return false;
     }
 }

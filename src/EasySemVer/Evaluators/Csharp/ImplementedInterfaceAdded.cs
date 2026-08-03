@@ -8,7 +8,9 @@ public class ImplementedInterfaceAdded : IEvaluateCsharpSignatures
 {
     public VersionType EvaluationImpact => VersionType.Minor;
 
-    public bool AreDifferencesPresent(ICsharpSignaturesToCompare signatures)
+    public string ChangeDescription => "implements an interface it did not before";
+
+    public IEnumerable<string> FindDifferences(ICsharpSignaturesToCompare signatures)
     {
         foreach (var typePair in signatures.ClassHistory)
         {
@@ -19,10 +21,8 @@ public class ImplementedInterfaceAdded : IEvaluateCsharpSignatures
                     continue;
                 }
 
-                return true;
+                yield return $"{typePair.Newer.Name} ({newerInterface})";
             }
         }
-
-        return false;
     }
 }

@@ -11,31 +11,40 @@ public class TypeInheritanceRestricted : IEvaluateCsharpSignatures
 {
     public VersionType EvaluationImpact => VersionType.Major;
 
-    public bool AreDifferencesPresent(ICsharpSignaturesToCompare signatures)
+    public string ChangeDescription => "restricted what callers may derive from or instantiate";
+
+    public IEnumerable<string> FindDifferences(ICsharpSignaturesToCompare signatures)
     {
         foreach (var typePair in signatures.ClassHistory)
         {
-            if (typePair.Newer.IsSealed && !typePair.Older.IsSealed)
+            // One type is one finding however many of the four ways it tightened, because they
+            // all say the same thing about it.
+            if (!IsRestricted(typePair))
             {
-                return true;
+                continue;
             }
 
-            if (typePair.Newer.IsAbstract && !typePair.Older.IsAbstract)
-            {
-                return true;
-            }
+            yield return typePair.Newer.Name;
+        }
+    }
 
-            if (typePair.Newer.IsStatic && !typePair.Older.IsStatic)
-            {
-                return true;
-            }
-
-            if (typePair.Newer.BaseType != typePair.Older.BaseType)
-            {
-                return true;
-            }
+    private static bool IsRestricted(ICsharpClassHistory typePair)
+    {
+        if (typePair.Newer.IsSealed && !typePair.Older.IsSealed)
+        {
+            return true;
         }
 
-        return false;
+        if (typePair.Newer.IsAbstract && !typePair.Older.IsAbstract)
+        {
+            return true;
+        }
+
+        if (typePair.Newer.IsStatic && !typePair.Older.IsStatic)
+        {
+            return true;
+        }
+
+        return typePair.Newer.BaseType != typePair.Older.BaseType;
     }
 }

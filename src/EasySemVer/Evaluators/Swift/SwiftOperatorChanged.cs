@@ -10,28 +10,30 @@ public class SwiftOperatorChanged : IEvaluateSwiftSignatures
 {
     public VersionType EvaluationImpact => VersionType.Major;
 
-    public bool AreDifferencesPresent(ISwiftSignaturesToCompare signatures)
+    public string ChangeDescription => "was removed, or changed kind or precedence group";
+
+    public IEnumerable<string> FindDifferences(ISwiftSignaturesToCompare signatures)
     {
         foreach (var olderOperator in signatures.Older.Operators)
         {
             var newerOperator = FindOperator(signatures.Newer, olderOperator.Name);
             if (newerOperator == null)
             {
-                return true;
+                yield return olderOperator.Name;
+                continue;
             }
 
             if (newerOperator.PrecedenceGroup != olderOperator.PrecedenceGroup)
             {
-                return true;
+                yield return olderOperator.Name;
+                continue;
             }
 
             if (newerOperator.OperatorKind != olderOperator.OperatorKind)
             {
-                return true;
+                yield return olderOperator.Name;
             }
         }
-
-        return false;
     }
 
     private static ISwiftOperator? FindOperator(ISwiftModule module, string name)

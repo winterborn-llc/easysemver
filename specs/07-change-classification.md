@@ -18,12 +18,19 @@ contract over its own comparison context; there is deliberately no shared base t
 ```csharp
 // Interfaces/Csharp/IEvaluateCsharpSignatures.cs
 VersionType EvaluationImpact { get; }
-bool AreDifferencesPresent(ICsharpSignaturesToCompare signatures);
+string ChangeDescription { get; }
+IEnumerable<string> FindDifferences(ICsharpSignaturesToCompare signatures);
 
 // Interfaces/Swift/IEvaluateSwiftSignatures.cs
 VersionType EvaluationImpact { get; }
-bool AreDifferencesPresent(ISwiftSignaturesToCompare signatures);
+string ChangeDescription { get; }
+IEnumerable<string> FindDifferences(ISwiftSignaturesToCompare signatures);
 ```
+
+A rule yields the symbols it fired on rather than a bare yes/no, and carries one phrase saying
+what happened to them; empty means the rule did not fire. That is what lets a run report its
+reasoning (CLI-08) — a bool cannot name anything. The neutral existence rules have the same
+shape over units instead of symbols.
 
 Rules are registered in a static list per language (`CompareSignatures`, `CompareSwiftSignatures`
 — 41 and 38 classes today). Adding a detection capability means a rule class + registration + a test
@@ -46,14 +53,18 @@ kind, so R01/R10/R15/R16 cover interfaces, structs and records without being res
 
 **CLS-03 — Aggregation.** ✅ *(generalized by ML-05)*
 The result SHALL be the highest impact across the neutral existence rules **and** every language
-provider's verdict — `Major > Minor > Patch` — with **Patch as the default**. Every rule is
+provider's findings — `Major > Minor > Patch` — with **Patch as the default**. Every rule is
 evaluated; evaluation order must not affect the outcome. Because there is one version per folder
 (OVR-02/ML-06), a Swift-only change moves the C# projects' versions too, and vice versa.
+Classification produces findings and nothing else: rendering them is a formatter's job, so a
+second output format is a second formatter over the same findings and never a second traversal.
 
 **CLS-04 — Defensive null handling.** ✅
 If either side is `null`, the result SHALL be **Minor** (fail-safe: assume additive). In practice
 a missing baseline is an *empty* (not null) unit list, and first runs classify Minor via NCL-02
-(see PER-03).
+(see PER-03). Where the fail-safe has a unit to name — a baseline entry with no signature for its
+language — it is reported as an ordinary finding against that unit rather than as an unexplained
+verdict; only the whole-run case has nothing to name.
 
 ## The rules
 

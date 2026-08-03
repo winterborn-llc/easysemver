@@ -83,8 +83,13 @@ internal static class CsharpUnitBuilder
             return;
         }
 
+        if (!IsDeclaredInSource(typeSymbol))
+        {
+            return;
+        }
+
         var fullName = typeSymbol.GetFullyQualifiedName();
-        if (!IsTypeInScope(fullName))
+        if (fullName.Trim().Length < 1)
         {
             return;
         }
@@ -105,20 +110,19 @@ internal static class CsharpUnitBuilder
         }
     }
 
-    private static bool IsTypeInScope(string fullName)
+    /// <summary>
+    /// SIG-03 - a unit's signature is what the unit's own source declares. Every other symbol the
+    /// compilation can see arrives through a metadata reference and belongs to somebody else:
+    /// dependency types, and - via the framework references added in
+    /// <see cref="GetProjectSignature"/> - whatever runtime this tool is itself executing on. A
+    /// name-prefix denylist could not express that distinction: it let through keyword-aliased
+    /// framework types (<c>object</c>, <c>string</c>) and any namespace nobody had thought to list
+    /// (<c>Internal.Console</c>), which made a unit's baseline depend on the machine that wrote it.
+    /// Metadata symbols have no declaring syntax; source symbols always have at least one.
+    /// </summary>
+    private static bool IsDeclaredInSource(INamedTypeSymbol typeSymbol)
     {
-        // SIG-03 - guards against dependency or generated symbols leaking into a project's own
-        // signature.
-        string[] excludedPrefixes = ["Newtonsoft.", "Microsoft.", "Coverlet.", "System.", "XUnit."];
-        foreach (var prefix in excludedPrefixes)
-        {
-            if (fullName.StartsWith(prefix, StringComparison.Ordinal))
-            {
-                return false;
-            }
-        }
-
-        return fullName.Trim().Length > 0;
+        return typeSymbol.DeclaringSyntaxReferences.Length > 0;
     }
 
     private static CsharpType? BuildType(

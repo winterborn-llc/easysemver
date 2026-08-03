@@ -11,7 +11,9 @@ public class EnumMemberValueChanged : IEvaluateCsharpSignatures
 {
     public VersionType EvaluationImpact => VersionType.Major;
 
-    public bool AreDifferencesPresent(ICsharpSignaturesToCompare signatures)
+    public string ChangeDescription => "changed its value";
+
+    public IEnumerable<string> FindDifferences(ICsharpSignaturesToCompare signatures)
     {
         foreach (var typePair in EnumMembers.GetPairedEnums(signatures))
         {
@@ -30,10 +32,8 @@ public class EnumMemberValueChanged : IEvaluateCsharpSignatures
                     continue;
                 }
 
-                return true;
+                yield return $"{newer.Name}.{olderMember.Name}";
             }
         }
-
-        return false;
     }
 }

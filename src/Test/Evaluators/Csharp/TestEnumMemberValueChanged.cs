@@ -22,7 +22,7 @@ public class TestEnumMemberValueChanged
             Build.Enum().WithMembers(Build.EnumMember("Red", "1")),
             Build.Enum().WithMembers(Build.EnumMember("Red", "1")));
 
-        Assert.False(Evaluator.AreDifferencesPresent(signatures));
+        Assert.Empty(Evaluator.FindDifferences(signatures));
     }
 
     [Fact]
@@ -32,6 +32,6 @@ public class TestEnumMemberValueChanged
             Build.Enum().WithMembers(Build.EnumMember("Red", "1")),
             Build.Enum().WithMembers(Build.EnumMember("Red", "7")));
 
-        Assert.True(Evaluator.AreDifferencesPresent(signatures));
+        Assert.Equal(["Test.TestType.Red"], Evaluator.FindDifferences(signatures));
     }
 }

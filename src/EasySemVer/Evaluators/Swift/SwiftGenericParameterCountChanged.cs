@@ -10,28 +10,32 @@ public class SwiftGenericParameterCountChanged : IEvaluateSwiftSignatures
 {
     public VersionType EvaluationImpact => VersionType.Major;
 
-    public bool AreDifferencesPresent(ISwiftSignaturesToCompare signatures)
+    public string ChangeDescription => "changed its number of generic parameters";
+
+    public IEnumerable<string> FindDifferences(ISwiftSignaturesToCompare signatures)
     {
         foreach (var typePair in signatures.TypeHistory)
         {
-            if (SwiftGenericConstraints.DidCountChange(
+            if (!SwiftGenericConstraints.DidCountChange(
                     typePair.Older.GenericParameters,
                     typePair.Newer.GenericParameters))
             {
-                return true;
+                continue;
             }
+
+            yield return typePair.Newer.Name;
         }
 
         foreach (var functionPair in SwiftMembers.GetPairedFunctions(signatures))
         {
-            if (SwiftGenericConstraints.DidCountChange(
+            if (!SwiftGenericConstraints.DidCountChange(
                     functionPair.Older.GenericParameters,
                     functionPair.Newer.GenericParameters))
             {
-                return true;
+                continue;
             }
-        }
 
-        return false;
+            yield return functionPair.Newer.Name;
+        }
     }
 }

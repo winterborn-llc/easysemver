@@ -10,21 +10,22 @@ public class SwiftFunctionSignatureChanged : IEvaluateSwiftSignatures
 {
     public VersionType EvaluationImpact => VersionType.Major;
 
-    public bool AreDifferencesPresent(ISwiftSignaturesToCompare signatures)
+    public string ChangeDescription => "changed its signature";
+
+    public IEnumerable<string> FindDifferences(ISwiftSignaturesToCompare signatures)
     {
         foreach (var functionPair in SwiftMembers.GetPairedFunctions(signatures))
         {
-            if (functionPair.Older.ReturnType != functionPair.Newer.ReturnType)
+            // Parameters and return type are one signature, so a function that changed both is
+            // still one finding.
+            if (functionPair.Older.ReturnType == functionPair.Newer.ReturnType
+                && SwiftParameters.AreTheSame(
+                    functionPair.Older.Parameters, functionPair.Newer.Parameters))
             {
-                return true;
+                continue;
             }
 
-            if (!SwiftParameters.AreTheSame(functionPair.Older.Parameters, functionPair.Newer.Parameters))
-            {
-                return true;
-            }
+            yield return functionPair.Newer.Name;
         }
-
-        return false;
     }
 }

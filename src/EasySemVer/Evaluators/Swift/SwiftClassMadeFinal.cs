@@ -10,7 +10,9 @@ public class SwiftClassMadeFinal : IEvaluateSwiftSignatures
 {
     public VersionType EvaluationImpact => VersionType.Major;
 
-    public bool AreDifferencesPresent(ISwiftSignaturesToCompare signatures)
+    public string ChangeDescription => "became final";
+
+    public IEnumerable<string> FindDifferences(ISwiftSignaturesToCompare signatures)
     {
         foreach (var typePair in signatures.TypeHistory)
         {
@@ -19,9 +21,7 @@ public class SwiftClassMadeFinal : IEvaluateSwiftSignatures
                 continue;
             }
 
-            return true;
+            yield return typePair.Newer.Name;
         }
-
-        return false;
     }
 }

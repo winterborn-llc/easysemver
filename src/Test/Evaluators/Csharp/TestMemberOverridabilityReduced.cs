@@ -23,7 +23,7 @@ public class TestMemberOverridabilityReduced
             new CsharpMethodOverride { IsVirtual = true },
             new CsharpMethodOverride { IsVirtual = true });
 
-        Assert.False(Evaluator.AreDifferencesPresent(signatures));
+        Assert.Empty(Evaluator.FindDifferences(signatures));
     }
 
     [Fact]
@@ -31,7 +31,7 @@ public class TestMemberOverridabilityReduced
     {
         var signatures = Compare(new CsharpMethodOverride { IsVirtual = true }, new CsharpMethodOverride());
 
-        Assert.True(Evaluator.AreDifferencesPresent(signatures));
+        Assert.Equal(["Test.TestType.TestMethod()"], Evaluator.FindDifferences(signatures));
     }
 
     [Fact]
@@ -39,7 +39,7 @@ public class TestMemberOverridabilityReduced
     {
         var signatures = Compare(new CsharpMethodOverride(), new CsharpMethodOverride { IsAbstract = true });
 
-        Assert.True(Evaluator.AreDifferencesPresent(signatures));
+        Assert.NotEmpty(Evaluator.FindDifferences(signatures));
     }
 
     [Fact]
@@ -47,7 +47,7 @@ public class TestMemberOverridabilityReduced
     {
         var signatures = Compare(new CsharpMethodOverride(), new CsharpMethodOverride { IsSealed = true });
 
-        Assert.True(Evaluator.AreDifferencesPresent(signatures));
+        Assert.NotEmpty(Evaluator.FindDifferences(signatures));
     }
 
     [Fact]
@@ -55,7 +55,7 @@ public class TestMemberOverridabilityReduced
     {
         var signatures = Compare(new CsharpMethodOverride(), new CsharpMethodOverride { IsVirtual = true });
 
-        Assert.False(Evaluator.AreDifferencesPresent(signatures));
+        Assert.Empty(Evaluator.FindDifferences(signatures));
     }
 
     private static ICsharpSignaturesToCompare Compare(

@@ -23,7 +23,7 @@ public class TestUnitRemoved
             older: [Units.Csharp("Widgets"), Units.Swift("Sources/Gadgets:Gadgets")],
             newer: [Units.Csharp("Widgets"), Units.Swift("Sources/Gadgets:Gadgets")]);
 
-        Assert.False(Evaluator.AreDifferencesPresent(units));
+        Assert.Empty(Evaluator.FindDifferences(units));
     }
 
     [Fact]
@@ -33,7 +33,10 @@ public class TestUnitRemoved
             older: [Units.Csharp("Widgets"), Units.Csharp("Gadgets")],
             newer: [Units.Csharp("Widgets")]);
 
-        Assert.True(Evaluator.AreDifferencesPresent(units));
+        // The rule yields the baseline's unit, which is the one that disappeared.
+        Assert.Equal(
+            ["Gadgets"],
+            Evaluator.FindDifferences(units).Select(unit => unit.UnitId));
     }
 
     [Fact]
@@ -43,7 +46,7 @@ public class TestUnitRemoved
             older: [Units.Swift("Sources/Gadgets:Gadgets")],
             newer: []);
 
-        Assert.True(Evaluator.AreDifferencesPresent(units));
+        Assert.NotEmpty(Evaluator.FindDifferences(units));
     }
 
     /// <summary>
@@ -57,6 +60,6 @@ public class TestUnitRemoved
             older: [Units.Csharp("Widgets")],
             newer: [Units.Swift("Widgets")]);
 
-        Assert.True(Evaluator.AreDifferencesPresent(units));
+        Assert.NotEmpty(Evaluator.FindDifferences(units));
     }
 }

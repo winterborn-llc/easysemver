@@ -8,8 +8,13 @@ internal static class MagicValues
 
     internal const string BaselineFormatVersionAttributeName = "formatVersion";
 
-    /// <summary>BAS-03. A baseline carrying any other value is treated as unreadable (PER-04).</summary>
-    internal const string BaselineFormatVersion = "2";
+    /// <summary>
+    /// BAS-03. A baseline carrying any other value is treated as unreadable (PER-04). Bumped to 3
+    /// when signature extraction stopped recording metadata types (SIG-03): a version-2 baseline
+    /// holds framework symbols that a version-3 run will never produce, so diffing the two would
+    /// report their disappearance as a Major change. Rejecting it costs one Minor bump instead.
+    /// </summary>
+    internal const string BaselineFormatVersion = "3";
 
     internal static readonly string[] VersionPropertyNames =
         ["AssemblyVersion", "PackageVersion", "FileVersion"];

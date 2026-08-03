@@ -10,7 +10,9 @@ public class SwiftObjCExposureAdded : IEvaluateSwiftSignatures
 {
     public VersionType EvaluationImpact => VersionType.Minor;
 
-    public bool AreDifferencesPresent(ISwiftSignaturesToCompare signatures)
+    public string ChangeDescription => "gained Objective-C exposure";
+
+    public IEnumerable<string> FindDifferences(ISwiftSignaturesToCompare signatures)
     {
         foreach (var pair in SwiftMembers.GetPairedDeclarations(signatures))
         {
@@ -24,9 +26,7 @@ public class SwiftObjCExposureAdded : IEvaluateSwiftSignatures
                 continue;
             }
 
-            return true;
+            yield return pair.Newer.Name;
         }
-
-        return false;
     }
 }

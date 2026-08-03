@@ -18,19 +18,21 @@ public class TestMethodInputParameterMadeRequired
     [Fact]
     public void RequirednessIsUnchanged()
     {
-        Assert.False(Evaluator.AreDifferencesPresent(BuildComparison(false, false)));
+        Assert.Empty(Evaluator.FindDifferences(BuildComparison(false, false)));
     }
 
     [Fact]
     public void OptionalParameterMadeRequired()
     {
-        Assert.True(Evaluator.AreDifferencesPresent(BuildComparison(false, true)));
+        Assert.Equal(
+            ["Test.TestType.TestMethod([string input], int count)"],
+            Evaluator.FindDifferences(BuildComparison(false, true)));
     }
 
     [Fact]
     public void RequiredParameterMadeOptionalIsNotBreaking()
     {
-        Assert.False(Evaluator.AreDifferencesPresent(BuildComparison(true, false)));
+        Assert.Empty(Evaluator.FindDifferences(BuildComparison(true, false)));
     }
 
     private static ICsharpSignaturesToCompare BuildComparison(bool wasRequired, bool isRequired)

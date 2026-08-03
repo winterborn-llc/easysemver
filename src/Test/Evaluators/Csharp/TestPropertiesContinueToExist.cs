@@ -22,7 +22,7 @@ public class TestPropertiesContinueToExist
             Build.Class().WithProperties(Build.Property("One"), Build.Property("Two")),
             Build.Class().WithProperties(Build.Property("One"), Build.Property("Two")));
 
-        Assert.False(Evaluator.AreDifferencesPresent(signatures));
+        Assert.Empty(Evaluator.FindDifferences(signatures));
     }
 
     [Fact]
@@ -32,6 +32,6 @@ public class TestPropertiesContinueToExist
             Build.Class().WithProperties(Build.Property("One"), Build.Property("Two")),
             Build.Class().WithProperties(Build.Property("One")));
 
-        Assert.True(Evaluator.AreDifferencesPresent(signatures));
+        Assert.Equal(["Test.TestType.Two"], Evaluator.FindDifferences(signatures));
     }
 }

@@ -10,7 +10,9 @@ public class SwiftObjCExposureRemoved : IEvaluateSwiftSignatures
 {
     public VersionType EvaluationImpact => VersionType.Major;
 
-    public bool AreDifferencesPresent(ISwiftSignaturesToCompare signatures)
+    public string ChangeDescription => "lost or changed its Objective-C exposure";
+
+    public IEnumerable<string> FindDifferences(ISwiftSignaturesToCompare signatures)
     {
         foreach (var pair in SwiftMembers.GetPairedDeclarations(signatures))
         {
@@ -24,9 +26,7 @@ public class SwiftObjCExposureRemoved : IEvaluateSwiftSignatures
                 continue;
             }
 
-            return true;
+            yield return pair.Newer.Name;
         }
-
-        return false;
     }
 }

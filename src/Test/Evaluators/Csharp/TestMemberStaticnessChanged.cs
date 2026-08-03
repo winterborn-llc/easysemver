@@ -23,7 +23,7 @@ public class TestMemberStaticnessChanged
             Build.Class().WithMethods(Build.Method()),
             Build.Class().WithMethods(Build.Method()));
 
-        Assert.False(Evaluator.AreDifferencesPresent(signatures));
+        Assert.Empty(Evaluator.FindDifferences(signatures));
     }
 
     [Fact]
@@ -33,7 +33,7 @@ public class TestMemberStaticnessChanged
             Build.Class().WithMethods(Build.Method(overrides: new CsharpMethodOverride())),
             Build.Class().WithMethods(Build.Method(overrides: new CsharpMethodOverride { IsStatic = true })));
 
-        Assert.True(Evaluator.AreDifferencesPresent(signatures));
+        Assert.Equal(["Test.TestType.TestMethod()"], Evaluator.FindDifferences(signatures));
     }
 
     [Fact]
@@ -43,7 +43,7 @@ public class TestMemberStaticnessChanged
             Build.Class().WithMethods(Build.Method(overrides: new CsharpMethodOverride { IsStatic = true })),
             Build.Class().WithMethods(Build.Method(overrides: new CsharpMethodOverride())));
 
-        Assert.True(Evaluator.AreDifferencesPresent(signatures));
+        Assert.NotEmpty(Evaluator.FindDifferences(signatures));
     }
 
     [Fact]
@@ -60,6 +60,6 @@ public class TestMemberStaticnessChanged
                 IsStatic = true
             }));
 
-        Assert.True(Evaluator.AreDifferencesPresent(signatures));
+        Assert.Equal(["Test.TestType.TestProperty"], Evaluator.FindDifferences(signatures));
     }
 }

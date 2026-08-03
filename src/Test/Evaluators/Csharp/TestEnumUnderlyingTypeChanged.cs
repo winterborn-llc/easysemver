@@ -20,7 +20,7 @@ public class TestEnumUnderlyingTypeChanged
     {
         var signatures = Build.Compare(Build.Enum(), Build.Enum());
 
-        Assert.False(Evaluator.AreDifferencesPresent(signatures));
+        Assert.Empty(Evaluator.FindDifferences(signatures));
     }
 
     [Fact]
@@ -30,6 +30,6 @@ public class TestEnumUnderlyingTypeChanged
             Build.Enum(underlyingType: "int"),
             Build.Enum(underlyingType: "byte"));
 
-        Assert.True(Evaluator.AreDifferencesPresent(signatures));
+        Assert.Equal(["Test.TestType"], Evaluator.FindDifferences(signatures));
     }
 }

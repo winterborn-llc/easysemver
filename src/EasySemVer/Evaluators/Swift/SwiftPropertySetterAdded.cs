@@ -10,7 +10,9 @@ public class SwiftPropertySetterAdded : IEvaluateSwiftSignatures
 {
     public VersionType EvaluationImpact => VersionType.Minor;
 
-    public bool AreDifferencesPresent(ISwiftSignaturesToCompare signatures)
+    public string ChangeDescription => "gained a setter";
+
+    public IEnumerable<string> FindDifferences(ISwiftSignaturesToCompare signatures)
     {
         foreach (var propertyPair in SwiftMembers.GetPairedProperties(signatures))
         {
@@ -19,9 +21,7 @@ public class SwiftPropertySetterAdded : IEvaluateSwiftSignatures
                 continue;
             }
 
-            return true;
+            yield return propertyPair.Newer.Name;
         }
-
-        return false;
     }
 }

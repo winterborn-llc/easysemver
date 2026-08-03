@@ -10,7 +10,9 @@ public class SwiftParameterModifierChanged : IEvaluateSwiftSignatures
 {
     public VersionType EvaluationImpact => VersionType.Major;
 
-    public bool AreDifferencesPresent(ISwiftSignaturesToCompare signatures)
+    public string ChangeDescription => "changed a parameter modifier";
+
+    public IEnumerable<string> FindDifferences(ISwiftSignaturesToCompare signatures)
     {
         foreach (var functionPair in SwiftMembers.GetPairedFunctions(signatures))
         {
@@ -18,23 +20,28 @@ public class SwiftParameterModifierChanged : IEvaluateSwiftSignatures
                          functionPair.Older.Parameters,
                          functionPair.Newer.Parameters))
             {
-                if (parameterPair.Older.IsInout != parameterPair.Newer.IsInout)
+                if (!DidAnyModifierChange(parameterPair.Older, parameterPair.Newer))
                 {
-                    return true;
+                    continue;
                 }
 
-                if (parameterPair.Older.IsVariadic != parameterPair.Newer.IsVariadic)
-                {
-                    return true;
-                }
-
-                if (parameterPair.Older.Ownership != parameterPair.Newer.Ownership)
-                {
-                    return true;
-                }
+                yield return $"{functionPair.Newer.Name} ({parameterPair.Newer.Label})";
             }
         }
+    }
 
-        return false;
+    private static bool DidAnyModifierChange(ISwiftParameter older, ISwiftParameter newer)
+    {
+        if (older.IsInout != newer.IsInout)
+        {
+            return true;
+        }
+
+        if (older.IsVariadic != newer.IsVariadic)
+        {
+            return true;
+        }
+
+        return older.Ownership != newer.Ownership;
     }
 }

@@ -119,12 +119,17 @@ public class TestBaselineFile
         var document = BaselineFile.BuildDocument([], Providers);
 
         Assert.Equal("EasySemVer", document.Root!.Name.LocalName);
-        Assert.Equal("2", document.Root.Attribute("formatVersion")!.Value);
+        // Hardcoded rather than read from MagicValues: bumping the format is a deliberate act that
+        // invalidates every baseline in the wild, so it should have to be made twice.
+        Assert.Equal("3", document.Root.Attribute("formatVersion")!.Value);
     }
 
     /// <summary>BAS-03 - an unknown or absent format version is unreadable, never guessed at.</summary>
     [Theory]
     [InlineData("<EasySemVer formatVersion=\"1\" />")]
+    // A version-2 baseline holds the metadata types extraction used to record before SIG-03; a
+    // version-3 run never produces them, so diffing the two would read their absence as Major.
+    [InlineData("<EasySemVer formatVersion=\"2\" />")]
     [InlineData("<EasySemVer />")]
     [InlineData("<Solution />")]
     public void UnusableBaselineIsRejected(string xml)

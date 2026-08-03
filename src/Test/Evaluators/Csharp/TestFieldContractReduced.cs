@@ -23,7 +23,7 @@ public class TestFieldContractReduced
             Build.Class().WithFields(Build.Field()),
             Build.Class().WithFields(Build.Field()));
 
-        Assert.False(Evaluator.AreDifferencesPresent(signatures));
+        Assert.Empty(Evaluator.FindDifferences(signatures));
     }
 
     [Fact]
@@ -33,7 +33,7 @@ public class TestFieldContractReduced
             Build.Class().WithFields(Build.Field()),
             Build.Class());
 
-        Assert.True(Evaluator.AreDifferencesPresent(signatures));
+        Assert.Equal(["Test.TestType.TestField"], Evaluator.FindDifferences(signatures));
     }
 
     [Fact]
@@ -43,7 +43,7 @@ public class TestFieldContractReduced
             Build.Class().WithFields(Build.Field(type: "string")),
             Build.Class().WithFields(Build.Field(type: "int")));
 
-        Assert.True(Evaluator.AreDifferencesPresent(signatures));
+        Assert.NotEmpty(Evaluator.FindDifferences(signatures));
     }
 
     [Fact]
@@ -53,7 +53,7 @@ public class TestFieldContractReduced
             Build.Class().WithFields(Build.Field()),
             Build.Class().WithFields(new CsharpField { Name = "TestField", Type = "string", IsReadOnly = true }));
 
-        Assert.True(Evaluator.AreDifferencesPresent(signatures));
+        Assert.NotEmpty(Evaluator.FindDifferences(signatures));
     }
 
     [Fact]
@@ -63,6 +63,6 @@ public class TestFieldContractReduced
             Build.Class().WithFields(new CsharpField { Name = "TestField", Type = "string", IsReadOnly = true }),
             Build.Class().WithFields(Build.Field()));
 
-        Assert.False(Evaluator.AreDifferencesPresent(signatures));
+        Assert.Empty(Evaluator.FindDifferences(signatures));
     }
 }

@@ -22,7 +22,7 @@ public class TestDelegateSignatureChanged
             Build.Delegate().WithParameters(Build.Parameter()),
             Build.Delegate().WithParameters(Build.Parameter()));
 
-        Assert.False(Evaluator.AreDifferencesPresent(signatures));
+        Assert.Empty(Evaluator.FindDifferences(signatures));
     }
 
     [Fact]
@@ -32,7 +32,7 @@ public class TestDelegateSignatureChanged
             Build.Delegate(returns: "void"),
             Build.Delegate(returns: "int"));
 
-        Assert.True(Evaluator.AreDifferencesPresent(signatures));
+        Assert.Equal(["Test.TestType"], Evaluator.FindDifferences(signatures));
     }
 
     [Fact]
@@ -42,6 +42,6 @@ public class TestDelegateSignatureChanged
             Build.Delegate().WithParameters(Build.Parameter()),
             Build.Delegate().WithParameters(Build.Parameter(), Build.Parameter("count", "int")));
 
-        Assert.True(Evaluator.AreDifferencesPresent(signatures));
+        Assert.NotEmpty(Evaluator.FindDifferences(signatures));
     }
 }

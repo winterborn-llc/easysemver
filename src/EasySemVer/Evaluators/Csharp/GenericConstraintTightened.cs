@@ -11,25 +11,29 @@ public class GenericConstraintTightened : IEvaluateCsharpSignatures
 {
     public VersionType EvaluationImpact => VersionType.Major;
 
-    public bool AreDifferencesPresent(ICsharpSignaturesToCompare signatures)
+    public string ChangeDescription => "tightened its generic constraints";
+
+    public IEnumerable<string> FindDifferences(ICsharpSignaturesToCompare signatures)
     {
         foreach (var typePair in signatures.ClassHistory)
         {
-            if (IsTightened(typePair.Older.GenericParameters, typePair.Newer.GenericParameters))
+            if (!IsTightened(typePair.Older.GenericParameters, typePair.Newer.GenericParameters))
             {
-                return true;
+                continue;
             }
+
+            yield return typePair.Newer.Name;
         }
 
         foreach (var overloadPair in Overloads.GetMatchedOverloads(signatures))
         {
-            if (IsTightened(overloadPair.Older.GenericParameters, overloadPair.Newer.GenericParameters))
+            if (!IsTightened(overloadPair.Older.GenericParameters, overloadPair.Newer.GenericParameters))
             {
-                return true;
+                continue;
             }
-        }
 
-        return false;
+            yield return overloadPair.Symbol;
+        }
     }
 
     private static bool IsTightened(

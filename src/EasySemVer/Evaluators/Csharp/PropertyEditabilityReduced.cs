@@ -1,17 +1,18 @@
 using Winterborn.Library.EasySemVer.DataObject;
-using Winterborn.Library.EasySemVer.DataObject.Csharp;
 using Winterborn.Library.EasySemVer.Interfaces.Csharp;
 
 namespace Winterborn.Library.EasySemVer.Evaluators.Csharp;
 
+/// <summary>R09 - a property lost its setter.</summary>
 public class PropertyEditabilityReduced : IEvaluateCsharpSignatures
 {
     public VersionType EvaluationImpact => VersionType.Major;
 
-    public bool AreDifferencesPresent(ICsharpSignaturesToCompare signatures)
+    public string ChangeDescription => "is no longer writable";
+
+    public IEnumerable<string> FindDifferences(ICsharpSignaturesToCompare signatures)
     {
-        var classes = signatures.ClassHistory;
-        foreach (var classPair in classes)
+        foreach (var classPair in signatures.ClassHistory)
         {
             var oldClass = classPair.Older;
             var newClass = classPair.Newer;
@@ -22,7 +23,7 @@ public class PropertyEditabilityReduced : IEvaluateCsharpSignatures
                 {
                     continue;
                 }
-                
+
                 var newProperty = newClass.Properties[oldPropertyName];
                 if (newProperty.IsWritable)
                 {
@@ -33,11 +34,9 @@ public class PropertyEditabilityReduced : IEvaluateCsharpSignatures
                 {
                     continue;
                 }
-                    
-                return true;
+
+                yield return $"{newClass.Name}.{oldPropertyName}";
             }
         }
-
-        return false;
     }
 }

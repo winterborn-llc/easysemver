@@ -1,17 +1,19 @@
 using Winterborn.Library.EasySemVer.DataObject;
-using Winterborn.Library.EasySemVer.DataObject.Csharp;
+using Winterborn.Library.EasySemVer.Extensions;
 using Winterborn.Library.EasySemVer.Interfaces.Csharp;
 
 namespace Winterborn.Library.EasySemVer.Evaluators.Csharp;
 
+/// <summary>R04 - a parameter that used to be optional now has to be passed.</summary>
 internal class MethodInputParameterMadeRequired : IEvaluateCsharpSignatures
 {
     public VersionType EvaluationImpact => VersionType.Major;
 
-    public bool AreDifferencesPresent(ICsharpSignaturesToCompare signatures)
+    public string ChangeDescription => "made an optional parameter required";
+
+    public IEnumerable<string> FindDifferences(ICsharpSignaturesToCompare signatures)
     {
-        var classes = signatures.ClassHistory;
-        foreach (var classPair in classes)
+        foreach (var classPair in signatures.ClassHistory)
         {
             var oldClass = classPair.Older;
             var newClass = classPair.Newer;
@@ -31,12 +33,11 @@ internal class MethodInputParameterMadeRequired : IEvaluateCsharpSignatures
                         continue;
                     }
 
-                    return true;
+                    yield return
+                        $"{oldClass.Name}.{oldMethodName}({oldOverride.GetMethodSignature()})";
                 }
             }
         }
-
-        return false;
     }
 
     private static bool IsAnyParameterMadeRequired(

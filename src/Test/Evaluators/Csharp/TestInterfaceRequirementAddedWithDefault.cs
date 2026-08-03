@@ -23,7 +23,7 @@ public class TestInterfaceRequirementAddedWithDefault
             Build.Interface().WithMethods(Build.Method("One")),
             Build.Interface().WithMethods(Build.Method("One")));
 
-        Assert.False(Evaluator.AreDifferencesPresent(signatures));
+        Assert.Empty(Evaluator.FindDifferences(signatures));
     }
 
     [Fact]
@@ -35,7 +35,7 @@ public class TestInterfaceRequirementAddedWithDefault
                 Build.Method("One"),
                 Build.Method("Two", overrides: new CsharpMethodOverride { HasDefaultImplementation = true })));
 
-        Assert.True(Evaluator.AreDifferencesPresent(signatures));
+        Assert.Equal(["Test.TestType.Two"], Evaluator.FindDifferences(signatures));
     }
 
     [Fact]
@@ -45,6 +45,6 @@ public class TestInterfaceRequirementAddedWithDefault
             Build.Interface().WithMethods(Build.Method("One")),
             Build.Interface().WithMethods(Build.Method("One"), Build.Method("Two")));
 
-        Assert.False(Evaluator.AreDifferencesPresent(signatures));
+        Assert.Empty(Evaluator.FindDifferences(signatures));
     }
 }

@@ -20,7 +20,7 @@ public class TestProjectClassAdded
     {
         var signatures = Build.Compare(Build.Project(Build.Class()), Build.Project(Build.Class()));
 
-        Assert.False(Evaluator.AreDifferencesPresent(signatures));
+        Assert.Empty(Evaluator.FindDifferences(signatures));
     }
 
     [Fact]
@@ -30,7 +30,7 @@ public class TestProjectClassAdded
             Build.Project(Build.Class()),
             Build.Project(Build.Class(), Build.Class("Test.Another")));
 
-        Assert.True(Evaluator.AreDifferencesPresent(signatures));
+        Assert.Equal(["Test.Another"], Evaluator.FindDifferences(signatures));
     }
 
     /// <summary>A new interface is R19's business, not this rule's.</summary>
@@ -41,6 +41,6 @@ public class TestProjectClassAdded
             Build.Project(Build.Class()),
             Build.Project(Build.Class(), Build.Interface("Test.IThing")));
 
-        Assert.False(Evaluator.AreDifferencesPresent(signatures));
+        Assert.Empty(Evaluator.FindDifferences(signatures));
     }
 }

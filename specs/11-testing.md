@@ -37,12 +37,21 @@ version file, git tag, `MARKETING_VERSION` and `CFBundleShortVersionString` — 
 non-literal value is read-skipped and write-skipped (MVR-04) and that build counters are left
 alone (MVR-06).
 
-**TST-04 — Self-signature smoke test.** ✅
-[`TestSelfSignature`](../src/Test/TestSelfSignature.cs) SHALL run real extraction against the
-test project's own sources. [`TestCsharpExtraction`](../src/Test/TestCsharpExtraction.cs) extends
-that to the full C# topology over a fixture source file: every type kind, positional record
-parameters, enum members and underlying type, delegate signatures, fields, events, modifiers,
-generic constraints, nested types, interface default implementations, per-overload return types.
+**TST-04 — Extraction against real source.** ✅
+[`TestCsharpExtraction`](../src/Test/TestCsharpExtraction.cs) SHALL run real extraction over a
+fixture source file covering the full C# topology: every type kind, positional record parameters,
+enum members and underlying type, delegate signatures, fields, events, modifiers, generic
+constraints, nested types, interface default implementations, per-overload return types.
+
+[`TestCsharpSignatureIsolation`](../src/Test/TestCsharpSignatureIsolation.cs) SHALL assert the
+other half of SIG-03: that a unit's signature contains what the unit's own source declares and
+nothing reached through a metadata reference. The compilation's framework references come from
+whichever runtime the tool is executing on, so a symbol leaking in from metadata would make the
+baseline a property of the machine that wrote it. It asserts the outcome rather than the
+mechanism, so it holds however the symbol walk is later narrowed, and covers the partial-type case
+where one type has several declaring syntax references.
+ℹ️ It replaces the former `TestSelfSignature`, which extracted the test project's own sources: a
+smoke test whose expectations changed every time the test project did.
 
 **TST-05 / TST-M8 — Integration regression.** ✅ **Resolved** *(was blocked by G-01)*
 [`Regression.TestProgramInvocation`](../src/IntegrationTest/Regression.cs) SHALL invoke

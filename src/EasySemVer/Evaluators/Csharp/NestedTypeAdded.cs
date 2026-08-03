@@ -9,7 +9,9 @@ public class NestedTypeAdded : IEvaluateCsharpSignatures
 {
     public VersionType EvaluationImpact => VersionType.Minor;
 
-    public bool AreDifferencesPresent(ICsharpSignaturesToCompare signatures)
+    public string ChangeDescription => "was added";
+
+    public IEnumerable<string> FindDifferences(ICsharpSignaturesToCompare signatures)
     {
         foreach (var newerType in signatures.Newer.Types)
         {
@@ -24,9 +26,7 @@ public class NestedTypeAdded : IEvaluateCsharpSignatures
                 continue;
             }
 
-            return true;
+            yield return newerType.Name;
         }
-
-        return false;
     }
 }

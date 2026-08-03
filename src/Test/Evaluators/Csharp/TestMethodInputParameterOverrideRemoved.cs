@@ -22,7 +22,7 @@ public class TestMethodInputParameterOverrideRemoved
             Build.Class().WithMethods(Build.Method(overrides: Build.Override(Build.Parameter()))),
             Build.Class().WithMethods(Build.Method(overrides: Build.Override(Build.Parameter()))));
 
-        Assert.False(Evaluator.AreDifferencesPresent(signatures));
+        Assert.Empty(Evaluator.FindDifferences(signatures));
     }
 
     [Fact]
@@ -37,7 +37,10 @@ public class TestMethodInputParameterOverrideRemoved
                 ])),
             Build.Class().WithMethods(Build.Method(overrides: Build.Override(Build.Parameter()))));
 
-        Assert.True(Evaluator.AreDifferencesPresent(signatures));
+        // An overload-level finding names the overload, not just the method (SIG-09).
+        Assert.Equal(
+            ["Test.TestType.TestMethod([string input], [int count])"],
+            Evaluator.FindDifferences(signatures));
     }
 
     /// <summary>
@@ -53,6 +56,6 @@ public class TestMethodInputParameterOverrideRemoved
             Build.Class().WithMethods(Build.Method(
                 overrides: Build.Override(Build.Parameter(isRequired: false)))));
 
-        Assert.False(Evaluator.AreDifferencesPresent(signatures));
+        Assert.Empty(Evaluator.FindDifferences(signatures));
     }
 }

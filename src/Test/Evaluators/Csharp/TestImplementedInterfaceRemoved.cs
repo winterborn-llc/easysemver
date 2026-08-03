@@ -22,7 +22,7 @@ public class TestImplementedInterfaceRemoved
             Build.Class().WithInterfaces("Test.IThing"),
             Build.Class().WithInterfaces("Test.IThing"));
 
-        Assert.False(Evaluator.AreDifferencesPresent(signatures));
+        Assert.Empty(Evaluator.FindDifferences(signatures));
     }
 
     [Fact]
@@ -32,7 +32,8 @@ public class TestImplementedInterfaceRemoved
             Build.Class().WithInterfaces("Test.IThing", "Test.IOther"),
             Build.Class().WithInterfaces("Test.IThing"));
 
-        Assert.True(Evaluator.AreDifferencesPresent(signatures));
+        // The symbol names the type and the interface it dropped.
+        Assert.Equal(["Test.TestType (Test.IOther)"], Evaluator.FindDifferences(signatures));
     }
 
     [Fact]
@@ -42,6 +43,6 @@ public class TestImplementedInterfaceRemoved
             Build.Class().WithInterfaces("Test.IThing"),
             Build.Class().WithInterfaces("Test.IThing", "Test.IOther"));
 
-        Assert.False(Evaluator.AreDifferencesPresent(signatures));
+        Assert.Empty(Evaluator.FindDifferences(signatures));
     }
 }

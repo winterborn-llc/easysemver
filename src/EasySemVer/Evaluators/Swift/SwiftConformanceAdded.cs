@@ -10,7 +10,9 @@ public class SwiftConformanceAdded : IEvaluateSwiftSignatures
 {
     public VersionType EvaluationImpact => VersionType.Minor;
 
-    public bool AreDifferencesPresent(ISwiftSignaturesToCompare signatures)
+    public string ChangeDescription => "conforms to a protocol it did not before";
+
+    public IEnumerable<string> FindDifferences(ISwiftSignaturesToCompare signatures)
     {
         foreach (var typePair in signatures.TypeHistory)
         {
@@ -21,10 +23,8 @@ public class SwiftConformanceAdded : IEvaluateSwiftSignatures
                     continue;
                 }
 
-                return true;
+                yield return $"{typePair.Newer.Name} ({conformance})";
             }
         }
-
-        return false;
     }
 }

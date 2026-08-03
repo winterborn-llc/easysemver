@@ -23,7 +23,7 @@ public class TestSwiftTypeRemoved
             BuildSwift.Module(BuildSwift.Struct("Point"), BuildSwift.Class("Gadget")),
             BuildSwift.Module(BuildSwift.Struct("Point"), BuildSwift.Class("Gadget")));
 
-        Assert.False(Evaluator.AreDifferencesPresent(signatures));
+        Assert.Empty(Evaluator.FindDifferences(signatures));
     }
 
     [Fact]
@@ -33,7 +33,8 @@ public class TestSwiftTypeRemoved
             BuildSwift.Module(BuildSwift.Struct("Point"), BuildSwift.Class("Gadget")),
             BuildSwift.Module(BuildSwift.Struct("Point")));
 
-        Assert.True(Evaluator.AreDifferencesPresent(signatures));
+        // The rule names what it found, which is what a dry run reports (§20 O-04).
+        Assert.Equal(["Gadget"], Evaluator.FindDifferences(signatures));
     }
 
     /// <summary>SWE-02 - dropping from public to internal reads as a removal, which is correct.</summary>
@@ -44,6 +45,6 @@ public class TestSwiftTypeRemoved
             BuildSwift.Module(BuildSwift.Struct("Point")),
             BuildSwift.Module());
 
-        Assert.True(Evaluator.AreDifferencesPresent(signatures));
+        Assert.NotEmpty(Evaluator.FindDifferences(signatures));
     }
 }

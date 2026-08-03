@@ -20,7 +20,7 @@ public class TestProjectClassesContinueToExist
     {
         var signatures = Build.Compare(Build.Project(Build.Class()), Build.Project(Build.Class()));
 
-        Assert.False(Evaluator.AreDifferencesPresent(signatures));
+        Assert.Empty(Evaluator.FindDifferences(signatures));
     }
 
     [Fact]
@@ -30,7 +30,7 @@ public class TestProjectClassesContinueToExist
             Build.Project(Build.Class(), Build.Class("Test.Another")),
             Build.Project(Build.Class()));
 
-        Assert.True(Evaluator.AreDifferencesPresent(signatures));
+        Assert.Equal(["Test.Another"], Evaluator.FindDifferences(signatures));
     }
 
     /// <summary>SIG-04 - identity is the namespace-qualified name, so a move is a remove + add.</summary>
@@ -41,6 +41,7 @@ public class TestProjectClassesContinueToExist
             Build.Project(Build.Class("Old.Thing")),
             Build.Project(Build.Class("New.Thing")));
 
-        Assert.True(Evaluator.AreDifferencesPresent(signatures));
+        // The finding names the old name, which is the one that disappeared.
+        Assert.Equal(["Old.Thing"], Evaluator.FindDifferences(signatures));
     }
 }

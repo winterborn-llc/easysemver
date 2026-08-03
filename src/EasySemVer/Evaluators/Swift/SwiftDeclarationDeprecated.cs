@@ -10,7 +10,9 @@ public class SwiftDeclarationDeprecated : IEvaluateSwiftSignatures
 {
     public VersionType EvaluationImpact => VersionType.Patch;
 
-    public bool AreDifferencesPresent(ISwiftSignaturesToCompare signatures)
+    public string ChangeDescription => "was marked deprecated";
+
+    public IEnumerable<string> FindDifferences(ISwiftSignaturesToCompare signatures)
     {
         foreach (var pair in SwiftMembers.GetPairedDeclarations(signatures))
         {
@@ -24,9 +26,7 @@ public class SwiftDeclarationDeprecated : IEvaluateSwiftSignatures
                 continue;
             }
 
-            return true;
+            yield return pair.Newer.Name;
         }
-
-        return false;
     }
 }

@@ -10,7 +10,9 @@ public class SwiftDeclarationWithdrawn : IEvaluateSwiftSignatures
 {
     public VersionType EvaluationImpact => VersionType.Major;
 
-    public bool AreDifferencesPresent(ISwiftSignaturesToCompare signatures)
+    public string ChangeDescription => "became unavailable or obsoleted";
+
+    public IEnumerable<string> FindDifferences(ISwiftSignaturesToCompare signatures)
     {
         foreach (var pair in SwiftMembers.GetPairedDeclarations(signatures))
         {
@@ -24,9 +26,7 @@ public class SwiftDeclarationWithdrawn : IEvaluateSwiftSignatures
                 continue;
             }
 
-            return true;
+            yield return pair.Newer.Name;
         }
-
-        return false;
     }
 }

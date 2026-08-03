@@ -24,7 +24,7 @@ public class TestSwiftPropertyTypeChanged
             BuildSwift.Struct().WithProperties(BuildSwift.Property(type: "Int")),
             BuildSwift.Struct().WithProperties(BuildSwift.Property(type: "Int")));
 
-        Assert.False(Evaluator.AreDifferencesPresent(signatures));
+        Assert.Empty(Evaluator.FindDifferences(signatures));
     }
 
     [Fact]
@@ -34,6 +34,6 @@ public class TestSwiftPropertyTypeChanged
             BuildSwift.Struct().WithProperties(BuildSwift.Property(type: "Int")),
             BuildSwift.Struct().WithProperties(BuildSwift.Property(type: "Double")));
 
-        Assert.True(Evaluator.AreDifferencesPresent(signatures));
+        Assert.Equal(["TestType.speed"], Evaluator.FindDifferences(signatures));
     }
 }

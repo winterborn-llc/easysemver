@@ -12,7 +12,9 @@ public class UnitAdded : IEvaluateUnitExistence
 {
     public VersionType EvaluationImpact => VersionType.Minor;
 
-    public bool AreDifferencesPresent(IUnitsToCompare units)
+    public string ChangeDescription => "was added";
+
+    public IEnumerable<IPackageableUnit> FindDifferences(IUnitsToCompare units)
     {
         foreach (var newerUnit in units.Newer)
         {
@@ -22,9 +24,7 @@ public class UnitAdded : IEvaluateUnitExistence
                 continue;
             }
 
-            return true;
+            yield return newerUnit;
         }
-
-        return false;
     }
 }

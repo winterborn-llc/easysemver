@@ -24,7 +24,7 @@ public class TestSwiftGenericParameterCountChanged
             BuildSwift.Struct().WithGenerics(BuildSwift.Generic()),
             BuildSwift.Struct().WithGenerics(BuildSwift.Generic()));
 
-        Assert.False(Evaluator.AreDifferencesPresent(signatures));
+        Assert.Empty(Evaluator.FindDifferences(signatures));
     }
 
     [Fact]
@@ -34,7 +34,7 @@ public class TestSwiftGenericParameterCountChanged
             BuildSwift.Struct().WithGenerics(BuildSwift.Generic()),
             BuildSwift.Struct().WithGenerics(BuildSwift.Generic(), BuildSwift.Generic("U")));
 
-        Assert.True(Evaluator.AreDifferencesPresent(signatures));
+        Assert.Equal([BuildSwift.DefaultTypeName], Evaluator.FindDifferences(signatures));
     }
 
     [Fact]
@@ -44,6 +44,7 @@ public class TestSwiftGenericParameterCountChanged
             BuildSwift.Struct().WithFunctions(BuildSwift.Function().WithGenerics(BuildSwift.Generic())),
             BuildSwift.Struct().WithFunctions(BuildSwift.Function()));
 
-        Assert.True(Evaluator.AreDifferencesPresent(signatures));
+        // A function-level change is reported against the function, not its type.
+        Assert.Equal(["TestType.move()"], Evaluator.FindDifferences(signatures));
     }
 }

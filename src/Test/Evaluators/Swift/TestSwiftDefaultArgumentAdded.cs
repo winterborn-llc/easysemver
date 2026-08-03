@@ -20,19 +20,19 @@ public class TestSwiftDefaultArgumentAdded
     [Fact]
     public void DefaultsAreUnchanged()
     {
-        Assert.False(Evaluator.AreDifferencesPresent(Compare(false, false)));
+        Assert.Empty(Evaluator.FindDifferences(Compare(false, false)));
     }
 
     [Fact]
     public void DefaultIsAdded()
     {
-        Assert.True(Evaluator.AreDifferencesPresent(Compare(false, true)));
+        Assert.Equal(["TestType.move() (to)"], Evaluator.FindDifferences(Compare(false, true)));
     }
 
     [Fact]
     public void RemovingADefaultDoesNotFire()
     {
-        Assert.False(Evaluator.AreDifferencesPresent(Compare(true, false)));
+        Assert.Empty(Evaluator.FindDifferences(Compare(true, false)));
     }
 
     private static ISwiftSignaturesToCompare Compare(bool hadDefault, bool hasDefault)

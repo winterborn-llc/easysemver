@@ -22,7 +22,7 @@ public class TestEventContractReduced
             Build.Class().WithEvents(Build.Event()),
             Build.Class().WithEvents(Build.Event()));
 
-        Assert.False(Evaluator.AreDifferencesPresent(signatures));
+        Assert.Empty(Evaluator.FindDifferences(signatures));
     }
 
     [Fact]
@@ -30,7 +30,7 @@ public class TestEventContractReduced
     {
         var signatures = Build.Compare(Build.Class().WithEvents(Build.Event()), Build.Class());
 
-        Assert.True(Evaluator.AreDifferencesPresent(signatures));
+        Assert.Equal(["Test.TestType.TestEvent"], Evaluator.FindDifferences(signatures));
     }
 
     [Fact]
@@ -40,6 +40,6 @@ public class TestEventContractReduced
             Build.Class().WithEvents(Build.Event(handler: "System.EventHandler")),
             Build.Class().WithEvents(Build.Event(handler: "System.Action")));
 
-        Assert.True(Evaluator.AreDifferencesPresent(signatures));
+        Assert.NotEmpty(Evaluator.FindDifferences(signatures));
     }
 }

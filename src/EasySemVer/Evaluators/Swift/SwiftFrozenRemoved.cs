@@ -10,7 +10,9 @@ public class SwiftFrozenRemoved : IEvaluateSwiftSignatures
 {
     public VersionType EvaluationImpact => VersionType.Major;
 
-    public bool AreDifferencesPresent(ISwiftSignaturesToCompare signatures)
+    public string ChangeDescription => "is no longer @frozen";
+
+    public IEnumerable<string> FindDifferences(ISwiftSignaturesToCompare signatures)
     {
         foreach (var typePair in signatures.TypeHistory)
         {
@@ -19,9 +21,7 @@ public class SwiftFrozenRemoved : IEvaluateSwiftSignatures
                 continue;
             }
 
-            return true;
+            yield return typePair.Newer.Name;
         }
-
-        return false;
     }
 }

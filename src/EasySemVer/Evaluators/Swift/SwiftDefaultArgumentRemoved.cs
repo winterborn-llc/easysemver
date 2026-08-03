@@ -10,7 +10,9 @@ public class SwiftDefaultArgumentRemoved : IEvaluateSwiftSignatures
 {
     public VersionType EvaluationImpact => VersionType.Major;
 
-    public bool AreDifferencesPresent(ISwiftSignaturesToCompare signatures)
+    public string ChangeDescription => "lost a default argument value";
+
+    public IEnumerable<string> FindDifferences(ISwiftSignaturesToCompare signatures)
     {
         foreach (var functionPair in SwiftMembers.GetPairedFunctions(signatures))
         {
@@ -23,10 +25,10 @@ public class SwiftDefaultArgumentRemoved : IEvaluateSwiftSignatures
                     continue;
                 }
 
-                return true;
+                // The function is the subject; the parameter rides along so the line says which
+                // one without the description having to vary per finding.
+                yield return $"{functionPair.Newer.Name} ({parameterPair.Newer.Label})";
             }
         }
-
-        return false;
     }
 }

@@ -19,7 +19,7 @@ public class TestParameterModifierChanged
     [Fact]
     public void ModifiersAreUnchanged()
     {
-        Assert.False(Evaluator.AreDifferencesPresent(Compare(Build.Parameter(), Build.Parameter())));
+        Assert.Empty(Evaluator.FindDifferences(Compare(Build.Parameter(), Build.Parameter())));
     }
 
     [Fact]
@@ -32,7 +32,9 @@ public class TestParameterModifierChanged
             RefKind = "Ref"
         };
 
-        Assert.True(Evaluator.AreDifferencesPresent(Compare(Build.Parameter(), newer)));
+        Assert.Equal(
+            ["Test.TestType.TestMethod([string input])"],
+            Evaluator.FindDifferences(Compare(Build.Parameter(), newer)));
     }
 
     [Fact]
@@ -45,7 +47,7 @@ public class TestParameterModifierChanged
             IsParams = true
         };
 
-        Assert.True(Evaluator.AreDifferencesPresent(Compare(Build.Parameter(), newer)));
+        Assert.NotEmpty(Evaluator.FindDifferences(Compare(Build.Parameter(), newer)));
     }
 
     private static ICsharpSignaturesToCompare Compare(

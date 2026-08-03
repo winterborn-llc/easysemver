@@ -1,31 +1,28 @@
 using Winterborn.Library.EasySemVer.DataObject;
-using Winterborn.Library.EasySemVer.DataObject.Csharp;
 using Winterborn.Library.EasySemVer.Interfaces.Csharp;
 
 namespace Winterborn.Library.EasySemVer.Evaluators.Csharp;
 
+/// <summary>R15 - a type that exists on both sides gained a method.</summary>
 public class MethodAdded : IEvaluateCsharpSignatures
 {
     public VersionType EvaluationImpact => VersionType.Minor;
 
-    public bool AreDifferencesPresent(ICsharpSignaturesToCompare signatures)
+    public string ChangeDescription => "was added";
+
+    public IEnumerable<string> FindDifferences(ICsharpSignaturesToCompare signatures)
     {
-        var classes = signatures.ClassHistory;
-        foreach (var classPair in classes)
+        foreach (var classPair in signatures.ClassHistory)
         {
-            var oldClass = classPair.Older;
-            var newClass = classPair.Newer;
-            foreach (var newMethodName in newClass.Methods.Keys)
+            foreach (var newMethodName in classPair.Newer.Methods.Keys)
             {
-                if (oldClass.Methods.Contains(newMethodName))
+                if (classPair.Older.Methods.Contains(newMethodName))
                 {
                     continue;
                 }
 
-                return true;
+                yield return $"{classPair.Newer.Name}.{newMethodName}";
             }
         }
-
-        return false;
     }
 }

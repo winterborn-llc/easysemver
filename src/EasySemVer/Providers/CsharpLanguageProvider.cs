@@ -48,10 +48,10 @@ internal class CsharpLanguageProvider : ILanguageProvider
         unit.Signature = CsharpUnitBuilder.GetProjectSignature(this.GetProjectFilePath(unit));
     }
 
-    public VersionType Classify(IPackageableUnit? older, IPackageableUnit newer)
+    public IReadOnlyList<ChangeFinding> Classify(IPackageableUnit? older, IPackageableUnit newer)
     {
-        return CompareSignatures.GetChangeType(
-            newer.UnitId,
+        return CompareSignatures.GetFindings(
+            newer,
             older?.Signature as CsharpProject,
             newer.Signature as CsharpProject);
     }

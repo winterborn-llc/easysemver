@@ -11,7 +11,9 @@ public class PropertySetterBecameInitOnly : IEvaluateCsharpSignatures
 {
     public VersionType EvaluationImpact => VersionType.Major;
 
-    public bool AreDifferencesPresent(ICsharpSignaturesToCompare signatures)
+    public string ChangeDescription => "can now only be set during initialization";
+
+    public IEnumerable<string> FindDifferences(ICsharpSignaturesToCompare signatures)
     {
         foreach (var typePair in signatures.ClassHistory)
         {
@@ -34,10 +36,8 @@ public class PropertySetterBecameInitOnly : IEvaluateCsharpSignatures
                     continue;
                 }
 
-                return true;
+                yield return $"{typePair.Newer.Name}.{name}";
             }
         }
-
-        return false;
     }
 }

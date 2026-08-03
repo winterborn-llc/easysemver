@@ -8,7 +8,9 @@ public class EnumMemberRemoved : IEvaluateCsharpSignatures
 {
     public VersionType EvaluationImpact => VersionType.Major;
 
-    public bool AreDifferencesPresent(ICsharpSignaturesToCompare signatures)
+    public string ChangeDescription => "was removed";
+
+    public IEnumerable<string> FindDifferences(ICsharpSignaturesToCompare signatures)
     {
         foreach (var typePair in EnumMembers.GetPairedEnums(signatures))
         {
@@ -21,10 +23,8 @@ public class EnumMemberRemoved : IEvaluateCsharpSignatures
                     continue;
                 }
 
-                return true;
+                yield return $"{older.Name}.{olderMember.Name}";
             }
         }
-
-        return false;
     }
 }

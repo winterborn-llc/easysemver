@@ -8,7 +8,9 @@ public class ImplementedInterfaceRemoved : IEvaluateCsharpSignatures
 {
     public VersionType EvaluationImpact => VersionType.Major;
 
-    public bool AreDifferencesPresent(ICsharpSignaturesToCompare signatures)
+    public string ChangeDescription => "no longer implements an interface it used to";
+
+    public IEnumerable<string> FindDifferences(ICsharpSignaturesToCompare signatures)
     {
         foreach (var typePair in signatures.ClassHistory)
         {
@@ -19,10 +21,10 @@ public class ImplementedInterfaceRemoved : IEvaluateCsharpSignatures
                     continue;
                 }
 
-                return true;
+                // The type is the subject; the interface it dropped goes in the symbol so the
+                // line says which one without the description having to be per-finding.
+                yield return $"{typePair.Newer.Name} ({olderInterface})";
             }
         }
-
-        return false;
     }
 }

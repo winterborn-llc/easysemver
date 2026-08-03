@@ -10,7 +10,9 @@ public class SwiftEnumCaseAdded : IEvaluateSwiftSignatures
 {
     public VersionType EvaluationImpact => VersionType.Major;
 
-    public bool AreDifferencesPresent(ISwiftSignaturesToCompare signatures)
+    public string ChangeDescription => "was added, so an exhaustive switch no longer compiles";
+
+    public IEnumerable<string> FindDifferences(ISwiftSignaturesToCompare signatures)
     {
         foreach (var enumPair in SwiftEnums.GetPaired(signatures))
         {
@@ -21,10 +23,8 @@ public class SwiftEnumCaseAdded : IEvaluateSwiftSignatures
                     continue;
                 }
 
-                return true;
+                yield return newerCase.Name;
             }
         }
-
-        return false;
     }
 }

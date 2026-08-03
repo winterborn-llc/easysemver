@@ -24,7 +24,7 @@ public class TestSwiftConformanceRemoved
             BuildSwift.Struct().WithConformances("Equatable"),
             BuildSwift.Struct().WithConformances("Equatable"));
 
-        Assert.False(Evaluator.AreDifferencesPresent(signatures));
+        Assert.Empty(Evaluator.FindDifferences(signatures));
     }
 
     [Fact]
@@ -34,7 +34,8 @@ public class TestSwiftConformanceRemoved
             BuildSwift.Struct().WithConformances("Equatable", "Hashable"),
             BuildSwift.Struct().WithConformances("Equatable"));
 
-        Assert.True(Evaluator.AreDifferencesPresent(signatures));
+        // The symbol names the type and the conformance it dropped.
+        Assert.Equal(["TestType (Hashable)"], Evaluator.FindDifferences(signatures));
     }
 
     [Fact]
@@ -44,6 +45,6 @@ public class TestSwiftConformanceRemoved
             BuildSwift.Struct().WithConformances("Equatable"),
             BuildSwift.Struct().WithConformances("Equatable", "Hashable"));
 
-        Assert.False(Evaluator.AreDifferencesPresent(signatures));
+        Assert.Empty(Evaluator.FindDifferences(signatures));
     }
 }

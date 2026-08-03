@@ -19,21 +19,23 @@ public class TestSwiftClassSubclassingOffered
     [Fact]
     public void AccessLevelIsUnchanged()
     {
-        Assert.False(Evaluator.AreDifferencesPresent(
+        Assert.Empty(Evaluator.FindDifferences(
             BuildSwift.Compare(BuildSwift.Class(), BuildSwift.Class())));
     }
 
     [Fact]
     public void PublicBecameOpen()
     {
-        Assert.True(Evaluator.AreDifferencesPresent(
-            BuildSwift.Compare(BuildSwift.Class(), BuildSwift.Class(accessLevel: "open"))));
+        Assert.Equal(
+            [BuildSwift.DefaultTypeName],
+            Evaluator.FindDifferences(
+                BuildSwift.Compare(BuildSwift.Class(), BuildSwift.Class(accessLevel: "open"))));
     }
 
     [Fact]
     public void OpenBecomingPublicDoesNotFire()
     {
-        Assert.False(Evaluator.AreDifferencesPresent(
+        Assert.Empty(Evaluator.FindDifferences(
             BuildSwift.Compare(BuildSwift.Class(accessLevel: "open"), BuildSwift.Class())));
     }
 }

@@ -8,7 +8,9 @@ public class EnumUnderlyingTypeChanged : IEvaluateCsharpSignatures
 {
     public VersionType EvaluationImpact => VersionType.Major;
 
-    public bool AreDifferencesPresent(ICsharpSignaturesToCompare signatures)
+    public string ChangeDescription => "changed its underlying type";
+
+    public IEnumerable<string> FindDifferences(ICsharpSignaturesToCompare signatures)
     {
         foreach (var typePair in EnumMembers.GetPairedEnums(signatures))
         {
@@ -19,9 +21,7 @@ public class EnumUnderlyingTypeChanged : IEvaluateCsharpSignatures
                 continue;
             }
 
-            return true;
+            yield return newer.Name;
         }
-
-        return false;
     }
 }

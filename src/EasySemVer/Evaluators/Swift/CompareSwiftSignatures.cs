@@ -1,6 +1,6 @@
 using Winterborn.Library.EasySemVer.DataObject;
 using Winterborn.Library.EasySemVer.Evaluation.Swift;
-using Winterborn.Library.EasySemVer.Extensions;
+using Winterborn.Library.EasySemVer.Interfaces;
 using Winterborn.Library.EasySemVer.Interfaces.Swift;
 
 namespace Winterborn.Library.EasySemVer.Evaluators.Swift;
@@ -54,29 +54,47 @@ internal static class CompareSwiftSignatures
         new SwiftOperatorChanged()
     ];
 
-    internal static VersionType GetChangeType(
-        string unitId,
+    internal static IReadOnlyList<ChangeFinding> GetFindings(
+        IPackageableUnit unit,
         ISwiftModule? older,
         ISwiftModule? newer)
     {
+        // CLS-04: fail safe towards additive. There is a unit to name here, so the fail-safe is
+        // reported as an ordinary finding rather than as an unexplained verdict.
         if (older is null || newer is null)
         {
-            return VersionType.Minor;
+            return
+            [
+                new ChangeFinding
+                {
+                    Language = unit.Language,
+                    UnitId = unit.UnitId,
+                    RuleName = nameof(CompareSwiftSignatures),
+                    Symbol = unit.UnitId,
+                    Description = "has no comparable baseline signature, so it is treated as additive",
+                    Impact = VersionType.Minor
+                }
+            ];
         }
 
         var signatures = new SwiftSignaturesToCompare(older, newer);
-        var changeType = VersionType.Patch;
+        var findings = new List<ChangeFinding>();
         foreach (var evaluator in Evaluators)
         {
-            if (!evaluator.AreDifferencesPresent(signatures))
+            foreach (var symbol in evaluator.FindDifferences(signatures))
             {
-                continue;
+                findings.Add(new ChangeFinding
+                {
+                    Language = unit.Language,
+                    UnitId = unit.UnitId,
+                    RuleName = evaluator.GetType().Name,
+                    Symbol = symbol,
+                    Description = evaluator.ChangeDescription,
+                    Impact = evaluator.EvaluationImpact
+                });
             }
-
-            Log.WriteLine($"{evaluator.GetType().Name}: {evaluator.EvaluationImpact} in {unitId}");
-            changeType = changeType.GetHigherImpact(evaluator.EvaluationImpact);
         }
 
-        return changeType;
+        return findings;
     }
 }

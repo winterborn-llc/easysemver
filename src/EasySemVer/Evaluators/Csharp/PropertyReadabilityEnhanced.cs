@@ -1,17 +1,18 @@
 using Winterborn.Library.EasySemVer.DataObject;
-using Winterborn.Library.EasySemVer.DataObject.Csharp;
 using Winterborn.Library.EasySemVer.Interfaces.Csharp;
 
 namespace Winterborn.Library.EasySemVer.Evaluators.Csharp;
 
+/// <summary>R18 - a write-only property gained a getter.</summary>
 public class PropertyReadabilityEnhanced : IEvaluateCsharpSignatures
 {
     public VersionType EvaluationImpact => VersionType.Minor;
 
-    public bool AreDifferencesPresent(ICsharpSignaturesToCompare signatures)
+    public string ChangeDescription => "became readable";
+
+    public IEnumerable<string> FindDifferences(ICsharpSignaturesToCompare signatures)
     {
-        var classes = signatures.ClassHistory;
-        foreach (var classPair in classes)
+        foreach (var classPair in signatures.ClassHistory)
         {
             var oldClass = classPair.Older;
             var newClass = classPair.Newer;
@@ -22,22 +23,20 @@ public class PropertyReadabilityEnhanced : IEvaluateCsharpSignatures
                 {
                     continue;
                 }
-                
+
                 if (!newClass.Properties.Contains(oldPropertyName))
                 {
                     continue;
                 }
-                
+
                 var newProperty = newClass.Properties[oldPropertyName];
                 if (!newProperty.IsReadable)
                 {
                     continue;
                 }
-                    
-                return true;
+
+                yield return $"{newClass.Name}.{oldPropertyName}";
             }
         }
-
-        return false;
     }
 }

@@ -20,19 +20,19 @@ public class TestSwiftPropertySetterRemoved
     [Fact]
     public void SettabilityIsUnchanged()
     {
-        Assert.False(Evaluator.AreDifferencesPresent(Compare(true, true)));
+        Assert.Empty(Evaluator.FindDifferences(Compare(true, true)));
     }
 
     [Fact]
     public void SetterIsRemoved()
     {
-        Assert.True(Evaluator.AreDifferencesPresent(Compare(true, false)));
+        Assert.Equal(["TestType.speed"], Evaluator.FindDifferences(Compare(true, false)));
     }
 
     [Fact]
     public void AddingASetterDoesNotFire()
     {
-        Assert.False(Evaluator.AreDifferencesPresent(Compare(false, true)));
+        Assert.Empty(Evaluator.FindDifferences(Compare(false, true)));
     }
 
     private static ISwiftSignaturesToCompare Compare(bool wasSettable, bool isSettable)

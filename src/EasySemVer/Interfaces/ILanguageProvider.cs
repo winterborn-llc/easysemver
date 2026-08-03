@@ -22,8 +22,10 @@ public interface ILanguageProvider
     /// <summary>
     /// Compares two units of this language that exist on both sides (NCL-03). Unit existence is the
     /// neutral core's business, so <paramref name="older"/> is only ever null defensively (NCL-04).
+    /// Returns what it found rather than a verdict: the caller aggregates the impacts (CLS-03) and
+    /// the same findings are what the run reports (§20 O-04). An empty list is a Patch.
     /// </summary>
-    public VersionType Classify(IPackageableUnit? older, IPackageableUnit newer);
+    public IReadOnlyList<ChangeFinding> Classify(IPackageableUnit? older, IPackageableUnit newer);
 
     public IReadOnlyList<Version> ReadVersions(IPackageableUnit unit);
 

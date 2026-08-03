@@ -23,7 +23,7 @@ public class TestSwiftTypeAdded
             BuildSwift.Module(BuildSwift.Struct("Point")),
             BuildSwift.Module(BuildSwift.Struct("Point")));
 
-        Assert.False(Evaluator.AreDifferencesPresent(signatures));
+        Assert.Empty(Evaluator.FindDifferences(signatures));
     }
 
     [Fact]
@@ -33,7 +33,7 @@ public class TestSwiftTypeAdded
             BuildSwift.Module(BuildSwift.Struct("Point")),
             BuildSwift.Module(BuildSwift.Struct("Point"), BuildSwift.Actor("Counter")));
 
-        Assert.True(Evaluator.AreDifferencesPresent(signatures));
+        Assert.Equal(["Counter"], Evaluator.FindDifferences(signatures));
     }
 
     [Fact]
@@ -43,6 +43,6 @@ public class TestSwiftTypeAdded
             BuildSwift.Module(BuildSwift.Struct("Point"), BuildSwift.Actor("Counter")),
             BuildSwift.Module(BuildSwift.Struct("Point")));
 
-        Assert.False(Evaluator.AreDifferencesPresent(signatures));
+        Assert.Empty(Evaluator.FindDifferences(signatures));
     }
 }

@@ -178,10 +178,10 @@ internal class SwiftLanguageProvider(IRunProcess runProcess) : ILanguageProvider
         return sources.ToArray();
     }
 
-    public VersionType Classify(IPackageableUnit? older, IPackageableUnit newer)
+    public IReadOnlyList<ChangeFinding> Classify(IPackageableUnit? older, IPackageableUnit newer)
     {
-        return CompareSwiftSignatures.GetChangeType(
-            newer.UnitId,
+        return CompareSwiftSignatures.GetFindings(
+            newer,
             older?.Signature as SwiftModule,
             newer.Signature as SwiftModule);
     }

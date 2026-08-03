@@ -22,7 +22,7 @@ public class TestImplementedInterfaceAdded
             Build.Class().WithInterfaces("Test.IThing"),
             Build.Class().WithInterfaces("Test.IThing"));
 
-        Assert.False(Evaluator.AreDifferencesPresent(signatures));
+        Assert.Empty(Evaluator.FindDifferences(signatures));
     }
 
     [Fact]
@@ -32,7 +32,7 @@ public class TestImplementedInterfaceAdded
             Build.Class().WithInterfaces("Test.IThing"),
             Build.Class().WithInterfaces("Test.IThing", "Test.IOther"));
 
-        Assert.True(Evaluator.AreDifferencesPresent(signatures));
+        Assert.Equal(["Test.TestType (Test.IOther)"], Evaluator.FindDifferences(signatures));
     }
 
     [Fact]
@@ -42,6 +42,6 @@ public class TestImplementedInterfaceAdded
             Build.Class().WithInterfaces("Test.IThing", "Test.IOther"),
             Build.Class().WithInterfaces("Test.IThing"));
 
-        Assert.False(Evaluator.AreDifferencesPresent(signatures));
+        Assert.Empty(Evaluator.FindDifferences(signatures));
     }
 }

@@ -11,7 +11,9 @@ public class MemberStaticnessChanged : IEvaluateCsharpSignatures
 {
     public VersionType EvaluationImpact => VersionType.Major;
 
-    public bool AreDifferencesPresent(ICsharpSignaturesToCompare signatures)
+    public string ChangeDescription => "moved between static and instance";
+
+    public IEnumerable<string> FindDifferences(ICsharpSignaturesToCompare signatures)
     {
         foreach (var overloadPair in Overloads.GetMatchedOverloads(signatures))
         {
@@ -20,7 +22,7 @@ public class MemberStaticnessChanged : IEvaluateCsharpSignatures
                 continue;
             }
 
-            return true;
+            yield return overloadPair.Symbol;
         }
 
         foreach (var typePair in signatures.ClassHistory)
@@ -38,10 +40,8 @@ public class MemberStaticnessChanged : IEvaluateCsharpSignatures
                     continue;
                 }
 
-                return true;
+                yield return $"{typePair.Newer.Name}.{name}";
             }
         }
-
-        return false;
     }
 }

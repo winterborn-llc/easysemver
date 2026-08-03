@@ -12,7 +12,9 @@ public class UnitRemoved : IEvaluateUnitExistence
 {
     public VersionType EvaluationImpact => VersionType.Major;
 
-    public bool AreDifferencesPresent(IUnitsToCompare units)
+    public string ChangeDescription => "was removed";
+
+    public IEnumerable<IPackageableUnit> FindDifferences(IUnitsToCompare units)
     {
         foreach (var olderUnit in units.Older)
         {
@@ -22,9 +24,7 @@ public class UnitRemoved : IEvaluateUnitExistence
                 continue;
             }
 
-            return true;
+            yield return olderUnit;
         }
-
-        return false;
     }
 }

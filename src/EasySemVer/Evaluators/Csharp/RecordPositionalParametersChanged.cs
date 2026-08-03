@@ -12,7 +12,9 @@ public class RecordPositionalParametersChanged : IEvaluateCsharpSignatures
 {
     public VersionType EvaluationImpact => VersionType.Major;
 
-    public bool AreDifferencesPresent(ICsharpSignaturesToCompare signatures)
+    public string ChangeDescription => "changed its positional parameters";
+
+    public IEnumerable<string> FindDifferences(ICsharpSignaturesToCompare signatures)
     {
         foreach (var typePair in signatures.ClassHistory)
         {
@@ -28,9 +30,7 @@ public class RecordPositionalParametersChanged : IEvaluateCsharpSignatures
                 continue;
             }
 
-            return true;
+            yield return newer.Name;
         }
-
-        return false;
     }
 }

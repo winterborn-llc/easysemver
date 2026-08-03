@@ -10,7 +10,9 @@ public class SwiftConformanceRemoved : IEvaluateSwiftSignatures
 {
     public VersionType EvaluationImpact => VersionType.Major;
 
-    public bool AreDifferencesPresent(ISwiftSignaturesToCompare signatures)
+    public string ChangeDescription => "no longer conforms to a protocol it used to";
+
+    public IEnumerable<string> FindDifferences(ISwiftSignaturesToCompare signatures)
     {
         foreach (var typePair in signatures.TypeHistory)
         {
@@ -21,10 +23,10 @@ public class SwiftConformanceRemoved : IEvaluateSwiftSignatures
                     continue;
                 }
 
-                return true;
+                // The type is the subject; the protocol it dropped rides along in the symbol so
+                // the line names it without the description having to vary per finding.
+                yield return $"{typePair.Newer.Name} ({conformance})";
             }
         }
-
-        return false;
     }
 }

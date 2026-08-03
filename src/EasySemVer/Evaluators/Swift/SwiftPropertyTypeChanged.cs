@@ -10,7 +10,9 @@ public class SwiftPropertyTypeChanged : IEvaluateSwiftSignatures
 {
     public VersionType EvaluationImpact => VersionType.Major;
 
-    public bool AreDifferencesPresent(ISwiftSignaturesToCompare signatures)
+    public string ChangeDescription => "changed its type";
+
+    public IEnumerable<string> FindDifferences(ISwiftSignaturesToCompare signatures)
     {
         foreach (var propertyPair in SwiftMembers.GetPairedProperties(signatures))
         {
@@ -19,9 +21,7 @@ public class SwiftPropertyTypeChanged : IEvaluateSwiftSignatures
                 continue;
             }
 
-            return true;
+            yield return propertyPair.Newer.Name;
         }
-
-        return false;
     }
 }

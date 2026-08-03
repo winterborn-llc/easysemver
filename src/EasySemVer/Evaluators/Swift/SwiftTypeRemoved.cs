@@ -10,7 +10,9 @@ public class SwiftTypeRemoved : IEvaluateSwiftSignatures
 {
     public VersionType EvaluationImpact => VersionType.Major;
 
-    public bool AreDifferencesPresent(ISwiftSignaturesToCompare signatures)
+    public string ChangeDescription => "was removed";
+
+    public IEnumerable<string> FindDifferences(ISwiftSignaturesToCompare signatures)
     {
         foreach (var olderType in signatures.Older.Types)
         {
@@ -19,9 +21,7 @@ public class SwiftTypeRemoved : IEvaluateSwiftSignatures
                 continue;
             }
 
-            return true;
+            yield return olderType.Name;
         }
-
-        return false;
     }
 }

@@ -18,19 +18,21 @@ public class TestPropertyReadabilityEnhanced
     [Fact]
     public void AccessorIsUnchanged()
     {
-        Assert.False(Evaluator.AreDifferencesPresent(BuildComparison(true, true)));
+        Assert.Empty(Evaluator.FindDifferences(BuildComparison(true, true)));
     }
 
     [Fact]
     public void AccessorChangesInTheFiringDirection()
     {
-        Assert.True(Evaluator.AreDifferencesPresent(BuildComparison(false, true)));
+        Assert.Equal(
+            ["Test.TestType.TestProperty"],
+            Evaluator.FindDifferences(BuildComparison(false, true)));
     }
 
     [Fact]
     public void TheOppositeDirectionDoesNotFire()
     {
-        Assert.False(Evaluator.AreDifferencesPresent(BuildComparison(true, false)));
+        Assert.Empty(Evaluator.FindDifferences(BuildComparison(true, false)));
     }
 
     private static ICsharpSignaturesToCompare BuildComparison(bool wasPresent, bool isPresent)

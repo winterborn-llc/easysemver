@@ -8,21 +8,24 @@ public class TypeInheritanceRelaxed : IEvaluateCsharpSignatures
 {
     public VersionType EvaluationImpact => VersionType.Minor;
 
-    public bool AreDifferencesPresent(ICsharpSignaturesToCompare signatures)
+    public string ChangeDescription => "widened what callers may derive from or instantiate";
+
+    public IEnumerable<string> FindDifferences(ICsharpSignaturesToCompare signatures)
     {
         foreach (var typePair in signatures.ClassHistory)
         {
+            // Losing sealed and losing abstract say the same thing, so a type that did both is
+            // still one finding.
             if (typePair.Older.IsSealed && !typePair.Newer.IsSealed)
             {
-                return true;
+                yield return typePair.Newer.Name;
+                continue;
             }
 
             if (typePair.Older.IsAbstract && !typePair.Newer.IsAbstract)
             {
-                return true;
+                yield return typePair.Newer.Name;
             }
         }
-
-        return false;
     }
 }

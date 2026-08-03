@@ -24,7 +24,7 @@ public class TestSwiftObjCExposureRemoved
             BuildSwift.Struct().WithObjC(),
             BuildSwift.Struct().WithObjC());
 
-        Assert.False(Evaluator.AreDifferencesPresent(signatures));
+        Assert.Empty(Evaluator.FindDifferences(signatures));
     }
 
     [Fact]
@@ -32,7 +32,7 @@ public class TestSwiftObjCExposureRemoved
     {
         var signatures = BuildSwift.Compare(BuildSwift.Struct().WithObjC(), BuildSwift.Struct());
 
-        Assert.True(Evaluator.AreDifferencesPresent(signatures));
+        Assert.Equal([BuildSwift.DefaultTypeName], Evaluator.FindDifferences(signatures));
     }
 
     /// <summary>A custom ObjC name is part of the contract, so changing it is breaking too.</summary>
@@ -43,7 +43,7 @@ public class TestSwiftObjCExposureRemoved
             BuildSwift.Struct().WithObjC("@objc(WBGadget)"),
             BuildSwift.Struct().WithObjC("@objc(WBWidget)"));
 
-        Assert.True(Evaluator.AreDifferencesPresent(signatures));
+        Assert.NotEmpty(Evaluator.FindDifferences(signatures));
     }
 
     [Fact]
@@ -51,6 +51,6 @@ public class TestSwiftObjCExposureRemoved
     {
         var signatures = BuildSwift.Compare(BuildSwift.Struct(), BuildSwift.Struct().WithObjC());
 
-        Assert.False(Evaluator.AreDifferencesPresent(signatures));
+        Assert.Empty(Evaluator.FindDifferences(signatures));
     }
 }

@@ -10,21 +10,23 @@ public class SwiftEffectAdded : IEvaluateSwiftSignatures
 {
     public VersionType EvaluationImpact => VersionType.Major;
 
-    public bool AreDifferencesPresent(ISwiftSignaturesToCompare signatures)
+    public string ChangeDescription => "gained a throws or async effect";
+
+    public IEnumerable<string> FindDifferences(ISwiftSignaturesToCompare signatures)
     {
         foreach (var functionPair in SwiftMembers.GetPairedFunctions(signatures))
         {
+            // Gaining both effects at once is still one thing that happened to the function.
             if (!functionPair.Older.Throws && functionPair.Newer.Throws)
             {
-                return true;
+                yield return functionPair.Newer.Name;
+                continue;
             }
 
             if (!functionPair.Older.IsAsync && functionPair.Newer.IsAsync)
             {
-                return true;
+                yield return functionPair.Newer.Name;
             }
         }
-
-        return false;
     }
 }

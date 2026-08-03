@@ -10,25 +10,29 @@ public class SwiftGenericConstraintLoosened : IEvaluateSwiftSignatures
 {
     public VersionType EvaluationImpact => VersionType.Minor;
 
-    public bool AreDifferencesPresent(ISwiftSignaturesToCompare signatures)
+    public string ChangeDescription => "loosened its generic constraints";
+
+    public IEnumerable<string> FindDifferences(ISwiftSignaturesToCompare signatures)
     {
         foreach (var typePair in signatures.TypeHistory)
         {
-            if (IsLoosened(typePair.Older.GenericParameters, typePair.Newer.GenericParameters))
+            if (!IsLoosened(typePair.Older.GenericParameters, typePair.Newer.GenericParameters))
             {
-                return true;
+                continue;
             }
+
+            yield return typePair.Newer.Name;
         }
 
         foreach (var functionPair in SwiftMembers.GetPairedFunctions(signatures))
         {
-            if (IsLoosened(functionPair.Older.GenericParameters, functionPair.Newer.GenericParameters))
+            if (!IsLoosened(functionPair.Older.GenericParameters, functionPair.Newer.GenericParameters))
             {
-                return true;
+                continue;
             }
-        }
 
-        return false;
+            yield return functionPair.Newer.Name;
+        }
     }
 
     private static bool IsLoosened(

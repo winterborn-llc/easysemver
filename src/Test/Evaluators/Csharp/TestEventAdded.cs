@@ -22,7 +22,7 @@ public class TestEventAdded
             Build.Class().WithEvents(Build.Event()),
             Build.Class().WithEvents(Build.Event()));
 
-        Assert.False(Evaluator.AreDifferencesPresent(signatures));
+        Assert.Empty(Evaluator.FindDifferences(signatures));
     }
 
     [Fact]
@@ -30,6 +30,6 @@ public class TestEventAdded
     {
         var signatures = Build.Compare(Build.Class(), Build.Class().WithEvents(Build.Event()));
 
-        Assert.True(Evaluator.AreDifferencesPresent(signatures));
+        Assert.Equal(["Test.TestType.TestEvent"], Evaluator.FindDifferences(signatures));
     }
 }

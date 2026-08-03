@@ -12,7 +12,9 @@ public class NestedTypeRemoved : IEvaluateCsharpSignatures
 {
     public VersionType EvaluationImpact => VersionType.Major;
 
-    public bool AreDifferencesPresent(ICsharpSignaturesToCompare signatures)
+    public string ChangeDescription => "was removed";
+
+    public IEnumerable<string> FindDifferences(ICsharpSignaturesToCompare signatures)
     {
         foreach (var olderType in signatures.Older.Types)
         {
@@ -27,9 +29,7 @@ public class NestedTypeRemoved : IEvaluateCsharpSignatures
                 continue;
             }
 
-            return true;
+            yield return olderType.Name;
         }
-
-        return false;
     }
 }

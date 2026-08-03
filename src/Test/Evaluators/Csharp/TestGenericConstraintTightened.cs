@@ -22,7 +22,7 @@ public class TestGenericConstraintTightened
             Build.Class().WithGenerics(Build.Generic("T", "class")),
             Build.Class().WithGenerics(Build.Generic("T", "class")));
 
-        Assert.False(Evaluator.AreDifferencesPresent(signatures));
+        Assert.Empty(Evaluator.FindDifferences(signatures));
     }
 
     [Fact]
@@ -32,7 +32,7 @@ public class TestGenericConstraintTightened
             Build.Class().WithGenerics(Build.Generic()),
             Build.Class().WithGenerics(Build.Generic(), Build.Generic("TOther")));
 
-        Assert.True(Evaluator.AreDifferencesPresent(signatures));
+        Assert.NotEmpty(Evaluator.FindDifferences(signatures));
     }
 
     [Fact]
@@ -42,7 +42,7 @@ public class TestGenericConstraintTightened
             Build.Class().WithGenerics(Build.Generic("T", "class")),
             Build.Class().WithGenerics(Build.Generic("T", "class, new()")));
 
-        Assert.True(Evaluator.AreDifferencesPresent(signatures));
+        Assert.Equal(["Test.TestType"], Evaluator.FindDifferences(signatures));
     }
 
     [Fact]
@@ -54,7 +54,8 @@ public class TestGenericConstraintTightened
             Build.Class().WithMethods(Build.Method(
                 overrides: Build.Override().WithGenerics(Build.Generic("T", "class")))));
 
-        Assert.True(Evaluator.AreDifferencesPresent(signatures));
+        // A method-level constraint is reported against the overload, not the type.
+        Assert.Equal(["Test.TestType.TestMethod()"], Evaluator.FindDifferences(signatures));
     }
 
     [Fact]
@@ -64,6 +65,6 @@ public class TestGenericConstraintTightened
             Build.Class().WithGenerics(Build.Generic("T", "class, new()")),
             Build.Class().WithGenerics(Build.Generic("T", "class")));
 
-        Assert.False(Evaluator.AreDifferencesPresent(signatures));
+        Assert.Empty(Evaluator.FindDifferences(signatures));
     }
 }

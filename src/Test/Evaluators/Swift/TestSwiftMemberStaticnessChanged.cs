@@ -24,7 +24,7 @@ public class TestSwiftMemberStaticnessChanged
             BuildSwift.Struct().WithFunctions(BuildSwift.Function()),
             BuildSwift.Struct().WithFunctions(BuildSwift.Function()));
 
-        Assert.False(Evaluator.AreDifferencesPresent(signatures));
+        Assert.Empty(Evaluator.FindDifferences(signatures));
     }
 
     [Fact]
@@ -35,7 +35,7 @@ public class TestSwiftMemberStaticnessChanged
             BuildSwift.Struct().WithFunctions(
                 new SwiftFunction { Name = "TestType.move()", IsStatic = true }));
 
-        Assert.True(Evaluator.AreDifferencesPresent(signatures));
+        Assert.Equal(["TestType.move()"], Evaluator.FindDifferences(signatures));
     }
 
     [Fact]
@@ -46,7 +46,7 @@ public class TestSwiftMemberStaticnessChanged
                 new SwiftFunction { Name = "TestType.move()", IsStatic = true }),
             BuildSwift.Struct().WithFunctions(BuildSwift.Function()));
 
-        Assert.True(Evaluator.AreDifferencesPresent(signatures));
+        Assert.NotEmpty(Evaluator.FindDifferences(signatures));
     }
 
     [Fact]
@@ -57,6 +57,6 @@ public class TestSwiftMemberStaticnessChanged
             BuildSwift.Struct().WithProperties(
                 new SwiftProperty { Name = "TestType.speed", Type = "Int", IsStatic = true }));
 
-        Assert.True(Evaluator.AreDifferencesPresent(signatures));
+        Assert.Equal(["TestType.speed"], Evaluator.FindDifferences(signatures));
     }
 }

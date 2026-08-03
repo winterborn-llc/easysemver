@@ -20,19 +20,20 @@ public class TestSwiftDefaultArgumentRemoved
     [Fact]
     public void DefaultsAreUnchanged()
     {
-        Assert.False(Evaluator.AreDifferencesPresent(Compare(true, true)));
+        Assert.Empty(Evaluator.FindDifferences(Compare(true, true)));
     }
 
     [Fact]
     public void DefaultIsRemoved()
     {
-        Assert.True(Evaluator.AreDifferencesPresent(Compare(true, false)));
+        // The symbol names the function and the parameter that lost its default.
+        Assert.Equal(["TestType.move() (to)"], Evaluator.FindDifferences(Compare(true, false)));
     }
 
     [Fact]
     public void AddingADefaultDoesNotFire()
     {
-        Assert.False(Evaluator.AreDifferencesPresent(Compare(false, true)));
+        Assert.Empty(Evaluator.FindDifferences(Compare(false, true)));
     }
 
     private static ISwiftSignaturesToCompare Compare(bool hadDefault, bool hasDefault)

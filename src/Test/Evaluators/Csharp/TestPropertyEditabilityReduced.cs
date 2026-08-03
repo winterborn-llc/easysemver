@@ -18,19 +18,21 @@ public class TestPropertyEditabilityReduced
     [Fact]
     public void AccessorIsUnchanged()
     {
-        Assert.False(Evaluator.AreDifferencesPresent(BuildComparison(false, false)));
+        Assert.Empty(Evaluator.FindDifferences(BuildComparison(false, false)));
     }
 
     [Fact]
     public void AccessorChangesInTheFiringDirection()
     {
-        Assert.True(Evaluator.AreDifferencesPresent(BuildComparison(true, false)));
+        Assert.Equal(
+            ["Test.TestType.TestProperty"],
+            Evaluator.FindDifferences(BuildComparison(true, false)));
     }
 
     [Fact]
     public void TheOppositeDirectionDoesNotFire()
     {
-        Assert.False(Evaluator.AreDifferencesPresent(BuildComparison(false, true)));
+        Assert.Empty(Evaluator.FindDifferences(BuildComparison(false, true)));
     }
 
     private static ICsharpSignaturesToCompare BuildComparison(bool wasPresent, bool isPresent)

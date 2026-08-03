@@ -22,7 +22,7 @@ public class TestRecordPositionalParametersChanged
             Build.Record().WithPositional(Build.Parameter("Amount", "decimal")),
             Build.Record().WithPositional(Build.Parameter("Amount", "decimal")));
 
-        Assert.False(Evaluator.AreDifferencesPresent(signatures));
+        Assert.Empty(Evaluator.FindDifferences(signatures));
     }
 
     [Fact]
@@ -34,7 +34,7 @@ public class TestRecordPositionalParametersChanged
                 Build.Parameter("Amount", "decimal"),
                 Build.Parameter("Currency", "string")));
 
-        Assert.True(Evaluator.AreDifferencesPresent(signatures));
+        Assert.Equal(["Test.TestType"], Evaluator.FindDifferences(signatures));
     }
 
     [Fact]
@@ -44,6 +44,6 @@ public class TestRecordPositionalParametersChanged
             Build.Record().WithPositional(Build.Parameter("Amount", "decimal")),
             Build.Record().WithPositional(Build.Parameter("Amount", "double")));
 
-        Assert.True(Evaluator.AreDifferencesPresent(signatures));
+        Assert.NotEmpty(Evaluator.FindDifferences(signatures));
     }
 }

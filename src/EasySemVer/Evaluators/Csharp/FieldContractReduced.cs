@@ -11,30 +11,33 @@ public class FieldContractReduced : IEvaluateCsharpSignatures
 {
     public VersionType EvaluationImpact => VersionType.Major;
 
-    public bool AreDifferencesPresent(ICsharpSignaturesToCompare signatures)
+    public string ChangeDescription => "was removed, retyped, or made readonly";
+
+    public IEnumerable<string> FindDifferences(ICsharpSignaturesToCompare signatures)
     {
         foreach (var typePair in signatures.ClassHistory)
         {
             foreach (var olderField in typePair.Older.Fields)
             {
+                var symbol = $"{typePair.Older.Name}.{olderField.Name}";
                 var newerField = Fields.Find(typePair.Newer, olderField.Name);
                 if (newerField == null)
                 {
-                    return true;
+                    yield return symbol;
+                    continue;
                 }
 
                 if (newerField.Type != olderField.Type)
                 {
-                    return true;
+                    yield return symbol;
+                    continue;
                 }
 
                 if (newerField.IsReadOnly && !olderField.IsReadOnly)
                 {
-                    return true;
+                    yield return symbol;
                 }
             }
         }
-
-        return false;
     }
 }

@@ -37,7 +37,7 @@ public class TestPropertySetterBecameInitOnly
             Build.Class().WithProperties(Settable),
             Build.Class().WithProperties(Settable));
 
-        Assert.False(Evaluator.AreDifferencesPresent(signatures));
+        Assert.Empty(Evaluator.FindDifferences(signatures));
     }
 
     [Fact]
@@ -47,7 +47,7 @@ public class TestPropertySetterBecameInitOnly
             Build.Class().WithProperties(Settable),
             Build.Class().WithProperties(InitOnly));
 
-        Assert.True(Evaluator.AreDifferencesPresent(signatures));
+        Assert.Equal(["Test.TestType.TestProperty"], Evaluator.FindDifferences(signatures));
     }
 
     [Fact]
@@ -57,6 +57,6 @@ public class TestPropertySetterBecameInitOnly
             Build.Class().WithProperties(InitOnly),
             Build.Class().WithProperties(Settable));
 
-        Assert.False(Evaluator.AreDifferencesPresent(signatures));
+        Assert.Empty(Evaluator.FindDifferences(signatures));
     }
 }

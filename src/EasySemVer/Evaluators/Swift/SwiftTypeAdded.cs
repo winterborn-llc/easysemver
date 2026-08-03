@@ -10,7 +10,9 @@ public class SwiftTypeAdded : IEvaluateSwiftSignatures
 {
     public VersionType EvaluationImpact => VersionType.Minor;
 
-    public bool AreDifferencesPresent(ISwiftSignaturesToCompare signatures)
+    public string ChangeDescription => "was added";
+
+    public IEnumerable<string> FindDifferences(ISwiftSignaturesToCompare signatures)
     {
         foreach (var newerType in signatures.Newer.Types)
         {
@@ -19,9 +21,7 @@ public class SwiftTypeAdded : IEvaluateSwiftSignatures
                 continue;
             }
 
-            return true;
+            yield return newerType.Name;
         }
-
-        return false;
     }
 }

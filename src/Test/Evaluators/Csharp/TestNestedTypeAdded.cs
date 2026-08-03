@@ -22,7 +22,7 @@ public class TestNestedTypeAdded
             Build.Project(Build.Class(), Build.Class("Test.TestType.Inner").Nested(Build.DefaultTypeName)),
             Build.Project(Build.Class(), Build.Class("Test.TestType.Inner").Nested(Build.DefaultTypeName)));
 
-        Assert.False(Evaluator.AreDifferencesPresent(signatures));
+        Assert.Empty(Evaluator.FindDifferences(signatures));
     }
 
     [Fact]
@@ -32,7 +32,7 @@ public class TestNestedTypeAdded
             Build.Project(Build.Class()),
             Build.Project(Build.Class(), Build.Enum("Test.TestType.Mode").Nested(Build.DefaultTypeName)));
 
-        Assert.True(Evaluator.AreDifferencesPresent(signatures));
+        Assert.Equal(["Test.TestType.Mode"], Evaluator.FindDifferences(signatures));
     }
 
     [Fact]
@@ -42,6 +42,6 @@ public class TestNestedTypeAdded
             Build.Project(Build.Class()),
             Build.Project(Build.Class(), Build.Class("Test.Another")));
 
-        Assert.False(Evaluator.AreDifferencesPresent(signatures));
+        Assert.Empty(Evaluator.FindDifferences(signatures));
     }
 }

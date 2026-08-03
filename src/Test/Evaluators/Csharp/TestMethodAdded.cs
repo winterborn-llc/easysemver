@@ -22,7 +22,7 @@ public class TestMethodAdded
             Build.Class().WithMethods(Build.Method("One")),
             Build.Class().WithMethods(Build.Method("One")));
 
-        Assert.False(Evaluator.AreDifferencesPresent(signatures));
+        Assert.Empty(Evaluator.FindDifferences(signatures));
     }
 
     [Fact]
@@ -32,7 +32,7 @@ public class TestMethodAdded
             Build.Class().WithMethods(Build.Method("One")),
             Build.Class().WithMethods(Build.Method("One"), Build.Method("Two")));
 
-        Assert.True(Evaluator.AreDifferencesPresent(signatures));
+        Assert.Equal(["Test.TestType.Two"], Evaluator.FindDifferences(signatures));
     }
 
     /// <summary>CLS-02 - members of a brand-new type are R05's concern, not this rule's.</summary>
@@ -45,6 +45,6 @@ public class TestMethodAdded
                 Build.Class().WithMethods(Build.Method("One")),
                 Build.Class("Test.BrandNew").WithMethods(Build.Method("Two"))));
 
-        Assert.False(Evaluator.AreDifferencesPresent(signatures));
+        Assert.Empty(Evaluator.FindDifferences(signatures));
     }
 }

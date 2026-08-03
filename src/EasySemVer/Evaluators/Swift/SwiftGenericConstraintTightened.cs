@@ -10,25 +10,29 @@ public class SwiftGenericConstraintTightened : IEvaluateSwiftSignatures
 {
     public VersionType EvaluationImpact => VersionType.Major;
 
-    public bool AreDifferencesPresent(ISwiftSignaturesToCompare signatures)
+    public string ChangeDescription => "tightened its generic constraints";
+
+    public IEnumerable<string> FindDifferences(ISwiftSignaturesToCompare signatures)
     {
         foreach (var typePair in signatures.TypeHistory)
         {
-            if (IsTightened(typePair.Older.GenericParameters, typePair.Newer.GenericParameters))
+            if (!IsTightened(typePair.Older.GenericParameters, typePair.Newer.GenericParameters))
             {
-                return true;
+                continue;
             }
+
+            yield return typePair.Newer.Name;
         }
 
         foreach (var functionPair in SwiftMembers.GetPairedFunctions(signatures))
         {
-            if (IsTightened(functionPair.Older.GenericParameters, functionPair.Newer.GenericParameters))
+            if (!IsTightened(functionPair.Older.GenericParameters, functionPair.Newer.GenericParameters))
             {
-                return true;
+                continue;
             }
-        }
 
-        return false;
+            yield return functionPair.Newer.Name;
+        }
     }
 
     private static bool IsTightened(

@@ -23,7 +23,7 @@ public class TestInterfaceRequirementAdded
             Build.Interface().WithMethods(Build.Method("One")),
             Build.Interface().WithMethods(Build.Method("One")));
 
-        Assert.False(Evaluator.AreDifferencesPresent(signatures));
+        Assert.Empty(Evaluator.FindDifferences(signatures));
     }
 
     [Fact]
@@ -33,7 +33,7 @@ public class TestInterfaceRequirementAdded
             Build.Interface().WithMethods(Build.Method("One")),
             Build.Interface().WithMethods(Build.Method("One"), Build.Method("Two")));
 
-        Assert.True(Evaluator.AreDifferencesPresent(signatures));
+        Assert.Equal(["Test.TestType.Two"], Evaluator.FindDifferences(signatures));
     }
 
     [Fact]
@@ -45,7 +45,7 @@ public class TestInterfaceRequirementAdded
                 Build.Method("One"),
                 Build.Method("Two", overrides: new CsharpMethodOverride { HasDefaultImplementation = true })));
 
-        Assert.False(Evaluator.AreDifferencesPresent(signatures));
+        Assert.Empty(Evaluator.FindDifferences(signatures));
     }
 
     /// <summary>A method added to a class is R15's concern, and only Minor.</summary>
@@ -56,7 +56,7 @@ public class TestInterfaceRequirementAdded
             Build.Class().WithMethods(Build.Method("One")),
             Build.Class().WithMethods(Build.Method("One"), Build.Method("Two")));
 
-        Assert.False(Evaluator.AreDifferencesPresent(signatures));
+        Assert.Empty(Evaluator.FindDifferences(signatures));
     }
 
     [Fact]
@@ -66,6 +66,6 @@ public class TestInterfaceRequirementAdded
             Build.Interface(),
             Build.Interface().WithProperties(Build.Property()));
 
-        Assert.True(Evaluator.AreDifferencesPresent(signatures));
+        Assert.Equal(["Test.TestType.TestProperty"], Evaluator.FindDifferences(signatures));
     }
 }

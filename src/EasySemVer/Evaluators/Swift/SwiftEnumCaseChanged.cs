@@ -10,7 +10,9 @@ public class SwiftEnumCaseChanged : IEvaluateSwiftSignatures
 {
     public VersionType EvaluationImpact => VersionType.Major;
 
-    public bool AreDifferencesPresent(ISwiftSignaturesToCompare signatures)
+    public string ChangeDescription => "was removed, or changed its raw or associated values";
+
+    public IEnumerable<string> FindDifferences(ISwiftSignaturesToCompare signatures)
     {
         foreach (var enumPair in SwiftEnums.GetPaired(signatures))
         {
@@ -19,21 +21,21 @@ public class SwiftEnumCaseChanged : IEvaluateSwiftSignatures
                 var newerCase = SwiftMembers.FindCase(enumPair.Newer, olderCase.Name);
                 if (newerCase == null)
                 {
-                    return true;
+                    yield return olderCase.Name;
+                    continue;
                 }
 
                 if (newerCase.RawValue != olderCase.RawValue)
                 {
-                    return true;
+                    yield return olderCase.Name;
+                    continue;
                 }
 
                 if (!SwiftEnums.AreAssociatedValuesTheSame(olderCase, newerCase))
                 {
-                    return true;
+                    yield return olderCase.Name;
                 }
             }
         }
-
-        return false;
     }
 }

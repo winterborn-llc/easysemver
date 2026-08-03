@@ -11,33 +11,40 @@ public class MemberOverridabilityReduced : IEvaluateCsharpSignatures
 {
     public VersionType EvaluationImpact => VersionType.Major;
 
-    public bool AreDifferencesPresent(ICsharpSignaturesToCompare signatures)
+    public string ChangeDescription => "changed what subclasses may override";
+
+    public IEnumerable<string> FindDifferences(ICsharpSignaturesToCompare signatures)
     {
         foreach (var overloadPair in Overloads.GetMatchedOverloads(signatures))
         {
-            var older = overloadPair.Older;
-            var newer = overloadPair.Newer;
-            if (older.IsVirtual && !newer.IsVirtual)
+            if (!IsOverridabilityReduced(overloadPair))
             {
-                return true;
+                continue;
             }
 
-            if (older.IsAbstract && !newer.IsAbstract)
-            {
-                return true;
-            }
+            yield return overloadPair.Symbol;
+        }
+    }
 
-            if (newer.IsAbstract && !older.IsAbstract)
-            {
-                return true;
-            }
-
-            if (newer.IsSealed && !older.IsSealed)
-            {
-                return true;
-            }
+    private static bool IsOverridabilityReduced(Overloads.OverloadPair overloadPair)
+    {
+        var older = overloadPair.Older;
+        var newer = overloadPair.Newer;
+        if (older.IsVirtual && !newer.IsVirtual)
+        {
+            return true;
         }
 
-        return false;
+        if (older.IsAbstract && !newer.IsAbstract)
+        {
+            return true;
+        }
+
+        if (newer.IsAbstract && !older.IsAbstract)
+        {
+            return true;
+        }
+
+        return newer.IsSealed && !older.IsSealed;
     }
 }

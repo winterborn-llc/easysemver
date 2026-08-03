@@ -1,5 +1,4 @@
 using Winterborn.Library.EasySemVer.DataObject;
-using Winterborn.Library.EasySemVer.DataObject.Csharp;
 using Winterborn.Library.EasySemVer.Interfaces.Csharp;
 
 namespace Winterborn.Library.EasySemVer.Evaluators.Csharp;
@@ -12,8 +11,11 @@ public class InterfaceRequirementAdded : IEvaluateCsharpSignatures
 {
     public VersionType EvaluationImpact => VersionType.Major;
 
-    public bool AreDifferencesPresent(ICsharpSignaturesToCompare signatures)
+    public string ChangeDescription => "was added as an interface requirement with no default";
+
+    public IEnumerable<string> FindDifferences(ICsharpSignaturesToCompare signatures)
     {
-        return InterfaceRequirements.WasRequirementAdded(signatures, withDefaultImplementation: false);
+        return InterfaceRequirements.GetAddedRequirements(
+            signatures, withDefaultImplementation: false);
     }
 }

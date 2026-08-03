@@ -10,21 +10,23 @@ public class SwiftEffectRemoved : IEvaluateSwiftSignatures
 {
     public VersionType EvaluationImpact => VersionType.Minor;
 
-    public bool AreDifferencesPresent(ISwiftSignaturesToCompare signatures)
+    public string ChangeDescription => "lost a throws or async effect";
+
+    public IEnumerable<string> FindDifferences(ISwiftSignaturesToCompare signatures)
     {
         foreach (var functionPair in SwiftMembers.GetPairedFunctions(signatures))
         {
+            // Losing both effects at once is still one thing that happened to the function.
             if (functionPair.Older.Throws && !functionPair.Newer.Throws)
             {
-                return true;
+                yield return functionPair.Newer.Name;
+                continue;
             }
 
             if (functionPair.Older.IsAsync && !functionPair.Newer.IsAsync)
             {
-                return true;
+                yield return functionPair.Newer.Name;
             }
         }
-
-        return false;
     }
 }

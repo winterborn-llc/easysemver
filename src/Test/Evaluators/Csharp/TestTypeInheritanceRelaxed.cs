@@ -19,7 +19,7 @@ public class TestTypeInheritanceRelaxed
     [Fact]
     public void TypeIsUnchanged()
     {
-        Assert.False(Evaluator.AreDifferencesPresent(Build.Compare(Build.Class(), Build.Class())));
+        Assert.Empty(Evaluator.FindDifferences(Build.Compare(Build.Class(), Build.Class())));
     }
 
     [Fact]
@@ -29,7 +29,7 @@ public class TestTypeInheritanceRelaxed
             new CsharpClass { Name = Build.DefaultTypeName, IsSealed = true },
             Build.Class());
 
-        Assert.True(Evaluator.AreDifferencesPresent(signatures));
+        Assert.Equal([Build.DefaultTypeName], Evaluator.FindDifferences(signatures));
     }
 
     [Fact]
@@ -39,7 +39,7 @@ public class TestTypeInheritanceRelaxed
             new CsharpClass { Name = Build.DefaultTypeName, IsAbstract = true },
             Build.Class());
 
-        Assert.True(Evaluator.AreDifferencesPresent(signatures));
+        Assert.NotEmpty(Evaluator.FindDifferences(signatures));
     }
 
     [Fact]
@@ -49,6 +49,6 @@ public class TestTypeInheritanceRelaxed
             Build.Class(),
             new CsharpClass { Name = Build.DefaultTypeName, IsSealed = true });
 
-        Assert.False(Evaluator.AreDifferencesPresent(signatures));
+        Assert.Empty(Evaluator.FindDifferences(signatures));
     }
 }

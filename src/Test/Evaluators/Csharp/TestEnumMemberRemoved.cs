@@ -22,7 +22,7 @@ public class TestEnumMemberRemoved
             Build.Enum().WithMembers(Build.EnumMember("Red"), Build.EnumMember("Green", "1")),
             Build.Enum().WithMembers(Build.EnumMember("Red"), Build.EnumMember("Green", "1")));
 
-        Assert.False(Evaluator.AreDifferencesPresent(signatures));
+        Assert.Empty(Evaluator.FindDifferences(signatures));
     }
 
     [Fact]
@@ -32,7 +32,7 @@ public class TestEnumMemberRemoved
             Build.Enum().WithMembers(Build.EnumMember("Red"), Build.EnumMember("Green", "1")),
             Build.Enum().WithMembers(Build.EnumMember("Red")));
 
-        Assert.True(Evaluator.AreDifferencesPresent(signatures));
+        Assert.Equal(["Test.TestType.Green"], Evaluator.FindDifferences(signatures));
     }
 
     [Fact]
@@ -42,6 +42,7 @@ public class TestEnumMemberRemoved
             Build.Enum().WithMembers(Build.EnumMember("Red")),
             Build.Enum().WithMembers(Build.EnumMember("Crimson")));
 
-        Assert.True(Evaluator.AreDifferencesPresent(signatures));
+        // The finding names the old member, which is the one callers can no longer reach.
+        Assert.Equal(["Test.TestType.Red"], Evaluator.FindDifferences(signatures));
     }
 }

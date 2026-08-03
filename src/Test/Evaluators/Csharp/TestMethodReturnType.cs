@@ -22,7 +22,7 @@ public class TestMethodReturnType
             Build.Class().WithMethods(Build.Method(returns: "string")),
             Build.Class().WithMethods(Build.Method(returns: "string")));
 
-        Assert.False(Evaluator.AreDifferencesPresent(signatures));
+        Assert.Empty(Evaluator.FindDifferences(signatures));
     }
 
     [Fact]
@@ -32,7 +32,7 @@ public class TestMethodReturnType
             Build.Class().WithMethods(Build.Method(returns: "string")),
             Build.Class().WithMethods(Build.Method(returns: "int")));
 
-        Assert.True(Evaluator.AreDifferencesPresent(signatures));
+        Assert.Equal(["Test.TestType.TestMethod"], Evaluator.FindDifferences(signatures));
     }
 
     /// <summary>
@@ -55,6 +55,9 @@ public class TestMethodReturnType
                 new(Build.Parameter()) { ReturnType = "int" }
             ]));
 
-        Assert.True(Evaluator.AreDifferencesPresent(Build.Compare(older, newer)));
+        // The finding names the overload that changed, not the method as a whole.
+        Assert.Equal(
+            ["Test.TestType.TestMethod([string input])"],
+            Evaluator.FindDifferences(Build.Compare(older, newer)));
     }
 }

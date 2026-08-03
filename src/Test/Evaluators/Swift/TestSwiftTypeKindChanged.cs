@@ -19,21 +19,22 @@ public class TestSwiftTypeKindChanged
     [Fact]
     public void KindIsUnchanged()
     {
-        Assert.False(Evaluator.AreDifferencesPresent(
+        Assert.Empty(Evaluator.FindDifferences(
             BuildSwift.Compare(BuildSwift.Struct(), BuildSwift.Struct())));
     }
 
     [Fact]
     public void StructBecameAClass()
     {
-        Assert.True(Evaluator.AreDifferencesPresent(
-            BuildSwift.Compare(BuildSwift.Struct(), BuildSwift.Class())));
+        Assert.Equal(
+            [BuildSwift.DefaultTypeName],
+            Evaluator.FindDifferences(BuildSwift.Compare(BuildSwift.Struct(), BuildSwift.Class())));
     }
 
     [Fact]
     public void ClassBecameAnActor()
     {
-        Assert.True(Evaluator.AreDifferencesPresent(
+        Assert.NotEmpty(Evaluator.FindDifferences(
             BuildSwift.Compare(BuildSwift.Class(), BuildSwift.Actor())));
     }
 }

@@ -10,7 +10,9 @@ public class SwiftDefaultArgumentAdded : IEvaluateSwiftSignatures
 {
     public VersionType EvaluationImpact => VersionType.Minor;
 
-    public bool AreDifferencesPresent(ISwiftSignaturesToCompare signatures)
+    public string ChangeDescription => "gained a default argument value";
+
+    public IEnumerable<string> FindDifferences(ISwiftSignaturesToCompare signatures)
     {
         foreach (var functionPair in SwiftMembers.GetPairedFunctions(signatures))
         {
@@ -23,10 +25,8 @@ public class SwiftDefaultArgumentAdded : IEvaluateSwiftSignatures
                     continue;
                 }
 
-                return true;
+                yield return $"{functionPair.Newer.Name} ({parameterPair.Newer.Label})";
             }
         }
-
-        return false;
     }
 }

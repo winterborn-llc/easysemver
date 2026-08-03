@@ -24,7 +24,7 @@ public class TestSwiftMemberRemoved
             BuildSwift.Struct().WithFunctions(BuildSwift.Function()),
             BuildSwift.Struct().WithFunctions(BuildSwift.Function()));
 
-        Assert.False(Evaluator.AreDifferencesPresent(signatures));
+        Assert.Empty(Evaluator.FindDifferences(signatures));
     }
 
     [Fact]
@@ -34,7 +34,7 @@ public class TestSwiftMemberRemoved
             BuildSwift.Struct().WithFunctions(BuildSwift.Function()),
             BuildSwift.Struct());
 
-        Assert.True(Evaluator.AreDifferencesPresent(signatures));
+        Assert.Equal(["TestType.move()"], Evaluator.FindDifferences(signatures));
     }
 
     /// <summary>SWE-03 - argument labels are part of the identity, so a label change is a removal.</summary>
@@ -45,7 +45,7 @@ public class TestSwiftMemberRemoved
             BuildSwift.Struct().WithFunctions(BuildSwift.Function("TestType.move(to:)")),
             BuildSwift.Struct().WithFunctions(BuildSwift.Function("TestType.move(toward:)")));
 
-        Assert.True(Evaluator.AreDifferencesPresent(signatures));
+        Assert.Equal(["TestType.move(to:)"], Evaluator.FindDifferences(signatures));
     }
 
     [Fact]
@@ -56,6 +56,8 @@ public class TestSwiftMemberRemoved
             .WithInitializers(BuildSwift.Initializer())
             .WithSubscripts(BuildSwift.Subscript());
 
-        Assert.True(Evaluator.AreDifferencesPresent(BuildSwift.Compare(older, BuildSwift.Struct())));
+        Assert.Equal(
+            ["TestType.init()", "TestType.speed", "TestType.subscript(_:)"],
+            Evaluator.FindDifferences(BuildSwift.Compare(older, BuildSwift.Struct())));
     }
 }

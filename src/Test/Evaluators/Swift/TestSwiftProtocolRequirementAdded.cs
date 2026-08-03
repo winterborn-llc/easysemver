@@ -24,7 +24,7 @@ public class TestSwiftProtocolRequirementAdded
             BuildSwift.Protocol().WithFunctions(BuildSwift.Function()),
             BuildSwift.Protocol().WithFunctions(BuildSwift.Function()));
 
-        Assert.False(Evaluator.AreDifferencesPresent(signatures));
+        Assert.Empty(Evaluator.FindDifferences(signatures));
     }
 
     [Fact]
@@ -34,7 +34,7 @@ public class TestSwiftProtocolRequirementAdded
             BuildSwift.Protocol(),
             BuildSwift.Protocol().WithFunctions(BuildSwift.Function()));
 
-        Assert.True(Evaluator.AreDifferencesPresent(signatures));
+        Assert.Equal(["TestType.move()"], Evaluator.FindDifferences(signatures));
     }
 
     [Fact]
@@ -45,7 +45,7 @@ public class TestSwiftProtocolRequirementAdded
 
         var signatures = BuildSwift.Compare(BuildSwift.Protocol(), BuildSwift.Protocol().WithFunctions(defaulted));
 
-        Assert.False(Evaluator.AreDifferencesPresent(signatures));
+        Assert.Empty(Evaluator.FindDifferences(signatures));
     }
 
     /// <summary>A member added to a struct is S17's concern, and only Minor.</summary>
@@ -56,6 +56,6 @@ public class TestSwiftProtocolRequirementAdded
             BuildSwift.Struct(),
             BuildSwift.Struct().WithFunctions(BuildSwift.Function()));
 
-        Assert.False(Evaluator.AreDifferencesPresent(signatures));
+        Assert.Empty(Evaluator.FindDifferences(signatures));
     }
 }

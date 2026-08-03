@@ -1,6 +1,6 @@
 using Winterborn.Library.EasySemVer.DataObject;
 using Winterborn.Library.EasySemVer.Evaluation.Csharp;
-using Winterborn.Library.EasySemVer.Extensions;
+using Winterborn.Library.EasySemVer.Interfaces;
 using Winterborn.Library.EasySemVer.Interfaces.Csharp;
 
 namespace Winterborn.Library.EasySemVer.Evaluators.Csharp;
@@ -58,29 +58,47 @@ internal static class CompareSignatures
         new PropertySetterBecameInitOnly()
     ];
 
-    internal static VersionType GetChangeType(
-        string unitId,
+    internal static IReadOnlyList<ChangeFinding> GetFindings(
+        IPackageableUnit unit,
         ICsharpProject? older,
         ICsharpProject? newer)
     {
+        // CLS-04: fail safe towards additive. Unlike the run-level case this one has a unit to
+        // name, so it is reported as an ordinary finding rather than as an unexplained verdict.
         if (older is null || newer is null)
         {
-            return VersionType.Minor;
+            return
+            [
+                new ChangeFinding
+                {
+                    Language = unit.Language,
+                    UnitId = unit.UnitId,
+                    RuleName = nameof(CompareSignatures),
+                    Symbol = unit.UnitId,
+                    Description = "has no comparable baseline signature, so it is treated as additive",
+                    Impact = VersionType.Minor
+                }
+            ];
         }
 
         var signatures = new CsharpSignaturesToCompare(older, newer);
-        var changeType = VersionType.Patch;
+        var findings = new List<ChangeFinding>();
         foreach (var evaluator in Evaluators)
         {
-            if (!evaluator.AreDifferencesPresent(signatures))
+            foreach (var symbol in evaluator.FindDifferences(signatures))
             {
-                continue;
+                findings.Add(new ChangeFinding
+                {
+                    Language = unit.Language,
+                    UnitId = unit.UnitId,
+                    RuleName = evaluator.GetType().Name,
+                    Symbol = symbol,
+                    Description = evaluator.ChangeDescription,
+                    Impact = evaluator.EvaluationImpact
+                });
             }
-
-            Log.WriteLine($"{evaluator.GetType().Name}: {evaluator.EvaluationImpact} in {unitId}");
-            changeType = changeType.GetHigherImpact(evaluator.EvaluationImpact);
         }
 
-        return changeType;
+        return findings;
     }
 }

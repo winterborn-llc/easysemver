@@ -22,7 +22,7 @@ public class TestPropertyType
             Build.Class().WithProperties(Build.Property(type: "string")),
             Build.Class().WithProperties(Build.Property(type: "string")));
 
-        Assert.False(Evaluator.AreDifferencesPresent(signatures));
+        Assert.Empty(Evaluator.FindDifferences(signatures));
     }
 
     [Fact]
@@ -32,6 +32,6 @@ public class TestPropertyType
             Build.Class().WithProperties(Build.Property(type: "string")),
             Build.Class().WithProperties(Build.Property(type: "int")));
 
-        Assert.True(Evaluator.AreDifferencesPresent(signatures));
+        Assert.Equal(["Test.TestType.TestProperty"], Evaluator.FindDifferences(signatures));
     }
 }

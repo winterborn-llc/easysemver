@@ -6,7 +6,7 @@ namespace Winterborn.Library.EasySemVer.Evaluators.Swift;
 /// <summary>The half S20 and S21 share, so the two directions cannot drift apart.</summary>
 internal static class SwiftProtocolRequirements
 {
-    internal static bool WasRequirementAdded(
+    internal static IEnumerable<string> GetAddedRequirements(
         ISwiftSignaturesToCompare signatures,
         bool withDefaultImplementation)
     {
@@ -29,7 +29,7 @@ internal static class SwiftProtocolRequirements
                     continue;
                 }
 
-                return true;
+                yield return function.Name;
             }
 
             foreach (var property in typePair.Newer.Properties)
@@ -44,10 +44,8 @@ internal static class SwiftProtocolRequirements
                     continue;
                 }
 
-                return true;
+                yield return property.Name;
             }
         }
-
-        return false;
     }
 }

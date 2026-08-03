@@ -40,12 +40,12 @@ run mutates nothing.
 
 **PER-07 — Format.** ✅ *(BAS-01…BAS-04)*
 The baseline SHALL be a self-contained, indented XML document whose root is
-`<EasySemVer formatVersion="2">` and whose content is a **flat array of packageable units**, each
+`<EasySemVer formatVersion="3">` and whose content is a **flat array of packageable units**, each
 carrying its language, unit id, unit kind, folder-root-relative path, and that language's native
 signature payload:
 
 ```xml
-<EasySemVer formatVersion="2">
+<EasySemVer formatVersion="3">
    <Unit language="Csharp" unitId="EasySemVer" unitKind="csproj" path="src/EasySemVer/EasySemVer.csproj">
       <CsharpProject name="EasySemVer"> … </CsharpProject>
    </Unit>
@@ -69,6 +69,10 @@ toolchain, so the sorting is EasySemVer's job, not the tool's.
 The baseline SHALL be written to a temporary file in the same directory and moved into place, so
 a half-written file can never replace a good one.
 
-**PER-10 — No migration from v1.** ℹ️ *(BAS-03)*
-No migration path exists or is wanted: because of G-01 the v1 writer never succeeded, so no valid
-v1 file exists anywhere. An unknown version degrades to PER-04.
+**PER-10 — No migration between format versions.** ℹ️ *(BAS-03)*
+No migration path exists or is wanted; an unknown version degrades to PER-04, which costs one
+Minor bump and heals on the next run.
+- **v1** never had a valid file anywhere: because of G-01 the writer never succeeded.
+- **v2 → v3** was bumped when extraction stopped recording metadata types (SIG-03). A v2 baseline
+  holds framework symbols that a v3 run will never produce, so diffing the two would report their
+  disappearance as a Major change. Rejecting it outright is the cheaper error.

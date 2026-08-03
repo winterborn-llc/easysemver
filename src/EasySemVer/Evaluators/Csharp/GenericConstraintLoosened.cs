@@ -11,25 +11,29 @@ public class GenericConstraintLoosened : IEvaluateCsharpSignatures
 {
     public VersionType EvaluationImpact => VersionType.Minor;
 
-    public bool AreDifferencesPresent(ICsharpSignaturesToCompare signatures)
+    public string ChangeDescription => "loosened its generic constraints";
+
+    public IEnumerable<string> FindDifferences(ICsharpSignaturesToCompare signatures)
     {
         foreach (var typePair in signatures.ClassHistory)
         {
-            if (IsLoosened(typePair.Older.GenericParameters, typePair.Newer.GenericParameters))
+            if (!IsLoosened(typePair.Older.GenericParameters, typePair.Newer.GenericParameters))
             {
-                return true;
+                continue;
             }
+
+            yield return typePair.Newer.Name;
         }
 
         foreach (var overloadPair in Overloads.GetMatchedOverloads(signatures))
         {
-            if (IsLoosened(overloadPair.Older.GenericParameters, overloadPair.Newer.GenericParameters))
+            if (!IsLoosened(overloadPair.Older.GenericParameters, overloadPair.Newer.GenericParameters))
             {
-                return true;
+                continue;
             }
-        }
 
-        return false;
+            yield return overloadPair.Symbol;
+        }
     }
 
     private static bool IsLoosened(

@@ -22,7 +22,7 @@ public class TestMethodsContinueToExist
             Build.Class().WithMethods(Build.Method("One"), Build.Method("Two")),
             Build.Class().WithMethods(Build.Method("One"), Build.Method("Two")));
 
-        Assert.False(Evaluator.AreDifferencesPresent(signatures));
+        Assert.Empty(Evaluator.FindDifferences(signatures));
     }
 
     [Fact]
@@ -32,6 +32,7 @@ public class TestMethodsContinueToExist
             Build.Class().WithMethods(Build.Method("One"), Build.Method("Two")),
             Build.Class().WithMethods(Build.Method("One"), Build.Method("Three")));
 
-        Assert.True(Evaluator.AreDifferencesPresent(signatures));
+        // The rule names what it found, which is what a dry run reports (§20 O-04).
+        Assert.Equal(["Test.TestType.Two"], Evaluator.FindDifferences(signatures));
     }
 }

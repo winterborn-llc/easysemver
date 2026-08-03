@@ -8,7 +8,9 @@ public class EventAdded : IEvaluateCsharpSignatures
 {
     public VersionType EvaluationImpact => VersionType.Minor;
 
-    public bool AreDifferencesPresent(ICsharpSignaturesToCompare signatures)
+    public string ChangeDescription => "was added";
+
+    public IEnumerable<string> FindDifferences(ICsharpSignaturesToCompare signatures)
     {
         foreach (var typePair in signatures.ClassHistory)
         {
@@ -19,10 +21,8 @@ public class EventAdded : IEvaluateCsharpSignatures
                     continue;
                 }
 
-                return true;
+                yield return $"{typePair.Newer.Name}.{newerEvent.Name}";
             }
         }
-
-        return false;
     }
 }

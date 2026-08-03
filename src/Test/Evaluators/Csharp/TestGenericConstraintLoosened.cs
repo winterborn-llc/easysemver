@@ -22,7 +22,7 @@ public class TestGenericConstraintLoosened
             Build.Class().WithGenerics(Build.Generic("T", "class")),
             Build.Class().WithGenerics(Build.Generic("T", "class")));
 
-        Assert.False(Evaluator.AreDifferencesPresent(signatures));
+        Assert.Empty(Evaluator.FindDifferences(signatures));
     }
 
     [Fact]
@@ -32,7 +32,7 @@ public class TestGenericConstraintLoosened
             Build.Class().WithGenerics(Build.Generic("T", "class, new()")),
             Build.Class().WithGenerics(Build.Generic("T", "class")));
 
-        Assert.True(Evaluator.AreDifferencesPresent(signatures));
+        Assert.Equal(["Test.TestType"], Evaluator.FindDifferences(signatures));
     }
 
     [Fact]
@@ -42,7 +42,7 @@ public class TestGenericConstraintLoosened
             Build.Class().WithGenerics(Build.Generic("T", "class")),
             Build.Class().WithGenerics(Build.Generic("T", "class, new()")));
 
-        Assert.False(Evaluator.AreDifferencesPresent(signatures));
+        Assert.Empty(Evaluator.FindDifferences(signatures));
     }
 
     /// <summary>A parameter-count change is R39's alone; this rule must stay out of it.</summary>
@@ -53,6 +53,6 @@ public class TestGenericConstraintLoosened
             Build.Class().WithGenerics(Build.Generic("T", "class")),
             Build.Class().WithGenerics(Build.Generic("T", "class"), Build.Generic("TOther")));
 
-        Assert.False(Evaluator.AreDifferencesPresent(signatures));
+        Assert.Empty(Evaluator.FindDifferences(signatures));
     }
 }

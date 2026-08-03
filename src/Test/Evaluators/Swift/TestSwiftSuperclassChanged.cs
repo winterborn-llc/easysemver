@@ -20,19 +20,21 @@ public class TestSwiftSuperclassChanged
     [Fact]
     public void SuperclassIsUnchanged()
     {
-        Assert.False(Evaluator.AreDifferencesPresent(Compare("Base", "Base")));
+        Assert.Empty(Evaluator.FindDifferences(Compare("Base", "Base")));
     }
 
     [Fact]
     public void SuperclassChanged()
     {
-        Assert.True(Evaluator.AreDifferencesPresent(Compare("Base", "OtherBase")));
+        Assert.Equal(
+            [BuildSwift.DefaultTypeName],
+            Evaluator.FindDifferences(Compare("Base", "OtherBase")));
     }
 
     [Fact]
     public void SuperclassRemoved()
     {
-        Assert.True(Evaluator.AreDifferencesPresent(Compare("Base", "")));
+        Assert.NotEmpty(Evaluator.FindDifferences(Compare("Base", "")));
     }
 
     private static ISwiftSignaturesToCompare Compare(string older, string newer)

@@ -10,7 +10,9 @@ public class SwiftMutatingAdded : IEvaluateSwiftSignatures
 {
     public VersionType EvaluationImpact => VersionType.Major;
 
-    public bool AreDifferencesPresent(ISwiftSignaturesToCompare signatures)
+    public string ChangeDescription => "became mutating";
+
+    public IEnumerable<string> FindDifferences(ISwiftSignaturesToCompare signatures)
     {
         foreach (var functionPair in SwiftMembers.GetPairedFunctions(signatures))
         {
@@ -19,9 +21,7 @@ public class SwiftMutatingAdded : IEvaluateSwiftSignatures
                 continue;
             }
 
-            return true;
+            yield return functionPair.Newer.Name;
         }
-
-        return false;
     }
 }

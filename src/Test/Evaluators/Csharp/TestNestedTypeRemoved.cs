@@ -22,7 +22,7 @@ public class TestNestedTypeRemoved
             Build.Project(Build.Class(), Build.Class("Test.TestType.Inner").Nested(Build.DefaultTypeName)),
             Build.Project(Build.Class(), Build.Class("Test.TestType.Inner").Nested(Build.DefaultTypeName)));
 
-        Assert.False(Evaluator.AreDifferencesPresent(signatures));
+        Assert.Empty(Evaluator.FindDifferences(signatures));
     }
 
     [Fact]
@@ -32,7 +32,7 @@ public class TestNestedTypeRemoved
             Build.Project(Build.Class(), Build.Class("Test.TestType.Inner").Nested(Build.DefaultTypeName)),
             Build.Project(Build.Class()));
 
-        Assert.True(Evaluator.AreDifferencesPresent(signatures));
+        Assert.Equal(["Test.TestType.Inner"], Evaluator.FindDifferences(signatures));
     }
 
     /// <summary>A namespace-level type is R06/R18's concern, not this rule's.</summary>
@@ -43,6 +43,6 @@ public class TestNestedTypeRemoved
             Build.Project(Build.Class(), Build.Class("Test.Another")),
             Build.Project(Build.Class()));
 
-        Assert.False(Evaluator.AreDifferencesPresent(signatures));
+        Assert.Empty(Evaluator.FindDifferences(signatures));
     }
 }

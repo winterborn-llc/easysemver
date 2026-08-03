@@ -9,7 +9,9 @@ public class DelegateSignatureChanged : IEvaluateCsharpSignatures
 {
     public VersionType EvaluationImpact => VersionType.Major;
 
-    public bool AreDifferencesPresent(ICsharpSignaturesToCompare signatures)
+    public string ChangeDescription => "changed its signature";
+
+    public IEnumerable<string> FindDifferences(ICsharpSignaturesToCompare signatures)
     {
         foreach (var typePair in signatures.ClassHistory)
         {
@@ -20,17 +22,16 @@ public class DelegateSignatureChanged : IEvaluateCsharpSignatures
 
             var older = (ICsharpDelegate)typePair.Older;
             var newer = (ICsharpDelegate)typePair.Newer;
-            if (older.ReturnType != newer.ReturnType)
+
+            // Return type and parameters are one signature, so a delegate that changed both is
+            // still one finding.
+            if (older.ReturnType == newer.ReturnType
+                && ParameterLists.AreTheSame(older.Parameters, newer.Parameters))
             {
-                return true;
+                continue;
             }
 
-            if (!ParameterLists.AreTheSame(older.Parameters, newer.Parameters))
-            {
-                return true;
-            }
+            yield return newer.Name;
         }
-
-        return false;
     }
 }

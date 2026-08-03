@@ -2,6 +2,7 @@ using Winterborn.Library.EasySemVer.DataObject;
 using Winterborn.Library.EasySemVer.Interfaces;
 using Winterborn.Library.EasySemVer.Persistence;
 using Winterborn.Library.EasySemVer.Providers;
+using Winterborn.Library.EasySemVer.Reporting;
 using Winterborn.Library.EasySemVer.Settings;
 using Version = Winterborn.Library.EasySemVer.DataObject.Version;
 
@@ -16,19 +17,19 @@ internal static class VersioningRun
 {
     internal static void Execute(RunOptions options, IReadOnlyList<ILanguageProvider> providers)
     {
-        Log.WriteLine($"EasySemVer: {options.FolderRoot}");
+        Log.WriteLine($"EasySemVer: {options.FolderRoot}{(options.IsDryRun ? " (dry run)" : string.Empty)}");
         Log.Indent();
 
         var units = Discover(options.FolderRoot, providers);
         Extract(units, providers);
 
         var baseline = BaselineFile.Read(options.FolderRoot, providers);
-        var changeType = ChangeClassifier.Classify(baseline, units, providers);
-        Log.WriteLine($"Change Type: {changeType}");
+        var report = ChangeClassifier.Classify(baseline, units, providers);
+        TextChangeReport.Write(report, options.IsDryRun);
 
         var startingVersion = GetSeedVersion(units, providers);
         var newVersion = new Version(startingVersion);
-        newVersion.Increment(changeType);
+        newVersion.Increment(report.ChangeType);
         Log.WriteLine($"Version: {startingVersion} -> {newVersion}");
 
         if (options.IsDryRun)

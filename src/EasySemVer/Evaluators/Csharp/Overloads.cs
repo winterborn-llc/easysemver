@@ -1,3 +1,4 @@
+using Winterborn.Library.EasySemVer.Extensions;
 using Winterborn.Library.EasySemVer.Interfaces.Csharp;
 
 namespace Winterborn.Library.EasySemVer.Evaluators.Csharp;
@@ -9,8 +10,18 @@ namespace Winterborn.Library.EasySemVer.Evaluators.Csharp;
 /// </summary>
 internal static class Overloads
 {
-    internal class OverloadPair(ICsharpMethodOverride older, ICsharpMethodOverride newer)
+    internal class OverloadPair(
+        string symbol,
+        ICsharpMethodOverride older,
+        ICsharpMethodOverride newer)
     {
+        /// <summary>
+        /// What the pair is called, carried alongside it because a rule that fires on an overload
+        /// has to be able to name it and the overload itself does not know its own type or method
+        /// name (SIG-04).
+        /// </summary>
+        internal string Symbol { get; } = symbol;
+
         internal ICsharpMethodOverride Older { get; } = older;
 
         internal ICsharpMethodOverride Newer { get; } = newer;
@@ -38,7 +49,10 @@ internal static class Overloads
                         continue;
                     }
 
-                    yield return new OverloadPair(olderOverride, newerOverride);
+                    yield return new OverloadPair(
+                        $"{typePair.Newer.Name}.{methodName}({olderOverride.GetMethodSignature()})",
+                        olderOverride,
+                        newerOverride);
                 }
             }
         }

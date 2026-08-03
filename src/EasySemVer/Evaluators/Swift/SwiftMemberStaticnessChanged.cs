@@ -10,24 +10,28 @@ public class SwiftMemberStaticnessChanged : IEvaluateSwiftSignatures
 {
     public VersionType EvaluationImpact => VersionType.Major;
 
-    public bool AreDifferencesPresent(ISwiftSignaturesToCompare signatures)
+    public string ChangeDescription => "moved between static and instance";
+
+    public IEnumerable<string> FindDifferences(ISwiftSignaturesToCompare signatures)
     {
         foreach (var functionPair in SwiftMembers.GetPairedFunctions(signatures))
         {
-            if (functionPair.Older.IsStatic != functionPair.Newer.IsStatic)
+            if (functionPair.Older.IsStatic == functionPair.Newer.IsStatic)
             {
-                return true;
+                continue;
             }
+
+            yield return functionPair.Newer.Name;
         }
 
         foreach (var propertyPair in SwiftMembers.GetPairedProperties(signatures))
         {
-            if (propertyPair.Older.IsStatic != propertyPair.Newer.IsStatic)
+            if (propertyPair.Older.IsStatic == propertyPair.Newer.IsStatic)
             {
-                return true;
+                continue;
             }
-        }
 
-        return false;
+            yield return propertyPair.Newer.Name;
+        }
     }
 }

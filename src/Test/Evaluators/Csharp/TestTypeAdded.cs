@@ -23,7 +23,7 @@ public class TestTypeAdded
             Build.Project(Build.Interface()),
             Build.Project(Build.Interface()));
 
-        Assert.False(Evaluator.AreDifferencesPresent(signatures));
+        Assert.Empty(Evaluator.FindDifferences(signatures));
     }
 
     [Theory]
@@ -34,7 +34,7 @@ public class TestTypeAdded
             Build.Project(Build.Class()),
             Build.Project(Build.Class(), added));
 
-        Assert.True(Evaluator.AreDifferencesPresent(signatures));
+        Assert.Equal([added.Name], Evaluator.FindDifferences(signatures));
     }
 
     /// <summary>An added class is R05's concern.</summary>
@@ -45,6 +45,6 @@ public class TestTypeAdded
             Build.Project(Build.Class()),
             Build.Project(Build.Class(), Build.Class("Test.Another")));
 
-        Assert.False(Evaluator.AreDifferencesPresent(signatures));
+        Assert.Empty(Evaluator.FindDifferences(signatures));
     }
 }

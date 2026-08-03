@@ -20,20 +20,22 @@ public class TestSwiftGenericConstraintLoosened
     [Fact]
     public void ConstraintsAreUnchanged()
     {
-        Assert.False(Evaluator.AreDifferencesPresent(Compare("conformance Equatable", "conformance Equatable")));
+        Assert.Empty(Evaluator.FindDifferences(Compare("conformance Equatable", "conformance Equatable")));
     }
 
     [Fact]
     public void ConstraintIsRemoved()
     {
-        Assert.True(Evaluator.AreDifferencesPresent(
-            Compare("conformance Equatable, conformance Hashable", "conformance Equatable")));
+        Assert.Equal(
+            [BuildSwift.DefaultTypeName],
+            Evaluator.FindDifferences(
+                Compare("conformance Equatable, conformance Hashable", "conformance Equatable")));
     }
 
     [Fact]
     public void AddingAConstraintDoesNotFire()
     {
-        Assert.False(Evaluator.AreDifferencesPresent(
+        Assert.Empty(Evaluator.FindDifferences(
             Compare("conformance Equatable", "conformance Equatable, conformance Hashable")));
     }
 

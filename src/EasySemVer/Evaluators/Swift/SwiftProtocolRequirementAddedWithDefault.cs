@@ -10,8 +10,11 @@ public class SwiftProtocolRequirementAddedWithDefault : IEvaluateSwiftSignatures
 {
     public VersionType EvaluationImpact => VersionType.Minor;
 
-    public bool AreDifferencesPresent(ISwiftSignaturesToCompare signatures)
+    public string ChangeDescription => "was added as a protocol requirement with a default";
+
+    public IEnumerable<string> FindDifferences(ISwiftSignaturesToCompare signatures)
     {
-        return SwiftProtocolRequirements.WasRequirementAdded(signatures, withDefaultImplementation: true);
+        return SwiftProtocolRequirements.GetAddedRequirements(
+            signatures, withDefaultImplementation: true);
     }
 }

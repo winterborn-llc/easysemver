@@ -24,7 +24,7 @@ public class TestSwiftEnumCaseChanged
             BuildSwift.Enum().WithCases(BuildSwift.Case("TestType.red", "r")),
             BuildSwift.Enum().WithCases(BuildSwift.Case("TestType.red", "r")));
 
-        Assert.False(Evaluator.AreDifferencesPresent(signatures));
+        Assert.Empty(Evaluator.FindDifferences(signatures));
     }
 
     [Fact]
@@ -34,7 +34,7 @@ public class TestSwiftEnumCaseChanged
             BuildSwift.Enum().WithCases(BuildSwift.Case("TestType.red")),
             BuildSwift.Enum());
 
-        Assert.True(Evaluator.AreDifferencesPresent(signatures));
+        Assert.Equal(["TestType.red"], Evaluator.FindDifferences(signatures));
     }
 
     [Fact]
@@ -44,7 +44,7 @@ public class TestSwiftEnumCaseChanged
             BuildSwift.Enum().WithCases(BuildSwift.Case("TestType.red", "r")),
             BuildSwift.Enum().WithCases(BuildSwift.Case("TestType.red", "R")));
 
-        Assert.True(Evaluator.AreDifferencesPresent(signatures));
+        Assert.NotEmpty(Evaluator.FindDifferences(signatures));
     }
 
     [Fact]
@@ -59,6 +59,6 @@ public class TestSwiftEnumCaseChanged
             BuildSwift.Enum().WithCases(older),
             BuildSwift.Enum().WithCases(newer));
 
-        Assert.True(Evaluator.AreDifferencesPresent(signatures));
+        Assert.Equal(["TestType.green"], Evaluator.FindDifferences(signatures));
     }
 }

@@ -11,5 +11,13 @@ public interface IEvaluateUnitExistence
 {
     public VersionType EvaluationImpact { get; }
 
-    public bool AreDifferencesPresent(IUnitsToCompare units);
+    /// <summary>The phrase completing "&lt;unit&gt; ..." in the report, such as "was removed".</summary>
+    public string ChangeDescription { get; }
+
+    /// <summary>
+    /// Every unit this rule fires on; empty means it did not fire. It yields the units rather
+    /// than answering yes/no so the run can report what it found and not only that it found
+    /// something (§20 O-04).
+    /// </summary>
+    public IEnumerable<IPackageableUnit> FindDifferences(IUnitsToCompare units);
 }

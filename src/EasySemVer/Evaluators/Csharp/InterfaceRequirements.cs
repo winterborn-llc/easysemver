@@ -9,7 +9,7 @@ namespace Winterborn.Library.EasySemVer.Evaluators.Csharp;
 /// </summary>
 internal static class InterfaceRequirements
 {
-    internal static bool WasRequirementAdded(
+    internal static IEnumerable<string> GetAddedRequirements(
         ICsharpSignaturesToCompare signatures,
         bool withDefaultImplementation)
     {
@@ -20,21 +20,21 @@ internal static class InterfaceRequirements
                 continue;
             }
 
-            if (WasMethodAdded(typePair, withDefaultImplementation))
+            foreach (var method in GetAddedMethods(typePair, withDefaultImplementation))
             {
-                return true;
+                yield return method;
             }
 
-            if (WasPropertyAdded(typePair, withDefaultImplementation))
+            foreach (var property in GetAddedProperties(typePair, withDefaultImplementation))
             {
-                return true;
+                yield return property;
             }
         }
-
-        return false;
     }
 
-    private static bool WasMethodAdded(ICsharpClassHistory typePair, bool withDefaultImplementation)
+    private static IEnumerable<string> GetAddedMethods(
+        ICsharpClassHistory typePair,
+        bool withDefaultImplementation)
     {
         foreach (var name in typePair.Newer.Methods.Keys)
         {
@@ -43,6 +43,8 @@ internal static class InterfaceRequirements
                 continue;
             }
 
+            // One added method is one finding however many overloads it arrived with, so the
+            // first matching overload settles it.
             foreach (var added in typePair.Newer.Methods[name].Overrides)
             {
                 if (added.HasDefaultImplementation != withDefaultImplementation)
@@ -50,14 +52,15 @@ internal static class InterfaceRequirements
                     continue;
                 }
 
-                return true;
+                yield return $"{typePair.Newer.Name}.{name}";
+                break;
             }
         }
-
-        return false;
     }
 
-    private static bool WasPropertyAdded(ICsharpClassHistory typePair, bool withDefaultImplementation)
+    private static IEnumerable<string> GetAddedProperties(
+        ICsharpClassHistory typePair,
+        bool withDefaultImplementation)
     {
         foreach (var name in typePair.Newer.Properties.Keys)
         {
@@ -71,9 +74,7 @@ internal static class InterfaceRequirements
                 continue;
             }
 
-            return true;
+            yield return $"{typePair.Newer.Name}.{name}";
         }
-
-        return false;
     }
 }

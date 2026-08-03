@@ -20,19 +20,21 @@ public class TestSwiftFrozenRemoved
     [Fact]
     public void FlagIsUnchanged()
     {
-        Assert.False(Evaluator.AreDifferencesPresent(Compare(false, false)));
+        Assert.Empty(Evaluator.FindDifferences(Compare(false, false)));
     }
 
     [Fact]
     public void FlagChangesInTheFiringDirection()
     {
-        Assert.True(Evaluator.AreDifferencesPresent(Compare(true, false)));
+        Assert.Equal(
+            [BuildSwift.DefaultTypeName],
+            Evaluator.FindDifferences(Compare(true, false)));
     }
 
     [Fact]
     public void TheOppositeDirectionDoesNotFire()
     {
-        Assert.False(Evaluator.AreDifferencesPresent(Compare(false, true)));
+        Assert.Empty(Evaluator.FindDifferences(Compare(false, true)));
     }
 
     private static ISwiftSignaturesToCompare Compare(bool wasSet, bool isSet)

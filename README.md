@@ -48,7 +48,7 @@ rather than every developer build.
 It is a flat array of packageable units, each carrying its own language's signature:
 
 ```xml
-<EasySemVer formatVersion="2">
+<EasySemVer formatVersion="3">
    <Unit language="Csharp" unitId="Widgets" unitKind="csproj" path="src/Widgets/Widgets.csproj">
       <CsharpProject name="Widgets"> … </CsharpProject>
    </Unit>

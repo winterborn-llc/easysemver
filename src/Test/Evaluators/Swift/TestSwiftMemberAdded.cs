@@ -24,7 +24,7 @@ public class TestSwiftMemberAdded
             BuildSwift.Struct().WithFunctions(BuildSwift.Function()),
             BuildSwift.Struct().WithFunctions(BuildSwift.Function()));
 
-        Assert.False(Evaluator.AreDifferencesPresent(signatures));
+        Assert.Empty(Evaluator.FindDifferences(signatures));
     }
 
     [Fact]
@@ -34,7 +34,7 @@ public class TestSwiftMemberAdded
             BuildSwift.Struct(),
             BuildSwift.Struct().WithFunctions(BuildSwift.Function()));
 
-        Assert.True(Evaluator.AreDifferencesPresent(signatures));
+        Assert.Equal(["TestType.move()"], Evaluator.FindDifferences(signatures));
     }
 
     /// <summary>NCL-03 - members of a brand-new type are S02's concern, not this rule's.</summary>
@@ -47,6 +47,6 @@ public class TestSwiftMemberAdded
                 BuildSwift.Struct("Point"),
                 BuildSwift.Struct("Gadget").WithFunctions(BuildSwift.Function("Gadget.move()"))));
 
-        Assert.False(Evaluator.AreDifferencesPresent(signatures));
+        Assert.Empty(Evaluator.FindDifferences(signatures));
     }
 }

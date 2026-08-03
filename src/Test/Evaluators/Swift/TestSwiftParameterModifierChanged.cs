@@ -22,7 +22,7 @@ public class TestSwiftParameterModifierChanged
     {
         var signatures = Compare(new SwiftParameter { Label = "to", Type = "Point" });
 
-        Assert.False(Evaluator.AreDifferencesPresent(signatures));
+        Assert.Empty(Evaluator.FindDifferences(signatures));
     }
 
     [Fact]
@@ -36,7 +36,7 @@ public class TestSwiftParameterModifierChanged
             Ownership = "inout"
         });
 
-        Assert.True(Evaluator.AreDifferencesPresent(signatures));
+        Assert.Equal(["TestType.move() (to)"], Evaluator.FindDifferences(signatures));
     }
 
     [Fact]
@@ -44,7 +44,7 @@ public class TestSwiftParameterModifierChanged
     {
         var signatures = Compare(new SwiftParameter { Label = "to", Type = "Point", IsVariadic = true });
 
-        Assert.True(Evaluator.AreDifferencesPresent(signatures));
+        Assert.NotEmpty(Evaluator.FindDifferences(signatures));
     }
 
     [Fact]
@@ -52,7 +52,7 @@ public class TestSwiftParameterModifierChanged
     {
         var signatures = Compare(new SwiftParameter { Label = "to", Type = "Point", Ownership = "consuming" });
 
-        Assert.True(Evaluator.AreDifferencesPresent(signatures));
+        Assert.NotEmpty(Evaluator.FindDifferences(signatures));
     }
 
     private static ISwiftSignaturesToCompare Compare(SwiftParameter newer)

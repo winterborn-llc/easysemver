@@ -24,7 +24,7 @@ public class TestSwiftOperatorChanged
             BuildSwift.Module().WithOperators(BuildSwift.Operator()),
             BuildSwift.Module().WithOperators(BuildSwift.Operator()));
 
-        Assert.False(Evaluator.AreDifferencesPresent(signatures));
+        Assert.Empty(Evaluator.FindDifferences(signatures));
     }
 
     [Fact]
@@ -34,7 +34,7 @@ public class TestSwiftOperatorChanged
             BuildSwift.Module().WithOperators(BuildSwift.Operator()),
             BuildSwift.Module());
 
-        Assert.True(Evaluator.AreDifferencesPresent(signatures));
+        Assert.Equal(["<~>(_:_:)"], Evaluator.FindDifferences(signatures));
     }
 
     [Fact]
@@ -44,6 +44,6 @@ public class TestSwiftOperatorChanged
             BuildSwift.Module().WithOperators(BuildSwift.Operator(precedenceGroup: "AdditionPrecedence")),
             BuildSwift.Module().WithOperators(BuildSwift.Operator(precedenceGroup: "ComparisonPrecedence")));
 
-        Assert.True(Evaluator.AreDifferencesPresent(signatures));
+        Assert.NotEmpty(Evaluator.FindDifferences(signatures));
     }
 }

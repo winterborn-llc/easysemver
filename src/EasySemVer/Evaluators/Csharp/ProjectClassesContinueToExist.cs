@@ -9,7 +9,9 @@ public class ProjectClassesContinueToExist : IEvaluateCsharpSignatures
 {
     public VersionType EvaluationImpact => VersionType.Major;
 
-    public bool AreDifferencesPresent(ICsharpSignaturesToCompare signatures)
+    public string ChangeDescription => "was removed";
+
+    public IEnumerable<string> FindDifferences(ICsharpSignaturesToCompare signatures)
     {
         foreach (var olderClass in signatures.Older.Classes)
         {
@@ -20,9 +22,7 @@ public class ProjectClassesContinueToExist : IEvaluateCsharpSignatures
                 continue;
             }
 
-            return true;
+            yield return olderClass.Name;
         }
-
-        return false;
     }
 }

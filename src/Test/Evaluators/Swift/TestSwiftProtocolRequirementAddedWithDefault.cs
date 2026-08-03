@@ -22,7 +22,7 @@ public class TestSwiftProtocolRequirementAddedWithDefault
     {
         var signatures = BuildSwift.Compare(BuildSwift.Protocol(), BuildSwift.Protocol());
 
-        Assert.False(Evaluator.AreDifferencesPresent(signatures));
+        Assert.Empty(Evaluator.FindDifferences(signatures));
     }
 
     [Fact]
@@ -33,7 +33,7 @@ public class TestSwiftProtocolRequirementAddedWithDefault
 
         var signatures = BuildSwift.Compare(BuildSwift.Protocol(), BuildSwift.Protocol().WithFunctions(defaulted));
 
-        Assert.True(Evaluator.AreDifferencesPresent(signatures));
+        Assert.Equal(["TestType.move()"], Evaluator.FindDifferences(signatures));
     }
 
     [Fact]
@@ -43,6 +43,6 @@ public class TestSwiftProtocolRequirementAddedWithDefault
             BuildSwift.Protocol(),
             BuildSwift.Protocol().WithFunctions(BuildSwift.Function()));
 
-        Assert.False(Evaluator.AreDifferencesPresent(signatures));
+        Assert.Empty(Evaluator.FindDifferences(signatures));
     }
 }

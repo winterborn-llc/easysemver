@@ -11,23 +11,35 @@ public class ParameterModifierChanged : IEvaluateCsharpSignatures
 {
     public VersionType EvaluationImpact => VersionType.Major;
 
-    public bool AreDifferencesPresent(ICsharpSignaturesToCompare signatures)
+    public string ChangeDescription => "changed a parameter modifier";
+
+    public IEnumerable<string> FindDifferences(ICsharpSignaturesToCompare signatures)
     {
         foreach (var overloadPair in Overloads.GetMatchedOverloads(signatures))
         {
-            var older = overloadPair.Older.Parameters;
-            var newer = overloadPair.Newer.Parameters;
-            for (var i = 0; i < older.Count; i++)
+            if (!DidAnyModifierChange(overloadPair))
             {
-                if (older[i].RefKind != newer[i].RefKind)
-                {
-                    return true;
-                }
+                continue;
+            }
 
-                if (older[i].IsParams != newer[i].IsParams)
-                {
-                    return true;
-                }
+            yield return overloadPair.Symbol;
+        }
+    }
+
+    private static bool DidAnyModifierChange(Overloads.OverloadPair overloadPair)
+    {
+        var older = overloadPair.Older.Parameters;
+        var newer = overloadPair.Newer.Parameters;
+        for (var i = 0; i < older.Count; i++)
+        {
+            if (older[i].RefKind != newer[i].RefKind)
+            {
+                return true;
+            }
+
+            if (older[i].IsParams != newer[i].IsParams)
+            {
+                return true;
             }
         }
 

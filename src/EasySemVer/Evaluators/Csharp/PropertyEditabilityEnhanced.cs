@@ -1,17 +1,18 @@
 using Winterborn.Library.EasySemVer.DataObject;
-using Winterborn.Library.EasySemVer.DataObject.Csharp;
 using Winterborn.Library.EasySemVer.Interfaces.Csharp;
 
 namespace Winterborn.Library.EasySemVer.Evaluators.Csharp;
 
+/// <summary>R08 - a read-only property gained a setter.</summary>
 public class PropertyEditabilityEnhanced : IEvaluateCsharpSignatures
 {
     public VersionType EvaluationImpact => VersionType.Minor;
 
-    public bool AreDifferencesPresent(ICsharpSignaturesToCompare signatures)
+    public string ChangeDescription => "became writable";
+
+    public IEnumerable<string> FindDifferences(ICsharpSignaturesToCompare signatures)
     {
-        var classes = signatures.ClassHistory;
-        foreach (var classPair in classes)
+        foreach (var classPair in signatures.ClassHistory)
         {
             var oldClass = classPair.Older;
             var newClass = classPair.Newer;
@@ -33,11 +34,9 @@ public class PropertyEditabilityEnhanced : IEvaluateCsharpSignatures
                 {
                     continue;
                 }
-                    
-                return true;
+
+                yield return $"{newClass.Name}.{oldPropertyName}";
             }
         }
-
-        return false;
     }
 }

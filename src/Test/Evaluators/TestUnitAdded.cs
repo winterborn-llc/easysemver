@@ -23,7 +23,7 @@ public class TestUnitAdded
             older: [Units.Csharp("Widgets"), Units.Swift("Sources/Gadgets:Gadgets")],
             newer: [Units.Csharp("Widgets"), Units.Swift("Sources/Gadgets:Gadgets")]);
 
-        Assert.False(Evaluator.AreDifferencesPresent(units));
+        Assert.Empty(Evaluator.FindDifferences(units));
     }
 
     [Fact]
@@ -33,7 +33,10 @@ public class TestUnitAdded
             older: [Units.Csharp("Widgets")],
             newer: [Units.Csharp("Widgets"), Units.Csharp("Gadgets")]);
 
-        Assert.True(Evaluator.AreDifferencesPresent(units));
+        // The rule yields the unit itself, so the report can name what appeared (§20 O-04).
+        Assert.Equal(
+            ["Gadgets"],
+            Evaluator.FindDifferences(units).Select(unit => unit.UnitId));
     }
 
     /// <summary>An empty baseline makes a first run Minor (BAS-05).</summary>
@@ -44,7 +47,7 @@ public class TestUnitAdded
             older: [],
             newer: [Units.Csharp("Widgets")]);
 
-        Assert.True(Evaluator.AreDifferencesPresent(units));
+        Assert.NotEmpty(Evaluator.FindDifferences(units));
     }
 
     [Fact]
@@ -54,6 +57,6 @@ public class TestUnitAdded
             older: [Units.Csharp("Widgets"), Units.Csharp("Gadgets")],
             newer: [Units.Csharp("Widgets")]);
 
-        Assert.False(Evaluator.AreDifferencesPresent(units));
+        Assert.Empty(Evaluator.FindDifferences(units));
     }
 }

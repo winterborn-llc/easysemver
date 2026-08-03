@@ -1,17 +1,19 @@
 using Winterborn.Library.EasySemVer.DataObject;
-using Winterborn.Library.EasySemVer.DataObject.Csharp;
+using Winterborn.Library.EasySemVer.Extensions;
 using Winterborn.Library.EasySemVer.Interfaces.Csharp;
 
 namespace Winterborn.Library.EasySemVer.Evaluators.Csharp;
 
+/// <summary>R02 - an overload the baseline recorded has no match in the new signature.</summary>
 internal class MethodInputParameterOverrideRemoved : IEvaluateCsharpSignatures
 {
     public VersionType EvaluationImpact => VersionType.Major;
-    
-    public bool AreDifferencesPresent(ICsharpSignaturesToCompare signatures)
+
+    public string ChangeDescription => "no longer has a matching overload";
+
+    public IEnumerable<string> FindDifferences(ICsharpSignaturesToCompare signatures)
     {
-        var classes = signatures.ClassHistory;
-        foreach (var classPair in classes)
+        foreach (var classPair in signatures.ClassHistory)
         {
             var oldClass = classPair.Older;
             var newClass = classPair.Newer;
@@ -30,17 +32,16 @@ internal class MethodInputParameterOverrideRemoved : IEvaluateCsharpSignatures
                     {
                         continue;
                     }
-                    
-                    return true;
+
+                    yield return
+                        $"{oldClass.Name}.{oldMethodName}({oldOverride.GetMethodSignature()})";
                 }
             }
         }
-
-        return false;
     }
-    
+
     private static bool DoesOldOverrideExistInNew(
-        ICsharpMethodOverride oldOverride, 
+        ICsharpMethodOverride oldOverride,
         ICsharpMethod newMethod)
     {
         foreach (var newOverride in newMethod.Overrides)
@@ -55,7 +56,7 @@ internal class MethodInputParameterOverrideRemoved : IEvaluateCsharpSignatures
             {
                 continue;
             }
-            
+
             return true;
         }
 

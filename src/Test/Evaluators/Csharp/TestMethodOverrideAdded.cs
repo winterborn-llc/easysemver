@@ -22,7 +22,7 @@ public class TestMethodOverrideAdded
             Build.Class().WithMethods(Build.Method(overrides: Build.Override(Build.Parameter()))),
             Build.Class().WithMethods(Build.Method(overrides: Build.Override(Build.Parameter()))));
 
-        Assert.False(Evaluator.AreDifferencesPresent(signatures));
+        Assert.Empty(Evaluator.FindDifferences(signatures));
     }
 
     [Fact]
@@ -37,6 +37,8 @@ public class TestMethodOverrideAdded
                     Build.Override(Build.Parameter(), Build.Parameter("count", "int"))
                 ])));
 
-        Assert.True(Evaluator.AreDifferencesPresent(signatures));
+        Assert.Equal(
+            ["Test.TestType.TestMethod([string input], [int count])"],
+            Evaluator.FindDifferences(signatures));
     }
 }

@@ -18,7 +18,9 @@ increases the level and `Outdent` decreases it, and the indented string is the o
 **LOG-03 — Progress events.** ✅ *(ERR-M3)*
 A run SHALL log at minimum: the folder root, the unit count per language, each unit as it is
 read, each firing rule with its unit and impact, the aggregate change type, the seed version, the
-new version, and each file written. A build-log reader can act on all of it.
+new version, and each file written. A build-log reader can act on all of it. A dry run replaces
+the firing-rule summary with the per-change report CLI-08 requires; a release run keeps the
+summary, because its job is to write versions and the detail is a flag away.
 
 ## Error handling
 

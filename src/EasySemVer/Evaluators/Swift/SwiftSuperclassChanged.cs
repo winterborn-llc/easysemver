@@ -10,7 +10,9 @@ public class SwiftSuperclassChanged : IEvaluateSwiftSignatures
 {
     public VersionType EvaluationImpact => VersionType.Major;
 
-    public bool AreDifferencesPresent(ISwiftSignaturesToCompare signatures)
+    public string ChangeDescription => "changed or lost its superclass";
+
+    public IEnumerable<string> FindDifferences(ISwiftSignaturesToCompare signatures)
     {
         foreach (var typePair in signatures.TypeHistory)
         {
@@ -19,9 +21,7 @@ public class SwiftSuperclassChanged : IEvaluateSwiftSignatures
                 continue;
             }
 
-            return true;
+            yield return typePair.Newer.Name;
         }
-
-        return false;
     }
 }

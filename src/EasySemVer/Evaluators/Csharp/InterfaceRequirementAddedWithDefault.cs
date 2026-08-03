@@ -11,8 +11,11 @@ public class InterfaceRequirementAddedWithDefault : IEvaluateCsharpSignatures
 {
     public VersionType EvaluationImpact => VersionType.Minor;
 
-    public bool AreDifferencesPresent(ICsharpSignaturesToCompare signatures)
+    public string ChangeDescription => "was added as an interface requirement with a default";
+
+    public IEnumerable<string> FindDifferences(ICsharpSignaturesToCompare signatures)
     {
-        return InterfaceRequirements.WasRequirementAdded(signatures, withDefaultImplementation: true);
+        return InterfaceRequirements.GetAddedRequirements(
+            signatures, withDefaultImplementation: true);
     }
 }

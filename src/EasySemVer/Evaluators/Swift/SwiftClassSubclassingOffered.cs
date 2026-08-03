@@ -10,7 +10,9 @@ public class SwiftClassSubclassingOffered : IEvaluateSwiftSignatures
 {
     public VersionType EvaluationImpact => VersionType.Minor;
 
-    public bool AreDifferencesPresent(ISwiftSignaturesToCompare signatures)
+    public string ChangeDescription => "became open, so it can now be subclassed";
+
+    public IEnumerable<string> FindDifferences(ISwiftSignaturesToCompare signatures)
     {
         foreach (var typePair in signatures.TypeHistory)
         {
@@ -24,9 +26,7 @@ public class SwiftClassSubclassingOffered : IEvaluateSwiftSignatures
                 continue;
             }
 
-            return true;
+            yield return typePair.Newer.Name;
         }
-
-        return false;
     }
 }
