@@ -36,7 +36,11 @@ internal static class JsonChangeReport
             // removes a class of casing bugs in shell and YAML comparisons.
             ChangeType = report.ChangeType.ToString().ToLowerInvariant(),
             OldVersion = JsonReportVersion.From(oldVersion),
-            NewVersion = JsonReportVersion.From(newVersion)
+            NewVersion = JsonReportVersion.From(newVersion),
+
+            // REP-09. The order is ChangeReport's, which is already the sorted one, so this
+            // formatter stays a formatter: no re-sorting here, and REP-07 holds for free.
+            Findings = [.. report.Findings.Select(JsonReportFinding.From)]
         };
     }
 

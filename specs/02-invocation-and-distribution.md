@@ -69,9 +69,11 @@ parse a log, and no existing stream contract changes.
   "dryRun": false,
   "changeType": "major",
   "oldVersion": { "version": "2.3.4", "major": 2, "minor": 3, "patch": 4 },
-  "newVersion": { "version": "3.0.0", "major": 3, "minor": 0, "patch": 0 }
+  "newVersion": { "version": "3.0.0", "major": 3, "minor": 0, "patch": 0 },
+  "findings": [ … ]
 }
 ```
+`findings` is specified by REP-09.
 - `changeType` is `"major" | "minor" | "patch"`, lower case. So are all enum-valued fields: this
   is a wire format, not a dump of a C# enum, and lower case removes a class of casing bugs in
   shell and YAML comparisons.
@@ -92,12 +94,17 @@ Adding a field is backwards-compatible and SHALL NOT bump `formatVersion`. Remov
 one, or changing its type SHALL bump it. This is what makes REP-05's minimalism safe rather than
 short-sighted: the document can grow into whatever a real consumer turns out to need.
 
-**REP-05 — Only what a consumer demonstrably needs.** ℹ️
+**REP-05 — Only what a consumer demonstrably needs.** ℹ️ *(findings since added by REP-09)*
 Discovered units, individual findings, and the list of files written were all specified, weighed
 and deliberately **left out**. They belong in the log, which already renders them (CLI-08), and
 no consumer for them existed at the time of writing. Per REP-04 any of them can be added later
 without breaking a reader, whereas shipping them now would have committed the contract to a
 shape nobody had asked for. Do not re-add them by reflex; add them when something needs them.
+
+ℹ️ Findings met that condition on 2026-08-03 and were added as REP-09; the reasoning above stands
+for the other two, which are still out. This is the process working as intended rather than a
+reversal — the requirement asked for a demonstrated need, and one arrived. **Discovered units and
+the written-file list remain deliberately absent, on the original grounds.**
 
 **REP-06 — The verdict is stated, never inferred.** ℹ️
 `changeType` is not redundant with the two versions, and a consumer SHALL NOT derive it by
@@ -111,6 +118,40 @@ versions. Two runs over unchanged source on two machines SHALL produce byte-iden
 the same reason a baseline must (BAS-04) — so that diffing two reports shows only real change.
 ℹ️ The folder root is deliberately absent: the caller passed it, so restating it would buy
 nothing and would be the one field that broke this property.
+
+**REP-09 — `findings`: the evidence behind the verdict.** ✅
+The document SHALL carry every finding the run made, in the order `ChangeReport` already sorts
+them — unit, then symbol, then rule — so REP-07 holds for the array as it does for the rest:
+
+```json
+"findings": [
+  {
+    "ruleId": "R02",
+    "impact": "major",
+    "language": "csharp",
+    "unitId": "Widgets",
+    "symbol": "Widgets.Widget.Spin()",
+    "description": "was removed"
+  }
+]
+```
+- `ruleId` is the rule's identifier from the tables in
+  [07](07-change-classification.md) and [12 §13](12-multi-language-swift-and-folder-model.md).
+  It is what makes a verdict auditable in a machine's hands rather than only a reader's: a
+  consumer can point at the rule that cost it a Major without matching on prose.
+- The rule's **class name is not published.** It is an implementation detail, and a consumer keyed
+  to it would break on a rename that changed no behavior. `ruleId` is the stable identity, which
+  is the reason [`TestRuleIds`](../src/Test/TestRuleIds.cs) pins every id to its spec row.
+- `impact` and `language` are lower case, like every other enum-valued field (REP-02).
+- `description` completes "*symbol* …" — "was removed". It is prose for a human reading the
+  document, and nothing should match on it; `ruleId` is there for that.
+- The array SHALL be present and empty rather than absent when a run found nothing. An absent
+  array would make "no changes" and "an older writer" indistinguishable.
+ℹ️ A run can legitimately report an empty array and a `changeType` above `patch`: CLS-04's
+fail-safe raises the floor when there is no comparable baseline, and there is no symbol to name.
+This is REP-06 again — the verdict is stated, never inferred, including from this array.
+ℹ️ Adding this field does not bump `formatVersion` (REP-04), and it introduces no absolute path,
+timestamp or machine name: `unitId` is machine-stable by ML-03, so REP-07 is unaffected.
 
 **REP-08 — A failed run writes no report.** ✅
 If the run fails, `<path>` SHALL NOT be written or modified. This matches BAS-06 — a failed run

@@ -1,13 +1,15 @@
 using System.Text.Json.Serialization;
+using Winterborn.Library.EasySemVer.Evaluation;
 
 namespace Winterborn.Library.EasySemVer.Reporting;
 
 /// <summary>
-/// The shape of the <c>--json</c> report (REP-02). Deliberately small: discovered units,
-/// individual findings and the written-file list were all weighed and left out, because they
-/// belong in the log and no consumer for them exists. REP-04 makes adding a field
-/// backwards-compatible, so this can grow into whatever a real consumer turns out to need -
-/// which is what makes starting minimal safe rather than short-sighted.
+/// The shape of the <c>--json</c> report (REP-02). Deliberately small: discovered units and the
+/// written-file list were weighed and left out, because they belong in the log and no consumer
+/// for them exists. REP-04 makes adding a field backwards-compatible, so this can grow into
+/// whatever a real consumer turns out to need - which is what makes starting minimal safe rather
+/// than short-sighted, and is exactly how <see cref="Findings"/> arrived later (REP-09) without
+/// a format version bump.
 /// <para>
 /// Property order is pinned rather than left to reflection, because REP-07 requires two runs over
 /// unchanged source to produce byte-identical output.
@@ -43,4 +45,13 @@ public class JsonReportDocument
     [JsonPropertyName("newVersion")]
     [JsonPropertyOrder(4)]
     public JsonReportVersion NewVersion { get; init; } = new();
+
+    /// <summary>
+    /// REP-09 - the evidence behind the verdict, in the order <see cref="ChangeReport"/> already
+    /// sorts it. Present and empty rather than absent when a run found nothing: an absent array
+    /// would make "no changes" and "an older writer" indistinguishable.
+    /// </summary>
+    [JsonPropertyName("findings")]
+    [JsonPropertyOrder(5)]
+    public IReadOnlyList<JsonReportFinding> Findings { get; init; } = [];
 }

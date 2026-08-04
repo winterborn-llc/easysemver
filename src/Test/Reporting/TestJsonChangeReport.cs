@@ -6,7 +6,7 @@ using Version = Winterborn.Library.EasySemVer.DataObject.Version;
 
 namespace Test.Reporting;
 
-/// <summary>REP-01…REP-08 - the machine-readable report's contract.</summary>
+/// <summary>REP-01…REP-09 - the machine-readable report's contract.</summary>
 public class TestJsonChangeReport
 {
     private static ChangeReport Report(params VersionType[] impacts)
@@ -42,14 +42,17 @@ public class TestJsonChangeReport
         var root = Render(Report(VersionType.Major));
 
         Assert.Equal(
-            ["formatVersion", "dryRun", "changeType", "oldVersion", "newVersion"],
+            ["formatVersion", "dryRun", "changeType", "oldVersion", "newVersion", "findings"],
             root.EnumerateObject().Select(p => p.Name));
     }
 
-    /// <summary>REP-05 - the fields that were weighed and deliberately left out stay out.</summary>
+    /// <summary>
+    /// REP-05 - the fields that were weighed and deliberately left out stay out. Findings were
+    /// among them until REP-09 gave them a consumer; discovered units and the written-file list
+    /// were not, and are still absent on the original grounds.
+    /// </summary>
     [Theory]
     [InlineData("units")]
-    [InlineData("findings")]
     [InlineData("written")]
     [InlineData("folderRoot")]
     public void TheOmittedFieldsAreAbsent(string name)
@@ -146,6 +149,111 @@ public class TestJsonChangeReport
                 new Version("2.3.4"), new Version("3.0.0"), isDryRun: false));
 
         Assert.Equal(first, second);
+    }
+
+    // --------------------------------------------------------------------------------------
+    // REP-09 - findings
+    // --------------------------------------------------------------------------------------
+
+    private static JsonElement OnlyFinding(ChangeReport report) =>
+        Render(report).GetProperty("findings").EnumerateArray().Single();
+
+    [Fact]
+    public void AFindingIsExactlyTheAgreedShape()
+    {
+        Assert.Equal(
+            ["ruleId", "impact", "language", "unitId", "symbol", "description"],
+            OnlyFinding(Report(VersionType.Major)).EnumerateObject().Select(p => p.Name));
+    }
+
+    /// <summary>
+    /// REP-09 - the rule id is the point of the array: it is what lets a consumer name the rule
+    /// that cost it a Major without matching on prose.
+    /// </summary>
+    [Fact]
+    public void AFindingCarriesItsRuleIdAndTheRestOfItsEvidence()
+    {
+        var finding = OnlyFinding(Report(VersionType.Major));
+
+        Assert.Equal("R18", finding.GetProperty("ruleId").GetString());
+        Assert.Equal("major", finding.GetProperty("impact").GetString());
+        Assert.Equal("Widgets", finding.GetProperty("unitId").GetString());
+        Assert.Equal("Widgets.Gone0", finding.GetProperty("symbol").GetString());
+        Assert.Equal("was removed", finding.GetProperty("description").GetString());
+    }
+
+    /// <summary>
+    /// REP-09 - the rule's class name is an implementation detail. A consumer keyed to it would
+    /// break on a rename that changed no behaviour, which is what the id exists to prevent.
+    /// </summary>
+    [Fact]
+    public void TheRuleClassNameIsNotPublished()
+    {
+        Assert.False(OnlyFinding(Report(VersionType.Major)).TryGetProperty("ruleName", out _));
+
+        Assert.DoesNotContain("TypeRemoved", JsonChangeReport.Render(
+            JsonChangeReport.Build(Report(VersionType.Major),
+                new Version("2.3.4"), new Version("3.0.0"), isDryRun: false)));
+    }
+
+    /// <summary>REP-02 - impact and language are lower case, like every enum-valued field.</summary>
+    [Theory]
+    [InlineData(Language.Csharp, "csharp")]
+    [InlineData(Language.Swift, "swift")]
+    public void ImpactAndLanguageAreLowerCase(Language language, string expected)
+    {
+        var report = new ChangeReport([
+            new ChangeFinding { Language = language, Impact = VersionType.Minor, UnitId = "U" }
+        ]);
+
+        var finding = OnlyFinding(report);
+        Assert.Equal(expected, finding.GetProperty("language").GetString());
+        Assert.Equal("minor", finding.GetProperty("impact").GetString());
+    }
+
+    /// <summary>
+    /// REP-09 - present and empty rather than absent, so that "no changes" and "an older writer"
+    /// are never the same observation.
+    /// </summary>
+    [Fact]
+    public void FindingsArePresentAndEmptyWhenNothingWasFound()
+    {
+        var findings = Render(Report()).GetProperty("findings");
+
+        Assert.Equal(JsonValueKind.Array, findings.ValueKind);
+        Assert.Empty(findings.EnumerateArray());
+    }
+
+    /// <summary>
+    /// REP-09 and REP-06 - CLS-04's fail-safe raises the floor when there is no comparable
+    /// baseline, and there is no symbol to name. A consumer inferring the verdict from an empty
+    /// array would get this exactly wrong, which is why the verdict is stated.
+    /// </summary>
+    [Fact]
+    public void AnEmptyArrayCanAccompanyAVerdictAbovePatch()
+    {
+        var root = Render(new ChangeReport([], VersionType.Major));
+
+        Assert.Empty(root.GetProperty("findings").EnumerateArray());
+        Assert.Equal("major", root.GetProperty("changeType").GetString());
+    }
+
+    /// <summary>
+    /// REP-07 - the array is in ChangeReport's sorted order, so the document is stable however
+    /// the rules happened to fire. Handed to the report backwards, it comes out sorted.
+    /// </summary>
+    [Fact]
+    public void FindingsKeepTheirDeterministicOrder()
+    {
+        var report = new ChangeReport([
+            new ChangeFinding { UnitId = "Widgets", Symbol = "Zeta", Impact = VersionType.Minor },
+            new ChangeFinding { UnitId = "Widgets", Symbol = "Alpha", Impact = VersionType.Minor }
+        ]);
+
+        Assert.Equal(
+            ["Alpha", "Zeta"],
+            Render(report).GetProperty("findings").EnumerateArray()
+                .Select(finding => finding.GetProperty("symbol").GetString()));
     }
 
     /// <summary>REP-07 - nothing machine-specific, so two machines agree.</summary>

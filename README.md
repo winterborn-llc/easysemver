@@ -19,12 +19,28 @@ without writing anything, and `--json <path>` to drop the verdict somewhere a sc
   "dryRun": false,
   "changeType": "major",
   "oldVersion": { "version": "2.3.4", "major": 2, "minor": 3, "patch": 4 },
-  "newVersion": { "version": "3.0.0", "major": 3, "minor": 0, "patch": 0 }
+  "newVersion": { "version": "3.0.0", "major": 3, "minor": 0, "patch": 0 },
+  "findings": [
+    {
+      "ruleId": "R02",
+      "impact": "major",
+      "language": "csharp",
+      "unitId": "Widgets",
+      "symbol": "Widgets.Widget.Spin()",
+      "description": "was removed"
+    }
+  ]
 }
 ```
 
 The report is always a file — never stdout — so the log stream stays exactly where it was. A run
 that fails leaves no report behind.
+
+Each finding carries the `ruleId` of the rule that fired, so a verdict can be audited by a script
+and not just read: that is the id from the rule tables in [specs/07](specs/07-change-classification.md)
+and [specs/12](specs/12-multi-language-swift-and-folder-model.md). Match on `ruleId`, never on
+`description` — the prose is for people. Take the verdict from `changeType` rather than from the
+array: a run with no comparable baseline reports no findings and still classifies above Patch.
 
 ## Installing
 
