@@ -53,11 +53,12 @@ folder-based, multi-language system that exists today.
 
 ## Verification snapshot
 
-Statuses were verified on **2026-08-02** on macOS with .NET SDK 10.0.100 and Swift 6.3.3:
+Statuses were verified on **2026-08-03** on macOS with .NET SDK 10.0.100 and Swift 6.3.3:
 
-- `dotnet build` — succeeds, one warning: `NU5129` (gap **G-04**).
-- `dotnet test` (unit project `Test`) — **464/464 pass**.
-- `dotnet test` (project `IntegrationTest`) — **10/10 pass**: 3 C#, 4 SwiftPM, 3 Xcode,
-  including `Regression.TestProgramInvocation`. G-01 is dead.
+- `dotnet build` — succeeds, **no warnings** (`NU5129` went with **G-04**'s withdrawal).
+- `dotnet test` (unit project `Test`) — **509/509 pass**.
+- `dotnet test` (project `IntegrationTest`) — **34/34 pass**: 6 `Regression`,
+  6 `JsonReportRegression`, 15 `ActionRegression`, 4 SwiftPM, 3 Xcode. G-01 is dead.
 - The Swift-traited integration tests shell out to `swift` and `xcodebuild`; skip them on a
-  machine without a toolchain with `dotnet test --filter Toolchain!=Swift`.
+  machine without a toolchain with `dotnet test --filter Toolchain!=Swift`. They dominate the
+  runtime — the suite is about 18 minutes with them and seconds without.

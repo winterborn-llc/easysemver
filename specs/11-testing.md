@@ -145,14 +145,19 @@ two dry runs produce byte-identical reports, and that a failed run leaves no rep
 `Experimental.cs` and its hard-coded `/Users/andrew/…` path are deleted, as are the
 `Test.csproj` content references to the non-existent `SampleCsProj.xml` / `TargetCsProj.xml`.
 
-**TST-06 — Verification snapshot (2026-08-02).** ℹ️
+**TST-06 — Verification snapshot (2026-08-03).** ℹ️
 .NET SDK 10.0.100, Swift 6.3.3, macOS:
 
 | Suite | Result |
 |-------|--------|
-| `dotnet build` | ✅ success — one warning, `NU5129` (PKG-05, gap G-04) |
-| `Test` (unit) | ✅ **502/502 passed** |
-| `IntegrationTest` | ✅ **18/18 passed** (3 C#, 5 JSON report, 4 SwiftPM, 3 Xcode, 3 others) |
+| `dotnet build` | ✅ success — **no warnings** (`NU5129` went with PKG-05) |
+| `Test` (unit) | ✅ **509/509 passed** |
+| `IntegrationTest` | ✅ **34/34 passed** (6 `Regression`, 6 `JsonReportRegression`, 15 `ActionRegression`, 4 SwiftPM, 3 Xcode) |
+
+ℹ️ `ActionRegression` (ACT-09) needs `bash`, `tar` and `jq`, which every GitHub-hosted runner has;
+it is traited `Toolchain=Bash` so a machine without them can exclude it the way the Swift tests are
+excluded. Filtering it out costs 15 tests, and the whole integration suite takes about 18 minutes
+because of the Swift ones — `--filter Toolchain!=Swift` runs the other 27 in seconds.
 
 ℹ️ The Swift-traited tests shell out to `swift` and `xcodebuild` and are therefore sensitive to
 machine load: on a box already saturated with another Swift build they will hit the five-minute
