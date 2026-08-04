@@ -7,7 +7,7 @@
     <FileVersion>15.3.3</FileVersion>
     <Title>EasySemVer by Winterborn</Title>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <RootNamespace>Winterborn.Library.EasySemVer</RootNamespace>
+    <RootNamespace>Winterborn.App.EasySemVer</RootNamespace>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageIcon>Resources/logo.png</PackageIcon>
     <PackageProjectUrl>https://github.com/winterborn-llc/easysemver</PackageProjectUrl>
@@ -20,9 +20,9 @@
     <PackAsTool>true</PackAsTool>
     <ToolCommandName>easysemver</ToolCommandName>
     <LangVersion>14</LangVersion>
-    <TargetFrameworks>net10.0;net8.0;net9.0</TargetFrameworks>
+    <TargetFrameworks>net10.0;net8.0</TargetFrameworks>
     <OutputType>Exe</OutputType>
-    <AssemblyName>Winterborn.Library.EasySemVer</AssemblyName>
+    <AssemblyName>Winterborn.App.EasySemVer</AssemblyName>
   </PropertyGroup>
   <ItemGroup>
     <None Include="..\..\README.md">
