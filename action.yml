@@ -1,0 +1,196 @@
+name: EasySemVer
+description: >-
+  Version a folder from what happened to its public API surface, and expose the verdict
+  (change type, old version, new version) as step outputs.
+author: Winterborn LLC
+
+branding:
+  icon: tag
+  color: blue
+
+inputs:
+  folder:
+    description: >-
+      The folder root to version. Relative paths resolve against the workspace, so the
+      default runs against the repository you checked out.
+    required: false
+    default: '.'
+
+  dry-run:
+    description: >-
+      'true' to classify and report the verdict without writing anything: no baseline, no
+      version stamped (CLI-07). Every non-dry run is a release and bumps by at least a patch,
+      so gate this action accordingly (INV-03).
+    required: false
+    default: 'false'
+
+  version:
+    description: >-
+      The EasySemVer release tag to run. Pinned deliberately rather than defaulting to the
+      latest release, so a workflow's behaviour cannot change under it without an edit.
+    required: false
+    default: v15.3.3
+
+  token:
+    description: >-
+      Token used to download the release archive. The default only suffices while
+      winterborn-llc/easysemver is public; against a private repository a caller must supply
+      a token that can read its releases.
+    required: false
+    default: ${{ github.token }}
+
+# The action reports the verdict; it does not act on it. Committing the bumped versions and
+# the baseline, tagging, and publishing are all outward-facing acts left to the calling
+# workflow, for the same reason the tool reads git tags but never writes one.
+outputs:
+  version:
+    description: The new version, e.g. '2.4.0'. On a dry run, the version that would be written.
+    value: ${{ steps.run.outputs.version }}
+
+  old-version:
+    description: The version the run started from, e.g. '2.3.4'.
+    value: ${{ steps.run.outputs.old-version }}
+
+  change-type:
+    description: >-
+      'major', 'minor' or 'patch'. The classification itself - do not re-derive it by
+      comparing the two versions, which is wrong across an overflow rollover (REP-06).
+    value: ${{ steps.run.outputs.change-type }}
+
+  dry-run:
+    description: >-
+      'true' if this run wrote nothing. Read from the report rather than echoed from the
+      input, so it describes what happened rather than what was asked for.
+    value: ${{ steps.run.outputs.dry-run }}
+
+  major:
+    description: First segment of the new version, as a number. For a '3' / '3.0' / '3.0.0' tag set.
+    value: ${{ steps.run.outputs.major }}
+
+  minor:
+    description: Second segment of the new version, as a number.
+    value: ${{ steps.run.outputs.minor }}
+
+  patch:
+    description: Third segment of the new version, as a number.
+    value: ${{ steps.run.outputs.patch }}
+
+  report:
+    description: >-
+      Path to the raw JSON report. Here so that a field added under REP-04 is readable
+      without this action having to grow an output for it first.
+    value: ${{ steps.run.outputs.report }}
+
+# INV-05. A composite action rather than Docker or JS: the deliverable is already a
+# self-contained native binary (PKG-02), so there is nothing for a container to add except a
+# pull, and nothing for a JS wrapper to add except a second language and a `dist/` bundle to
+# keep in sync. Composite also runs on every runner OS, which a Docker action does not.
+runs:
+  using: composite
+
+  steps:
+    # ------------------------------------------------------------------------------------
+    # Fetch the pinned release binary (PKG-02). `gh` is present on every GitHub-hosted
+    # runner and works whether the release is public or private, which plain curl does not.
+    # ------------------------------------------------------------------------------------
+    - name: Install EasySemVer
+      shell: bash
+      env:
+        # Inputs are passed through the environment, never interpolated into the script.
+        # `${{ inputs.x }}` inside a run block is substituted before bash ever sees it, so a
+        # caller passing a folder named `; rm -rf /` would be running it, not naming it.
+        EASYSEMVER_VERSION: ${{ inputs.version }}
+        GH_TOKEN: ${{ inputs.token }}
+      run: |
+        set -euo pipefail
+
+        case "$RUNNER_OS/$RUNNER_ARCH" in
+          Linux/X64)     rid=linux-x64   ; archive=tar.gz ; exe=      ;;
+          Linux/ARM64)   rid=linux-arm64 ; archive=tar.gz ; exe=      ;;
+          macOS/X64)     rid=osx-x64     ; archive=tar.gz ; exe=      ;;
+          macOS/ARM64)   rid=osx-arm64   ; archive=tar.gz ; exe=      ;;
+          Windows/X64)   rid=win-x64     ; archive=zip    ; exe=.exe  ;;
+          *)
+            # Named rather than guessed: silently falling back to x64 would produce a
+            # confusing exec-format error several steps later.
+            echo "::error::EasySemVer publishes no binary for $RUNNER_OS/$RUNNER_ARCH. Supported: linux-x64, linux-arm64, osx-x64, osx-arm64, win-x64." >&2
+            exit 1
+            ;;
+        esac
+
+        dir="$RUNNER_TEMP/easysemver"
+        mkdir -p "$dir"
+        asset="easysemver-$rid.$archive"
+
+        echo "Downloading $asset from EasySemVer $EASYSEMVER_VERSION"
+        gh release download "$EASYSEMVER_VERSION" \
+          --repo winterborn-llc/easysemver \
+          --pattern "$asset" \
+          --dir "$dir" \
+          --clobber
+
+        if [ "$RUNNER_OS" = "Windows" ]; then
+          powershell -NoProfile -NonInteractive -Command \
+            "Expand-Archive -Path '$dir/$asset' -DestinationPath '$dir' -Force"
+        else
+          tar -xzf "$dir/$asset" -C "$dir"
+        fi
+
+        # The publish output is named for the assembly, not for the `dotnet tool` command:
+        # `easysemver` only exists where PackAsTool created it. Rename once here so the rest
+        # of the action, and anything reading the log, sees the name the tool is known by.
+        mv "$dir/Winterborn.Library.EasySemVer$exe" "$dir/easysemver$exe"
+        chmod +x "$dir/easysemver$exe"
+        echo "$dir" >> "$GITHUB_PATH"
+
+    # ------------------------------------------------------------------------------------
+    # Run it. The verdict comes from --json (REP-01), never from scraping the log.
+    # ------------------------------------------------------------------------------------
+    - name: Run EasySemVer
+      id: run
+      shell: bash
+      env:
+        EASYSEMVER_FOLDER: ${{ inputs.folder }}
+        EASYSEMVER_DRY_RUN: ${{ inputs.dry-run }}
+      run: |
+        set -euo pipefail
+
+        report="$RUNNER_TEMP/easysemver/report.json"
+
+        # An unrecognised value is rejected rather than treated as false: a typo'd
+        # `dry-run: yes` that silently stamped versions and rewrote the baseline would be a
+        # bad way to find out about the typo.
+        case "$EASYSEMVER_DRY_RUN" in
+          true)  dry_run=--dry-run ;;
+          false) dry_run= ;;
+          *)
+            echo "::error::dry-run must be 'true' or 'false', got '$EASYSEMVER_DRY_RUN'." >&2
+            exit 1
+            ;;
+        esac
+
+        # Exit 1 fails this step and stops the action, which is the whole point of CLI-06:
+        # a versioning failure on a release build should be impossible to miss. REP-08 means
+        # no report exists to read in that case, so nothing below runs on a half-truth.
+        #
+        # $dry_run is deliberately unquoted, so that empty expands to no argument at all
+        # rather than to an empty one. It holds a literal set just above and never anything
+        # a caller supplied, which is what makes that safe. The array form this replaces
+        # tripped `set -u` on bash 3.2 - still what a macOS runner's /bin/bash is.
+        # shellcheck disable=SC2086
+        easysemver "$EASYSEMVER_FOLDER" $dry_run --json "$report"
+
+        # `changeType` is read, never derived from the two versions: VER-05's overflow
+        # rollover makes that inference wrong in both directions (REP-06).
+        {
+          echo "report=$report"
+          jq -r '
+            "change-type=" + .changeType,
+            "dry-run="     + (.dryRun | tostring),
+            "old-version=" + .oldVersion.version,
+            "version="     + .newVersion.version,
+            "major="       + (.newVersion.major | tostring),
+            "minor="       + (.newVersion.minor | tostring),
+            "patch="       + (.newVersion.patch | tostring)
+          ' "$report"
+        } >> "$GITHUB_OUTPUT"
