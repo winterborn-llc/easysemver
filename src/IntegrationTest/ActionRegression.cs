@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Runtime.InteropServices;
+using System.Text.RegularExpressions;
 using YamlDotNet.Serialization;
 using Xunit;
 
@@ -266,6 +267,25 @@ public class ActionRegression : IDisposable
 
         Assert.StartsWith("v", version);
         Assert.DoesNotContain("latest", version);
+    }
+
+    /// <summary>
+    /// ACT-02 - the pinned default and every <c>uses:</c> in the README name the same release.
+    /// They have to move together when a tag is cut, and a README example naming a tag with no
+    /// release behind it is a copy-paste that fails in someone else's workflow, not in ours.
+    /// </summary>
+    [Fact]
+    public void TheReadmeExamplesNameThePinnedRelease()
+    {
+        var readme = File.ReadAllText(Path.Combine(RepositoryRoot, "README.md"));
+
+        var referenced = Regex.Matches(readme, @"winterborn-llc/easysemver@(\S+)")
+            .Select(match => match.Groups[1].Value)
+            .Distinct()
+            .ToList();
+
+        Assert.NotEmpty(referenced);
+        Assert.All(referenced, reference => Assert.Equal(Setting("version", "default"), reference));
     }
 
     // ----------------------------------------------------------------------------------------
