@@ -48,12 +48,32 @@ jobs:
         NUGET_AUTH_TOKEN: ${{ secrets.NUGET_TOKEN }}
       run: dotnet nuget push ./src/${{ env.project }}/bin/${{ env.configuration }}/*.nupkg -k ${{ env.NUGET_AUTH_TOKEN }} -s https://api.nuget.org/v3/index.json --skip-duplicate
 
+  # Pushing a tag creates a tag, not a Release, and `gh release upload` needs one to exist. This
+  # is its own job rather than a step in the matrix below, so that five parallel jobs cannot race
+  # to create the same release, and it is idempotent so that re-running the workflow - which is
+  # what you do when one of the five publishes fails - does not fall over on the second attempt.
+  create-release:
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+    - name: Create the release for ${{ github.ref_name }}
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: >
+        gh release view "${GITHUB_REF_NAME}" --repo "${GITHUB_REPOSITORY}" > /dev/null 2>&1 ||
+        gh release create "${GITHUB_REF_NAME}" --repo "${GITHUB_REPOSITORY}"
+        --generate-notes --verify-tag
+
   # PKG-02: self-contained binaries, so a repository with no .NET in it - a Swift-only one, say -
   # can still be versioned. Runtime packs are downloadable for every target, so one Linux runner
   # cross-publishes all of them.
   release:
     if: startsWith(github.ref, 'refs/tags/v')
-    needs: build
+    needs: create-release
     runs-on: ubuntu-latest
     permissions:
       contents: write
