@@ -71,6 +71,15 @@ public class ActionRegression : IDisposable
     private static Dictionary<object, object> Section(Dictionary<object, object> node, string key) =>
         (Dictionary<object, object>)node[key];
 
+    /// <summary>
+    /// The name a self-contained publish gives the executable, read from the project rather than
+    /// restated, because the Action has to reach for that exact filename inside the archive.
+    /// </summary>
+    private static string AssemblyName =>
+        Regex.Match(
+            File.ReadAllText(Path.Combine(RepositoryRoot, "src", "EasySemVer", "EasySemVer.csproj")),
+            @"<AssemblyName>(.+?)</AssemblyName>").Groups[1].Value;
+
     /// <summary>One named input's scalar setting, e.g. the <c>default</c> of <c>folder</c>.</summary>
     private static string Setting(string input, string key) =>
         (string)Section(Section(Action, "inputs"), input)[key];
@@ -125,15 +134,15 @@ public class ActionRegression : IDisposable
     private void StubTheRelease(string rid)
     {
         var staging = Directory.CreateDirectory(Path.Combine(this._temp, "staging")).FullName;
-        var toolPath = Path.Combine(AppContext.BaseDirectory, "Winterborn.Library.EasySemVer");
+        var toolPath = Path.Combine(AppContext.BaseDirectory, AssemblyName);
 
-        var published = Path.Combine(staging, "Winterborn.Library.EasySemVer");
+        var published = Path.Combine(staging, AssemblyName);
         File.WriteAllText(published, $"#!/bin/bash\nexec \"{toolPath}\" \"$@\"\n");
         Process.Start("chmod", ["+x", published])!.WaitForExit();
 
         var archive = $"easysemver-{rid}.tar.gz";
         Process.Start(new ProcessStartInfo("tar",
-            ["-czf", Path.Combine(staging, archive), "-C", staging, "Winterborn.Library.EasySemVer"]))!
+            ["-czf", Path.Combine(staging, archive), "-C", staging, AssemblyName]))!
             .WaitForExit();
 
         // `gh release download --dir X` is the only thing the install step needs from the network.
@@ -234,6 +243,18 @@ public class ActionRegression : IDisposable
 
             Assert.Equal($"${{{{ steps.run.outputs.{name} }}}}", value);
         }
+    }
+
+    /// <summary>
+    /// ACT-02 - the Action reaches into the archive for one exact filename, and that name is the
+    /// project's <c>AssemblyName</c>. Renaming the assembly without editing the Action produces
+    /// the nastiest failure this thing has: the download succeeds, the archive unpacks, and then
+    /// there is nothing there to run. It has happened once already.
+    /// </summary>
+    [Fact]
+    public void TheActionUnpacksTheNameTheProjectActuallyPublishes()
+    {
+        Assert.Contains($"/{AssemblyName}$exe", Script(0));
     }
 
     /// <summary>ACT-01 - composite, and every step names the shell it runs under.</summary>
@@ -483,7 +504,7 @@ public class ActionRegression : IDisposable
     [Fact]
     public void RenamingThePublishedBinaryDoesNotBreakIt()
     {
-        var apphost = Path.Combine(AppContext.BaseDirectory, "Winterborn.Library.EasySemVer");
+        var apphost = Path.Combine(AppContext.BaseDirectory, AssemblyName);
         Assert.True(File.Exists(apphost), $"No apphost at {apphost}");
 
         // Beside the original, so the assembly and its dependencies resolve exactly as they do

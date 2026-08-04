@@ -139,7 +139,11 @@ runs:
         # The publish output is named for the assembly, not for the `dotnet tool` command:
         # `easysemver` only exists where PackAsTool created it. Rename once here so the rest
         # of the action, and anything reading the log, sees the name the tool is known by.
-        mv "$dir/Winterborn.Library.EasySemVer$exe" "$dir/easysemver$exe"
+        #
+        # This name must track EasySemVer.csproj's AssemblyName. ActionRegression asserts that
+        # it does, because when the two drifted apart the failure landed here - in a download
+        # that unpacked fine and then had nothing to run.
+        mv "$dir/Winterborn.App.EasySemVer$exe" "$dir/easysemver$exe"
         chmod +x "$dir/easysemver$exe"
         echo "$dir" >> "$GITHUB_PATH"
 
