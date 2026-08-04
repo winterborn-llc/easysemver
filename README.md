@@ -158,6 +158,57 @@ Conditioning on `Release` keeps day-to-day builds from bumping versions and caus
 conflicts in the baseline. Timing does not otherwise matter: signatures are read from **source**,
 not from compiled assemblies, so the run works equally well before or after the build.
 
+## As a GitHub Action
+
+```yaml
+- uses: actions/checkout@v4
+
+- id: version
+  uses: winterborn-llc/easysemver@v15.3.3
+
+- run: echo "${{ steps.version.outputs.change-type }} → ${{ steps.version.outputs.version }}"
+```
+
+It downloads the standalone binary for the runner's platform, so nothing needs .NET installed.
+
+| Input | Default | |
+|-------|---------|-|
+| `folder` | `.` | The folder root, relative to the workspace |
+| `dry-run` | `false` | `true` classifies and reports without writing anything |
+| `version` | pinned | Which EasySemVer release to run |
+| `token` | `${{ github.token }}` | Only needs overriding if this repository is private to you |
+
+| Output | Example |
+|--------|---------|
+| `version` | `2.4.0` |
+| `old-version` | `2.3.4` |
+| `change-type` | `major`, `minor` or `patch` |
+| `dry-run` | `true` if the run wrote nothing |
+| `major` / `minor` / `patch` | `2` / `4` / `0`, for a `2` / `2.4` / `2.4.0` tag set |
+| `report` | Path to the raw JSON, for anything the outputs above don't cover |
+
+Read `change-type` rather than comparing the two versions: across an overflow rollover a Patch
+bump can look like a Minor one, so the comparison is wrong in a way that is very hard to spot.
+
+The Action **does not commit, tag, or publish**. It hands you the verdict and stops — pushing a
+version bump to someone's repository on their behalf is not a decision a version calculator gets
+to make. If you want the bump committed, the calling workflow does it:
+
+```yaml
+- id: version
+  uses: winterborn-llc/easysemver@v15.3.3
+
+- run: |
+    git config user.name  "github-actions[bot]"
+    git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+    git commit -am "Version ${{ steps.version.outputs.version }}"
+    git push
+```
+
+A run that fails exits 1 and fails the step, and publishes no outputs at all — the verdict is
+never encoded in the exit code, because "this change is Major" would then be indistinguishable
+from the tool falling over.
+
 ## Seeding versions
 
 EasySemVer only updates version properties that already exist. Add seed values to whichever ones
