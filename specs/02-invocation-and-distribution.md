@@ -151,7 +151,75 @@ Signatures are extracted from **source**, never from compiled assemblies, so it 
 whether EasySemVer runs before or after a build. The increment is relative to the persisted
 baseline, not to build artifacts.
 
-**INV-05 — GitHub Action.** ⚠️ *planned, not implemented*
-The intended third surface is a GitHub Action wrapping the CLI. Nothing of it exists yet, but the
-capability it depends on now does: REP-01…REP-08 give it a machine-readable verdict to turn into
-step outputs, so no workflow ever has to scrape a log.
+**INV-05 — GitHub Action.** ✅ *(was planned; specified as ACT-01…ACT-09 below)*
+The third surface is a GitHub Action wrapping the CLI, at [`action.yml`](../action.yml). It is
+built on REP-01…REP-08: the machine-readable verdict is what it turns into step outputs, so no
+workflow ever has to scrape a log.
+
+## The GitHub Action
+
+**ACT-01 — A composite action at the repository root.** ✅
+`action.yml` SHALL sit at the repository root, so that `uses: winterborn-llc/easysemver@<ref>`
+resolves it with no subdirectory. It SHALL be a **composite** action. The deliverable is already a
+self-contained native binary (PKG-02), so a Docker action would add an image pull and a JS action
+would add a second language plus a committed `dist/` bundle to keep in sync with source — neither
+buys anything here. Composite also runs on every runner OS, which a Docker action does not.
+
+**ACT-02 — It runs the published binary, at a pinned version.** ✅
+The Action SHALL obtain the tool by downloading the PKG-02 release archive for the runner's
+platform, for the tag named by the `version` input. That input SHALL default to a specific tag and
+SHALL NOT track the latest release: a workflow that silently changed behaviour when this repository
+cut a release would make every consumer's build non-reproducible.
+ℹ️ This is the reason the Action could not exist before a release did — the dependency runs from
+the Action to the release, and it cannot be satisfied retroactively.
+
+**ACT-03 — Platform coverage is exactly PKG-02's.** ✅
+The Action SHALL resolve `linux-x64`, `linux-arm64`, `osx-x64`, `osx-arm64` and `win-x64` from the
+runner's reported OS and architecture, and SHALL fail by name on any other combination. Guessing a
+default would surface as an exec-format error several steps later, in a place that does not name
+the cause.
+
+**ACT-04 — Inputs.** ✅
+`folder` (default `.`), `dry-run` (default `false`), `version`, and `token`. `dry-run` SHALL accept
+only `true` or `false` and SHALL fail on anything else rather than treating it as false: a typo'd
+`dry-run: yes` that silently stamped versions and rewrote the baseline would be a bad way to find
+out about the typo.
+
+**ACT-05 — Outputs come from the report, never from the log.** ✅
+The Action SHALL publish `version`, `old-version`, `change-type` and `dry-run`, read from the
+`--json` document (REP-01). It also publishes `major`, `minor` and `patch` — the decomposition
+REP-02 exists to serve — and `report`, the path to the document itself, so that a field added later
+under REP-04 is readable without the Action having to grow an output for it first. `change-type`
+SHALL be read, never derived by comparing the two versions (REP-06). `dry-run` SHALL be read from
+the report rather than echoed from the input, so that it describes what happened.
+
+**ACT-06 — The Action reports the verdict and does not act on it.** ✅
+It SHALL NOT commit the bumped versions or the baseline, create a tag, or publish anything. Those
+are outward-facing acts belonging to the calling workflow, for the same reason the tool reads git
+tags but never writes one (VER-*, README). What the Action owes its caller is a trustworthy
+verdict; what the caller does with it is a policy the caller owns.
+
+**ACT-07 — A failed run fails the step, with nothing published.** ✅
+Exit 1 (CLI-06) SHALL fail the step and stop the Action. No outputs are published, and REP-08
+guarantees there is no report to read in that case, so no consumer ever sees a half-truth. The
+verdict is deliberately **not** encoded in the exit code: a non-zero exit fails a workflow step, so
+signalling "this change is Major" that way would be indistinguishable from the tool falling over.
+
+**ACT-08 — Inputs reach the shell through the environment.** ✅
+Input values SHALL NOT be interpolated into a `run:` block with `${{ }}`, which substitutes before
+bash parses the script and would run a folder named `; rm -rf /` rather than name it. They are
+passed as environment variables and quoted at the point of use.
+
+**ACT-09 — What the Action's tests do and do not cover.** ℹ️
+A GitHub Action cannot be run locally, so
+[`ActionRegression`](../src/IntegrationTest/ActionRegression.cs) tests the parts that are testable:
+it parses `action.yml`, asserts the wiring (ACT-01, ACT-05), checks the platform table against the
+release job's own matrix so the two cannot drift (ACT-03), and executes the `run:` scripts
+extracted from the file itself against a real tool with only the release download stubbed
+(ACT-04, ACT-07). What that leaves untested is everything owned by the runner: the real download,
+`gh`'s authentication, `$GITHUB_OUTPUT` actually becoming step outputs, and the Windows and
+cross-architecture paths — the harness runs one platform, the host's. Those are covered only by
+running the Action for real.
+ℹ️ The harness earns its keep: it caught an empty-bash-array expansion that tripped `set -u` under
+bash 3.2, which is what a macOS runner's `/bin/bash` still is. An Ubuntu-only smoke test would
+have passed straight over it.

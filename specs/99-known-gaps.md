@@ -39,8 +39,8 @@ never reused.
 
 All three were defects in one mechanism: consuming EasySemVer as a `PackageReference` that hooks
 itself into a consuming build. On 2026-08-02 that mechanism was withdrawn — EasySemVer is a CLI,
-distributed as a `dotnet tool` and as self-contained binaries, with a GitHub Action planned
-(**INV-01**, **PKG-01/PKG-02**). A tool whose unit of work is *a folder* does not belong bolted
+distributed as a `dotnet tool`, as self-contained binaries, and as a GitHub Action
+(**INV-01**, **PKG-01/PKG-02**, **ACT-01…ACT-09**). A tool whose unit of work is *a folder* does not belong bolted
 to one arbitrary project inside it.
 
 Deleting `Winterborn.EasySemVer.targets` also removed the `NU5129` warning, so the build is now

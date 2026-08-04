@@ -26,7 +26,7 @@ whenever the cost of the rename is judged worth paying.
 CI SHALL publish self-contained, framework-independent binaries for `linux-x64`, `linux-arm64`,
 `osx-x64`, `osx-arm64` and `win-x64`, attached to the GitHub Release for a `v*` tag. This is the
 channel that matters for a repository with no .NET in it at all — a Swift-only one, most
-obviously — and for the planned GitHub Action (INV-05).
+obviously — and it is what the GitHub Action installs (ACT-02).
 ℹ️ Roslyn plus a bundled runtime makes each archive roughly **36 MB** compressed, ~99 MB expanded.
 ℹ️ The binaries are unsigned; macOS Gatekeeper will quarantine a downloaded one until it is
 cleared. Signing is not currently done.
