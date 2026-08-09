@@ -600,6 +600,7 @@
                </Methods>
                <Properties>
                   <Property name="DisplayName" type="string" readable="true" writable="true" initOnly="true" static="false" required="false" hasDefaultImplementation="false" />
+                  <Property name="HasPublicApiSurface" type="bool" readable="true" writable="true" initOnly="true" static="false" required="false" hasDefaultImplementation="false" />
                   <Property name="Language" type="Winterborn.Tools.EasySemVer.DataObject.Language" readable="true" writable="true" initOnly="true" static="false" required="false" hasDefaultImplementation="false" />
                   <Property name="RelativePath" type="string" readable="true" writable="true" initOnly="true" static="false" required="false" hasDefaultImplementation="false" />
                   <Property name="Signature" type="object" readable="true" writable="true" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
@@ -4352,6 +4353,7 @@
                <Methods />
                <Properties>
                   <Property name="DisplayName" type="string" readable="true" writable="false" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
+                  <Property name="HasPublicApiSurface" type="bool" readable="true" writable="false" initOnly="false" static="false" required="false" hasDefaultImplementation="true" />
                   <Property name="Language" type="Winterborn.Tools.EasySemVer.DataObject.Language" readable="true" writable="false" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
                   <Property name="RelativePath" type="string" readable="true" writable="false" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
                   <Property name="Signature" type="object" readable="true" writable="true" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
@@ -9387,6 +9389,30 @@
                         </Override>
                      </Overrides>
                   </Method>
+                  <Method name="ALegacyBaselineEntryForASurfacelessUnitIsNotARemoval" returns="void">
+                     <Overrides>
+                        <Override returns="void" static="false" virtual="false" abstract="false" override="false" sealed="false" hasDefaultImplementation="false">
+                           <GenericParameters />
+                           <Parameters />
+                        </Override>
+                     </Overrides>
+                  </Method>
+                  <Method name="AUnitWithNoApiSurfaceIsNotCompared" returns="void">
+                     <Overrides>
+                        <Override returns="void" static="false" virtual="false" abstract="false" override="false" sealed="false" hasDefaultImplementation="false">
+                           <GenericParameters />
+                           <Parameters />
+                        </Override>
+                     </Overrides>
+                  </Method>
+                  <Method name="AddingAUnitWithNoApiSurfaceIsNotAnAddition" returns="void">
+                     <Overrides>
+                        <Override returns="void" static="false" virtual="false" abstract="false" override="false" sealed="false" hasDefaultImplementation="false">
+                           <GenericParameters />
+                           <Parameters />
+                        </Override>
+                     </Overrides>
+                  </Method>
                   <Method name="FindingsAreOrderedByUnitThenSymbol" returns="void">
                      <Overrides>
                         <Override returns="void" static="false" virtual="false" abstract="false" override="false" sealed="false" hasDefaultImplementation="false">
@@ -9420,6 +9446,14 @@
                      </Overrides>
                   </Method>
                   <Method name="OnlyAddingAUnitIsMinor" returns="void">
+                     <Overrides>
+                        <Override returns="void" static="false" virtual="false" abstract="false" override="false" sealed="false" hasDefaultImplementation="false">
+                           <GenericParameters />
+                           <Parameters />
+                        </Override>
+                     </Overrides>
+                  </Method>
+                  <Method name="RealChangesAreStillClassifiedAlongsideASurfacelessUnit" returns="void">
                      <Overrides>
                         <Override returns="void" static="false" virtual="false" abstract="false" override="false" sealed="false" hasDefaultImplementation="false">
                            <GenericParameters />
@@ -9559,6 +9593,14 @@
                <GenericParameters />
                <Methods>
                   <Method name=".ctor" returns="void">
+                     <Overrides>
+                        <Override returns="void" static="false" virtual="false" abstract="false" override="false" sealed="false" hasDefaultImplementation="false">
+                           <GenericParameters />
+                           <Parameters />
+                        </Override>
+                     </Overrides>
+                  </Method>
+                  <Method name="AUnitWithNoApiSurfaceIsNotWritten" returns="void">
                      <Overrides>
                         <Override returns="void" static="false" virtual="false" abstract="false" override="false" sealed="false" hasDefaultImplementation="false">
                            <GenericParameters />
@@ -10563,6 +10605,91 @@
                      </Overrides>
                   </Method>
                   <Method name="KeywordAliasedFrameworkTypesAreNotRecorded" returns="void">
+                     <Overrides>
+                        <Override returns="void" static="false" virtual="false" abstract="false" override="false" sealed="false" hasDefaultImplementation="false">
+                           <GenericParameters />
+                           <Parameters />
+                        </Override>
+                     </Overrides>
+                  </Method>
+               </Methods>
+               <Properties />
+               <Fields />
+               <Events />
+            </Class>
+            <Class name="Test.TestDetectingTestProjects" declaringType="" static="false" abstract="false" sealed="false" base="">
+               <Implements />
+               <GenericParameters />
+               <Methods>
+                  <Method name=".ctor" returns="void">
+                     <Overrides>
+                        <Override returns="void" static="false" virtual="false" abstract="false" override="false" sealed="false" hasDefaultImplementation="false">
+                           <GenericParameters />
+                           <Parameters />
+                        </Override>
+                     </Overrides>
+                  </Method>
+                  <Method name="ALegacyNamespacedProjectIsStillRead" returns="void">
+                     <Overrides>
+                        <Override returns="void" static="false" virtual="false" abstract="false" override="false" sealed="false" hasDefaultImplementation="false">
+                           <GenericParameters />
+                           <Parameters />
+                        </Override>
+                     </Overrides>
+                  </Method>
+                  <Method name="AnExplicitPropertyWinsOverTheReferences" returns="void">
+                     <Overrides>
+                        <Override returns="void" static="false" virtual="false" abstract="false" override="false" sealed="false" hasDefaultImplementation="false">
+                           <GenericParameters />
+                           <Parameters />
+                        </Override>
+                     </Overrides>
+                  </Method>
+                  <Method name="AnOrdinaryLibraryIsNotATestProject" returns="void">
+                     <Overrides>
+                        <Override returns="void" static="false" virtual="false" abstract="false" override="false" sealed="false" hasDefaultImplementation="false">
+                           <GenericParameters />
+                           <Parameters />
+                        </Override>
+                     </Overrides>
+                  </Method>
+                  <Method name="AnUnparseablePropertyFallsBackToTheReferences" returns="void">
+                     <Overrides>
+                        <Override returns="void" static="false" virtual="false" abstract="false" override="false" sealed="false" hasDefaultImplementation="false">
+                           <GenericParameters />
+                           <Parameters />
+                        </Override>
+                     </Overrides>
+                  </Method>
+                  <Method name="AnUnreadableProjectIsNotATestProject" returns="void">
+                     <Overrides>
+                        <Override returns="void" static="false" virtual="false" abstract="false" override="false" sealed="false" hasDefaultImplementation="false">
+                           <GenericParameters />
+                           <Parameters>
+                              <Parameter name="projectXml" type="string" required="true" refKind="None" params="false" />
+                           </Parameters>
+                        </Override>
+                     </Overrides>
+                  </Method>
+                  <Method name="EachTestFrameworkIsRecognised" returns="void">
+                     <Overrides>
+                        <Override returns="void" static="false" virtual="false" abstract="false" override="false" sealed="false" hasDefaultImplementation="false">
+                           <GenericParameters />
+                           <Parameters>
+                              <Parameter name="package" type="string" required="true" refKind="None" params="false" />
+                           </Parameters>
+                        </Override>
+                     </Overrides>
+                  </Method>
+                  <Method name="TheProjectNameIsNeverConsulted" returns="void">
+                     <Overrides>
+                        <Override returns="void" static="false" virtual="false" abstract="false" override="false" sealed="false" hasDefaultImplementation="false">
+                           <GenericParameters />
+                           <Parameters />
+                        </Override>
+                     </Overrides>
+                  </Method>
+                  <Method name="TheTestSdkReferenceMakesItATestProject" returns="void">
                      <Overrides>
                         <Override returns="void" static="false" virtual="false" abstract="false" override="false" sealed="false" hasDefaultImplementation="false">
                            <GenericParameters />
