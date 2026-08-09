@@ -36,13 +36,14 @@ public interface IPackageableUnit
 
     /// <summary>
     /// UNI-04 - false for a unit that is versioned but whose public members are not a contract
-    /// anyone can depend on: a test project, most obviously. Such a unit still has its versions
-    /// read and written like any other, and is simply absent from signature extraction, from
+    /// anyone can depend on: test code, most obviously. Such a unit still has its versions read
+    /// and written like any other, and is simply absent from signature extraction, from
     /// classification and from the baseline.
     /// <para>
-    /// Defaulted to true rather than declared, so that adding it does not break an implementer -
-    /// and so that a unit kind nobody has thought about yet keeps the behaviour it has today.
+    /// Settable for the same reason <see cref="Signature"/> is: the core fills it in after
+    /// discovery from the owning provider's answer (<c>ILanguageProvider.IsTestCode</c>), so that
+    /// one neutral place applies the rule and every language is asked the same question.
     /// </para>
     /// </summary>
-    public bool HasPublicApiSurface => true;
+    public bool HasPublicApiSurface { get; set; }
 }

@@ -99,6 +99,15 @@ internal static class VersioningRun
         foreach (var provider in providers)
         {
             var found = provider.Discover(folderRoot);
+
+            // UNI-04. Asked here rather than left to each Discover, so that the rule is applied
+            // once, in one neutral place, and a provider cannot quietly not have an answer. What
+            // counts as test code is entirely the provider's to decide; what happens next is not.
+            foreach (var unit in found)
+            {
+                unit.HasPublicApiSurface = !provider.IsTestCode(unit);
+            }
+
             Log.WriteLine($"{provider.Language}: {found.Count} units");
             units.AddRange(found);
         }

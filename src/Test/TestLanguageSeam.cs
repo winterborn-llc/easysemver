@@ -84,6 +84,34 @@ public class TestLanguageSeam
     }
 
     /// <summary>
+    /// UNI-04 - every language answers the test-code question for itself, and none inherits the
+    /// interface's default.
+    /// <para>
+    /// The default exists so that adding the member broke no implementer, and so that an unfamiliar
+    /// language behaves as it did before the question was asked. That makes forgetting it silent:
+    /// the run stays green and a language's test code quietly keeps a vote on the version. This is
+    /// the only thing that would say so, which is why it reads the declaration rather than calling
+    /// the method - an override that happens to return false for the fixture at hand still counts
+    /// as having thought about it.
+    /// </para>
+    /// </summary>
+    [Fact]
+    public void EveryProviderDecidesForItselfWhatIsTestCode()
+    {
+        foreach (var provider in LanguageProviders.Create(new ProcessRunner()))
+        {
+            var declared = provider.GetType().GetMethod(
+                nameof(ILanguageProvider.IsTestCode),
+                [typeof(IPackageableUnit)]);
+
+            Assert.True(
+                declared?.DeclaringType == provider.GetType(),
+                $"{provider.Language} inherits ILanguageProvider.IsTestCode's default. Its test "
+                + "code will be compared like production code and vote on the version (UNI-04).");
+        }
+    }
+
+    /// <summary>
     /// The neutral core reaches a signature only as <see cref="object"/>: if it could see the
     /// concrete type it would eventually be tempted to look inside it (ML-01).
     /// </summary>

@@ -188,11 +188,12 @@ v16.1.2. Every consumer with a test project inside the versioned folder had the 
 fires on the most ordinary act there is — renaming a test.
 
 Fixed by separating "versioned" from "has an API surface": a test project is still discovered, still
-seeds the version and still gets the new one written into it, and is simply not compared. C# test
-projects are identified from MSBuild's own signals; Swift test targets are **not** covered yet and
-are named as open in UNI-03 rather than implied to be done.
+seeds the version and still gets the new one written into it, and is simply not compared. Which
+code is test code is answered per language, through `ILanguageProvider.IsTestCode` — C# from the
+`.csproj`, SwiftPM from `dump-package`, Xcode from the project file's product types — so the fix is
+the seam's, not C#'s, and a language added later cannot inherit the defect by omission.
 ℹ️ v17.0.0 is not a mistake to be undone — the release is real and immutable, and the major line is
 where the tool now lives. What is fixed is that the *next* one will not happen the same way.
 ℹ️ The versions of test projects are deliberately still written. They are assemblies that ship in
 a build output and get stamped like anything else; what changed is only whose changes get a vote.
-*Satisfies:* UNI-04. *Relates to:* UNI-02, UNI-03, NCL-03, BAS-01, R02.
+*Satisfies:* UNI-04. *Relates to:* ML-02, UNI-02, UNI-03, NCL-03, BAS-01, R02.

@@ -176,4 +176,87 @@ public class TestXcodeVersionSources : IDisposable
 
         Assert.Equal(["Widgets", "WidgetsTests"], SwiftPackageManifest.ReadTargetNames(manifest));
     }
+
+    /// <summary>
+    /// UNI-04 - a test target is still a unit, so it keeps its versions; what it loses is a vote on
+    /// the folder's API. The manifest states the kind, so no name matching is involved: `Scenarios`
+    /// below is a test target and `WidgetsTests` is not.
+    /// </summary>
+    [Fact]
+    public void SwiftPackageTestTargetsAreIdentifiedByKindNotByName()
+    {
+        const string manifest = """
+            {
+              "targets" : [
+                { "name" : "Widgets", "type" : "regular" },
+                { "name" : "WidgetsTests", "type" : "regular" },
+                { "name" : "Scenarios", "type" : "test" },
+                { "name" : "Prebuilt", "type" : "binary" }
+              ]
+            }
+            """;
+
+        Assert.Equal(["Scenarios"], SwiftPackageManifest.ReadTestTargetNames(manifest));
+
+        // ...and all three source targets are still units.
+        Assert.Equal(
+            ["Scenarios", "Widgets", "WidgetsTests"],
+            SwiftPackageManifest.ReadTargetNames(manifest));
+    }
+
+    /// <summary>
+    /// UNI-04 - the Xcode half. `xcodebuild -list` reports names only, so the product type comes
+    /// from the project file, where unit-test and UI-test bundles both name themselves.
+    /// </summary>
+    [Fact]
+    public void XcodeTestTargetsAreReadFromTheProjectFile()
+    {
+        const string pbxproj = """
+            // !$*UTF8*$!
+            {
+               objects = {
+                  AAA1 /* App */ = {
+                     isa = PBXNativeTarget;
+                     buildPhases = (
+                        BBB1 /* Sources */,
+                     );
+                     name = App;
+                     productType = "com.apple.product-type.application";
+                  };
+                  AAA2 /* My App Tests */ = {
+                     isa = PBXNativeTarget;
+                     name = "My App Tests";
+                     productType = "com.apple.product-type.bundle.unit-test";
+                  };
+                  AAA3 /* AppUITests */ = {
+                     isa = PBXNativeTarget;
+                     name = AppUITests;
+                     productType = "com.apple.product-type.bundle.ui-testing";
+                  };
+                  CCC1 /* Debug */ = {
+                     isa = XCBuildConfiguration;
+                     name = Debug;
+                  };
+               };
+            }
+            """;
+
+        Assert.Equal(
+            ["AppUITests", "My App Tests"],
+            XcodeTestTarget.ReadTestTargetNames(pbxproj));
+    }
+
+    /// <summary>
+    /// A project with no test bundle in it, and one this cannot make sense of at all, both yield
+    /// nothing rather than failing: discovery has already succeeded via xcodebuild by this point,
+    /// and the worst case is a test target keeping a vote it should not have.
+    /// </summary>
+    [Theory]
+    [InlineData("")]
+    [InlineData("{ objects = { }; }")]
+    [InlineData("nothing that resembles a project file")]
+    public void AProjectWithNoTestTargetsYieldsNone(string pbxproj)
+    {
+        Assert.Empty(XcodeTestTarget.ReadTestTargetNames(pbxproj));
+    }
 }

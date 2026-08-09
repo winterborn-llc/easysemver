@@ -32,11 +32,30 @@ internal class SwiftLanguageProvider(IRunProcess runProcess) : ILanguageProvider
     /// </summary>
     private readonly Dictionary<string, Dictionary<string, SwiftModule>> _modulesByPackage = [];
 
+    /// <summary>
+    /// UNI-04. Collected while discovery is already reading the manifests and project files, and
+    /// keyed by ML-03 unit id so that two packages with a target of the same name stay distinct.
+    /// Re-deriving it per unit would mean another `swift package dump-package` each time, which is
+    /// a compile.
+    /// </summary>
+    private readonly HashSet<string> _testUnitIds = [];
+
     public Language Language => Language.Swift;
+
+    /// <summary>
+    /// UNI-04 - answered from what discovery read. A target that was never discovered is not test
+    /// code as far as this provider knows, which is the same answer it gave before the question
+    /// existed.
+    /// </summary>
+    public bool IsTestCode(IPackageableUnit unit)
+    {
+        return this._testUnitIds.Contains(unit.UnitId);
+    }
 
     public IReadOnlyList<IPackageableUnit> Discover(string folderRoot)
     {
         this._folderRoot = folderRoot;
+        this._testUnitIds.Clear();
         var units = new List<IPackageableUnit>();
         this.DiscoverXcodeProjects(folderRoot, units);
         foreach (var manifestPath in FolderScanner.FindFiles(folderRoot, PackageManifestFileName))
@@ -45,7 +64,14 @@ internal class SwiftLanguageProvider(IRunProcess runProcess) : ILanguageProvider
             var packageRelativePath = FolderScanner.GetRelativePath(folderRoot, packageDirectory);
             var versionSources = this.GetVersionSources(folderRoot, packageDirectory);
 
-            foreach (var targetName in SwiftPackageManifest.GetTargetNames(runProcess, packageDirectory))
+            // One dump, both answers: which targets are units, and which of those are tests.
+            var manifestJson = SwiftPackageManifest.Dump(runProcess, packageDirectory);
+            foreach (var testTarget in SwiftPackageManifest.ReadTestTargetNames(manifestJson))
+            {
+                this._testUnitIds.Add($"{packageRelativePath}:{testTarget}");
+            }
+
+            foreach (var targetName in SwiftPackageManifest.ReadTargetNames(manifestJson))
             {
                 units.Add(new PackageableUnit
                 {
@@ -72,6 +98,14 @@ internal class SwiftLanguageProvider(IRunProcess runProcess) : ILanguageProvider
         {
             var projectRelativePath = FolderScanner.GetRelativePath(folderRoot, projectPath);
             var versionSources = GetXcodeVersionSources(folderRoot, projectPath);
+
+            // UNI-04. From the project file, because the xcodebuild listing below carries names
+            // and nothing else - see XcodeTestTarget for why that is not worth a process per target.
+            foreach (var testTarget in XcodeTestTarget.Read(
+                         Path.Combine(projectPath, XcodeProjectFileName)))
+            {
+                this._testUnitIds.Add($"{projectRelativePath}:{testTarget}");
+            }
 
             foreach (var targetName in XcodeProject.GetTargetNames(runProcess, projectPath))
             {

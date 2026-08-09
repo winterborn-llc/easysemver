@@ -36,15 +36,21 @@ internal class CsharpLanguageProvider : ILanguageProvider
                 DisplayName = Path.GetFileName(projectFilePath),
                 RelativePath = relativePath,
                 UnitKind = CsprojUnitKind,
-                VersionSources = [new CsProjVersionSource(projectFilePath, relativePath)],
-
-                // UNI-04. Still a unit, and still versioned - only its public members stop being
-                // treated as a contract.
-                HasPublicApiSurface = !CsProjTestProject.Read(projectFilePath)
+                VersionSources = [new CsProjVersionSource(projectFilePath, relativePath)]
             });
         }
 
         return units;
+    }
+
+    /// <summary>
+    /// UNI-04 - read from the project file, which is cheap enough to open again here rather than
+    /// be cached across discovery. The signals are MSBuild's own and live in
+    /// <see cref="CsProjTestProject"/>.
+    /// </summary>
+    public bool IsTestCode(IPackageableUnit unit)
+    {
+        return CsProjTestProject.Read(this.GetProjectFilePath(unit));
     }
 
     public void Extract(IPackageableUnit unit)

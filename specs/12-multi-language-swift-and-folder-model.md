@@ -85,6 +85,7 @@ public interface ILanguageProvider
 {
     Language Language { get; }                                  // Csharp | Swift | ...
     IReadOnlyList<IPackageableUnit> Discover(string folderRoot);
+    bool IsTestCode(IPackageableUnit unit);                     // UNI-04
     void Extract(IPackageableUnit unit);                        // fills the unit's signature
     VersionType Classify(IPackageableUnit? older, IPackageableUnit newer);
     IReadOnlyList<Version> ReadVersions(IPackageableUnit unit);
@@ -172,7 +173,7 @@ IPackageableUnit
   UnitKind        string          // "csproj" | "swiftpm-target" | "xcode-target"
   VersionSources  IReadOnlyList<IVersionSource>   // §14
   Signature       object          // the language-native graph; opaque to the core
-  HasPublicApiSurface  bool       // UNI-04; defaults true
+  HasPublicApiSurface  bool       // UNI-04; filled by the core from the provider's answer
 ```
 `Signature` SHALL be typed per language at the provider boundary (`ICsharpProject`,
 `ISwiftModule`) and never inspected by the neutral core.
@@ -185,11 +186,7 @@ does not contribute is an **API surface**, per UNI-04.
 
 **UNI-03 — Swift units.** ✅ required (D-05)
 One unit per SwiftPM **target** and per Xcode **target**. Test targets participate as units and
-carry versions, consistent with UNI-02.
-ℹ️ UNI-04 is **not** yet applied to Swift: a SwiftPM or Xcode test target still contributes its
-symbols to the folder's surface. The signals differ per language — `.testTarget` in a manifest, a
-`com.apple.product-type.bundle.unit-test` product type — and neither is read today. The neutral
-half of UNI-04 is in place, so this is a provider change when it is wanted, not a redesign.
+carry versions, consistent with UNI-02 — and, per UNI-04, contribute no API surface.
 
 **UNI-04 — A versioned unit need not have an API surface.** ✅ required *(added 2026-08-09)*
 A unit MAY carry versions without its public members being a contract. `HasPublicApiSurface`
@@ -203,18 +200,39 @@ unit for which it is false SHALL be:
 - **absent from the baseline**, because a baseline entry with no signature reads back on the next
   run as "everything in it was removed".
 
-**A C# unit SHALL have no API surface when its project is a test project**, determined from the
-project file alone:
+**Identifying test code is part of the ML-02 contract, not one language's special case.** Every
+provider SHALL answer `IsTestCode` for its own units; the neutral core asks once per discovered
+unit, immediately after `Discover`, and the answer becomes `HasPublicApiSurface`. What counts is
+entirely the language's to decide — it is the only thing that has read that language's project
+files — and what happens next is entirely the core's. A provider MAY answer from state gathered
+during discovery rather than reading again, and the Swift one does, because a second
+`swift package dump-package` is a second compile.
 
-1. an explicit `<IsTestProject>` property, which wins in both directions; otherwise
-2. a `PackageReference` to `Microsoft.NET.Test.Sdk`, or to a package whose id begins `xunit`,
-   `NUnit` or `MSTest`.
+`IsTestCode` defaults to **false**, so that adding it broke no implementer and an unfamiliar
+language behaves as it did before the question existed. That makes forgetting it silent, so
+`TestLanguageSeam.EveryProviderDecidesForItselfWhatIsTestCode` SHALL assert that every registered
+provider **declares** the member rather than inheriting the default.
 
-Both are MSBuild's own signals, not configuration this tool defines — (1) is the property
-`dotnet test` already reads, and it is the escape hatch for a library that references a test
-framework on purpose. The project **name** SHALL NOT be consulted: a `Tests` project that is a
-fixture library, and a `Fixtures` project that is a test project, are both commonplace, and a
-filename heuristic gets each of them wrong silently.
+The signals, per language, all read from what the ecosystem already states:
+
+| Language | Test code is | Read from |
+|----------|--------------|-----------|
+| C# | an explicit `<IsTestProject>`, which wins in both directions; otherwise a `PackageReference` to `Microsoft.NET.Test.Sdk` or to a package id beginning `xunit`, `NUnit` or `MSTest` | the `.csproj` |
+| SwiftPM | a target of `type: "test"` — what `.testTarget` produces | `swift package dump-package` |
+| Xcode | a native target whose `productType` is `…bundle.unit-test` or `…bundle.ui-testing` | `project.pbxproj` |
+
+None of these is configuration this tool defines. C#'s (1) is the property `dotnet test` already
+reads, and is the escape hatch for a library that references a test framework on purpose.
+
+A **name** SHALL NOT be consulted in any language: a `Tests` project that is a fixture library,
+and a `Fixtures` target that is a test target, are both commonplace, and a filename heuristic gets
+each of them wrong silently.
+
+ℹ️ Xcode is the one place a project file is parsed rather than a tool asked, which SWD-02 otherwise
+avoids. `xcodebuild -list -json` reports target names and nothing else, so the alternative is one
+`-showBuildSettings` process per target against the slowest tool in the run. `project.pbxproj` is
+already read directly for `MARKETING_VERSION` (MVR-04), and misreading it costs a test target
+keeping a vote it should not have — not a failed run.
 
 The requirement exists because the alternative was measured. This repository released **v17.0.0**
 off the back of two renamed `[Fact]` methods: removing a public member is Major (R02), a test

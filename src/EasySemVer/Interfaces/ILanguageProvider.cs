@@ -16,6 +16,26 @@ public interface ILanguageProvider
     /// <summary>Enumerates the folder root once per run (FLD-03) and returns this language's units.</summary>
     public IReadOnlyList<IPackageableUnit> Discover(string folderRoot);
 
+    /// <summary>
+    /// UNI-04 - whether this unit is test code, and so is versioned without its public members
+    /// being treated as a contract. Asked once per discovered unit, immediately after
+    /// <see cref="Discover"/>, and the answer becomes
+    /// <see cref="IPackageableUnit.HasPublicApiSurface"/>.
+    /// <para>
+    /// Every language has this question and every language answers it differently - a
+    /// <c>&lt;IsTestProject&gt;</c> property or a test-framework reference in a .csproj, a
+    /// <c>.testTarget</c> in a Package.swift, a unit-test product type in an .xcodeproj - so it
+    /// belongs here, beside the discovery that already reads those files, and nowhere else. A
+    /// provider MAY answer from state it gathered during discovery rather than reading again.
+    /// </para>
+    /// <para>
+    /// Defaulted to false so that adding this did not break an implementer, and so that a
+    /// language nobody has taught behaves as it did before the question existed. Every provider in
+    /// this repository overrides it, and <c>TestLanguageSeam</c> asserts that a new one has to.
+    /// </para>
+    /// </summary>
+    public bool IsTestCode(IPackageableUnit unit) => false;
+
     /// <summary>Fills <see cref="IPackageableUnit.Signature"/>. Throws to fail the run (SWE-05).</summary>
     public void Extract(IPackageableUnit unit);
 

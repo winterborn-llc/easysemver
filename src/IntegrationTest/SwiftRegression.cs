@@ -42,7 +42,12 @@ public class SwiftRegression
         Assert.Contains("language=\"Swift\"", baseline);
         Assert.Contains("unitKind=\"swiftpm-target\"", baseline);
         Assert.Contains("<SwiftModule name=\"Widgets\"", baseline);
-        Assert.Contains("<SwiftModule name=\"WidgetsTests\"", baseline);
+
+        // UNI-04, against a real `swift package dump-package`: the fixture's `.testTarget` is
+        // discovered and versioned like any other target, and its symbols are not in the baseline.
+        // Before this it was, and renaming an XCTest method moved the whole folder's version.
+        Assert.DoesNotContain("<SwiftModule name=\"WidgetsTests\"", baseline);
+        Assert.DoesNotContain("unitId=\"Widgets:WidgetsTests\"", baseline);
 
         // MVR-05: the one new version reaches both ecosystems' version locations. The podspec
         // seeds 2.3.4, which is higher than the csproj's 1.0.0, and a first run is Minor.
@@ -94,6 +99,12 @@ public class SwiftRegression
         Assert.Equal(
             ["SwiftPackage:Widgets", "SwiftPackage:WidgetsTests"],
             units.Select(u => u.UnitId).Order());
+
+        // UNI-04, from what a real `swift package dump-package` reported: the `.testTarget` is a
+        // unit that carries versions, and is the one the provider names as test code.
+        Assert.Equal(
+            ["SwiftPackage:WidgetsTests"],
+            units.Where(provider.IsTestCode).Select(u => u.UnitId).Order());
 
         foreach (var discovered in units)
         {
