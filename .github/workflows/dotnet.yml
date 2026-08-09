@@ -16,10 +16,10 @@ jobs:
     runs-on: macos-latest
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v5
 
     - name: Setup .NET
-      uses: actions/setup-dotnet@v4
+      uses: actions/setup-dotnet@v5
       with:
         dotnet-version: 10.0.x
 
@@ -41,12 +41,22 @@ jobs:
       working-directory: ./src
       run: dotnet test IntegrationTest/IntegrationTest.csproj --no-build --verbosity normal --configuration ${{ env.configuration }}
 
-    # PKG-01: a dotnet tool package, for anyone who already has a .NET SDK.
-    - name: Publish the tool to nuget.org
-      if: github.ref == 'refs/heads/main'
-      env:
-        NUGET_AUTH_TOKEN: ${{ secrets.NUGET_TOKEN }}
-      run: dotnet nuget push ./src/${{ env.project }}/bin/${{ env.configuration }}/*.nupkg -k ${{ env.NUGET_AUTH_TOKEN }} -s https://api.nuget.org/v3/index.json --skip-duplicate
+
+
+
+
+    # Get a short-lived NuGet API key
+    - name: NuGet login (OIDC → temp API key)
+      uses: NuGet/login@v1
+      id: login
+      with:
+        user: andrew-of-the-winterborn
+    
+    - name: Publish the package to nuget.org
+      run: dotnet nuget push ./src/${{ env.project }}/bin/${{ env.configuration }}/*.nupkg --api-key ${{steps.login.outputs.NUGET_API_KEY}} --source https://api.nuget.org/v3/index.json --skip-duplicate
+
+
+
 
   # Pushing a tag creates a tag, not a Release, and `gh release upload` needs one to exist. This
   # is its own job rather than a step in the matrix below, so that five parallel jobs cannot race
@@ -83,10 +93,10 @@ jobs:
         runtime: [ linux-x64, linux-arm64, osx-x64, osx-arm64, win-x64 ]
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v5
 
     - name: Setup .NET
-      uses: actions/setup-dotnet@v4
+      uses: actions/setup-dotnet@v5
       with:
         dotnet-version: 10.0.x
 
