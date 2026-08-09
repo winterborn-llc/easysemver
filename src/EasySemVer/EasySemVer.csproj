@@ -9,6 +9,10 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <RootNamespace>Winterborn.Tools.EasySemVer</RootNamespace>
     <PackageReadmeFile>README.md</PackageReadmeFile>
+    <!-- An SPDX expression rather than PackageLicenseFile: nuget.org renders it as a link to the
+         canonical licence text, so the repository's LICENSE does not have to be packed to say
+         the same thing twice. Keep it in step with LICENSE at the repository root. -->
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageIcon>Resources/logo.png</PackageIcon>
     <PackageProjectUrl>https://github.com/winterborn-llc/easysemver</PackageProjectUrl>
     <RepositoryUrl>https://github.com/winterborn-llc/easysemver</RepositoryUrl>
