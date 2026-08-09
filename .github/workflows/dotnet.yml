@@ -49,26 +49,24 @@ jobs:
       with:
         dotnet-version: 10.0.x
 
-    # Dogfooding: the released tool versions the next release. Deliberately the published
-    # package rather than the binary this run builds - if a change breaks versioning, it breaks
-    # the *next* release rather than silently mis-versioning the one that introduced it.
-    - name: Install the published EasySemVer
-      run: |
-        dotnet tool install -g Winterborn.Tools.EasySemVer
-        echo "$HOME/.dotnet/tools" >> "$GITHUB_PATH"
-
-    # Rewrites the version in every location that already has one - here, the three .csproj
-    # files - and rewrites the EasySemVer.xml baseline. Nothing is committed yet: if the build
-    # or the tests fail below, the run dies and the working copy goes with the runner.
+    # ------------------------------------------------------------------------------------------
+    # ACT-10. This step and the release step below are the block the README documents, byte for
+    # byte, and ActionRegression asserts that they stay so. Between them they replaced an install
+    # step, a jq-and-$GITHUB_OUTPUT step, a commit step and a tag step: about thirty lines of
+    # shell, every one of which could be subtly wrong on a release and nowhere else.
+    #
+    # Dogfooding: the Action downloads a *published* binary, deliberately rather than the one this
+    # run builds - if a change breaks versioning, it breaks the next release rather than silently
+    # mis-versioning the one that introduced it.
+    #
+    # ACT-12 is why this is two steps and not one. The version has to be stamped before the build
+    # so the nupkg carries it, and nothing may be committed until the tests below have passed - a
+    # single step would force one of those to give. Nothing is committed yet: if the build or the
+    # tests fail, the run dies and the working copy goes with the runner.
+    # ------------------------------------------------------------------------------------------
     - name: Compute and apply the version
       id: version
-      run: |
-        easysemver . --json "$RUNNER_TEMP/verdict.json"
-        version=$(jq -r .newVersion.version "$RUNNER_TEMP/verdict.json")
-        echo "version=$version" >> "$GITHUB_OUTPUT"
-        echo "### Version $version" >> "$GITHUB_STEP_SUMMARY"
-        jq -r '.findings[] | "- \(.impact) \(.ruleId) \(.symbol // .unitId) \(.description)"' \
-          "$RUNNER_TEMP/verdict.json" >> "$GITHUB_STEP_SUMMARY"
+      uses: winterborn-llc/easysemver@v16.0.0
 
     - name: Restore dependencies
       working-directory: ./src
@@ -83,33 +81,28 @@ jobs:
       run: dotnet test Test/Test.csproj --no-build --verbosity normal --configuration ${{ env.configuration }}
 
     # Runs the tool against this repository and against fixture trees, so it mutates the working
-    # copy on purpose. Kept separate from the unit suite for that reason.
+    # copy on purpose (TST-05). That is exactly why the release step below stages what the run
+    # reported writing (REP-10) rather than `git add -u`, which would sweep this step's debris
+    # into the release commit.
     - name: Integration tests
       working-directory: ./src
       run: dotnet test IntegrationTest/IntegrationTest.csproj --no-build --verbosity normal --configuration ${{ env.configuration }}
 
-    # Git before nuget.org, because a package cannot be unpublished. If someone pushed to main
-    # while this ran, the push below is rejected and the run fails having published nothing -
-    # rather than leaving a version on nuget.org that no commit accounts for.
+    # CI-03. Git before nuget.org, because a package cannot be unpublished. If someone pushed to
+    # main while this ran, this push is rejected and the run fails having published nothing -
+    # rather than leaving a version on nuget.org that no commit accounts for. The Action pushes the
+    # branch and the tag atomically, so the tag cannot outlive a rejected branch push and end up
+    # naming a commit the remote never received.
     #
-    # A GITHUB_TOKEN push raises no events, so this cannot trigger another run of this workflow.
-    # That is also why the tag has to be consumed in this run: it will not trigger one either.
-    - name: Commit the new version
-      run: |
-        git config user.name "github-actions[bot]"
-        git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-        git add EasySemVer.xml src/*/*.csproj
-        if git diff --cached --quiet; then
-          echo "no version locations changed; nothing to record"
-          exit 0
-        fi
-        git commit -m "EasySemVer: ${{ steps.version.outputs.version }}"
-        git push origin HEAD:main
-
-    - name: Tag v${{ steps.version.outputs.version }}
-      run: |
-        git tag "v${{ steps.version.outputs.version }}"
-        git push origin "v${{ steps.version.outputs.version }}"
+    # A GITHUB_TOKEN push raises no events, so neither ref can trigger another run of this
+    # workflow. That is also why the tag has to be consumed by the jobs below rather than trigger
+    # them.
+    - name: Commit and tag the release
+      uses: winterborn-llc/easysemver@v16.0.0
+      with:
+        commit: true
+        tag: true
+        report: ${{ steps.version.outputs.report }}
 
     # PKG-01: a dotnet tool package, for anyone who already has a .NET SDK.
     #

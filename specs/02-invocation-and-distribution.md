@@ -378,7 +378,7 @@ time — points nowhere near the cause.
 is the "real" one: they are the same three inputs, and which you want is decided by whether anything
 has to happen between stamping a version and releasing it.
 
-**ACT-10 — One release block, identical in every repository.** ⚠️ *(added 2026-08-09; blocked on a release — see below)*
+**ACT-10 — One release block, identical in every repository.** ✅ *(added 2026-08-09; in force from v16.0.0)*
 Versioning, committing and tagging a release SHALL be **one step**, documented in
 [`README.md`](../README.md) as a block copied verbatim into any repository, and this repository's
 own [`dotnet.yml`](../.github/workflows/dotnet.yml) SHALL run that exact text. A regression test
@@ -412,12 +412,11 @@ executed rots quietly, and the failure lands in someone else's workflow, on a co
 repository we never see.
 ℹ️ The `uses:` ref here, the README's other examples and ACT-02's pinned `version` default SHALL name
 one release, asserted by the same test. They move together when a tag is cut.
-⚠️ **Not yet in force.** ACT-02's note has a consequence here: the Action runs a *published* binary,
-so a block depending on CLI-10 and REP-10 cannot land in the same commit as CLI-10 and REP-10. The
-release that provides them has to exist first. Until it does, `dotnet.yml` keeps the hand-written
-steps this requirement replaces, the README documents the block but nothing executes it, and the
-regression test above is not yet written. All three move together in the commit after that release,
-along with ACT-02's pinned `version` default. Tracked as G-20 in [99-known-gaps.md](99-known-gaps.md).
+ℹ️ Adoption took two commits, and had to: ACT-02's Action runs a *published* binary, so a block
+depending on CLI-10 and REP-10 could not land in the same commit as CLI-10 and REP-10 — the release
+providing them did not exist yet. The first commit shipped the capability and its own run published
+v16.0.0; the second pinned to it and switched `dotnet.yml` over. That was G-20, now closed. Expect
+the same two-step shape for any future change that this repository's own release pipeline consumes.
 
 **ACT-07 — A failed run fails the step, with nothing published.** ✅
 Exit 1 (CLI-06) SHALL fail the step and stop the Action. No outputs are published, and REP-08

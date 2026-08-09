@@ -402,6 +402,71 @@ public class ActionRegression : IDisposable
         Assert.All(referenced, reference => Assert.Equal(Setting("version", "default"), reference));
     }
 
+    /// <summary>
+    /// ACT-10 - the steps the README tells other repositories to copy are the steps this repository
+    /// actually releases with. Documentation that is not executed rots quietly, and the failure
+    /// lands in someone else's workflow, on a copy-paste, in a repository we never see.
+    /// <para>
+    /// It also pins the `uses:` ref transitively: the README's refs must match ACT-02's default
+    /// (asserted above), and the workflow must contain the README's text, so all three name one
+    /// release or this fails.
+    /// </para>
+    /// </summary>
+    [Theory]
+    [InlineData("- name: Compute and apply the version")]
+    [InlineData("- name: Commit and tag the release")]
+    public void TheDocumentedReleaseStepsAreTheOnesThisRepositoryRuns(string opening)
+    {
+        var documented = StepStartingWith(
+            File.ReadAllText(Path.Combine(RepositoryRoot, "README.md")), opening);
+
+        Assert.False(string.IsNullOrWhiteSpace(documented), $"No step starting '{opening}' in README.md");
+
+        var executed = Dedent(File.ReadAllText(
+            Path.Combine(RepositoryRoot, ".github", "workflows", "dotnet.yml")));
+
+        Assert.Contains(documented, executed);
+    }
+
+    /// <summary>
+    /// One step from the README, taken by its opening line rather than by position, so reordering
+    /// the file cannot quietly point this test at a different block.
+    /// <para>
+    /// A step ends at whichever comes first: the blank line before the next step, or the fence
+    /// closing the example. Stopping only at the blank line reads the fence itself into the step -
+    /// which is what the first run of this test did, and it failed for that reason rather than for
+    /// any drift.
+    /// </para>
+    /// </summary>
+    private static string StepStartingWith(string readme, string opening)
+    {
+        var start = readme.IndexOf(opening, StringComparison.Ordinal);
+        if (start < 0)
+        {
+            return string.Empty;
+        }
+
+        var end = readme.Length;
+        foreach (var terminator in (string[])["\n\n", "\n```"])
+        {
+            var found = readme.IndexOf(terminator, start, StringComparison.Ordinal);
+            if (found >= 0 && found < end)
+            {
+                end = found;
+            }
+        }
+
+        return readme[start..end].TrimEnd().ReplaceLineEndings("\n");
+    }
+
+    /// <summary>
+    /// The workflow indents its steps four spaces to sit under `steps:`; the README does not. That
+    /// is the only difference permitted between them, so it is the only one normalised away.
+    /// </summary>
+    private static string Dedent(string workflow) =>
+        string.Join('\n', workflow.ReplaceLineEndings("\n").Split('\n')
+            .Select(line => line.StartsWith("    ", StringComparison.Ordinal) ? line[4..] : line));
+
     // ----------------------------------------------------------------------------------------
     // ACT-03 - the platform table, against the release job that produces the assets
     // ----------------------------------------------------------------------------------------

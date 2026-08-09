@@ -180,7 +180,7 @@ not from compiled assemblies, so the run works equally well before or after the 
 - uses: actions/checkout@v4
 
 - id: version
-  uses: winterborn-llc/easysemver@v15.3.3
+  uses: winterborn-llc/easysemver@v16.0.0
 
 - run: echo "${{ steps.version.outputs.change-type }} → ${{ steps.version.outputs.version }}"
 ```
@@ -235,7 +235,7 @@ path, no project, no branch and no language:
 ```yaml
 - name: Version, commit and tag
   id: version
-  uses: winterborn-llc/easysemver@v15.3.3
+  uses: winterborn-llc/easysemver@v16.0.0
   with:
     commit: true
     tag: true
@@ -252,12 +252,12 @@ one's report and it commits that verdict instead of computing a new one:
 ```yaml
 - name: Compute and apply the version
   id: version
-  uses: winterborn-llc/easysemver@v15.3.3
+  uses: winterborn-llc/easysemver@v16.0.0
 
 # ...restore, build, test...
 
 - name: Commit and tag the release
-  uses: winterborn-llc/easysemver@v15.3.3
+  uses: winterborn-llc/easysemver@v16.0.0
   with:
     commit: true
     tag: true

@@ -20,23 +20,6 @@ Cross-project and NuGet types resolve as error symbols in the ad-hoc compilation
 names may lack namespaces. Stable run-to-run, so diffs work, but theoretically collidable.
 *Relates to:* SIG-01.
 
-**G-20 — ACT-10's release block is specified but not yet in force.** (Verified)
-CLI-10 and REP-10 are implemented and tested, but the copy-paste release block they exist to enable
-cannot be adopted until a release ships them: the Action runs a *published* binary (ACT-02), so a
-workflow using the block would download a binary that rejects `--github` and reports no
-`writtenFiles`. Until then [`dotnet.yml`](../.github/workflows/dotnet.yml) keeps the hand-written
-version, commit and tag steps — including the `git add EasySemVer.xml src/*/*.csproj` glob REP-10
-exists to retire, which stays silently wrong for any project it does not match.
-
-*Closing it* is one commit, taken after the release that carries CLI-10, REP-10 and ACT-11 lands on
-nuget.org and as a GitHub Release: bump ACT-02's pinned `version` default and every `uses:` ref in
-the README to that tag, replace the four steps in `dotnet.yml` with ACT-12's two invocations, and add the
-ACT-10 regression test asserting the workflow and the README agree.
-ℹ️ Only the *adoption* is blocked. ACT-11 itself is implemented and covered — `ActionRegression`
-exercises the commit step against a real repository with a real remote, including the atomicity
-guarantee, which was confirmed by removing `--atomic` and watching the test fail.
-*Relates to:* ACT-02, ACT-10, ACT-11, CLI-10, REP-10.
-
 ## Informative / hygiene
 
 **G-17 — Stale documentation.** ✅ Resolved by the doc-12 rewrite of
@@ -57,7 +40,7 @@ never reused.
 All three were defects in one mechanism: consuming EasySemVer as a `PackageReference` that hooks
 itself into a consuming build. On 2026-08-02 that mechanism was withdrawn — EasySemVer is a CLI,
 distributed as a `dotnet tool`, as self-contained binaries, and as a GitHub Action
-(**INV-01**, **PKG-01/PKG-02**, **ACT-01…ACT-09**). A tool whose unit of work is *a folder* does not belong bolted
+(**INV-01**, **PKG-01/PKG-02**, **ACT-01…ACT-12**). A tool whose unit of work is *a folder* does not belong bolted
 to one arbitrary project inside it.
 
 Deleting `Winterborn.EasySemVer.targets` also removed the `NU5129` warning, so the build is now
@@ -139,3 +122,17 @@ Deleted: `CsProjSignature`, `ExtendIList`, `ExtendDirectoryInfo`, `ExtendFileInf
 `ExtendString.GetXmlNodeValue`, the commented-out `AdhocWorkspace` block, and the
 `Newtonsoft.Json` attributes on `Solution` (along with `Solution` itself, replaced by the unit
 array). *Satisfies:* PKG-07.
+
+**G-20 — ACT-10's release block specified but not in force.** ✅ Resolved by adoption
+CLI-10, REP-10, ACT-11 and ACT-12 shipped in one commit; that commit's own run published **v16.0.0**
+to nuget.org and cut the GitHub Release with all five PKG-02 archives. The commit after it pinned
+ACT-02's `version` default and the README's `uses:` refs to that tag, replaced four hand-written
+steps in [`dotnet.yml`](../.github/workflows/dotnet.yml) with ACT-12's two invocations, and added
+`ActionRegression.TheDocumentedReleaseStepsAreTheOnesThisRepositoryRuns` — which asserts the README
+and the workflow cannot drift, and was confirmed to fail when they do.
+
+The two-commit shape was not avoidable and is not a defect: ACT-02's Action runs a *published*
+binary, so nothing here can consume a capability in the same commit that introduces it.
+ℹ️ Retiring the `git add EasySemVer.xml src/*/*.csproj` glob was the point. It was silently wrong
+for any project it did not match — a green run, a tag, and a commit with no bump in it.
+*Satisfies:* ACT-10. *Relates to:* ACT-02, ACT-11, ACT-12, CLI-10, REP-10.

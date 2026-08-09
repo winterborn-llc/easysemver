@@ -64,7 +64,7 @@ inputs:
       The EasySemVer release tag to run. Pinned deliberately rather than defaulting to the
       latest release, so a workflow's behaviour cannot change under it without an edit.
     required: false
-    default: v15.3.3
+    default: v16.0.0
 
   token:
     description: >-
