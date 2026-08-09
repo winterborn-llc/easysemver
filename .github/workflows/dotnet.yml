@@ -135,6 +135,10 @@ jobs:
   # rather than a step in the matrix below, so that five parallel jobs cannot race to create the
   # same release, and it is idempotent so that re-running the workflow - which is what you do
   # when one of the five publishes fails - does not fall over on the second attempt.
+  #
+  # It is created as a *draft*. Publishing a release freezes it - "Cannot upload assets to an
+  # immutable release", HTTP 422 - so every asset has to be attached before that happens. The
+  # draft is filled by the matrix below and published by the job after it.
   create-release:
     needs: build
     runs-on: ubuntu-latest
@@ -151,7 +155,7 @@ jobs:
       run: >
         gh release view "${tag}" --repo "${GITHUB_REPOSITORY}" > /dev/null 2>&1 ||
         gh release create "${tag}" --repo "${GITHUB_REPOSITORY}"
-        --generate-notes --verify-tag
+        --draft --generate-notes --verify-tag
 
   # PKG-02: self-contained binaries, so a repository with no .NET in it - a Swift-only one, say -
   # can still be versioned. Runtime packs are downloadable for every target, so one Linux runner
@@ -203,3 +207,21 @@ jobs:
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: gh release upload "${tag}" easysemver-${{ matrix.runtime }}.* --clobber
+
+  # Publishing is what makes the release immutable, so it happens last, once all five archives
+  # are attached. Until this runs the release is a draft and invisible to anyone but the repo's
+  # own maintainers - which is the correct state for a release with no binaries on it yet.
+  publish-release:
+    needs: [ build, release ]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    env:
+      tag: v${{ needs.build.outputs.version }}
+
+    steps:
+    - name: Publish the release for ${{ env.tag }}
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: gh release edit "${tag}" --repo "${GITHUB_REPOSITORY}" --draft=false
