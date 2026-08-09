@@ -484,6 +484,12 @@ public class ActionRegression : IDisposable
     /// One step from the README, taken by its opening line rather than by position, so reordering
     /// the file cannot quietly point this test at a different block.
     /// <para>
+    /// The match is anchored to the start of a line. The same two steps appear a second time
+    /// inside the README's complete-workflow example, indented under `steps:`, where every
+    /// continuation line carries the job's indentation as well - text that could never match the
+    /// workflow this test compares against, and should not be asked to.
+    /// </para>
+    /// <para>
     /// A step ends at whichever comes first: the blank line before the next step, or the fence
     /// closing the example. Stopping only at the blank line reads the fence itself into the step -
     /// which is what the first run of this test did, and it failed for that reason rather than for
@@ -492,8 +498,10 @@ public class ActionRegression : IDisposable
     /// </summary>
     private static string StepStartingWith(string readme, string opening)
     {
-        var start = readme.IndexOf(opening, StringComparison.Ordinal);
-        if (start < 0)
+        // -1 (not found) and a match on the first line of the file both land on 0, and a README
+        // whose very first line is a workflow step is not a thing.
+        var start = readme.IndexOf("\n" + opening, StringComparison.Ordinal) + 1;
+        if (start == 0)
         {
             return string.Empty;
         }

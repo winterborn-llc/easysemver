@@ -176,11 +176,14 @@ not from compiled assemblies, so the run works equally well before or after the 
 
 ## As a GitHub Action
 
+Reading the verdict is three lines. If what you want is the whole file to paste into
+`.github/workflows/`, skip to [a complete workflow](#a-complete-workflow) below.
+
 ```yaml
 - uses: actions/checkout@v4
 
 - id: version
-  uses: winterborn-llc/easysemver@v16.0.0
+  uses: winterborn-llc/easysemver@v16.1.1
 
 - run: echo "${{ steps.version.outputs.change-type }} → ${{ steps.version.outputs.version }}"
 ```
@@ -235,7 +238,7 @@ path, no project, no branch and no language:
 ```yaml
 - name: Version, commit and tag
   id: version
-  uses: winterborn-llc/easysemver@v16.0.0
+  uses: winterborn-llc/easysemver@v16.1.1
   with:
     commit: true
     tag: true
@@ -252,12 +255,12 @@ one's report and it commits that verdict instead of computing a new one:
 ```yaml
 - name: Compute and apply the version
   id: version
-  uses: winterborn-llc/easysemver@v16.0.0
+  uses: winterborn-llc/easysemver@v16.1.1
 
 # ...restore, build, test...
 
 - name: Commit and tag the release
-  uses: winterborn-llc/easysemver@v16.0.0
+  uses: winterborn-llc/easysemver@v16.1.1
   with:
     commit: true
     tag: true
@@ -289,6 +292,62 @@ there is no single way to publish and so nothing for it to get right.
 A run that fails exits 1 and fails the step, and publishes no outputs at all — the verdict is
 never encoded in the exit code, because "this change is Major" would then be indistinguishable
 from the tool falling over.
+
+### A complete workflow
+
+Everything above, assembled — the three job-level requirements included. Save it as
+`.github/workflows/release.yml`, put your own build and tests where the comment is, and the
+repository versions, commits and tags itself on every push to `main`. Nothing in it names a
+path, a project or a language, so it goes in unedited:
+
+```yaml
+name: Release
+
+on:
+  push:
+    branches: [ main ]
+
+# One release at a time. Two runs landing together would seed from the same version, compute
+# the same next one, and race to push it.
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    # Naming any permission replaces the defaults wholesale, so name every one you need.
+    permissions:
+      contents: write
+
+    steps:
+    # fetch-depth: 0 for the tags. They are one of the places the version is seeded from, and
+    # a shallow clone hides them and seeds too low.
+    - uses: actions/checkout@v5
+      with:
+        fetch-depth: 0
+
+    - name: Compute and apply the version
+      id: version
+      uses: winterborn-llc/easysemver@v16.1.1
+
+    # Your build, your tests, your packaging. The version is already stamped on disk, so
+    # whatever you produce here carries it — and nothing has been committed yet, so a failure
+    # anywhere in between releases nothing.
+
+    - name: Commit and tag the release
+      uses: winterborn-llc/easysemver@v16.1.1
+      with:
+        commit: true
+        tag: true
+        report: ${{ steps.version.outputs.report }}
+```
+
+Two things to change for your repository, if they apply. A folder with Swift or an `.xcodeproj`
+in it needs `runs-on: macos-latest` and a toolchain the run can reach, per *Swift prerequisites*
+above. And if you version a subdirectory rather than the checkout, add `with: { folder: src }`
+to the first step — the second one takes its verdict from `report` and needs nothing further.
 
 ## Seeding versions
 
