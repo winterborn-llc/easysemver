@@ -122,6 +122,15 @@ internal static class VersioningRun
                            ?? throw new InvalidOperationException(
                                $"No provider is registered for {unit.Language}");
 
+            // UNI-04. Nothing downstream reads a signature this unit does not have, and building
+            // one would be work spent on a graph that classification, the baseline and the report
+            // all ignore. Its versions are still read and written by the stages after this one.
+            if (!unit.HasPublicApiSurface)
+            {
+                Log.WriteLine($"Versioning {unit.Language} {unit.UnitId} ({unit.RelativePath}) without reading its API surface");
+                continue;
+            }
+
             Log.WriteLine($"Reading {unit.Language} {unit.UnitId} ({unit.RelativePath})");
             provider.Extract(unit);
         }

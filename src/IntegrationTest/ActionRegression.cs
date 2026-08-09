@@ -372,7 +372,7 @@ public class ActionRegression : IDisposable
 
     /// <summary>
     /// ACT-02 - the version input is one exact release, never a floating ref. A default of
-    /// <c>latest</c>, or of the moving <c>v16</c> tag CI-05 maintains, would make every consumer's
+    /// <c>latest</c>, or of the moving <c>v&lt;major&gt;</c> tag CI-05 maintains, would make every consumer's
     /// build change under them the next time this repository cut a release.
     /// </summary>
     [Fact]
@@ -419,7 +419,7 @@ public class ActionRegression : IDisposable
     }
 
     /// <summary>
-    /// CI-05 - the moving tag is what the README's <c>@v16</c> resolves to, so it may only be moved
+    /// CI-05 - the moving tag is what the README's <c>@v&lt;major&gt;</c> resolves to, so it may only be moved
     /// once the release it names is published with all five archives on it. A release that dies
     /// half-built leaves the tag where it was, and consumers on the last one that completed.
     /// </summary>
@@ -892,7 +892,7 @@ public class ActionRegression : IDisposable
     /// This repository stages a repointed <c>action.yml</c> and <c>README.md</c> that way, so that
     /// the manifest inside a release tag pins the release it belongs to. Nothing in the action's
     /// contract promises the behaviour, and hardening the commit to a pathspec would silently stop
-    /// it - the pin would go stale again and the only symptom would be `@v16` handing out an
+    /// it - the pin would go stale again and the only symptom would be the moving major tag handing out an
     /// increasingly old binary.
     /// </para>
     /// </summary>

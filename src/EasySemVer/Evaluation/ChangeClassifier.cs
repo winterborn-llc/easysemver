@@ -32,8 +32,20 @@ internal static class ChangeClassifier
             return new ChangeReport([], VersionType.Minor);
         }
 
+        // UNI-04. Units that carry a version but no contract are not compared at all - neither
+        // against each other, nor for having appeared or vanished.
+        var surfaceless = Where(newer, unit => !unit.HasPublicApiSurface);
+        var comparableNewer = Where(newer, unit => unit.HasPublicApiSurface);
+
+        // The older side comes out of a baseline, which does not record UNI-04 and, if it predates
+        // it, still lists those units in full. Dropping them by the identity the pairing already
+        // uses is what stops the first run after an upgrade reading them as removals and
+        // classifying Major - the exact misclassification UNI-04 exists to prevent. After one write
+        // the baseline no longer carries them and this matches nothing.
+        var comparableOlder = Where(older, unit => UnitPairing.Find(surfaceless, unit) == null);
+
         var findings = new List<ChangeFinding>();
-        var units = new UnitsToCompare(older, newer);
+        var units = new UnitsToCompare(comparableOlder, comparableNewer);
         foreach (var rule in ExistenceRules)
         {
             foreach (var unit in rule.FindDifferences(units))
@@ -54,7 +66,7 @@ internal static class ChangeClassifier
             }
         }
 
-        foreach (var pair in UnitPairing.GetUnitsInBoth(older, newer))
+        foreach (var pair in UnitPairing.GetUnitsInBoth(comparableOlder, comparableNewer))
         {
             var provider = LanguageProviders.Find(providers, pair.Newer.Language);
             if (provider == null)
@@ -66,5 +78,23 @@ internal static class ChangeClassifier
         }
 
         return new ChangeReport(findings);
+    }
+
+    private static IReadOnlyList<IPackageableUnit> Where(
+        IReadOnlyList<IPackageableUnit> units,
+        Func<IPackageableUnit, bool> predicate)
+    {
+        var kept = new List<IPackageableUnit>();
+        foreach (var unit in units)
+        {
+            if (!predicate(unit))
+            {
+                continue;
+            }
+
+            kept.Add(unit);
+        }
+
+        return kept;
     }
 }

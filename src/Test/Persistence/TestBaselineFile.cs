@@ -113,6 +113,29 @@ public class TestBaselineFile
         Assert.Equal(["Gadgets", "Widgets"], ids);
     }
 
+    /// <summary>
+    /// UNI-04 - the baseline is signature history, and a unit with no API surface has none. It was
+    /// never extracted, so writing it would persist an empty graph that the next run reads back as
+    /// "everything in it was removed" - a Major, every release, forever.
+    /// </summary>
+    [Fact]
+    public void AUnitWithNoApiSurfaceIsNotWritten()
+    {
+        IPackageableUnit[] units =
+        [
+            Units.Csharp("Widgets", new CsharpProject("Widgets")),
+            Units.Csharp("Tests", new CsharpProject("Tests"), hasPublicApiSurface: false)
+        ];
+
+        var document = BaselineFile.BuildDocument(units, Providers);
+
+        var ids = document.Root!
+            .Elements("Unit")
+            .Select(e => e.Attribute("unitId")!.Value)
+            .ToArray();
+        Assert.Equal(["Widgets"], ids);
+    }
+
     [Fact]
     public void RootCarriesTheFormatVersion()
     {

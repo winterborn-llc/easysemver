@@ -80,7 +80,11 @@ internal static class BaselineFile
         }
 
         File.Move(temporaryPath, path, overwrite: true);
-        Log.WriteLine($"Wrote baseline {MagicValues.SignatureFileName} ({units.Count} units)");
+
+        // What went in, not what was offered: UNI-04 units are versioned but hold no signature, so
+        // counting them here would describe a file that does not exist.
+        var written = document.Root?.Elements(UnitElementName).Count() ?? 0;
+        Log.WriteLine($"Wrote baseline {MagicValues.SignatureFileName} ({written} units)");
     }
 
     /// <summary>Exposed for the round-trip test (TST-M4), which must not touch the disk.</summary>
@@ -96,6 +100,14 @@ internal static class BaselineFile
 
         foreach (var unit in SortUnits(units))
         {
+            // UNI-04. The baseline is signature history, and a unit with no surface has none. It
+            // was never extracted, so writing it would persist an empty graph that the next run
+            // would read back as "everything in it was removed".
+            if (!unit.HasPublicApiSurface)
+            {
+                continue;
+            }
+
             var provider = LanguageProviders.Find(providers, unit.Language)
                            ?? throw new InvalidOperationException(
                                $"No provider is registered for {unit.Language}");

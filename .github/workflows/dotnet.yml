@@ -100,7 +100,7 @@ jobs:
     #
     # That staleness was survivable only while every consumer copied an exact tag, because the
     # manifest and the binary it pins were released together. It stops being survivable the moment
-    # `v16` starts moving: a floating tag whose manifest still pins an old binary hands out the
+    # `v<major>` starts moving: a floating tag whose manifest still pins an old binary hands out the
     # newest wrapper around the oldest tool, and drifts one release further every time.
     #
     # Before the build, so the README inside the nupkg (PKG-08) is the one this release ships.
@@ -269,12 +269,12 @@ jobs:
       run: gh release edit "${tag}" --repo "${GITHUB_REPOSITORY}" --draft=false
 
   # CI-05. `v<major>` follows the newest release of that major, so a consumer can write
-  # `uses: winterborn-llc/easysemver@v16` and keep getting the current v16 without editing their
+  # `uses: winterborn-llc/easysemver@v17` and keep getting the current 17.x without editing their
   # workflow - the same convention `actions/checkout@v5` and every other well-known action uses.
   # GitHub resolves a `uses:` ref literally and does no version matching of its own, so a moving
   # tag is the only mechanism there is.
   #
-  # Last, and only once publish-release has run: this ref is what `@v16` resolves to for everyone,
+  # Last, and only once publish-release has run: this ref is what `@v<major>` resolves to for everyone,
   # so it must never name a release that is still a draft or still missing four of its five
   # archives. When a release does not complete, the right behaviour is the one that happens by
   # itself - the tag stays where it was and consumers stay on the last release that did.

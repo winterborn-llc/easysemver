@@ -172,18 +172,66 @@ IPackageableUnit
   UnitKind        string          // "csproj" | "swiftpm-target" | "xcode-target"
   VersionSources  IReadOnlyList<IVersionSource>   // §14
   Signature       object          // the language-native graph; opaque to the core
+  HasPublicApiSurface  bool       // UNI-04; defaults true
 ```
 `Signature` SHALL be typed per language at the provider boundary (`ICsharpProject`,
 `ISwiftModule`) and never inspected by the neutral core.
 
-**UNI-02 — C# units.** ✅ required
+**UNI-02 — C# units.** ✅ required *(revised 2026-08-09; test projects no longer contribute a surface)*
 One unit per `*.csproj` under the root (preserves DSC-03 semantics minus the exclusions fix).
-Test projects and sample projects still participate — there is deliberately no include/exclude
-configuration.
+Every project participates as a unit and is versioned — sample projects, tools, test projects
+alike — and there is still deliberately no include/exclude configuration. What a C# test project
+does not contribute is an **API surface**, per UNI-04.
 
 **UNI-03 — Swift units.** ✅ required (D-05)
-One unit per SwiftPM **target** and per Xcode **target**. Test targets participate as units
-(they carry versions and their disappearance is a real change), consistent with UNI-02.
+One unit per SwiftPM **target** and per Xcode **target**. Test targets participate as units and
+carry versions, consistent with UNI-02.
+ℹ️ UNI-04 is **not** yet applied to Swift: a SwiftPM or Xcode test target still contributes its
+symbols to the folder's surface. The signals differ per language — `.testTarget` in a manifest, a
+`com.apple.product-type.bundle.unit-test` product type — and neither is read today. The neutral
+half of UNI-04 is in place, so this is a provider change when it is wanted, not a redesign.
+
+**UNI-04 — A versioned unit need not have an API surface.** ✅ required *(added 2026-08-09)*
+A unit MAY carry versions without its public members being a contract. `HasPublicApiSurface`
+SHALL default to **true**, so a unit kind nobody has considered keeps today's behaviour, and a
+unit for which it is false SHALL be:
+
+- **versioned** exactly like any other — its versions seed MVR-03 and are written by MVR-05;
+- **absent from extraction**, so no signature is built for it;
+- **absent from classification**, on both sides: neither the language rules nor the neutral
+  existence rules (NCL-03) see it, so it can be gutted, added or deleted without effect;
+- **absent from the baseline**, because a baseline entry with no signature reads back on the next
+  run as "everything in it was removed".
+
+**A C# unit SHALL have no API surface when its project is a test project**, determined from the
+project file alone:
+
+1. an explicit `<IsTestProject>` property, which wins in both directions; otherwise
+2. a `PackageReference` to `Microsoft.NET.Test.Sdk`, or to a package whose id begins `xunit`,
+   `NUnit` or `MSTest`.
+
+Both are MSBuild's own signals, not configuration this tool defines — (1) is the property
+`dotnet test` already reads, and it is the escape hatch for a library that references a test
+framework on purpose. The project **name** SHALL NOT be consulted: a `Tests` project that is a
+fixture library, and a `Fixtures` project that is a test project, are both commonplace, and a
+filename heuristic gets each of them wrong silently.
+
+The requirement exists because the alternative was measured. This repository released **v17.0.0**
+off the back of two renamed `[Fact]` methods: removing a public member is Major (R02), a test
+project was a unit like any other, and so a test refactor cut a major version of a tool nobody's
+code had a breaking change in. Every consumer with a test project in the versioned folder had the
+same defect (G-23).
+
+ℹ️ The upgrade is handled in the classifier rather than by a baseline format bump. A baseline
+written before this requirement still lists the test projects in full, and they are no longer on
+the comparable side — which reads as a removal, and Major, the first time this version runs.
+Dropping them from the older side by the identity the pairing already uses costs nothing;
+rejecting the baseline outright (the BAS-03 route taken for SIG-03) would have thrown away every
+consumer's signature history and charged them a Minor bump to fix a problem most of them do not
+have.
+ℹ️ One hole is accepted rather than papered over: a pre-UNI-04 baseline listing a test project
+that is *also* deleted in that same release still classifies Major. Both have to happen in one
+release, once, and the next write closes it permanently.
 
 ## 6. Baseline format v2
 

@@ -190,11 +190,12 @@ Reading the verdict is three lines. If what you want is the whole file to paste 
 
 It downloads the standalone binary for the runner's platform, so nothing needs .NET installed.
 
-`@v16` is a moving tag, kept on the newest `16.x` release the way `actions/checkout@v5` is — you
-get fixes and features without editing your workflow, and never a major version you did not ask
-for. Name an exact release tag instead if you would rather nothing changed until you changed it.
-Either way you run the binary published alongside the manifest you pointed at: the release stamps
-the two together, so a moving tag never means a new wrapper around an old tool.
+The `@v<major>` ref above is a moving tag, kept on the newest release of that major the way
+`actions/checkout@v5` is — you get fixes and features without editing your workflow, and never a
+major version you did not ask for. Name an exact release tag instead if you would rather nothing
+changed until you changed it. Either way you run the binary published alongside the manifest you
+pointed at: the release stamps the two together, so a moving tag never means a new wrapper around
+an old tool.
 
 | Input | Default | |
 |-------|---------|-|

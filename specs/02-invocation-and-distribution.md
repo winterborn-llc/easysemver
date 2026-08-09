@@ -282,8 +282,8 @@ around the oldest tool, and drifts one release further every time.
 
 ℹ️ This is the reason the Action could not exist before a release did — the dependency runs from
 the Action to the release, and it cannot be satisfied retroactively.
-ℹ️ The pin and the tag it sits in are now self-referential: the manifest inside `v16.4.2` names
-`v16.4.2`. That is what makes the two refs a consumer can write — the exact tag and the major tag —
+ℹ️ The pin and the tag it sits in are now self-referential: the manifest inside a release tag names
+that release. That is what makes the two refs a consumer can write — the exact tag and the major tag —
 resolve to a matched pair rather than to whatever was last remembered.
 
 **ACT-03 — Platform coverage is exactly PKG-02's.** ✅

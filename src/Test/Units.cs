@@ -6,7 +6,10 @@ namespace Test;
 /// <summary>Hand-built packageable units for the neutral rule tests (TST-M2).</summary>
 internal static class Units
 {
-    internal static IPackageableUnit Csharp(string unitId, object? signature = null)
+    internal static IPackageableUnit Csharp(
+        string unitId,
+        object? signature = null,
+        bool hasPublicApiSurface = true)
     {
         return new PackageableUnit
         {
@@ -15,7 +18,8 @@ internal static class Units
             DisplayName = unitId,
             UnitKind = "csproj",
             RelativePath = $"src/{unitId}/{unitId}.csproj",
-            Signature = signature
+            Signature = signature,
+            HasPublicApiSurface = hasPublicApiSurface
         };
     }
 

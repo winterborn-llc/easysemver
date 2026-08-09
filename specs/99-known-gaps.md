@@ -175,3 +175,24 @@ whole thing rides on and is no part of that step's contract.
 ℹ️ Releases before v16.1.2 keep whatever pin they were published with. They are not wrong — each
 still names a real release — merely older than the tag that contains them.
 *Satisfies:* CI-05. *Relates to:* ACT-02, ACT-10, ACT-11.
+
+**G-23 — Renaming a test method cuts a major release.** ✅ Resolved by **UNI-04**
+UNI-02 made every `.csproj` a unit and UNI-03 said the same of Swift test targets, deliberately:
+they carry versions, and a unit vanishing is a real change. What neither noticed is that a test
+project's *public members* were then part of the folder's API surface, and R02 classifies a removed
+public member as Major.
+
+So this repository released **v17.0.0** for two renamed `[Fact]` methods. Nothing about the tool
+changed for anyone; the CLI, the package and the Action were byte-identical in behaviour to
+v16.1.2. Every consumer with a test project inside the versioned folder had the same defect, and it
+fires on the most ordinary act there is — renaming a test.
+
+Fixed by separating "versioned" from "has an API surface": a test project is still discovered, still
+seeds the version and still gets the new one written into it, and is simply not compared. C# test
+projects are identified from MSBuild's own signals; Swift test targets are **not** covered yet and
+are named as open in UNI-03 rather than implied to be done.
+ℹ️ v17.0.0 is not a mistake to be undone — the release is real and immutable, and the major line is
+where the tool now lives. What is fixed is that the *next* one will not happen the same way.
+ℹ️ The versions of test projects are deliberately still written. They are assemblies that ship in
+a build output and get stamped like anything else; what changed is only whose changes get a vote.
+*Satisfies:* UNI-04. *Relates to:* UNI-02, UNI-03, NCL-03, BAS-01, R02.

@@ -36,7 +36,11 @@ internal class CsharpLanguageProvider : ILanguageProvider
                 DisplayName = Path.GetFileName(projectFilePath),
                 RelativePath = relativePath,
                 UnitKind = CsprojUnitKind,
-                VersionSources = [new CsProjVersionSource(projectFilePath, relativePath)]
+                VersionSources = [new CsProjVersionSource(projectFilePath, relativePath)],
+
+                // UNI-04. Still a unit, and still versioned - only its public members stop being
+                // treated as a contract.
+                HasPublicApiSurface = !CsProjTestProject.Read(projectFilePath)
             });
         }
 

@@ -33,4 +33,16 @@ public interface IPackageableUnit
     /// Opaque here on purpose: only the owning provider ever looks inside it (ML-01).
     /// </summary>
     public object? Signature { get; set; }
+
+    /// <summary>
+    /// UNI-04 - false for a unit that is versioned but whose public members are not a contract
+    /// anyone can depend on: a test project, most obviously. Such a unit still has its versions
+    /// read and written like any other, and is simply absent from signature extraction, from
+    /// classification and from the baseline.
+    /// <para>
+    /// Defaulted to true rather than declared, so that adding it does not break an implementer -
+    /// and so that a unit kind nobody has thought about yet keeps the behaviour it has today.
+    /// </para>
+    /// </summary>
+    public bool HasPublicApiSurface => true;
 }
