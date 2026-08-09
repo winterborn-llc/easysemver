@@ -4809,6 +4809,14 @@
                         </Override>
                      </Overrides>
                   </Method>
+                  <Method name="AFileStagedBeforeTheStepIsCommittedWithTheBump" returns="void">
+                     <Overrides>
+                        <Override returns="void" static="false" virtual="false" abstract="false" override="false" sealed="false" hasDefaultImplementation="false">
+                           <GenericParameters />
+                           <Parameters />
+                        </Override>
+                     </Overrides>
+                  </Method>
                   <Method name="AHostileFolderValueIsNotExecuted" returns="void">
                      <Overrides>
                         <Override returns="void" static="false" virtual="false" abstract="false" override="false" sealed="false" hasDefaultImplementation="false">
@@ -4903,6 +4911,14 @@
                      </Overrides>
                   </Method>
                   <Method name="EveryVersionedFileIsStagedIncludingOnesAGlobWouldMiss" returns="void">
+                     <Overrides>
+                        <Override returns="void" static="false" virtual="false" abstract="false" override="false" sealed="false" hasDefaultImplementation="false">
+                           <GenericParameters />
+                           <Parameters />
+                        </Override>
+                     </Overrides>
+                  </Method>
+                  <Method name="ExactlyOneLineCarriesThePinTheReleaseRewrites" returns="void">
                      <Overrides>
                         <Override returns="void" static="false" virtual="false" abstract="false" override="false" sealed="false" hasDefaultImplementation="false">
                            <GenericParameters />
@@ -5016,6 +5032,14 @@
                         </Override>
                      </Overrides>
                   </Method>
+                  <Method name="TheMajorTagIsMovedOnlyOnceTheReleaseIsPublished" returns="void">
+                     <Overrides>
+                        <Override returns="void" static="false" virtual="false" abstract="false" override="false" sealed="false" hasDefaultImplementation="false">
+                           <GenericParameters />
+                           <Parameters />
+                        </Override>
+                     </Overrides>
+                  </Method>
                   <Method name="ThePlatformTableCoversExactlyTheRuntimesTheReleaseJobPublishes" returns="void">
                      <Overrides>
                         <Override returns="void" static="false" virtual="false" abstract="false" override="false" sealed="false" hasDefaultImplementation="false">
@@ -5024,7 +5048,7 @@
                         </Override>
                      </Overrides>
                   </Method>
-                  <Method name="TheReadmeExamplesNameThePinnedRelease" returns="void">
+                  <Method name="TheReadmeExamplesNameTheMajorTagOfThePinnedRelease" returns="void">
                      <Overrides>
                         <Override returns="void" static="false" virtual="false" abstract="false" override="false" sealed="false" hasDefaultImplementation="false">
                            <GenericParameters />
@@ -5056,7 +5080,7 @@
                         </Override>
                      </Overrides>
                   </Method>
-                  <Method name="TheVersionInputIsPinnedToATagAndDoesNotTrackLatest" returns="void">
+                  <Method name="TheVersionInputIsPinnedToAnExactReleaseAndDoesNotTrackLatest" returns="void">
                      <Overrides>
                         <Override returns="void" static="false" virtual="false" abstract="false" override="false" sealed="false" hasDefaultImplementation="false">
                            <GenericParameters />
