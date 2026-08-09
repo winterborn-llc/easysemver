@@ -2,7 +2,7 @@
 
 ## Product statement
 
-EasySemVer (`Winterborn.Library.EasySemVer`) is a lightweight build-time utility that takes **a
+EasySemVer (`Winterborn.Tools.EasySemVer`) is a lightweight build-time utility that takes **a
 folder**, **automatically computes and applies Semantic Versioning** based on changes to the
 public API surface of everything inside it, and **keeps every version counter in that folder in
 sync** across every language it finds.

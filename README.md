@@ -47,7 +47,7 @@ array: a run with no comparable baseline reports no findings and still classifie
 **As a .NET tool**, if you already have a .NET SDK:
 
 ```bash
-dotnet tool install -g Winterborn.Library.EasySemVer
+dotnet tool install -g Winterborn.Tools.EasySemVer
 ```
 
 **As a standalone binary**, if you don't — a Swift-only repository, for instance. Grab the archive

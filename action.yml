@@ -143,7 +143,7 @@ runs:
         # This name must track EasySemVer.csproj's AssemblyName. ActionRegression asserts that
         # it does, because when the two drifted apart the failure landed here - in a download
         # that unpacked fine and then had nothing to run.
-        mv "$dir/Winterborn.App.EasySemVer$exe" "$dir/easysemver$exe"
+        mv "$dir/Winterborn.Tools.EasySemVer$exe" "$dir/easysemver$exe"
         chmod +x "$dir/easysemver$exe"
         echo "$dir" >> "$GITHUB_PATH"
 

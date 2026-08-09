@@ -9,7 +9,7 @@ Sources: [`Program.cs`](../src/EasySemVer/Program.cs),
 
 **CLI-01 — Deliverable is a console executable.** ✅
 The tool SHALL build as a console executable (`OutputType=Exe`) with assembly name
-`Winterborn.Library.EasySemVer`, multi-targeting `net8.0`, `net9.0`, and `net10.0`
+`Winterborn.Tools.EasySemVer`, multi-targeting `net8.0`, `net9.0`, and `net10.0`
 (`LangVersion` 14). `public static int Main(params string[] args)` is public so tests can invoke
 a run in-process, and returns its exit code rather than calling `Environment.Exit` — see ERR-03.
 

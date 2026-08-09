@@ -10,11 +10,11 @@ into a consuming build — see [INV-01](02-invocation-and-distribution.md).
 
 **PKG-01 — A `dotnet tool` package.** ✅
 The project SHALL pack as a .NET tool (`PackAsTool`) with command name **`easysemver`**, package
-id `Winterborn.Library.EasySemVer`, multi-targeting `net8.0`/`net9.0`/`net10.0` so it runs on
+id `Winterborn.Tools.EasySemVer`, multi-targeting `net8.0`/`net9.0`/`net10.0` so it runs on
 whatever SDK a consumer already has:
 
 ```bash
-dotnet tool install -g Winterborn.Library.EasySemVer
+dotnet tool install -g Winterborn.Tools.EasySemVer
 easysemver /path/to/folder
 ```
 
