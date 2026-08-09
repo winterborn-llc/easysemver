@@ -68,12 +68,24 @@ repository URL `https://github.com/winterborn-llc/easysemver`, and the MIT licen
 ## Continuous integration / publishing
 
 **CI-01 — Pipeline.** ✅
-On every push to `main`, CI SHALL version the repository, restore, build `Release`, run the unit
-suite, run the integration suite, commit and tag the bump, and push the tool package to nuget.org
-with `--skip-duplicate` (idempotent republish). The build job runs on `macos-latest` because the
-Swift-traited tests need a Swift toolchain and Xcode.
-ℹ️ The integration step mutates the working copy by design (TST-05), which is why the commit stages
-exactly what the run reported writing (REP-10) and never `git add -u`.
+On every push to `main`, CI SHALL restore, build `Release`, run the unit suite and run the
+integration suite; and then, only if all of that passed, version the repository, commit and tag
+the bump, and push the tool package to nuget.org with `--skip-duplicate` (idempotent republish).
+ℹ️ Build-and-test is a [reusable workflow](../.github/workflows/build-and-test.yml) on
+`macos-latest`, because the Swift-traited suites need a Swift toolchain and Xcode. The release job
+that consumes it runs on `ubuntu-latest`: nothing it does — versioning, building the tool,
+committing, tagging, publishing — needs macOS, and confining that requirement to the one job that
+has it is what allows the split. The `needs:` edge carries the guarantee that step order used to:
+nothing is committed, tagged or published until the suite has passed on that commit.
+
+**CI-01a — Every other branch runs the same check.** ✅
+Every push to a branch other than `main` SHALL run the same build-and-test workflow, via
+[ci.yml](../.github/workflows/ci.yml), so a branch cannot go green against a weaker suite than the
+one guarding `main`. `main` is excluded from that trigger because CI-01 already covers it, and
+`pull_request` is not a trigger because for a branch in this repository it would only double the
+run. A pull request from a fork is consequently not built.
+ℹ️ Branch runs cancel in progress; the release pipeline does not. A superseded branch check
+describes a commit you have already replaced, whereas a half-finished release does not.
 ℹ️ One release at a time (`concurrency: release`, `cancel-in-progress: false`). Two pushes landing
 together would otherwise seed from the same version, compute the same next one, and race to push
 it; a half-finished release is worse than a queued one.

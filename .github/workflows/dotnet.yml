@@ -20,10 +20,20 @@ env:
   project: EasySemVer
 
 jobs:
+  # The same reusable job ci.yml runs on every other branch, so main is not held to a different
+  # standard than the branches that merge into it. It is the only job here that needs macOS - the
+  # Swift and Xcode suites want a real toolchain - which is exactly why it is separated from the
+  # release below rather than sharing a runner with it.
+  test:
+    uses: ./.github/workflows/build-and-test.yml
+
   build:
-    # macOS, because the Swift-traited tests need a Swift toolchain and Xcode. Everything else
-    # runs anywhere.
-    runs-on: macos-latest
+    # Nothing below needs macOS: the tests that did are behind `needs`, and this job only versions,
+    # builds the tool, commits, tags and publishes. `needs: test` is what preserves the invariant
+    # that used to come from step order in a single job - nothing is committed, tagged or pushed
+    # until the whole suite has passed on this commit.
+    needs: test
+    runs-on: ubuntu-latest
 
     # `id-token: write` lets nuget.org verify this workflow over OIDC (see the publish step);
     # `contents: write` is for pushing the version commit and the tag. Naming any permission
@@ -71,33 +81,19 @@ jobs:
     # mis-versioning the one that introduced it.
     #
     # ACT-12 is why this is two steps and not one. The version has to be stamped before the build
-    # so the nupkg carries it, and nothing may be committed until the tests below have passed - a
-    # single step would force one of those to give. Nothing is committed yet: if the build or the
-    # tests fail, the run dies and the working copy goes with the runner.
+    # so the nupkg carries it, and nothing may be committed until that build has succeeded - a
+    # single step would force one of those to give. Nothing is committed yet: if the build fails,
+    # the run dies and the working copy goes with the runner.
     # ------------------------------------------------------------------------------------------
     - name: Compute and apply the version
       id: version
       uses: ./
 
-    - name: Restore dependencies
-      working-directory: ./src
-      run: dotnet restore
-
-    - name: Build
-      working-directory: ./src
-      run: dotnet build --no-restore --configuration ${{ env.configuration }}
-
-    - name: Unit tests
-      working-directory: ./src
-      run: dotnet test Test/Test.csproj --no-build --verbosity normal --configuration ${{ env.configuration }}
-
-    # Runs the tool against this repository and against fixture trees, so it mutates the working
-    # copy on purpose (TST-05). That is exactly why the release step below stages what the run
-    # reported writing (REP-10) rather than `git add -u`, which would sweep this step's debris
-    # into the release commit.
-    - name: Integration tests
-      working-directory: ./src
-      run: dotnet test IntegrationTest/IntegrationTest.csproj --no-build --verbosity normal --configuration ${{ env.configuration }}
+    # Just the tool, not the whole solution: the test projects were built and run by the `test`
+    # job, and this job exists to produce one nupkg. GeneratePackageOnBuild puts it in bin, so
+    # there is no separate pack step, and the implicit restore makes this one step rather than two.
+    - name: Build the package
+      run: dotnet build src/${{ env.project }}/${{ env.project }}.csproj --configuration ${{ env.configuration }}
 
     # CI-03. Git before nuget.org, because a package cannot be unpublished. If someone pushed to
     # main while this ran, this push is rejected and the run fails having published nothing -
@@ -151,11 +147,10 @@ jobs:
 
     env:
       tag: v${{ needs.build.outputs.version }}
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     steps:
     - name: Create the release for ${{ env.tag }}
-      env:
-        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: >
         gh release view "${tag}" --repo "${GITHUB_REPOSITORY}" > /dev/null 2>&1 ||
         gh release create "${tag}" --repo "${GITHUB_REPOSITORY}"
@@ -172,6 +167,7 @@ jobs:
 
     env:
       tag: v${{ needs.build.outputs.version }}
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     strategy:
       matrix:
@@ -208,8 +204,6 @@ jobs:
         fi
 
     - name: Attach to the release
-      env:
-        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: gh release upload "${tag}" easysemver-${{ matrix.runtime }}.* --clobber
 
   # Publishing is what makes the release immutable, so it happens last, once all five archives
@@ -223,9 +217,8 @@ jobs:
 
     env:
       tag: v${{ needs.build.outputs.version }}
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     steps:
     - name: Publish the release for ${{ env.tag }}
-      env:
-        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: gh release edit "${tag}" --repo "${GITHUB_REPOSITORY}" --draft=false

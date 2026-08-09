@@ -1,0 +1,52 @@
+name: Build and test
+
+# Reusable rather than triggered. This is the whole of the check on every branch (ci.yml) *and*
+# the gate in front of a release (dotnet.yml), from one copy - so a branch cannot go green against
+# a weaker suite than the one guarding main, and neither can drift into testing less than the
+# other.
+on:
+  workflow_call:
+
+env:
+  configuration: Release
+
+jobs:
+  build-and-test:
+    # macOS, and only this job. The Swift-traited suites shell out to a real toolchain and the
+    # Xcode one needs `xcodebuild`; nothing else in this repository's pipeline does. Keeping that
+    # requirement inside one job is what lets the release that depends on it run on Linux.
+    runs-on: macos-latest
+
+    # Read-only: this job compiles and tests. Everything that writes - the version commit, the
+    # tag, the package, the release - is in dotnet.yml, downstream of this passing.
+    permissions:
+      contents: read
+
+    steps:
+    # No `fetch-depth: 0` here, unlike the release job. Nothing in the suite reads git history:
+    # the regression fixtures are generated in temp directories and ActionRegression reads
+    # action.yml, README.md and dotnet.yml off the checked-out tree.
+    - uses: actions/checkout@v5
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v5
+      with:
+        dotnet-version: 10.0.x
+
+    - name: Restore dependencies
+      working-directory: ./src
+      run: dotnet restore
+
+    - name: Build
+      working-directory: ./src
+      run: dotnet build --no-restore --configuration ${{ env.configuration }}
+
+    - name: Unit tests
+      working-directory: ./src
+      run: dotnet test Test/Test.csproj --no-build --verbosity normal --configuration ${{ env.configuration }}
+
+    # Both live suites copy src/TestFixtures into a temp directory before touching anything, and
+    # the C# regressions generate their trees from scratch, so this leaves the working copy clean.
+    - name: Integration tests
+      working-directory: ./src
+      run: dotnet test IntegrationTest/IntegrationTest.csproj --no-build --verbosity normal --configuration ${{ env.configuration }}

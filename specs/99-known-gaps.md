@@ -60,6 +60,8 @@ the persisted graph, and no parallel DTO tree exists to drift.
 **G-05 — CI workflow is stale and cannot go green.** ✅ Resolved by the §17 workflow rewrite:
 `env.project` is `EasySemVer`, the SDK is `10.0.x`, the runner is `macos-latest` so the Swift
 suite can run, and the unit and integration suites are separate steps.
+ℹ️ Since split out: build-and-test is a reusable workflow still on `macos-latest`, and the release
+job that depends on it runs on `ubuntu-latest` (CI-01).
 *Satisfies:* CI-01.
 
 **G-06 — CLI directory argument is ignored.** ✅ Resolved by **FLD-01**

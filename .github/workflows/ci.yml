@@ -1,0 +1,23 @@
+name: CI
+
+# Every branch except main. main is deliberately absent: a push there runs .NET (dotnet.yml),
+# which calls the same reusable job as the gate in front of its release. Listing main here too
+# would run the identical suite twice for one push.
+#
+# `pull_request` is deliberately absent as well. For a branch in this repository the push above
+# already covers it, and adding the trigger would double every run for the length of the PR. A
+# pull request from a *fork* is therefore not built here - if this repository starts taking them,
+# that is the trigger to add, and the reason to add it.
+on:
+  push:
+    branches-ignore: [ main ]
+
+# One run per branch. Unlike the release pipeline this cancels: a superseded run of a branch check
+# is telling you about a commit you have already replaced.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-and-test:
+    uses: ./.github/workflows/build-and-test.yml
