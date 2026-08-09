@@ -4918,6 +4918,22 @@
                         </Override>
                      </Overrides>
                   </Method>
+                  <Method name="NoInputDescriptionCarriesAnExpression" returns="void">
+                     <Overrides>
+                        <Override returns="void" static="false" virtual="false" abstract="false" override="false" sealed="false" hasDefaultImplementation="false">
+                           <GenericParameters />
+                           <Parameters />
+                        </Override>
+                     </Overrides>
+                  </Method>
+                  <Method name="OutputValuesAreStillExpressions" returns="void">
+                     <Overrides>
+                        <Override returns="void" static="false" virtual="false" abstract="false" override="false" sealed="false" hasDefaultImplementation="false">
+                           <GenericParameters />
+                           <Parameters />
+                        </Override>
+                     </Overrides>
+                  </Method>
                   <Method name="RenamingThePublishedBinaryDoesNotBreakIt" returns="void">
                      <Overrides>
                         <Override returns="void" static="false" virtual="false" abstract="false" override="false" sealed="false" hasDefaultImplementation="false">
@@ -4987,6 +5003,16 @@
                         <Override returns="void" static="false" virtual="false" abstract="false" override="false" sealed="false" hasDefaultImplementation="false">
                            <GenericParameters />
                            <Parameters />
+                        </Override>
+                     </Overrides>
+                  </Method>
+                  <Method name="TheDocumentedReleaseStepsAreTheOnesThisRepositoryRuns" returns="void">
+                     <Overrides>
+                        <Override returns="void" static="false" virtual="false" abstract="false" override="false" sealed="false" hasDefaultImplementation="false">
+                           <GenericParameters />
+                           <Parameters>
+                              <Parameter name="opening" type="string" required="true" refKind="None" params="false" />
+                           </Parameters>
                         </Override>
                      </Overrides>
                   </Method>
