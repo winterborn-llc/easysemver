@@ -145,20 +145,21 @@ two dry runs produce byte-identical reports, and that a failed run leaves no rep
 `Experimental.cs` and its hard-coded `/Users/andrew/…` path are deleted, as are the
 `Test.csproj` content references to the non-existent `SampleCsProj.xml` / `TargetCsProj.xml`.
 
-**TST-06 — Verification snapshot (2026-08-03).** ℹ️
-.NET SDK 10.0.100, Swift 6.3.3, macOS:
+**TST-06 — Verification snapshot (2026-08-09).** ℹ️
+.NET SDK 10.0.100, Swift 6.3.3, macOS 26.5.2:
 
 | Suite | Result |
 |-------|--------|
 | `dotnet build` | ✅ success — **no warnings** (`NU5129` went with PKG-05) |
 | `Test` (unit) | ✅ **528/528 passed** |
-| `IntegrationTest` | ✅ **62/62 passed** (6 `Regression`, 9 `JsonReportRegression`, 40 `ActionRegression`, 4 SwiftPM, 3 Xcode) |
+| `IntegrationTest` | ✅ **65/65 passed** (6 `Regression`, 9 `JsonReportRegression`, 43 `ActionRegression`, 4 SwiftPM, 3 Xcode) |
 
 ℹ️ `ActionRegression` (ACT-09) needs `bash` and `tar`, which every GitHub-hosted runner has (`jq`
 went with the `jq` block CLI-10 removed from `action.yml`);
 it is traited `Toolchain=Bash` so a machine without them can exclude it the way the Swift tests are
-excluded. Filtering it out costs 15 tests, and the whole integration suite takes about 18 minutes
-because of the Swift ones — `--filter Toolchain!=Swift` runs the other 27 in seconds.
+excluded. Filtering it out costs 43 tests. The seven Swift ones dominate the wall clock rather than
+the count: `--filter Toolchain!=Swift` runs the other 58 in about 20 seconds, against a minute and
+a quarter for the whole suite.
 
 ℹ️ The Swift-traited tests shell out to `swift` and `xcodebuild` and are therefore sensitive to
 machine load: on a box already saturated with another Swift build they will hit the five-minute

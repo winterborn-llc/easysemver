@@ -113,3 +113,34 @@ immutable release`, HTTP 422 — so any asset attached afterwards fails. A draft
 everyone but the repository's maintainers, which is the correct state for a release that has no
 binaries on it yet. Creation is idempotent, because re-running the workflow is exactly what you do
 when one of the five publishes fails.
+
+**CI-05 — `v<major>` follows the newest release.** ✅ *(added 2026-08-09)*
+Once CI-04 has published a release, CI SHALL force-move the lightweight tag `v<major>` onto the
+commit that release was cut from, so that `uses: winterborn-llc/easysemver@v16` resolves to the
+current `16.x`. GitHub Actions resolves a `uses:` ref literally and performs no version matching of
+its own, so a moving tag is the only mechanism there is; it is the convention `actions/checkout@v5`
+and every other well-known action follows.
+
+Two things move with it, stamped by the same run rather than remembered:
+
+- **ACT-02's `version` default**, rewritten to the release being cut, so the manifest inside a tag
+  pins the binary released beside it. Without this the moving tag is hollow — it would hand out a
+  fresh wrapper around whichever binary was last hand-pinned, and the gap would widen every
+  release.
+- **The README's `uses:` refs**, rewritten to `v<major>`, so a major bump cannot leave the
+  documentation pointing at a major this repository has moved off.
+
+Both are staged before the ACT-11 commit step and ride into the release commit on it, which works
+because that step commits the index rather than a pathspec. That is not part of ACT-11's contract,
+so `ActionRegression` asserts it directly rather than trusting it.
+
+The move SHALL be the **last** thing the pipeline does. This ref is what `@v16` resolves to for
+every consumer, so it must never name a draft, or a release still missing four of its five
+archives. A run that dies half-built therefore leaves the tag where it was, and consumers on the
+last release that completed — the correct outcome, reached by doing nothing.
+
+ℹ️ It is deliberately not folded into ACT-11's `tag: true`. That tag is half of CI-03's atomic
+push, where a force-moved ref has no business being, and it is pushed long before any binary exists.
+ℹ️ A bare `v16` is invisible to the seeding in
+[`GitTagVersionSource`](../src/EasySemVer/CodeReader/Swift/GitTagVersionSource.cs), which matches
+`v?MAJOR.MINOR.PATCH` only. Even if it were read it could not seed above the release it names.

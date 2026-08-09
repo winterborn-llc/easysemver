@@ -43,9 +43,12 @@ jobs:
       contents: write
 
     # The version this run computed, for the release jobs below. They cannot read it from
-    # `github.ref_name` any more, because nothing tag-shaped triggered them.
+    # `github.ref_name` any more, because nothing tag-shaped triggered them. `major` is published
+    # by the action in its own right (ACT-05), so the major-tag job below never has to take a
+    # substring of a version string and hope.
     outputs:
       version: ${{ steps.version.outputs.version }}
+      major: ${{ steps.version.outputs.major }}
 
     steps:
     # Full history and tags: EasySemVer seeds from the highest version it can find, and git tags
@@ -88,6 +91,48 @@ jobs:
     - name: Compute and apply the version
       id: version
       uses: ./
+
+    # ------------------------------------------------------------------------------------------
+    # CI-05. The manifest about to be tagged is repointed at the release this run is cutting, and
+    # the README's `uses:` refs at the major tag that will name it. Both were hand-edited until
+    # now, and both were routinely wrong: `action.yml` still pinned v16.1.1 on the day v16.1.2 was
+    # the newest release.
+    #
+    # That staleness was survivable only while every consumer copied an exact tag, because the
+    # manifest and the binary it pins were released together. It stops being survivable the moment
+    # `v16` starts moving: a floating tag whose manifest still pins an old binary hands out the
+    # newest wrapper around the oldest tool, and drifts one release further every time.
+    #
+    # Before the build, so the README inside the nupkg (PKG-08) is the one this release ships.
+    #
+    # `git add` rather than a commit of its own: the release step below stages what the run wrote
+    # (REP-10) and then commits *everything staged*, so these two ride along into the release
+    # commit and are inside the tag. ActionRegression pins that behaviour, because it is the whole
+    # mechanism here and nothing in the action's own contract says so.
+    # ------------------------------------------------------------------------------------------
+    - name: Repoint the manifest and the README at this release
+      env:
+        version: ${{ steps.version.outputs.version }}
+        major: ${{ steps.version.outputs.major }}
+      run: |
+        # The ref's character class is spelled out rather than "everything up to the next space",
+        # so a ref written mid-sentence does not swallow the backtick or full stop after it.
+        sed -i "s|^    default: v.*|    default: v${version}|" action.yml
+        sed -i "s|winterborn-llc/easysemver@v[A-Za-z0-9._-]*|winterborn-llc/easysemver@v${major}|g" README.md
+
+        # Asserted, not assumed. A rename or a reformat that stopped either pattern matching would
+        # ship a stale pin in silence, which is the exact failure this step exists to end.
+        if ! grep -qx "    default: v${version}" action.yml; then
+          echo "::error::action.yml's version pin was not rewritten to v${version} - check the sed pattern in this step against the file." >&2
+          exit 1
+        fi
+
+        if grep -o 'winterborn-llc/easysemver@[A-Za-z0-9._-]*' README.md | grep -qv "@v${major}$"; then
+          echo "::error::README.md still carries a uses: ref that is not @v${major}." >&2
+          exit 1
+        fi
+
+        git add action.yml README.md
 
     # Just the tool, not the whole solution: the test projects were built and run by the `test`
     # job, and this job exists to produce one nupkg. GeneratePackageOnBuild puts it in bin, so
@@ -222,3 +267,38 @@ jobs:
     steps:
     - name: Publish the release for ${{ env.tag }}
       run: gh release edit "${tag}" --repo "${GITHUB_REPOSITORY}" --draft=false
+
+  # CI-05. `v<major>` follows the newest release of that major, so a consumer can write
+  # `uses: winterborn-llc/easysemver@v16` and keep getting the current v16 without editing their
+  # workflow - the same convention `actions/checkout@v5` and every other well-known action uses.
+  # GitHub resolves a `uses:` ref literally and does no version matching of its own, so a moving
+  # tag is the only mechanism there is.
+  #
+  # Last, and only once publish-release has run: this ref is what `@v16` resolves to for everyone,
+  # so it must never name a release that is still a draft or still missing four of its five
+  # archives. When a release does not complete, the right behaviour is the one that happens by
+  # itself - the tag stays where it was and consumers stay on the last release that did.
+  #
+  # Deliberately not folded into the `tag: true` above. That tag is half of CI-03's atomic push,
+  # where a force-moved ref has no business being, and it has to be pushed long before the
+  # binaries exist.
+  major-tag:
+    needs: [ build, publish-release ]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    env:
+      major: v${{ needs.build.outputs.major }}
+
+    steps:
+    # The release tag rather than the triggering commit, so the major tag names exactly the commit
+    # the release was cut from - the one carrying the version bump and the repointed manifest.
+    - uses: actions/checkout@v5
+      with:
+        ref: v${{ needs.build.outputs.version }}
+
+    - name: Move ${{ env.major }} to v${{ needs.build.outputs.version }}
+      run: |
+        git tag --force "${major}"
+        git push --force origin "${major}"

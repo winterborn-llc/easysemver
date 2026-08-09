@@ -155,3 +155,23 @@ NuGet package at that version are unaffected — only the manifest.
 ℹ️ Nothing was published by the failed run. CI-03's ordering held: it died before the version step,
 so no commit, no tag, and nothing on nuget.org.
 *Relates to:* ACT-02, ACT-09, ACT-10, ACT-13.
+
+**G-22 — The pinned version and the README refs go stale between releases.** ✅ Resolved by **CI-05**
+ACT-02's `version` default and the README's `uses:` refs were hand-edited, in a commit separate from
+the release that made them true. They were consequently wrong most of the time: `action.yml` pinned
+`v16.1.1` while v16.1.2 was the newest release, and every README example told a reader to copy a tag
+one release behind the one the pin would download.
+
+Nothing broke, because an exact tag names a manifest and a binary that shipped together whichever
+release that was — which is precisely why it went unnoticed. It became load-bearing the moment a
+moving `v16` was wanted: a floating tag over a hand-pinned manifest hands out the newest wrapper
+around the oldest tool, and widens the gap on every release.
+
+Fixed by stamping both in the release run itself, staged into the release commit so they are inside
+the tag, and by three assertions in `ActionRegression` — that exactly one line in `action.yml` looks
+like the pin the rewrite targets, that the README's refs are the major tag of that pin, and that a
+file staged before the ACT-11 commit step reaches the commit at all, which is the mechanism the
+whole thing rides on and is no part of that step's contract.
+ℹ️ Releases before v16.1.2 keep whatever pin they were published with. They are not wrong — each
+still names a real release — merely older than the tag that contains them.
+*Satisfies:* CI-05. *Relates to:* ACT-02, ACT-10, ACT-11.

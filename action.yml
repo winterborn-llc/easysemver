@@ -56,10 +56,12 @@ inputs:
 
   version:
     description: >-
-      The EasySemVer release tag to run. Pinned deliberately rather than defaulting to the
-      latest release, so a workflow's behaviour cannot change under it without an edit.
+      The EasySemVer release tag to run. Always an exact release, never 'latest', so that a
+      workflow pinned to a tag of this action cannot change behaviour under its author. The
+      release pipeline rewrites the default below to the release it is cutting, which is what
+      lets the moving 'v<major>' tag carry a manifest and a binary from the same release.
     required: false
-    default: v16.1.1
+    default: v16.1.2
 
   token:
     description: >-

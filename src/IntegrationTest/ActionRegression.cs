@@ -371,27 +371,43 @@ public class ActionRegression : IDisposable
     }
 
     /// <summary>
-    /// ACT-02 - the version input is a fixed tag. A default of <c>latest</c> would make every
-    /// consumer's build change under them the next time this repository cut a release.
+    /// ACT-02 - the version input is one exact release, never a floating ref. A default of
+    /// <c>latest</c>, or of the moving <c>v16</c> tag CI-05 maintains, would make every consumer's
+    /// build change under them the next time this repository cut a release.
     /// </summary>
     [Fact]
-    public void TheVersionInputIsPinnedToATagAndDoesNotTrackLatest()
+    public void TheVersionInputIsPinnedToAnExactReleaseAndDoesNotTrackLatest()
     {
-        var version = Setting("version", "default");
-
-        Assert.StartsWith("v", version);
-        Assert.DoesNotContain("latest", version);
+        Assert.Matches(@"^v[0-9]+\.[0-9]+\.[0-9]+$", Setting("version", "default"));
     }
 
     /// <summary>
-    /// ACT-02 - the pinned default and every <c>uses:</c> in the README name the same release.
-    /// They have to move together when a tag is cut, and a README example naming a tag with no
-    /// release behind it is a copy-paste that fails in someone else's workflow, not in ours.
+    /// CI-05 - exactly one line in the manifest looks like the pin, because the release rewrites
+    /// it with a <c>sed</c> anchored on <c>^    default: v</c>. A second line matching that pattern
+    /// would be rewritten alongside it, and a reformat that stopped this one matching would ship a
+    /// stale pin - the release step greps for the result, but this fails at the commit that broke
+    /// it rather than at the release that would have shipped it.
     /// </summary>
     [Fact]
-    public void TheReadmeExamplesNameThePinnedRelease()
+    public void ExactlyOneLineCarriesThePinTheReleaseRewrites()
+    {
+        var matching = File.ReadAllLines(Path.Combine(RepositoryRoot, "action.yml"))
+            .Where(line => line.StartsWith("    default: v", StringComparison.Ordinal));
+
+        Assert.Equal(["    default: " + Setting("version", "default")], matching);
+    }
+
+    /// <summary>
+    /// CI-05 - every <c>uses:</c> in the README names the moving major tag of the pinned release.
+    /// The two are stamped by the same release step and cannot be edited apart; what this catches
+    /// is that step's sed silently matching nothing, which would leave the README pointing at a
+    /// major this repository has moved off.
+    /// </summary>
+    [Fact]
+    public void TheReadmeExamplesNameTheMajorTagOfThePinnedRelease()
     {
         var readme = File.ReadAllText(Path.Combine(RepositoryRoot, "README.md"));
+        var pinned = Setting("version", "default");
 
         var referenced = Regex.Matches(readme, @"winterborn-llc/easysemver@(\S+)")
             .Select(match => match.Groups[1].Value)
@@ -399,7 +415,27 @@ public class ActionRegression : IDisposable
             .ToList();
 
         Assert.NotEmpty(referenced);
-        Assert.All(referenced, reference => Assert.Equal(Setting("version", "default"), reference));
+        Assert.All(referenced, reference => Assert.Equal(pinned[..pinned.IndexOf('.')], reference));
+    }
+
+    /// <summary>
+    /// CI-05 - the moving tag is what the README's <c>@v16</c> resolves to, so it may only be moved
+    /// once the release it names is published with all five archives on it. A release that dies
+    /// half-built leaves the tag where it was, and consumers on the last one that completed.
+    /// </summary>
+    [Fact]
+    public void TheMajorTagIsMovedOnlyOnceTheReleaseIsPublished()
+    {
+        var workflow = (Dictionary<object, object>)new DeserializerBuilder().Build()
+            .Deserialize<object>(File.ReadAllText(
+                Path.Combine(RepositoryRoot, ".github", "workflows", "dotnet.yml")))!;
+
+        var job = (Dictionary<object, object>)Section(workflow, "jobs")["major-tag"];
+
+        Assert.Contains("publish-release", ((List<object>)job["needs"]).Cast<string>());
+
+        var script = (string)((Dictionary<object, object>)((List<object>)job["steps"])[^1])["run"];
+        Assert.Contains("git push --force origin", script);
     }
 
     /// <summary>
@@ -845,6 +881,37 @@ public class ActionRegression : IDisposable
         var committed = this.Git(this.RemoteOf(folder), "show", "--name-only", "--pretty=", "main").Output;
         Assert.DoesNotContain("test-debris.txt", committed);
         Assert.DoesNotContain("Widget.cs", committed);
+        Assert.Contains("Widgets.csproj", committed);
+    }
+
+    /// <summary>
+    /// The exact counterpart of the test above, and the mechanism CI-05 rides on: what is *staged*
+    /// before the step goes into the release commit, because the step stages REP-10's paths and
+    /// then commits everything in the index rather than those paths alone.
+    /// <para>
+    /// This repository stages a repointed <c>action.yml</c> and <c>README.md</c> that way, so that
+    /// the manifest inside a release tag pins the release it belongs to. Nothing in the action's
+    /// contract promises the behaviour, and hardening the commit to a pathspec would silently stop
+    /// it - the pin would go stale again and the only symptom would be `@v16` handing out an
+    /// increasingly old binary.
+    /// </para>
+    /// </summary>
+    [Fact]
+    public void AFileStagedBeforeTheStepIsCommittedWithTheBump()
+    {
+        var folder = this.CreateRepository();
+
+        var run = this.InstallAndRun(folder, "false");
+        Assert.True(run.ExitCode == 0, run.Output);
+
+        File.WriteAllText(Path.Combine(folder, "manifest.yml"), "default: v2.4.0\n");
+        this.Git(folder, "add", "manifest.yml");
+
+        var result = this.RunCommitStep(folder, commit: "true", tag: "false");
+        Assert.True(result.ExitCode == 0, result.Output);
+
+        var committed = this.Git(this.RemoteOf(folder), "show", "--name-only", "--pretty=", "main").Output;
+        Assert.Contains("manifest.yml", committed);
         Assert.Contains("Widgets.csproj", committed);
     }
 

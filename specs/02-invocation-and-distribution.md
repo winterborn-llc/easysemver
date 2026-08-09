@@ -266,13 +266,25 @@ self-contained native binary (PKG-02), so a Docker action would add an image pul
 would add a second language plus a committed `dist/` bundle to keep in sync with source — neither
 buys anything here. Composite also runs on every runner OS, which a Docker action does not.
 
-**ACT-02 — It runs the published binary, at a pinned version.** ✅
+**ACT-02 — It runs the published binary, at a pinned version.** ✅ *(revised 2026-08-09; the pin is now stamped, not hand-edited)*
 The Action SHALL obtain the tool by downloading the PKG-02 release archive for the runner's
-platform, for the tag named by the `version` input. That input SHALL default to a specific tag and
-SHALL NOT track the latest release: a workflow that silently changed behaviour when this repository
-cut a release would make every consumer's build non-reproducible.
+platform, for the tag named by the `version` input. That input SHALL default to **one exact
+release** — `v<major>.<minor>.<patch>`, never `latest` and never CI-05's moving `v<major>` — so that
+a workflow naming a fixed ref of this Action cannot change behaviour under its author.
+
+The default SHALL be **the release the manifest was published in**, and CI-05 stamps it there
+rather than leaving it to be remembered. Hand-editing it was the previous requirement and it did
+not hold: `action.yml` still pinned v16.1.1 on the day v16.1.2 was the newest release. That was
+survivable only while every consumer copied an exact tag, because the manifest and the binary it
+pins were released together either way. It stops being survivable once `v<major>` moves, which is
+the whole of CI-05: a floating tag whose manifest pins an old binary hands out the newest wrapper
+around the oldest tool, and drifts one release further every time.
+
 ℹ️ This is the reason the Action could not exist before a release did — the dependency runs from
 the Action to the release, and it cannot be satisfied retroactively.
+ℹ️ The pin and the tag it sits in are now self-referential: the manifest inside `v16.4.2` names
+`v16.4.2`. That is what makes the two refs a consumer can write — the exact tag and the major tag —
+resolve to a matched pair rather than to whatever was last remembered.
 
 **ACT-03 — Platform coverage is exactly PKG-02's.** ✅
 The Action SHALL resolve `linux-x64`, `linux-arm64`, `osx-x64`, `osx-arm64` and `win-x64` from the
@@ -445,8 +457,10 @@ that only shows up on a release: staged too little, tagged the wrong commit, pus
 ℹ️ This makes the tool's own pipeline evidence rather than an example. Documentation that is not
 executed rots quietly, and the failure lands in someone else's workflow, on a copy-paste, in a
 repository we never see.
-ℹ️ The `uses:` ref here, the README's other examples and ACT-02's pinned `version` default SHALL name
-one release, asserted by the same test. They move together when a tag is cut.
+ℹ️ The `uses:` ref here and the README's other examples SHALL name CI-05's moving major tag, and
+ACT-02's `version` default SHALL name the exact release inside that major — asserted together, so
+the ref a consumer copies always resolves to the manifest whose pin was checked. All of it is
+stamped by the release rather than edited, which is what stopped the three drifting apart.
 ℹ️ Adoption took two commits, and had to: ACT-02's Action runs a *published* binary, so a block
 depending on CLI-10 and REP-10 could not land in the same commit as CLI-10 and REP-10 — the release
 providing them did not exist yet. The first commit shipped the capability and its own run published

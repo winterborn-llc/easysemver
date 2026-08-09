@@ -183,12 +183,18 @@ Reading the verdict is three lines. If what you want is the whole file to paste 
 - uses: actions/checkout@v4
 
 - id: version
-  uses: winterborn-llc/easysemver@v16.1.1
+  uses: winterborn-llc/easysemver@v16
 
 - run: echo "${{ steps.version.outputs.change-type }} → ${{ steps.version.outputs.version }}"
 ```
 
 It downloads the standalone binary for the runner's platform, so nothing needs .NET installed.
+
+`@v16` is a moving tag, kept on the newest `16.x` release the way `actions/checkout@v5` is — you
+get fixes and features without editing your workflow, and never a major version you did not ask
+for. Name an exact release tag instead if you would rather nothing changed until you changed it.
+Either way you run the binary published alongside the manifest you pointed at: the release stamps
+the two together, so a moving tag never means a new wrapper around an old tool.
 
 | Input | Default | |
 |-------|---------|-|
@@ -197,7 +203,7 @@ It downloads the standalone binary for the runner's platform, so nothing needs .
 | `commit` | `false` | `true` commits the bump and pushes it |
 | `tag` | `false` | `true` also creates and pushes `v<version>`. Needs `commit: true` |
 | `report` | — | Act on an earlier step's `report` output instead of versioning again |
-| `version` | pinned | Which EasySemVer release to run |
+| `version` | the release this manifest shipped with | Which EasySemVer release to run |
 | `token` | `${{ github.token }}` | Only needs overriding if this repository is private to you |
 
 | Output | Example |
@@ -238,7 +244,7 @@ path, no project, no branch and no language:
 ```yaml
 - name: Version, commit and tag
   id: version
-  uses: winterborn-llc/easysemver@v16.1.1
+  uses: winterborn-llc/easysemver@v16
   with:
     commit: true
     tag: true
@@ -255,12 +261,12 @@ one's report and it commits that verdict instead of computing a new one:
 ```yaml
 - name: Compute and apply the version
   id: version
-  uses: winterborn-llc/easysemver@v16.1.1
+  uses: winterborn-llc/easysemver@v16
 
 # ...restore, build, test...
 
 - name: Commit and tag the release
-  uses: winterborn-llc/easysemver@v16.1.1
+  uses: winterborn-llc/easysemver@v16
   with:
     commit: true
     tag: true
@@ -330,14 +336,14 @@ jobs:
 
     - name: Compute and apply the version
       id: version
-      uses: winterborn-llc/easysemver@v16.1.1
+      uses: winterborn-llc/easysemver@v16
 
     # Your build, your tests, your packaging. The version is already stamped on disk, so
     # whatever you produce here carries it — and nothing has been committed yet, so a failure
     # anywhere in between releases nothing.
 
     - name: Commit and tag the release
-      uses: winterborn-llc/easysemver@v16.1.1
+      uses: winterborn-llc/easysemver@v16
       with:
         commit: true
         tag: true
