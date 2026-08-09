@@ -3857,6 +3857,7 @@
                   <Property name="IsDryRun" type="bool" readable="true" writable="true" initOnly="true" static="false" required="false" hasDefaultImplementation="false" />
                   <Property name="NewVersion" type="Winterborn.Tools.EasySemVer.Reporting.JsonReportVersion" readable="true" writable="true" initOnly="true" static="false" required="false" hasDefaultImplementation="false" />
                   <Property name="OldVersion" type="Winterborn.Tools.EasySemVer.Reporting.JsonReportVersion" readable="true" writable="true" initOnly="true" static="false" required="false" hasDefaultImplementation="false" />
+                  <Property name="WrittenFiles" type="IReadOnlyList&lt;string&gt;" readable="true" writable="true" initOnly="true" static="false" required="false" hasDefaultImplementation="false" />
                </Properties>
                <Fields />
                <Events />
@@ -4327,9 +4328,9 @@
                         </Override>
                      </Overrides>
                   </Method>
-                  <Method name="WriteVersion" returns="void">
+                  <Method name="WriteVersion" returns="IReadOnlyList&lt;string&gt;">
                      <Overrides>
-                        <Override returns="void" static="false" virtual="false" abstract="true" override="false" sealed="false" hasDefaultImplementation="false">
+                        <Override returns="IReadOnlyList&lt;string&gt;" static="false" virtual="false" abstract="true" override="false" sealed="false" hasDefaultImplementation="false">
                            <GenericParameters />
                            <Parameters>
                               <Parameter name="unit" type="Winterborn.Tools.EasySemVer.Interfaces.IPackageableUnit" required="true" refKind="None" params="false" />
@@ -4816,6 +4817,33 @@
                         </Override>
                      </Overrides>
                   </Method>
+                  <Method name="ARejectedBranchPushTakesTheTagWithIt" returns="void">
+                     <Overrides>
+                        <Override returns="void" static="false" virtual="false" abstract="false" override="false" sealed="false" hasDefaultImplementation="false">
+                           <GenericParameters />
+                           <Parameters />
+                        </Override>
+                     </Overrides>
+                  </Method>
+                  <Method name="AnIdentityTheCallerAlreadySetIsNotOverwritten" returns="void">
+                     <Overrides>
+                        <Override returns="void" static="false" virtual="false" abstract="false" override="false" sealed="false" hasDefaultImplementation="false">
+                           <GenericParameters />
+                           <Parameters />
+                        </Override>
+                     </Overrides>
+                  </Method>
+                  <Method name="AnUnrecognisedCommitOrTagValueIsRejected" returns="void">
+                     <Overrides>
+                        <Override returns="void" static="false" virtual="false" abstract="false" override="false" sealed="false" hasDefaultImplementation="false">
+                           <GenericParameters />
+                           <Parameters>
+                              <Parameter name="commit" type="string" required="true" refKind="None" params="false" />
+                              <Parameter name="tag" type="string" required="true" refKind="None" params="false" />
+                           </Parameters>
+                        </Override>
+                     </Overrides>
+                  </Method>
                   <Method name="AnUnrecognisedDryRunValueIsRejectedRatherThanTreatedAsFalse" returns="void">
                      <Overrides>
                         <Override returns="void" static="false" virtual="false" abstract="false" override="false" sealed="false" hasDefaultImplementation="false">
@@ -4827,6 +4855,30 @@
                      </Overrides>
                   </Method>
                   <Method name="AnUnsupportedPlatformFailsAndNamesItself" returns="void">
+                     <Overrides>
+                        <Override returns="void" static="false" virtual="false" abstract="false" override="false" sealed="false" hasDefaultImplementation="false">
+                           <GenericParameters />
+                           <Parameters />
+                        </Override>
+                     </Overrides>
+                  </Method>
+                  <Method name="CommitAndTagPushTheBumpAndTheTagTogether" returns="void">
+                     <Overrides>
+                        <Override returns="void" static="false" virtual="false" abstract="false" override="false" sealed="false" hasDefaultImplementation="false">
+                           <GenericParameters />
+                           <Parameters />
+                        </Override>
+                     </Overrides>
+                  </Method>
+                  <Method name="CommittingADryRunIsRejected" returns="void">
+                     <Overrides>
+                        <Override returns="void" static="false" virtual="false" abstract="false" override="false" sealed="false" hasDefaultImplementation="false">
+                           <GenericParameters />
+                           <Parameters />
+                        </Override>
+                     </Overrides>
+                  </Method>
+                  <Method name="CommittingWithNoReportAtAllIsNamed" returns="void">
                      <Overrides>
                         <Override returns="void" static="false" virtual="false" abstract="false" override="false" sealed="false" hasDefaultImplementation="false">
                            <GenericParameters />
@@ -4850,6 +4902,14 @@
                         </Override>
                      </Overrides>
                   </Method>
+                  <Method name="EveryVersionedFileIsStagedIncludingOnesAGlobWouldMiss" returns="void">
+                     <Overrides>
+                        <Override returns="void" static="false" virtual="false" abstract="false" override="false" sealed="false" hasDefaultImplementation="false">
+                           <GenericParameters />
+                           <Parameters />
+                        </Override>
+                     </Overrides>
+                  </Method>
                   <Method name="FolderAndDryRunCarryTheDocumentedDefaults" returns="void">
                      <Overrides>
                         <Override returns="void" static="false" virtual="false" abstract="false" override="false" sealed="false" hasDefaultImplementation="false">
@@ -4859,6 +4919,30 @@
                      </Overrides>
                   </Method>
                   <Method name="RenamingThePublishedBinaryDoesNotBreakIt" returns="void">
+                     <Overrides>
+                        <Override returns="void" static="false" virtual="false" abstract="false" override="false" sealed="false" hasDefaultImplementation="false">
+                           <GenericParameters />
+                           <Parameters />
+                        </Override>
+                     </Overrides>
+                  </Method>
+                  <Method name="SupplyingAReportSkipsVersioningAltogether" returns="void">
+                     <Overrides>
+                        <Override returns="void" static="false" virtual="false" abstract="false" override="false" sealed="false" hasDefaultImplementation="false">
+                           <GenericParameters />
+                           <Parameters />
+                        </Override>
+                     </Overrides>
+                  </Method>
+                  <Method name="TaggingWithoutCommittingIsRejected" returns="void">
+                     <Overrides>
+                        <Override returns="void" static="false" virtual="false" abstract="false" override="false" sealed="false" hasDefaultImplementation="false">
+                           <GenericParameters />
+                           <Parameters />
+                        </Override>
+                     </Overrides>
+                  </Method>
+                  <Method name="TheActionAsksTheToolForTheOutputsRatherThanParsingTheReport" returns="void">
                      <Overrides>
                         <Override returns="void" static="false" virtual="false" abstract="false" override="false" sealed="false" hasDefaultImplementation="false">
                            <GenericParameters />
@@ -4890,6 +4974,22 @@
                         </Override>
                      </Overrides>
                   </Method>
+                  <Method name="TheBranchPushedIsTheOneThatTriggeredTheWorkflow" returns="void">
+                     <Overrides>
+                        <Override returns="void" static="false" virtual="false" abstract="false" override="false" sealed="false" hasDefaultImplementation="false">
+                           <GenericParameters />
+                           <Parameters />
+                        </Override>
+                     </Overrides>
+                  </Method>
+                  <Method name="TheDefaultCommitsNothing" returns="void">
+                     <Overrides>
+                        <Override returns="void" static="false" virtual="false" abstract="false" override="false" sealed="false" hasDefaultImplementation="false">
+                           <GenericParameters />
+                           <Parameters />
+                        </Override>
+                     </Overrides>
+                  </Method>
                   <Method name="ThePlatformTableCoversExactlyTheRuntimesTheReleaseJobPublishes" returns="void">
                      <Overrides>
                         <Override returns="void" static="false" virtual="false" abstract="false" override="false" sealed="false" hasDefaultImplementation="false">
@@ -4906,7 +5006,39 @@
                         </Override>
                      </Overrides>
                   </Method>
+                  <Method name="TheRunPublishesAJobSummaryCarryingTheVerdictAndItsEvidence" returns="void">
+                     <Overrides>
+                        <Override returns="void" static="false" virtual="false" abstract="false" override="false" sealed="false" hasDefaultImplementation="false">
+                           <GenericParameters />
+                           <Parameters />
+                        </Override>
+                     </Overrides>
+                  </Method>
+                  <Method name="TheToolPublishesExactlyTheOutputsTheActionDeclares" returns="void">
+                     <Overrides>
+                        <Override returns="void" static="false" virtual="false" abstract="false" override="false" sealed="false" hasDefaultImplementation="false">
+                           <GenericParameters />
+                           <Parameters />
+                        </Override>
+                     </Overrides>
+                  </Method>
+                  <Method name="TheTwoStepFormCommitsTheEarlierVerdict" returns="void">
+                     <Overrides>
+                        <Override returns="void" static="false" virtual="false" abstract="false" override="false" sealed="false" hasDefaultImplementation="false">
+                           <GenericParameters />
+                           <Parameters />
+                        </Override>
+                     </Overrides>
+                  </Method>
                   <Method name="TheVersionInputIsPinnedToATagAndDoesNotTrackLatest" returns="void">
+                     <Overrides>
+                        <Override returns="void" static="false" virtual="false" abstract="false" override="false" sealed="false" hasDefaultImplementation="false">
+                           <GenericParameters />
+                           <Parameters />
+                        </Override>
+                     </Overrides>
+                  </Method>
+                  <Method name="UnrelatedWorkingCopyChangesAreNotSweptIntoTheCommit" returns="void">
                      <Overrides>
                         <Override returns="void" static="false" virtual="false" abstract="false" override="false" sealed="false" hasDefaultImplementation="false">
                            <GenericParameters />
@@ -4939,6 +5071,14 @@
                         </Override>
                      </Overrides>
                   </Method>
+                  <Method name="ADryRunReportsNoWrittenFiles" returns="void">
+                     <Overrides>
+                        <Override returns="void" static="false" virtual="false" abstract="false" override="false" sealed="false" hasDefaultImplementation="false">
+                           <GenericParameters />
+                           <Parameters />
+                        </Override>
+                     </Overrides>
+                  </Method>
                   <Method name="ADryRunReportsTheVerdictAndChangesNothingElse" returns="void">
                      <Overrides>
                         <Override returns="void" static="false" virtual="false" abstract="false" override="false" sealed="false" hasDefaultImplementation="false">
@@ -4948,6 +5088,14 @@
                      </Overrides>
                   </Method>
                   <Method name="AFailedRunWritesNoReport" returns="void">
+                     <Overrides>
+                        <Override returns="void" static="false" virtual="false" abstract="false" override="false" sealed="false" hasDefaultImplementation="false">
+                           <GenericParameters />
+                           <Parameters />
+                        </Override>
+                     </Overrides>
+                  </Method>
+                  <Method name="ANestedUnitIsNamedByItsPathRatherThanMissed" returns="void">
                      <Overrides>
                         <Override returns="void" static="false" virtual="false" abstract="false" override="false" sealed="false" hasDefaultImplementation="false">
                            <GenericParameters />
@@ -4980,6 +5128,14 @@
                      </Overrides>
                   </Method>
                   <Method name="TheReportCarriesTheFindingsBehindTheVerdict" returns="void">
+                     <Overrides>
+                        <Override returns="void" static="false" virtual="false" abstract="false" override="false" sealed="false" hasDefaultImplementation="false">
+                           <GenericParameters />
+                           <Parameters />
+                        </Override>
+                     </Overrides>
+                  </Method>
+                  <Method name="TheReportNamesEveryFileTheRunActuallyChanged" returns="void">
                      <Overrides>
                         <Override returns="void" static="false" virtual="false" abstract="false" override="false" sealed="false" hasDefaultImplementation="false">
                            <GenericParameters />
@@ -9431,11 +9587,132 @@
                <Fields />
                <Events />
             </Class>
+            <Class name="Test.Reporting.TestGitHubActionsReport" declaringType="" static="false" abstract="false" sealed="false" base="IDisposable">
+               <Implements />
+               <GenericParameters />
+               <Methods>
+                  <Method name=".ctor" returns="void">
+                     <Overrides>
+                        <Override returns="void" static="false" virtual="false" abstract="false" override="false" sealed="false" hasDefaultImplementation="false">
+                           <GenericParameters />
+                           <Parameters />
+                        </Override>
+                     </Overrides>
+                  </Method>
+                  <Method name="ADryRunIsMarkedInTheSummary" returns="void">
+                     <Overrides>
+                        <Override returns="void" static="false" virtual="false" abstract="false" override="false" sealed="false" hasDefaultImplementation="false">
+                           <GenericParameters />
+                           <Parameters />
+                        </Override>
+                     </Overrides>
+                  </Method>
+                  <Method name="AMissingDestinationIsSkippedRatherThanFailing" returns="void">
+                     <Overrides>
+                        <Override returns="void" static="false" virtual="false" abstract="false" override="false" sealed="false" hasDefaultImplementation="false">
+                           <GenericParameters />
+                           <Parameters />
+                        </Override>
+                     </Overrides>
+                  </Method>
+                  <Method name="Dispose" returns="void">
+                     <Overrides>
+                        <Override returns="void" static="false" virtual="false" abstract="false" override="false" sealed="false" hasDefaultImplementation="false">
+                           <GenericParameters />
+                           <Parameters />
+                        </Override>
+                     </Overrides>
+                  </Method>
+                  <Method name="NoFindingsSaysSoRatherThanShowingAnEmptyList" returns="void">
+                     <Overrides>
+                        <Override returns="void" static="false" virtual="false" abstract="false" override="false" sealed="false" hasDefaultImplementation="false">
+                           <GenericParameters />
+                           <Parameters />
+                        </Override>
+                     </Overrides>
+                  </Method>
+                  <Method name="NoJsonReportMeansNoReportOutput" returns="void">
+                     <Overrides>
+                        <Override returns="void" static="false" virtual="false" abstract="false" override="false" sealed="false" hasDefaultImplementation="false">
+                           <GenericParameters />
+                           <Parameters />
+                        </Override>
+                     </Overrides>
+                  </Method>
+                  <Method name="TheChangeTypeSurvivesAnOverflowRollover" returns="void">
+                     <Overrides>
+                        <Override returns="void" static="false" virtual="false" abstract="false" override="false" sealed="false" hasDefaultImplementation="false">
+                           <GenericParameters />
+                           <Parameters />
+                        </Override>
+                     </Overrides>
+                  </Method>
+                  <Method name="TheOutputsAreExactlyTheAgreedNames" returns="void">
+                     <Overrides>
+                        <Override returns="void" static="false" virtual="false" abstract="false" override="false" sealed="false" hasDefaultImplementation="false">
+                           <GenericParameters />
+                           <Parameters />
+                        </Override>
+                     </Overrides>
+                  </Method>
+                  <Method name="TheSummaryLeadsWithTheVersionTransitionAndTheVerdict" returns="void">
+                     <Overrides>
+                        <Override returns="void" static="false" virtual="false" abstract="false" override="false" sealed="false" hasDefaultImplementation="false">
+                           <GenericParameters />
+                           <Parameters />
+                        </Override>
+                     </Overrides>
+                  </Method>
+                  <Method name="TheSummaryListsTheFindingsBehindTheVerdict" returns="void">
+                     <Overrides>
+                        <Override returns="void" static="false" virtual="false" abstract="false" override="false" sealed="false" hasDefaultImplementation="false">
+                           <GenericParameters />
+                           <Parameters />
+                        </Override>
+                     </Overrides>
+                  </Method>
+                  <Method name="TheVerdictReachesTheOutputs" returns="void">
+                     <Overrides>
+                        <Override returns="void" static="false" virtual="false" abstract="false" override="false" sealed="false" hasDefaultImplementation="false">
+                           <GenericParameters />
+                           <Parameters />
+                        </Override>
+                     </Overrides>
+                  </Method>
+                  <Method name="TheVersionIsPublishedInPartsAsWellAsWhole" returns="void">
+                     <Overrides>
+                        <Override returns="void" static="false" virtual="false" abstract="false" override="false" sealed="false" hasDefaultImplementation="false">
+                           <GenericParameters />
+                           <Parameters />
+                        </Override>
+                     </Overrides>
+                  </Method>
+                  <Method name="TwoRunsInOneJobBothPublish" returns="void">
+                     <Overrides>
+                        <Override returns="void" static="false" virtual="false" abstract="false" override="false" sealed="false" hasDefaultImplementation="false">
+                           <GenericParameters />
+                           <Parameters />
+                        </Override>
+                     </Overrides>
+                  </Method>
+               </Methods>
+               <Properties />
+               <Fields />
+               <Events />
+            </Class>
             <Class name="Test.Reporting.TestJsonChangeReport" declaringType="" static="false" abstract="false" sealed="false" base="">
                <Implements />
                <GenericParameters />
                <Methods>
                   <Method name=".ctor" returns="void">
+                     <Overrides>
+                        <Override returns="void" static="false" virtual="false" abstract="false" override="false" sealed="false" hasDefaultImplementation="false">
+                           <GenericParameters />
+                           <Parameters />
+                        </Override>
+                     </Overrides>
+                  </Method>
+                  <Method name="ADryRunReportsAnEmptyArrayRatherThanNone" returns="void">
                      <Overrides>
                         <Override returns="void" static="false" virtual="false" abstract="false" override="false" sealed="false" hasDefaultImplementation="false">
                            <GenericParameters />
@@ -9460,6 +9737,14 @@
                      </Overrides>
                   </Method>
                   <Method name="AFourSegmentVersionKeepsItsStringIntact" returns="void">
+                     <Overrides>
+                        <Override returns="void" static="false" virtual="false" abstract="false" override="false" sealed="false" hasDefaultImplementation="false">
+                           <GenericParameters />
+                           <Parameters />
+                        </Override>
+                     </Overrides>
+                  </Method>
+                  <Method name="ASharedLocationIsReportedOnce" returns="void">
                      <Overrides>
                         <Override returns="void" static="false" virtual="false" abstract="false" override="false" sealed="false" hasDefaultImplementation="false">
                            <GenericParameters />
@@ -9588,6 +9873,14 @@
                      </Overrides>
                   </Method>
                   <Method name="TheVerdictSurvivesAnOverflowRolloverThatWouldMisleadAnInference" returns="void">
+                     <Overrides>
+                        <Override returns="void" static="false" virtual="false" abstract="false" override="false" sealed="false" hasDefaultImplementation="false">
+                           <GenericParameters />
+                           <Parameters />
+                        </Override>
+                     </Overrides>
+                  </Method>
+                  <Method name="TheWrittenFilesAreSorted" returns="void">
                      <Overrides>
                         <Override returns="void" static="false" virtual="false" abstract="false" override="false" sealed="false" hasDefaultImplementation="false">
                            <GenericParameters />
@@ -10462,6 +10755,14 @@
                         </Override>
                      </Overrides>
                   </Method>
+                  <Method name="AnythingButTrueIsNotGitHubActions" returns="void">
+                     <Overrides>
+                        <Override returns="void" static="false" virtual="false" abstract="false" override="false" sealed="false" hasDefaultImplementation="false">
+                           <GenericParameters />
+                           <Parameters />
+                        </Override>
+                     </Overrides>
+                  </Method>
                   <Method name="DryRunFlagIsNotMistakenForTheFolder" returns="void">
                      <Overrides>
                         <Override returns="void" static="false" virtual="false" abstract="false" override="false" sealed="false" hasDefaultImplementation="false">
@@ -10526,7 +10827,47 @@
                         </Override>
                      </Overrides>
                   </Method>
+                  <Method name="RunningUnderGitHubActionsIsDetected" returns="void">
+                     <Overrides>
+                        <Override returns="void" static="false" virtual="false" abstract="false" override="false" sealed="false" hasDefaultImplementation="false">
+                           <GenericParameters />
+                           <Parameters />
+                        </Override>
+                     </Overrides>
+                  </Method>
                   <Method name="SingleArgumentIsTheFolderRoot" returns="void">
+                     <Overrides>
+                        <Override returns="void" static="false" virtual="false" abstract="false" override="false" sealed="false" hasDefaultImplementation="false">
+                           <GenericParameters />
+                           <Parameters />
+                        </Override>
+                     </Overrides>
+                  </Method>
+                  <Method name="TheDetectionIsCaseInsensitive" returns="void">
+                     <Overrides>
+                        <Override returns="void" static="false" virtual="false" abstract="false" override="false" sealed="false" hasDefaultImplementation="false">
+                           <GenericParameters />
+                           <Parameters />
+                        </Override>
+                     </Overrides>
+                  </Method>
+                  <Method name="TheFlagsOverrideTheDetectionBothWays" returns="void">
+                     <Overrides>
+                        <Override returns="void" static="false" virtual="false" abstract="false" override="false" sealed="false" hasDefaultImplementation="false">
+                           <GenericParameters />
+                           <Parameters />
+                        </Override>
+                     </Overrides>
+                  </Method>
+                  <Method name="TheGitHubFlagsAreNotMistakenForTheFolder" returns="void">
+                     <Overrides>
+                        <Override returns="void" static="false" virtual="false" abstract="false" override="false" sealed="false" hasDefaultImplementation="false">
+                           <GenericParameters />
+                           <Parameters />
+                        </Override>
+                     </Overrides>
+                  </Method>
+                  <Method name="TheLastGitHubFlagWins" returns="void">
                      <Overrides>
                         <Override returns="void" static="false" virtual="false" abstract="false" override="false" sealed="false" hasDefaultImplementation="false">
                            <GenericParameters />
