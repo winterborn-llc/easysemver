@@ -2,9 +2,9 @@
   <PropertyGroup>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <PackageVersion>15.3.3</PackageVersion>
-    <AssemblyVersion>15.3.3</AssemblyVersion>
-    <FileVersion>15.3.3</FileVersion>
+    <PackageVersion>15.4.0</PackageVersion>
+    <AssemblyVersion>15.4.0</AssemblyVersion>
+    <FileVersion>15.4.0</FileVersion>
     <Title>EasySemVer by Winterborn</Title>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <RootNamespace>Winterborn.Tools.EasySemVer</RootNamespace>
@@ -14,7 +14,6 @@
     <RepositoryUrl>https://github.com/winterborn-llc/easysemver</RepositoryUrl>
     <RepositoryType>Git</RepositoryType>
     <PackageId>Winterborn.Tools.EasySemVer</PackageId>
-
     <!-- PKG-01: the deliverable is a command, not a library to reference. `dotnet tool install`
          puts `easysemver` on the path; nothing imports this package into a build. -->
     <PackAsTool>true</PackAsTool>
