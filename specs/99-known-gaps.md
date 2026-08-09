@@ -136,3 +136,20 @@ binary, so nothing here can consume a capability in the same commit that introdu
 ℹ️ Retiring the `git add EasySemVer.xml src/*/*.csproj` glob was the point. It was silently wrong
 for any project it did not match — a green run, a tag, and a commit with no bump in it.
 *Satisfies:* ACT-10. *Relates to:* ACT-02, ACT-11, ACT-12, CLI-10, REP-10.
+
+**G-21 — v16.0.0's action manifest fails to load.** ✅ Resolved by **ACT-13**
+The `report` input's description carried `${{ steps.version.outputs.report }}` as a worked example.
+GitHub evaluates expressions inside input descriptions, where the `steps` context does not exist, so
+`action.yml` failed template validation at *Set up job*: `Unrecognized named-value: 'steps'`. Every
+consumer of `winterborn-llc/easysemver@v16.0.0` gets that error before any step runs, and this
+repository could not cut the fix because its own workflow pinned to that tag.
+
+Fixed by removing the example (it lives in the README), by `uses: ./` so a manifest is loaded by the
+run that publishes it, and by `ActionRegression.NoInputDescriptionCarriesAnExpression` — confirmed
+to fail when the example is put back.
+ℹ️ **v16.0.0 remains broken as an Action and cannot be repaired**: a published release is immutable
+and moving the tag would be a history rewrite. It is superseded, not fixed. The tool binary and the
+NuGet package at that version are unaffected — only the manifest.
+ℹ️ Nothing was published by the failed run. CI-03's ordering held: it died before the version step,
+so no commit, no tag, and nothing on nuget.org.
+*Relates to:* ACT-02, ACT-09, ACT-10, ACT-13.

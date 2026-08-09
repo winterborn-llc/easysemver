@@ -44,18 +44,13 @@ inputs:
 
   report:
     description: >-
-      Act on a report an earlier step produced instead of versioning again. Pass the `report`
-      output of a previous invocation to split versioning from committing, so a build and its
-      tests can run in between and a failure releases nothing:
-
-        - uses: winterborn-llc/easysemver@<tag>
-          id: version
-        - ...build and test...
-        - uses: winterborn-llc/easysemver@<tag>
-          with: { commit: true, tag: true, report: '${{ steps.version.outputs.report }}' }
-
-      With this set the tool is neither downloaded nor run, so the version is computed exactly
-      once however many times the action appears in a job.
+      Act on a report an earlier step produced instead of versioning again. Pass this the `report`
+      output of a previous invocation of this action, and it commits that verdict: versioning and
+      committing are split, a build and its tests run in between, and a failure releases nothing.
+      With it set the tool is neither downloaded nor run, so the version is computed exactly once
+      however many times this action appears in a job. See the README for the worked example -
+      it cannot be shown here, because GitHub evaluates expressions inside these descriptions and
+      the `steps` context does not exist at this point in the manifest (ACT-13).
     required: false
     default: ''
 

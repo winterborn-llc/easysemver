@@ -425,7 +425,59 @@ public class ActionRegression : IDisposable
         var executed = Dedent(File.ReadAllText(
             Path.Combine(RepositoryRoot, ".github", "workflows", "dotnet.yml")));
 
-        Assert.Contains(documented, executed);
+        Assert.Contains(CanonicaliseUses(documented), CanonicaliseUses(executed));
+    }
+
+    /// <summary>
+    /// ACT-13 - the one line ACT-10 permits to differ. A consumer writes
+    /// <c>uses: winterborn-llc/easysemver@&lt;tag&gt;</c>; this repository writes <c>uses: ./</c>, so
+    /// that the manifest a run is about to release is the manifest that run loaded. Everything
+    /// after the <c>uses:</c> line - the inputs, which is where the meaning lives - still has to
+    /// match exactly.
+    /// </summary>
+    private static string CanonicaliseUses(string yaml) =>
+        Regex.Replace(yaml, @"uses: (\./|winterborn-llc/easysemver@\S+)", "uses: <easysemver>");
+
+    /// <summary>
+    /// ACT-13 - no input description may contain a <c>${{ }}</c> expression.
+    /// <para>
+    /// GitHub evaluates expressions inside input descriptions, against a context where `steps` does
+    /// not exist. v16.0.0 shipped a worked example in the <c>report</c> description and the whole
+    /// manifest stopped loading: <c>Unrecognized named-value: 'steps'</c>, at "Set up job", before
+    /// any step ran. The release was unusable by every consumer, and this repository could not cut
+    /// the fix because its own workflow pinned to it.
+    /// </para>
+    /// <para>
+    /// YamlDotNet parses that file perfectly happily, which is exactly why nothing here caught it.
+    /// The rule is therefore blunt on purpose: examples belong in the README, not in a description.
+    /// </para>
+    /// </summary>
+    [Fact]
+    public void NoInputDescriptionCarriesAnExpression()
+    {
+        foreach (var (name, definition) in Section(Action, "inputs"))
+        {
+            var description = (string)((Dictionary<object, object>)definition)["description"];
+
+            Assert.False(
+                description.Contains("${{", StringComparison.Ordinal),
+                $"Input '{name}' has a ${{{{ }}}} expression in its description. GitHub evaluates "
+                + "those, and the manifest will fail to load for every consumer.");
+        }
+    }
+
+    /// <summary>
+    /// The other half of ACT-13: an output's value is *supposed* to be an expression over `steps`,
+    /// and that context does exist there. Asserting it stops an over-zealous reading of the rule
+    /// above from being applied to the place the expressions belong.
+    /// </summary>
+    [Fact]
+    public void OutputValuesAreStillExpressions()
+    {
+        foreach (var (_, definition) in Section(Action, "outputs"))
+        {
+            Assert.StartsWith("${{ steps.", (string)((Dictionary<object, object>)definition)["value"]);
+        }
     }
 
     /// <summary>

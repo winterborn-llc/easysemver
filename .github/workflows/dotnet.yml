@@ -55,6 +55,17 @@ jobs:
     # step, a jq-and-$GITHUB_OUTPUT step, a commit step and a tag step: about thirty lines of
     # shell, every one of which could be subtly wrong on a release and nowhere else.
     #
+    # ACT-13. `uses: ./` - the manifest from this commit, not from a published tag. The binary it
+    # downloads is still the published one (`version:` defaults to the pinned release), so the
+    # dogfooding rule below is untouched; what changes is that the action.yml about to be released
+    # is loaded by the run that releases it.
+    #
+    # That is not a preference. v16.0.0 shipped an action.yml carrying `${{ steps... }}` inside an
+    # input *description*, which GitHub evaluates - the manifest failed to load, the release was
+    # unusable by anyone, and the next run could not even start because it pinned to it. Pinning a
+    # tag here means the first workflow to prove a manifest is the first one that cannot recover
+    # from it being wrong.
+    #
     # Dogfooding: the Action downloads a *published* binary, deliberately rather than the one this
     # run builds - if a change breaks versioning, it breaks the next release rather than silently
     # mis-versioning the one that introduced it.
@@ -66,7 +77,7 @@ jobs:
     # ------------------------------------------------------------------------------------------
     - name: Compute and apply the version
       id: version
-      uses: winterborn-llc/easysemver@v16.0.0
+      uses: ./
 
     - name: Restore dependencies
       working-directory: ./src
@@ -98,7 +109,7 @@ jobs:
     # workflow. That is also why the tag has to be consumed by the jobs below rather than trigger
     # them.
     - name: Commit and tag the release
-      uses: winterborn-llc/easysemver@v16.0.0
+      uses: ./
       with:
         commit: true
         tag: true

@@ -152,7 +152,7 @@ two dry runs produce byte-identical reports, and that a failed run leaves no rep
 |-------|--------|
 | `dotnet build` | ✅ success — **no warnings** (`NU5129` went with PKG-05) |
 | `Test` (unit) | ✅ **528/528 passed** |
-| `IntegrationTest` | ✅ **60/60 passed** (6 `Regression`, 9 `JsonReportRegression`, 38 `ActionRegression`, 4 SwiftPM, 3 Xcode) |
+| `IntegrationTest` | ✅ **62/62 passed** (6 `Regression`, 9 `JsonReportRegression`, 40 `ActionRegression`, 4 SwiftPM, 3 Xcode) |
 
 ℹ️ `ActionRegression` (ACT-09) needs `bash` and `tar`, which every GitHub-hosted runner has (`jq`
 went with the `jq` block CLI-10 removed from `action.yml`);

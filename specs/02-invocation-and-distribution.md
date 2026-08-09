@@ -378,6 +378,41 @@ time — points nowhere near the cause.
 is the "real" one: they are the same three inputs, and which you want is decided by whether anything
 has to happen between stamping a version and releasing it.
 
+**ACT-13 — The manifest is validated by the run that releases it.** ✅ *(added 2026-08-09, after v16.0.0)*
+No input description SHALL contain a `${{ }}` expression, and this repository's own workflow SHALL
+reference the action as `uses: ./` rather than by tag.
+
+Both halves come from one incident. **v16.0.0 shipped an `action.yml` carrying a worked example —
+`report: ${{ steps.version.outputs.report }}` — inside the `report` input's *description*.** GitHub
+evaluates expressions in descriptions, against a context where `steps` does not exist, so the
+manifest failed to load with `Unrecognized named-value: 'steps'`. It failed at *Set up job*, before
+any step ran, which meant:
+
+- the release was unusable by every consumer, not merely wrong at the edges; and
+- this repository could not cut the fix, because its own workflow pinned to the broken tag.
+
+Neither is caught by anything below the runner. `ActionRegression` parses `action.yml` with
+YamlDotNet, which validates YAML and knows nothing of GitHub expressions — the file is well-formed
+by every measure available off a runner. This is ACT-09's boundary doing exactly what ACT-09 says it
+does, and the answer is not a better parser:
+
+- **`uses: ./`** means the manifest a run is about to publish is the manifest that run loaded. A
+  manifest that cannot load can no longer be released, because the release fails first. It also
+  removes the deadlock: a broken manifest is always recoverable in one commit.
+- **No expressions in descriptions** is the blunt rule that makes the specific mistake unrepeatable
+  without waiting for a runner to say so. Worked examples belong in the README.
+
+ℹ️ The binary is still the published one — `version:` defaults to the pinned release (ACT-02), so
+the dogfooding rule is untouched. `uses: ./` changes which *manifest* is loaded, not which *tool*
+runs.
+ℹ️ ACT-10 is weakened by exactly one line in exchange: the `uses:` line differs between the
+documented block and the executed one, and the test normalises it. Everything after it — the inputs,
+where the meaning is — still has to match byte for byte. That trade buys a class of unpublishable
+bug, and ACT-02's pinned default is still asserted against the README's refs, so the tag a consumer
+copies is still checked.
+ℹ️ Output values are the opposite case and are asserted to *be* expressions over `steps`: that
+context does exist there, and the rule above must not be over-applied to where it belongs.
+
 **ACT-10 — One release block, identical in every repository.** ✅ *(added 2026-08-09; in force from v16.0.0)*
 Versioning, committing and tagging a release SHALL be **one step**, documented in
 [`README.md`](../README.md) as a block copied verbatim into any repository, and this repository's
