@@ -1,4 +1,4 @@
-namespace Winterborn.Library.EasySemVer.DataObject;
+namespace Winterborn.Tools.EasySemVer.DataObject;
 
 public enum VersionType
 {

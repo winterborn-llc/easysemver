@@ -1,4 +1,4 @@
-namespace Winterborn.Library.EasySemVer.Interfaces.Csharp;
+namespace Winterborn.Tools.EasySemVer.Interfaces.Csharp;
 
 /// <summary>The C# native topology's root: one .csproj worth of public API surface.</summary>
 public interface ICsharpProject

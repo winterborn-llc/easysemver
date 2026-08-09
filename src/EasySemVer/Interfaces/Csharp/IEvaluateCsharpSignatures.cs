@@ -1,6 +1,6 @@
-using Winterborn.Library.EasySemVer.DataObject;
+using Winterborn.Tools.EasySemVer.DataObject;
 
-namespace Winterborn.Library.EasySemVer.Interfaces.Csharp;
+namespace Winterborn.Tools.EasySemVer.Interfaces.Csharp;
 
 /// <summary>
 /// One C# classification rule (CLS-01, preserved per-language by ML-04). Swift has its own

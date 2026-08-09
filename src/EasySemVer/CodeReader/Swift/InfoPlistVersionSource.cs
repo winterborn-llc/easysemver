@@ -1,8 +1,8 @@
 using System.Xml;
-using Winterborn.Library.EasySemVer.Interfaces;
-using Version = Winterborn.Library.EasySemVer.DataObject.Version;
+using Winterborn.Tools.EasySemVer.Interfaces;
+using Version = Winterborn.Tools.EasySemVer.DataObject.Version;
 
-namespace Winterborn.Library.EasySemVer.CodeReader.Swift;
+namespace Winterborn.Tools.EasySemVer.CodeReader.Swift;
 
 /// <summary>
 /// MVR-03 - the Info.plist CFBundleShortVersionString row. CFBundleVersion is deliberately left

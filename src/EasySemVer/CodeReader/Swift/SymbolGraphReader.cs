@@ -1,7 +1,7 @@
 using System.Text.Json;
-using Winterborn.Library.EasySemVer.DataObject.Swift;
+using Winterborn.Tools.EasySemVer.DataObject.Swift;
 
-namespace Winterborn.Library.EasySemVer.CodeReader.Swift;
+namespace Winterborn.Tools.EasySemVer.CodeReader.Swift;
 
 /// <summary>
 /// Turns the toolchain's symbol-graph JSON into an <see cref="SwiftModule"/> (SWE-01). The graph

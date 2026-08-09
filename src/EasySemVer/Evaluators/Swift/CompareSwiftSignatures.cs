@@ -1,9 +1,9 @@
-using Winterborn.Library.EasySemVer.DataObject;
-using Winterborn.Library.EasySemVer.Evaluation.Swift;
-using Winterborn.Library.EasySemVer.Interfaces;
-using Winterborn.Library.EasySemVer.Interfaces.Swift;
+using Winterborn.Tools.EasySemVer.DataObject;
+using Winterborn.Tools.EasySemVer.Evaluation.Swift;
+using Winterborn.Tools.EasySemVer.Interfaces;
+using Winterborn.Tools.EasySemVer.Interfaces.Swift;
 
-namespace Winterborn.Library.EasySemVer.Evaluators.Swift;
+namespace Winterborn.Tools.EasySemVer.Evaluators.Swift;
 
 /// <summary>
 /// The Swift rule list and its aggregation, over one paired module at a time (NCL-03). Rules

@@ -1,5 +1,5 @@
-using Winterborn.Library.EasySemVer.CodeReader.Swift;
-using Version = Winterborn.Library.EasySemVer.DataObject.Version;
+using Winterborn.Tools.EasySemVer.CodeReader.Swift;
+using Version = Winterborn.Tools.EasySemVer.DataObject.Version;
 
 namespace Test.Swift;
 
@@ -108,7 +108,7 @@ public class TestXcodeVersionSources : IDisposable
         var version = new MarketingVersionSource(path, "project.pbxproj").Read();
 
         Assert.Equal("1.2.0", version!.ToString());
-        version.Increment(Winterborn.Library.EasySemVer.DataObject.VersionType.Patch);
+        version.Increment(Winterborn.Tools.EasySemVer.DataObject.VersionType.Patch);
         Assert.Equal("1.2.1", version.ToString());
     }
 

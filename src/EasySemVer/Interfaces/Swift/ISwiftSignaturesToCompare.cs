@@ -1,4 +1,4 @@
-namespace Winterborn.Library.EasySemVer.Interfaces.Swift;
+namespace Winterborn.Tools.EasySemVer.Interfaces.Swift;
 
 /// <summary>
 /// The comparison context for exactly one paired Swift module. Swift's equivalent of

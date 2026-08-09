@@ -1,6 +1,6 @@
-using Winterborn.Library.EasySemVer.Interfaces.Swift;
+using Winterborn.Tools.EasySemVer.Interfaces.Swift;
 
-namespace Winterborn.Library.EasySemVer.Evaluators.Swift;
+namespace Winterborn.Tools.EasySemVer.Evaluators.Swift;
 
 /// <summary>Constraint-set comparison for S11-S13, mirroring the C# helper's shape.</summary>
 internal static class SwiftGenericConstraints

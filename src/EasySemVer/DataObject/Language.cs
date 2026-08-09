@@ -1,4 +1,4 @@
-namespace Winterborn.Library.EasySemVer.DataObject;
+namespace Winterborn.Tools.EasySemVer.DataObject;
 
 /// <summary>
 /// The languages EasySemVer knows how to version. One <see cref="Language"/> maps to exactly one

@@ -1,14 +1,14 @@
 using System.Xml.Linq;
-using Winterborn.Library.EasySemVer.CodeReader.Csharp;
-using Winterborn.Library.EasySemVer.DataObject;
-using Winterborn.Library.EasySemVer.DataObject.Csharp;
-using Winterborn.Library.EasySemVer.Evaluation;
-using Winterborn.Library.EasySemVer.Evaluators.Csharp;
-using Winterborn.Library.EasySemVer.Extensions;
-using Winterborn.Library.EasySemVer.Interfaces;
-using Version = Winterborn.Library.EasySemVer.DataObject.Version;
+using Winterborn.Tools.EasySemVer.CodeReader.Csharp;
+using Winterborn.Tools.EasySemVer.DataObject;
+using Winterborn.Tools.EasySemVer.DataObject.Csharp;
+using Winterborn.Tools.EasySemVer.Evaluation;
+using Winterborn.Tools.EasySemVer.Evaluators.Csharp;
+using Winterborn.Tools.EasySemVer.Extensions;
+using Winterborn.Tools.EasySemVer.Interfaces;
+using Version = Winterborn.Tools.EasySemVer.DataObject.Version;
 
-namespace Winterborn.Library.EasySemVer.Providers;
+namespace Winterborn.Tools.EasySemVer.Providers;
 
 /// <summary>Everything C# contributes to a run (ML-02). One .csproj is one unit (UNI-02).</summary>
 internal class CsharpLanguageProvider : ILanguageProvider

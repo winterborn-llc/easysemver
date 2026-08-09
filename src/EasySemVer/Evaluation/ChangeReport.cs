@@ -1,7 +1,7 @@
-using Winterborn.Library.EasySemVer.DataObject;
-using Winterborn.Library.EasySemVer.Extensions;
+using Winterborn.Tools.EasySemVer.DataObject;
+using Winterborn.Tools.EasySemVer.Extensions;
 
-namespace Winterborn.Library.EasySemVer.Evaluation;
+namespace Winterborn.Tools.EasySemVer.Evaluation;
 
 /// <summary>
 /// Everything a run found, in a deterministic order, and the change type it adds up to

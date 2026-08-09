@@ -1,4 +1,4 @@
-using Winterborn.Library.EasySemVer.Settings;
+using Winterborn.Tools.EasySemVer.Settings;
 
 namespace Test;
 

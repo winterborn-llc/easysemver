@@ -1,4 +1,4 @@
-namespace Winterborn.Library.EasySemVer.Settings;
+namespace Winterborn.Tools.EasySemVer.Settings;
 
 /// <summary>The parsed command line (§4).</summary>
 [DebuggerDisplay("{FolderRoot} dry-run={IsDryRun} json={JsonReportPath}")]

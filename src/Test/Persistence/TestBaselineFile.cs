@@ -1,10 +1,10 @@
 using System.Xml.Linq;
-using Winterborn.Library.EasySemVer.DataObject;
-using Winterborn.Library.EasySemVer.DataObject.Csharp;
-using Winterborn.Library.EasySemVer.Interfaces;
-using Winterborn.Library.EasySemVer.Persistence;
-using Winterborn.Library.EasySemVer.Process;
-using Winterborn.Library.EasySemVer.Providers;
+using Winterborn.Tools.EasySemVer.DataObject;
+using Winterborn.Tools.EasySemVer.DataObject.Csharp;
+using Winterborn.Tools.EasySemVer.Interfaces;
+using Winterborn.Tools.EasySemVer.Persistence;
+using Winterborn.Tools.EasySemVer.Process;
+using Winterborn.Tools.EasySemVer.Providers;
 
 namespace Test.Persistence;
 

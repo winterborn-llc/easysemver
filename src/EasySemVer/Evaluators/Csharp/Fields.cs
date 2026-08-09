@@ -1,6 +1,6 @@
-using Winterborn.Library.EasySemVer.Interfaces.Csharp;
+using Winterborn.Tools.EasySemVer.Interfaces.Csharp;
 
-namespace Winterborn.Library.EasySemVer.Evaluators.Csharp;
+namespace Winterborn.Tools.EasySemVer.Evaluators.Csharp;
 
 internal static class Fields
 {

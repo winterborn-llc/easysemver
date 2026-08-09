@@ -1,7 +1,7 @@
 using System.Text.Json.Serialization;
-using Version = Winterborn.Library.EasySemVer.DataObject.Version;
+using Version = Winterborn.Tools.EasySemVer.DataObject.Version;
 
-namespace Winterborn.Library.EasySemVer.Reporting;
+namespace Winterborn.Tools.EasySemVer.Reporting;
 
 /// <summary>
 /// One version, in the one shape both of them share (REP-02). <see cref="Version"/> is the

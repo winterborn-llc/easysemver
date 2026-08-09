@@ -1,4 +1,4 @@
-namespace Winterborn.Library.EasySemVer.Interfaces.Swift;
+namespace Winterborn.Tools.EasySemVer.Interfaces.Swift;
 
 /// <summary>
 /// The Swift native topology's root: one target's public API surface (D-05). This is Swift's

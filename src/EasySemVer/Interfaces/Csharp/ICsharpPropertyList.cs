@@ -1,4 +1,4 @@
-namespace Winterborn.Library.EasySemVer.Interfaces.Csharp;
+namespace Winterborn.Tools.EasySemVer.Interfaces.Csharp;
 
 /// <summary>A class's properties, addressable by name (SIG "named collections").</summary>
 public interface ICsharpPropertyList : IEnumerable<ICsharpProperty>

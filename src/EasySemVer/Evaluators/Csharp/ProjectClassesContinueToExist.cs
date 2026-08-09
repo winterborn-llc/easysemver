@@ -1,8 +1,8 @@
-using Winterborn.Library.EasySemVer.DataObject;
-using Winterborn.Library.EasySemVer.Evaluation.Csharp;
-using Winterborn.Library.EasySemVer.Interfaces.Csharp;
+using Winterborn.Tools.EasySemVer.DataObject;
+using Winterborn.Tools.EasySemVer.Evaluation.Csharp;
+using Winterborn.Tools.EasySemVer.Interfaces.Csharp;
 
-namespace Winterborn.Library.EasySemVer.Evaluators.Csharp;
+namespace Winterborn.Tools.EasySemVer.Evaluators.Csharp;
 
 /// <summary>R06 - a public class the baseline recorded is gone, renamed, or moved namespace.</summary>
 public class ProjectClassesContinueToExist : IEvaluateCsharpSignatures

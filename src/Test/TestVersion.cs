@@ -1,5 +1,5 @@
-using Winterborn.Library.EasySemVer.DataObject;
-using Version = Winterborn.Library.EasySemVer.DataObject.Version;
+using Winterborn.Tools.EasySemVer.DataObject;
+using Version = Winterborn.Tools.EasySemVer.DataObject.Version;
 
 namespace Test;
 

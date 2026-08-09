@@ -1,4 +1,4 @@
-namespace Winterborn.Library.EasySemVer.Interfaces;
+namespace Winterborn.Tools.EasySemVer.Interfaces;
 
 /// <summary>
 /// The two unit lists a run compares: last run's baseline and this run's discovery. This is the

@@ -1,6 +1,6 @@
-using Winterborn.Library.EasySemVer.DataObject;
+using Winterborn.Tools.EasySemVer.DataObject;
 
-namespace Winterborn.Library.EasySemVer.Interfaces;
+namespace Winterborn.Tools.EasySemVer.Interfaces;
 
 /// <summary>
 /// One independently shippable module of code - a csproj, a SwiftPM target, an Xcode target

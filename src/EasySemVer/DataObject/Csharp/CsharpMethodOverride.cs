@@ -1,8 +1,8 @@
 using System.Text;
 using System.Xml.Serialization;
-using Winterborn.Library.EasySemVer.Interfaces.Csharp;
+using Winterborn.Tools.EasySemVer.Interfaces.Csharp;
 
-namespace Winterborn.Library.EasySemVer.DataObject.Csharp;
+namespace Winterborn.Tools.EasySemVer.DataObject.Csharp;
 
 /// <inheritdoc cref="ICsharpMethodOverride"/>
 /// <remarks>

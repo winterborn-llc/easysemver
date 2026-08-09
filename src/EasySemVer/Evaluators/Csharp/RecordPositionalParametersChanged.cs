@@ -1,8 +1,8 @@
-using Winterborn.Library.EasySemVer.DataObject;
-using Winterborn.Library.EasySemVer.DataObject.Csharp;
-using Winterborn.Library.EasySemVer.Interfaces.Csharp;
+using Winterborn.Tools.EasySemVer.DataObject;
+using Winterborn.Tools.EasySemVer.DataObject.Csharp;
+using Winterborn.Tools.EasySemVer.Interfaces.Csharp;
 
-namespace Winterborn.Library.EasySemVer.Evaluators.Csharp;
+namespace Winterborn.Tools.EasySemVer.Evaluators.Csharp;
 
 /// <summary>
 /// R27 - a record's positional parameter list changed, which breaks both its primary constructor

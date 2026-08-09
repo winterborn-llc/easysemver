@@ -1,7 +1,7 @@
-using Winterborn.Library.EasySemVer.DataObject;
-using Winterborn.Library.EasySemVer.Evaluation;
+using Winterborn.Tools.EasySemVer.DataObject;
+using Winterborn.Tools.EasySemVer.Evaluation;
 
-namespace Winterborn.Library.EasySemVer.Reporting;
+namespace Winterborn.Tools.EasySemVer.Reporting;
 
 /// <summary>
 /// Renders a <see cref="ChangeReport"/> for a human, through <see cref="Log"/> so it nests inside

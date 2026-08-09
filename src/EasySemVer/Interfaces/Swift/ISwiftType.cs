@@ -1,4 +1,4 @@
-namespace Winterborn.Library.EasySemVer.Interfaces.Swift;
+namespace Winterborn.Tools.EasySemVer.Interfaces.Swift;
 
 /// <summary>
 /// A public nominal type in a Swift module. Each kind keeps its own concept - a protocol is not

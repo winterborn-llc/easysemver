@@ -1,7 +1,7 @@
-using Winterborn.Library.EasySemVer.Interfaces;
-using Version = Winterborn.Library.EasySemVer.DataObject.Version;
+using Winterborn.Tools.EasySemVer.Interfaces;
+using Version = Winterborn.Tools.EasySemVer.DataObject.Version;
 
-namespace Winterborn.Library.EasySemVer.CodeReader.Csharp;
+namespace Winterborn.Tools.EasySemVer.CodeReader.Csharp;
 
 /// <summary>
 /// The .csproj row of the MVR-03 table: reads the highest of AssemblyVersion, PackageVersion and

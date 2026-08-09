@@ -1,7 +1,7 @@
-using Winterborn.Library.EasySemVer.Extensions;
-using Winterborn.Library.EasySemVer.Interfaces.Csharp;
+using Winterborn.Tools.EasySemVer.Extensions;
+using Winterborn.Tools.EasySemVer.Interfaces.Csharp;
 
-namespace Winterborn.Library.EasySemVer.Evaluators.Csharp;
+namespace Winterborn.Tools.EasySemVer.Evaluators.Csharp;
 
 /// <summary>
 /// Matches an old overload to the new overload that is recognisably the same one - same

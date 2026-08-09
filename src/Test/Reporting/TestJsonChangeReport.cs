@@ -1,8 +1,8 @@
 using System.Text.Json;
-using Winterborn.Library.EasySemVer.DataObject;
-using Winterborn.Library.EasySemVer.Evaluation;
-using Winterborn.Library.EasySemVer.Reporting;
-using Version = Winterborn.Library.EasySemVer.DataObject.Version;
+using Winterborn.Tools.EasySemVer.DataObject;
+using Winterborn.Tools.EasySemVer.Evaluation;
+using Winterborn.Tools.EasySemVer.Reporting;
+using Version = Winterborn.Tools.EasySemVer.DataObject.Version;
 
 namespace Test.Reporting;
 

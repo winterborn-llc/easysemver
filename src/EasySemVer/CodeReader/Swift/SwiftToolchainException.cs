@@ -1,6 +1,6 @@
-using Winterborn.Library.EasySemVer.DataObject;
+using Winterborn.Tools.EasySemVer.DataObject;
 
-namespace Winterborn.Library.EasySemVer.CodeReader.Swift;
+namespace Winterborn.Tools.EasySemVer.CodeReader.Swift;
 
 /// <summary>
 /// SWE-05 / D-03 - if Swift units exist and their signatures cannot be extracted, the run fails.

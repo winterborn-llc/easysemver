@@ -1,8 +1,8 @@
 using System.Text.Json;
-using Winterborn.Library.EasySemVer.DataObject;
-using Winterborn.Library.EasySemVer.Interfaces;
+using Winterborn.Tools.EasySemVer.DataObject;
+using Winterborn.Tools.EasySemVer.Interfaces;
 
-namespace Winterborn.Library.EasySemVer.CodeReader.Swift;
+namespace Winterborn.Tools.EasySemVer.CodeReader.Swift;
 
 /// <summary>
 /// SWD-01 - a Package.swift is executable Swift, so its targets are read by asking the toolchain

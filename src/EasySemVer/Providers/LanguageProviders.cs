@@ -1,7 +1,7 @@
-using Winterborn.Library.EasySemVer.DataObject;
-using Winterborn.Library.EasySemVer.Interfaces;
+using Winterborn.Tools.EasySemVer.DataObject;
+using Winterborn.Tools.EasySemVer.Interfaces;
 
-namespace Winterborn.Library.EasySemVer.Providers;
+namespace Winterborn.Tools.EasySemVer.Providers;
 
 /// <summary>
 /// The registration point, and the only file a new language has to touch outside its own folders

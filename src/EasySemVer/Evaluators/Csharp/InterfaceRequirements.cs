@@ -1,7 +1,7 @@
-using Winterborn.Library.EasySemVer.DataObject.Csharp;
-using Winterborn.Library.EasySemVer.Interfaces.Csharp;
+using Winterborn.Tools.EasySemVer.DataObject.Csharp;
+using Winterborn.Tools.EasySemVer.Interfaces.Csharp;
 
-namespace Winterborn.Library.EasySemVer.Evaluators.Csharp;
+namespace Winterborn.Tools.EasySemVer.Evaluators.Csharp;
 
 /// <summary>
 /// The half of R20/R21 they share. Split out rather than duplicated so the two directions cannot

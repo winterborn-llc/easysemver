@@ -1,4 +1,4 @@
-namespace Winterborn.Library.EasySemVer;
+namespace Winterborn.Tools.EasySemVer;
 
 /// <summary>
 /// The one logging surface (LOG-01). With several languages, many units and shelled-out tools in

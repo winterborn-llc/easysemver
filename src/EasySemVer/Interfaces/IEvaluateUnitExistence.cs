@@ -1,6 +1,6 @@
-using Winterborn.Library.EasySemVer.DataObject;
+using Winterborn.Tools.EasySemVer.DataObject;
 
-namespace Winterborn.Library.EasySemVer.Interfaces;
+namespace Winterborn.Tools.EasySemVer.Interfaces;
 
 /// <summary>
 /// A neutral rule: "a shippable module appeared or disappeared" means the same thing in every

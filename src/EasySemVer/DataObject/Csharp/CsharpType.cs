@@ -1,7 +1,7 @@
 using System.Xml.Serialization;
-using Winterborn.Library.EasySemVer.Interfaces.Csharp;
+using Winterborn.Tools.EasySemVer.Interfaces.Csharp;
 
-namespace Winterborn.Library.EasySemVer.DataObject.Csharp;
+namespace Winterborn.Tools.EasySemVer.DataObject.Csharp;
 
 /// <summary>
 /// The facets and members every C# type kind shares (CSX-01…CSX-03). Concrete-typed throughout,

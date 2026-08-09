@@ -1,4 +1,4 @@
-namespace Winterborn.Library.EasySemVer.CodeReader.Swift;
+namespace Winterborn.Tools.EasySemVer.CodeReader.Swift;
 
 /// <summary>
 /// The small amount of reading the symbol graph forces on us. This is not a Swift parser (D-02):

@@ -1,4 +1,4 @@
-namespace Winterborn.Library.EasySemVer.CodeReader.Swift;
+namespace Winterborn.Tools.EasySemVer.CodeReader.Swift;
 
 internal static class SymbolGraphRelationshipKinds
 {

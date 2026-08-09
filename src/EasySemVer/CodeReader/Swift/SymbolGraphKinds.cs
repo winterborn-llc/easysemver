@@ -1,4 +1,4 @@
-namespace Winterborn.Library.EasySemVer.CodeReader.Swift;
+namespace Winterborn.Tools.EasySemVer.CodeReader.Swift;
 
 /// <summary>The <c>kind.identifier</c> values the symbol graph uses.</summary>
 internal static class SymbolGraphKinds

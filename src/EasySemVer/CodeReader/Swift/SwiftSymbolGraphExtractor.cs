@@ -1,7 +1,7 @@
-using Winterborn.Library.EasySemVer.Interfaces;
-using Winterborn.Library.EasySemVer.DataObject.Swift;
+using Winterborn.Tools.EasySemVer.Interfaces;
+using Winterborn.Tools.EasySemVer.DataObject.Swift;
 
-namespace Winterborn.Library.EasySemVer.CodeReader.Swift;
+namespace Winterborn.Tools.EasySemVer.CodeReader.Swift;
 
 /// <summary>
 /// SWE-01 - builds a SwiftPM package with the symbol-graph flags on and reads the resulting JSON.

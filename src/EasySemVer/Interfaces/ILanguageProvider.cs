@@ -1,8 +1,8 @@
 using System.Xml.Linq;
-using Winterborn.Library.EasySemVer.DataObject;
-using Version = Winterborn.Library.EasySemVer.DataObject.Version;
+using Winterborn.Tools.EasySemVer.DataObject;
+using Version = Winterborn.Tools.EasySemVer.DataObject.Version;
 
-namespace Winterborn.Library.EasySemVer.Interfaces;
+namespace Winterborn.Tools.EasySemVer.Interfaces;
 
 /// <summary>
 /// Everything one language contributes to a run (ML-02). Adding a language means writing one of

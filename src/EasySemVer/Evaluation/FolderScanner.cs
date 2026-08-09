@@ -1,6 +1,6 @@
-using Winterborn.Library.EasySemVer.Settings;
+using Winterborn.Tools.EasySemVer.Settings;
 
-namespace Winterborn.Library.EasySemVer.Evaluation;
+namespace Winterborn.Tools.EasySemVer.Evaluation;
 
 /// <summary>
 /// The one recursive walk of the folder root (FLD-03), honouring the exclusion list (FLD-04).

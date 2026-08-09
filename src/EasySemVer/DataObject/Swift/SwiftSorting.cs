@@ -1,4 +1,4 @@
-namespace Winterborn.Library.EasySemVer.DataObject.Swift;
+namespace Winterborn.Tools.EasySemVer.DataObject.Swift;
 
 /// <summary>BAS-04 - symbol-graph ordering is not guaranteed by the toolchain, so we impose one.</summary>
 internal static class SwiftSorting

@@ -1,4 +1,4 @@
-namespace Winterborn.Library.EasySemVer.Interfaces.Swift;
+namespace Winterborn.Tools.EasySemVer.Interfaces.Swift;
 
 /// <summary>
 /// What every public Swift declaration carries, whatever kind it is. Availability and ObjC

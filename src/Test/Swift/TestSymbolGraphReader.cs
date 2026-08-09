@@ -1,6 +1,6 @@
-using Winterborn.Library.EasySemVer.CodeReader.Swift;
-using Winterborn.Library.EasySemVer.DataObject.Swift;
-using Winterborn.Library.EasySemVer.Interfaces.Swift;
+using Winterborn.Tools.EasySemVer.CodeReader.Swift;
+using Winterborn.Tools.EasySemVer.DataObject.Swift;
+using Winterborn.Tools.EasySemVer.Interfaces.Swift;
 
 namespace Test.Swift;
 
@@ -223,7 +223,7 @@ public class TestSymbolGraphReader
     public void NoMangledNamesReachTheModel()
     {
         var module = (SwiftModule)Module;
-        var xml = Winterborn.Library.EasySemVer.Extensions.ExtendObject
+        var xml = Winterborn.Tools.EasySemVer.Extensions.ExtendObject
             .SerializeToElement(module)
             .ToString();
 

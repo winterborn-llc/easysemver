@@ -1,4 +1,4 @@
-namespace Winterborn.Library.EasySemVer.DataObject.Csharp;
+namespace Winterborn.Tools.EasySemVer.DataObject.Csharp;
 
 /// <summary>
 /// The kind names carried by <see cref="CsharpType.Kind"/>. A kind change - struct to class,

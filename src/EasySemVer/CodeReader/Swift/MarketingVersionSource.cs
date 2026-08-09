@@ -1,8 +1,8 @@
 using System.Text.RegularExpressions;
-using Winterborn.Library.EasySemVer.Interfaces;
-using Version = Winterborn.Library.EasySemVer.DataObject.Version;
+using Winterborn.Tools.EasySemVer.Interfaces;
+using Version = Winterborn.Tools.EasySemVer.DataObject.Version;
 
-namespace Winterborn.Library.EasySemVer.CodeReader.Swift;
+namespace Winterborn.Tools.EasySemVer.CodeReader.Swift;
 
 /// <summary>
 /// MVR-03 - the Xcode MARKETING_VERSION row, read from and written to project.pbxproj.

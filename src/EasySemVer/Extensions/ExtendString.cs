@@ -1,6 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
 
-namespace Winterborn.Library.EasySemVer.Extensions;
+namespace Winterborn.Tools.EasySemVer.Extensions;
 
 internal static class ExtendString
 {

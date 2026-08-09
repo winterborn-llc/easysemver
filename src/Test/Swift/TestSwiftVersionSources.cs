@@ -1,7 +1,7 @@
-using Winterborn.Library.EasySemVer.CodeReader.Swift;
-using Winterborn.Library.EasySemVer.DataObject;
-using Winterborn.Library.EasySemVer.Interfaces;
-using Version = Winterborn.Library.EasySemVer.DataObject.Version;
+using Winterborn.Tools.EasySemVer.CodeReader.Swift;
+using Winterborn.Tools.EasySemVer.DataObject;
+using Winterborn.Tools.EasySemVer.Interfaces;
+using Version = Winterborn.Tools.EasySemVer.DataObject.Version;
 
 namespace Test.Swift;
 

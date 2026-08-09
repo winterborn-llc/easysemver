@@ -1,5 +1,5 @@
 using System.Text.Json;
-using Winterborn.Library.EasySemVer;
+using Winterborn.Tools.EasySemVer;
 using Xunit;
 
 namespace IntegrationTest;

@@ -1,6 +1,6 @@
-using Winterborn.Library.EasySemVer.DataObject;
-using Winterborn.Library.EasySemVer.Evaluators.Csharp;
-using Winterborn.Library.EasySemVer.Interfaces.Csharp;
+using Winterborn.Tools.EasySemVer.DataObject;
+using Winterborn.Tools.EasySemVer.Evaluators.Csharp;
+using Winterborn.Tools.EasySemVer.Interfaces.Csharp;
 
 namespace Test.Evaluators.Csharp;
 

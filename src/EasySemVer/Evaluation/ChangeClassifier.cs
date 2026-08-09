@@ -1,9 +1,9 @@
-using Winterborn.Library.EasySemVer.DataObject;
-using Winterborn.Library.EasySemVer.Evaluators;
-using Winterborn.Library.EasySemVer.Interfaces;
-using Winterborn.Library.EasySemVer.Providers;
+using Winterborn.Tools.EasySemVer.DataObject;
+using Winterborn.Tools.EasySemVer.Evaluators;
+using Winterborn.Tools.EasySemVer.Interfaces;
+using Winterborn.Tools.EasySemVer.Providers;
 
-namespace Winterborn.Library.EasySemVer.Evaluation;
+namespace Winterborn.Tools.EasySemVer.Evaluation;
 
 /// <summary>
 /// ML-05 - the run's change type is the highest impact across the neutral unit-existence rules

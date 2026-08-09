@@ -1,6 +1,6 @@
-using Winterborn.Library.EasySemVer.DataObject;
+using Winterborn.Tools.EasySemVer.DataObject;
 
-namespace Winterborn.Library.EasySemVer.Interfaces;
+namespace Winterborn.Tools.EasySemVer.Interfaces;
 
 /// <summary>
 /// Every external tool invocation - swift, xcodebuild, git - goes through here, so extraction,

@@ -296,7 +296,7 @@ src/EasySemVer/
    Persistence/           (baseline DTOs + reader/writer)
    Settings/
 ```
-Namespaces follow the folders: `Winterborn.Library.EasySemVer.Interfaces.Csharp`,
+Namespaces follow the folders: `Winterborn.Tools.EasySemVer.Interfaces.Csharp`,
 `…DataObject.Swift`, and so on. Tests mirror this:
 `src/Test/Evaluators/Csharp/`, `src/Test/Evaluators/Swift/`.
 

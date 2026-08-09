@@ -1,5 +1,5 @@
-using Winterborn.Library.EasySemVer;
-using Winterborn.Library.EasySemVer.CodeReader.Csharp;
+using Winterborn.Tools.EasySemVer;
+using Winterborn.Tools.EasySemVer.CodeReader.Csharp;
 using Xunit;
 
 namespace IntegrationTest;

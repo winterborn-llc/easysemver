@@ -1,9 +1,9 @@
-using Winterborn.Library.EasySemVer;
-using Winterborn.Library.EasySemVer.CodeReader.Csharp;
-using Winterborn.Library.EasySemVer.CodeReader.Swift;
-using Winterborn.Library.EasySemVer.Interfaces.Swift;
-using Winterborn.Library.EasySemVer.Process;
-using Winterborn.Library.EasySemVer.Providers;
+using Winterborn.Tools.EasySemVer;
+using Winterborn.Tools.EasySemVer.CodeReader.Csharp;
+using Winterborn.Tools.EasySemVer.CodeReader.Swift;
+using Winterborn.Tools.EasySemVer.Interfaces.Swift;
+using Winterborn.Tools.EasySemVer.Process;
+using Winterborn.Tools.EasySemVer.Providers;
 using Xunit;
 
 namespace IntegrationTest;

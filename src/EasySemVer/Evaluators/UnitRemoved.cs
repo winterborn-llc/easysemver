@@ -1,8 +1,8 @@
-using Winterborn.Library.EasySemVer.DataObject;
-using Winterborn.Library.EasySemVer.Evaluation;
-using Winterborn.Library.EasySemVer.Interfaces;
+using Winterborn.Tools.EasySemVer.DataObject;
+using Winterborn.Tools.EasySemVer.Evaluation;
+using Winterborn.Tools.EasySemVer.Interfaces;
 
-namespace Winterborn.Library.EasySemVer.Evaluators;
+namespace Winterborn.Tools.EasySemVer.Evaluators;
 
 /// <summary>
 /// NCL-01 - a unit in the baseline is gone from this run. Replaces the C#-only R07 for every

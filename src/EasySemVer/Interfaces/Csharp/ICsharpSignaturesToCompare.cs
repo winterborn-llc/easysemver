@@ -1,4 +1,4 @@
-namespace Winterborn.Library.EasySemVer.Interfaces.Csharp;
+namespace Winterborn.Tools.EasySemVer.Interfaces.Csharp;
 
 /// <summary>
 /// REN-04 - the comparison context for exactly one paired C# unit. It knows nothing about file

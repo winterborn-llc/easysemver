@@ -1,8 +1,8 @@
 using System.Xml.Serialization;
-using Winterborn.Library.EasySemVer.Extensions;
-using Winterborn.Library.EasySemVer.Interfaces.Csharp;
+using Winterborn.Tools.EasySemVer.Extensions;
+using Winterborn.Tools.EasySemVer.Interfaces.Csharp;
 
-namespace Winterborn.Library.EasySemVer.DataObject.Csharp;
+namespace Winterborn.Tools.EasySemVer.DataObject.Csharp;
 
 [DebuggerDisplay("{MethodType} {MethodName}")]
 [XmlType("Method")]

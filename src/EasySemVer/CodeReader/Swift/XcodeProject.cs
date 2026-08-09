@@ -1,7 +1,7 @@
 using System.Text.Json;
-using Winterborn.Library.EasySemVer.Interfaces;
+using Winterborn.Tools.EasySemVer.Interfaces;
 
-namespace Winterborn.Library.EasySemVer.CodeReader.Swift;
+namespace Winterborn.Tools.EasySemVer.CodeReader.Swift;
 
 /// <summary>
 /// SWD-02 - an .xcodeproj's targets, read by asking xcodebuild rather than by parsing the

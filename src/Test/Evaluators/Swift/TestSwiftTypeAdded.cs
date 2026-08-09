@@ -1,6 +1,6 @@
-using Winterborn.Library.EasySemVer.DataObject;
-using Winterborn.Library.EasySemVer.Evaluators.Swift;
-using Winterborn.Library.EasySemVer.Interfaces.Swift;
+using Winterborn.Tools.EasySemVer.DataObject;
+using Winterborn.Tools.EasySemVer.Evaluators.Swift;
+using Winterborn.Tools.EasySemVer.Interfaces.Swift;
 using Test.Swift;
 
 namespace Test.Evaluators.Swift;

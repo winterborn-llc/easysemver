@@ -1,7 +1,7 @@
 using System.Text.Json.Serialization;
-using Winterborn.Library.EasySemVer.Evaluation;
+using Winterborn.Tools.EasySemVer.Evaluation;
 
-namespace Winterborn.Library.EasySemVer.Reporting;
+namespace Winterborn.Tools.EasySemVer.Reporting;
 
 /// <summary>
 /// The shape of the <c>--json</c> report (REP-02). Deliberately small: discovered units and the

@@ -1,4 +1,4 @@
-namespace Winterborn.Library.EasySemVer.Interfaces.Csharp;
+namespace Winterborn.Tools.EasySemVer.Interfaces.Csharp;
 
 /// <summary>
 /// What every C# type kind has in common. Each kind keeps its own concept - CSX-01 is explicit

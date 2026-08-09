@@ -1,6 +1,6 @@
-using Winterborn.Library.EasySemVer.DataObject;
+using Winterborn.Tools.EasySemVer.DataObject;
 
-namespace Winterborn.Library.EasySemVer.Interfaces.Swift;
+namespace Winterborn.Tools.EasySemVer.Interfaces.Swift;
 
 /// <summary>
 /// One Swift classification rule (ML-04). There is deliberately no base type shared with

@@ -1,7 +1,7 @@
-using Winterborn.Library.EasySemVer.DataObject.Swift;
-using Winterborn.Library.EasySemVer.Interfaces.Swift;
+using Winterborn.Tools.EasySemVer.DataObject.Swift;
+using Winterborn.Tools.EasySemVer.Interfaces.Swift;
 
-namespace Winterborn.Library.EasySemVer.Evaluators.Swift;
+namespace Winterborn.Tools.EasySemVer.Evaluators.Swift;
 
 /// <summary>The half S20 and S21 share, so the two directions cannot drift apart.</summary>
 internal static class SwiftProtocolRequirements

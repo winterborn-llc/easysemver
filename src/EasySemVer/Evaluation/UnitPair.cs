@@ -1,6 +1,6 @@
-using Winterborn.Library.EasySemVer.Interfaces;
+using Winterborn.Tools.EasySemVer.Interfaces;
 
-namespace Winterborn.Library.EasySemVer.Evaluation;
+namespace Winterborn.Tools.EasySemVer.Evaluation;
 
 /// <summary>One unit as the baseline recorded it, alongside the same unit as it is now (NCL-03).</summary>
 [DebuggerDisplay("{Newer.Language} {Newer.UnitId}")]

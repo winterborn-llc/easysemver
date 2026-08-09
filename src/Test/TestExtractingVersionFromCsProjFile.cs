@@ -1,5 +1,5 @@
-using Winterborn.Library.EasySemVer.CodeReader;
-using Winterborn.Library.EasySemVer.CodeReader.Csharp;
+using Winterborn.Tools.EasySemVer.CodeReader;
+using Winterborn.Tools.EasySemVer.CodeReader.Csharp;
 
 namespace Test;
 

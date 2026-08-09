@@ -1,6 +1,6 @@
-using Winterborn.Library.EasySemVer.Interfaces.Swift;
+using Winterborn.Tools.EasySemVer.Interfaces.Swift;
 
-namespace Winterborn.Library.EasySemVer.Evaluators.Swift;
+namespace Winterborn.Tools.EasySemVer.Evaluators.Swift;
 
 /// <summary>
 /// The member lookups the Swift rules share. Every declaration is identified by its full Swift

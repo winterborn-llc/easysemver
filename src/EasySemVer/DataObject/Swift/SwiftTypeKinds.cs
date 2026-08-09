@@ -1,4 +1,4 @@
-namespace Winterborn.Library.EasySemVer.DataObject.Swift;
+namespace Winterborn.Tools.EasySemVer.DataObject.Swift;
 
 internal static class SwiftTypeKinds
 {

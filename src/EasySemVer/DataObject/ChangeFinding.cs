@@ -1,4 +1,4 @@
-namespace Winterborn.Library.EasySemVer.DataObject;
+namespace Winterborn.Tools.EasySemVer.DataObject;
 
 /// <summary>
 /// One detected change: where it was found, what symbol it concerns, what happened to that

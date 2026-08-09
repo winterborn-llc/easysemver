@@ -1,6 +1,6 @@
 using System.Text.Json;
 
-namespace Winterborn.Library.EasySemVer.CodeReader.Swift;
+namespace Winterborn.Tools.EasySemVer.CodeReader.Swift;
 
 [DebuggerDisplay("{Kind}")]
 internal class SymbolGraphRelationship

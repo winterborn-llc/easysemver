@@ -1,9 +1,9 @@
-using Winterborn.Library.EasySemVer.DataObject;
-using Winterborn.Library.EasySemVer.DataObject.Swift;
-using Winterborn.Library.EasySemVer.Evaluation.Swift;
-using Winterborn.Library.EasySemVer.Interfaces.Swift;
+using Winterborn.Tools.EasySemVer.DataObject;
+using Winterborn.Tools.EasySemVer.DataObject.Swift;
+using Winterborn.Tools.EasySemVer.Evaluation.Swift;
+using Winterborn.Tools.EasySemVer.Interfaces.Swift;
 
-namespace Winterborn.Library.EasySemVer.Evaluators.Swift;
+namespace Winterborn.Tools.EasySemVer.Evaluators.Swift;
 
 /// <summary>S05 - a class went from public to open.</summary>
 public class SwiftClassSubclassingOffered : IEvaluateSwiftSignatures

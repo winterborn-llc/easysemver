@@ -1,4 +1,4 @@
-namespace Winterborn.Library.EasySemVer.DataObject.Swift;
+namespace Winterborn.Tools.EasySemVer.DataObject.Swift;
 
 /// <summary>
 /// The only two access levels that reach the signature (SWE-02). "open" additionally permits

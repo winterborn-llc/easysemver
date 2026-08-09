@@ -1,9 +1,9 @@
 using System.Xml;
-using Winterborn.Library.EasySemVer.DataObject.Csharp;
-using Winterborn.Library.EasySemVer.Settings;
-using Version = Winterborn.Library.EasySemVer.DataObject.Version;
+using Winterborn.Tools.EasySemVer.DataObject.Csharp;
+using Winterborn.Tools.EasySemVer.Settings;
+using Version = Winterborn.Tools.EasySemVer.DataObject.Version;
 
-namespace Winterborn.Library.EasySemVer.CodeReader.Csharp;
+namespace Winterborn.Tools.EasySemVer.CodeReader.Csharp;
 
 /// <summary>
 /// One .csproj on disk: its version properties, and the ability to write them back. Discovering

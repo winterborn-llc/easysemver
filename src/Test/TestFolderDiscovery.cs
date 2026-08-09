@@ -1,5 +1,5 @@
-using Winterborn.Library.EasySemVer.Evaluation;
-using Winterborn.Library.EasySemVer.Providers;
+using Winterborn.Tools.EasySemVer.Evaluation;
+using Winterborn.Tools.EasySemVer.Providers;
 
 namespace Test;
 

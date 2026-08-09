@@ -1,12 +1,12 @@
-using Winterborn.Library.EasySemVer.DataObject;
-using Winterborn.Library.EasySemVer.Interfaces;
-using Winterborn.Library.EasySemVer.Persistence;
-using Winterborn.Library.EasySemVer.Providers;
-using Winterborn.Library.EasySemVer.Reporting;
-using Winterborn.Library.EasySemVer.Settings;
-using Version = Winterborn.Library.EasySemVer.DataObject.Version;
+using Winterborn.Tools.EasySemVer.DataObject;
+using Winterborn.Tools.EasySemVer.Interfaces;
+using Winterborn.Tools.EasySemVer.Persistence;
+using Winterborn.Tools.EasySemVer.Providers;
+using Winterborn.Tools.EasySemVer.Reporting;
+using Winterborn.Tools.EasySemVer.Settings;
+using Version = Winterborn.Tools.EasySemVer.DataObject.Version;
 
-namespace Winterborn.Library.EasySemVer.Evaluation;
+namespace Winterborn.Tools.EasySemVer.Evaluation;
 
 /// <summary>
 /// One invocation, end to end. Discovery happens exactly once and its result feeds every

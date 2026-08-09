@@ -1,8 +1,8 @@
 using System.Text.Json;
-using Winterborn.Library.EasySemVer.Evaluation;
-using Version = Winterborn.Library.EasySemVer.DataObject.Version;
+using Winterborn.Tools.EasySemVer.Evaluation;
+using Version = Winterborn.Tools.EasySemVer.DataObject.Version;
 
-namespace Winterborn.Library.EasySemVer.Reporting;
+namespace Winterborn.Tools.EasySemVer.Reporting;
 
 /// <summary>
 /// Writes the run's verdict as JSON (REP-01). A sibling of <see cref="TextChangeReport"/> and,

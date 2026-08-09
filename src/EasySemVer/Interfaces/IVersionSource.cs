@@ -1,6 +1,6 @@
-using Version = Winterborn.Library.EasySemVer.DataObject.Version;
+using Version = Winterborn.Tools.EasySemVer.DataObject.Version;
 
-namespace Winterborn.Library.EasySemVer.Interfaces;
+namespace Winterborn.Tools.EasySemVer.Interfaces;
 
 /// <summary>
 /// One place a version number already lives inside a packageable unit (MVR-03): a csproj property

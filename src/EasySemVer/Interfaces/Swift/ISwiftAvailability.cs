@@ -1,4 +1,4 @@
-namespace Winterborn.Library.EasySemVer.Interfaces.Swift;
+namespace Winterborn.Tools.EasySemVer.Interfaces.Swift;
 
 /// <summary>One <c>@available</c> clause on a declaration (SWM-03). Drives S25 and S26.</summary>
 public interface ISwiftAvailability

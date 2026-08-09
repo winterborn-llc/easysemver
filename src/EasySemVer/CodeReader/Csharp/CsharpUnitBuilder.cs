@@ -1,11 +1,11 @@
 using System.Reflection;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
-using Winterborn.Library.EasySemVer.DataObject.Csharp;
-using Winterborn.Library.EasySemVer.Evaluation;
-using Winterborn.Library.EasySemVer.Extensions;
+using Winterborn.Tools.EasySemVer.DataObject.Csharp;
+using Winterborn.Tools.EasySemVer.Evaluation;
+using Winterborn.Tools.EasySemVer.Extensions;
 
-namespace Winterborn.Library.EasySemVer.CodeReader.Csharp;
+namespace Winterborn.Tools.EasySemVer.CodeReader.Csharp;
 
 /// <summary>
 /// Builds one .csproj's public API surface from source with Roslyn (SIG-01). One unit in, one

@@ -1,8 +1,8 @@
 using System.Text;
 using System.Text.Json;
-using Winterborn.Library.EasySemVer.DataObject.Swift;
+using Winterborn.Tools.EasySemVer.DataObject.Swift;
 
-namespace Winterborn.Library.EasySemVer.CodeReader.Swift;
+namespace Winterborn.Tools.EasySemVer.CodeReader.Swift;
 
 /// <summary>
 /// One entry from the symbol graph's <c>symbols</c> array, reduced to the facets EasySemVer

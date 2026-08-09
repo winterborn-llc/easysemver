@@ -1,9 +1,9 @@
-using Winterborn.Library.EasySemVer.DataObject;
-using Winterborn.Library.EasySemVer.DataObject.Swift;
-using Winterborn.Library.EasySemVer.Evaluation.Swift;
-using Winterborn.Library.EasySemVer.Interfaces.Swift;
+using Winterborn.Tools.EasySemVer.DataObject;
+using Winterborn.Tools.EasySemVer.DataObject.Swift;
+using Winterborn.Tools.EasySemVer.Evaluation.Swift;
+using Winterborn.Tools.EasySemVer.Interfaces.Swift;
 
-namespace Winterborn.Library.EasySemVer.Evaluators.Swift;
+namespace Winterborn.Tools.EasySemVer.Evaluators.Swift;
 
 /// <summary>S33 - a parameter's inout, variadic or ownership modifier changed. The call site has to change with it, in either direction.</summary>
 public class SwiftParameterModifierChanged : IEvaluateSwiftSignatures

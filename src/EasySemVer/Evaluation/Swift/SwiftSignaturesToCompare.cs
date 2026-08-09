@@ -1,6 +1,6 @@
-using Winterborn.Library.EasySemVer.Interfaces.Swift;
+using Winterborn.Tools.EasySemVer.Interfaces.Swift;
 
-namespace Winterborn.Library.EasySemVer.Evaluation.Swift;
+namespace Winterborn.Tools.EasySemVer.Evaluation.Swift;
 
 /// <inheritdoc cref="ISwiftSignaturesToCompare"/>
 internal class SwiftSignaturesToCompare : ISwiftSignaturesToCompare

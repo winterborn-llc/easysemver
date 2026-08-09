@@ -2,7 +2,7 @@ using System.Xml;
 using System.Xml.Linq;
 using System.Xml.Serialization;
 
-namespace Winterborn.Library.EasySemVer.Extensions;
+namespace Winterborn.Tools.EasySemVer.Extensions;
 
 internal static class ExtendObject
 {

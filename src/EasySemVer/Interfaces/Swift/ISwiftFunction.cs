@@ -1,4 +1,4 @@
-namespace Winterborn.Library.EasySemVer.Interfaces.Swift;
+namespace Winterborn.Tools.EasySemVer.Interfaces.Swift;
 
 /// <summary>A func, whether a method, a protocol requirement, or a global (SWM-01).</summary>
 public interface ISwiftFunction : ISwiftDeclaration

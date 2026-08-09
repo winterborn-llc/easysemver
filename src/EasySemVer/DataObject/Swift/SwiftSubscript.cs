@@ -1,7 +1,7 @@
 using System.Xml.Serialization;
-using Winterborn.Library.EasySemVer.Interfaces.Swift;
+using Winterborn.Tools.EasySemVer.Interfaces.Swift;
 
-namespace Winterborn.Library.EasySemVer.DataObject.Swift;
+namespace Winterborn.Tools.EasySemVer.DataObject.Swift;
 
 [DebuggerDisplay("{Name}")]
 [XmlType("Subscript")]

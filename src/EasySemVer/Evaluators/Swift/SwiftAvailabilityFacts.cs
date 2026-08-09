@@ -1,6 +1,6 @@
-using Winterborn.Library.EasySemVer.Interfaces.Swift;
+using Winterborn.Tools.EasySemVer.Interfaces.Swift;
 
-namespace Winterborn.Library.EasySemVer.Evaluators.Swift;
+namespace Winterborn.Tools.EasySemVer.Evaluators.Swift;
 
 /// <summary>Availability facts as S25 and S26 need them (SWM-03).</summary>
 internal static class SwiftAvailabilityFacts

@@ -1,8 +1,8 @@
 using System.Xml;
-using Winterborn.Library.EasySemVer.Settings;
-using Version = Winterborn.Library.EasySemVer.DataObject.Version;
+using Winterborn.Tools.EasySemVer.Settings;
+using Version = Winterborn.Tools.EasySemVer.DataObject.Version;
 
-namespace Winterborn.Library.EasySemVer.CodeReader.Csharp;
+namespace Winterborn.Tools.EasySemVer.CodeReader.Csharp;
 
 /// <summary>
 /// VER-06 - a project's version is the highest of the first occurrence of each of

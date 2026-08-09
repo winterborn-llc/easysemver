@@ -1,6 +1,6 @@
-using Winterborn.Library.EasySemVer.Interfaces;
+using Winterborn.Tools.EasySemVer.Interfaces;
 
-namespace Winterborn.Library.EasySemVer.Evaluation;
+namespace Winterborn.Tools.EasySemVer.Evaluation;
 
 /// <summary>
 /// NCL-03 - pair units by (Language, UnitId) before any language rule runs, so a removed unit is

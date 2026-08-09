@@ -1,4 +1,4 @@
-namespace Winterborn.Library.EasySemVer.Interfaces.Csharp;
+namespace Winterborn.Tools.EasySemVer.Interfaces.Csharp;
 
 /// <summary>
 /// A public interface. Its members are requirements, and whether a requirement carries a default

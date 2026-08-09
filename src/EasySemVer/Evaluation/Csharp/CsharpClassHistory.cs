@@ -1,6 +1,6 @@
-using Winterborn.Library.EasySemVer.Interfaces.Csharp;
+using Winterborn.Tools.EasySemVer.Interfaces.Csharp;
 
-namespace Winterborn.Library.EasySemVer.Evaluation.Csharp;
+namespace Winterborn.Tools.EasySemVer.Evaluation.Csharp;
 
 /// <inheritdoc cref="ICsharpClassHistory"/>
 [DebuggerDisplay("{Newer.Kind} {Newer.Name}")]

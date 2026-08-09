@@ -1,6 +1,6 @@
-using Winterborn.Library.EasySemVer.DataObject;
+using Winterborn.Tools.EasySemVer.DataObject;
 
-namespace Winterborn.Library.EasySemVer.Extensions;
+namespace Winterborn.Tools.EasySemVer.Extensions;
 
 internal static class ExtendVersionType
 {

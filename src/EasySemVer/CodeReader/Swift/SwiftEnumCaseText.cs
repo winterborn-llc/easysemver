@@ -1,6 +1,6 @@
-using Winterborn.Library.EasySemVer.DataObject.Swift;
+using Winterborn.Tools.EasySemVer.DataObject.Swift;
 
-namespace Winterborn.Library.EasySemVer.CodeReader.Swift;
+namespace Winterborn.Tools.EasySemVer.CodeReader.Swift;
 
 /// <summary>
 /// An enum case's associated values are not reported as a function signature, so they are read

@@ -1,3 +1,3 @@
-namespace Winterborn.Library.EasySemVer.Interfaces.Csharp;
+namespace Winterborn.Tools.EasySemVer.Interfaces.Csharp;
 
 public interface ICsharpStruct : ICsharpType;

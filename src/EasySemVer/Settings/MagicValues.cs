@@ -1,4 +1,4 @@
-namespace Winterborn.Library.EasySemVer.Settings;
+namespace Winterborn.Tools.EasySemVer.Settings;
 
 internal static class MagicValues
 {

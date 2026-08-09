@@ -1,6 +1,6 @@
-using Winterborn.Library.EasySemVer.DataObject;
-using Winterborn.Library.EasySemVer.Interfaces;
-using Winterborn.Library.EasySemVer.Providers;
+using Winterborn.Tools.EasySemVer.DataObject;
+using Winterborn.Tools.EasySemVer.Interfaces;
+using Winterborn.Tools.EasySemVer.Providers;
 
 namespace Test.Swift;
 
@@ -124,8 +124,8 @@ public class TestSwiftExtractionFailure
     {
         try
         {
-            Winterborn.Library.EasySemVer.Evaluation.VersioningRun.Execute(
-                Winterborn.Library.EasySemVer.Settings.RunOptions.Parse(folderRoot),
+            Winterborn.Tools.EasySemVer.Evaluation.VersioningRun.Execute(
+                Winterborn.Tools.EasySemVer.Settings.RunOptions.Parse(folderRoot),
                 LanguageProviders.Create(new StubProcessRunner(failure)));
             return 0;
         }

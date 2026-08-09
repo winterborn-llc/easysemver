@@ -1,8 +1,8 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Text;
-using Winterborn.Library.EasySemVer.Extensions;
+using Winterborn.Tools.EasySemVer.Extensions;
 
-namespace Winterborn.Library.EasySemVer.DataObject;
+namespace Winterborn.Tools.EasySemVer.DataObject;
 
 /// <summary>
 /// A dotted sequence of non-negative integers, canonically MAJOR.MINOR.PATCH (VER-01). Short

@@ -1,7 +1,7 @@
 using System.Text.Json.Serialization;
-using Winterborn.Library.EasySemVer.DataObject;
+using Winterborn.Tools.EasySemVer.DataObject;
 
-namespace Winterborn.Library.EasySemVer.Reporting;
+namespace Winterborn.Tools.EasySemVer.Reporting;
 
 /// <summary>
 /// One piece of the evidence behind the verdict (REP-09). The array these sit in is what makes a

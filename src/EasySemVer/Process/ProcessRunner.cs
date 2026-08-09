@@ -1,9 +1,9 @@
 using System.ComponentModel;
 using System.Text;
-using Winterborn.Library.EasySemVer.DataObject;
-using Winterborn.Library.EasySemVer.Interfaces;
+using Winterborn.Tools.EasySemVer.DataObject;
+using Winterborn.Tools.EasySemVer.Interfaces;
 
-namespace Winterborn.Library.EasySemVer.Process;
+namespace Winterborn.Tools.EasySemVer.Process;
 
 /// <summary>
 /// The real <see cref="IRunProcess"/>. Everything that shells out goes through here so the tests

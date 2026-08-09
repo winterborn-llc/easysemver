@@ -1,9 +1,9 @@
-using Winterborn.Library.EasySemVer.Evaluation;
-using Winterborn.Library.EasySemVer.Process;
-using Winterborn.Library.EasySemVer.Providers;
-using Winterborn.Library.EasySemVer.Settings;
+using Winterborn.Tools.EasySemVer.Evaluation;
+using Winterborn.Tools.EasySemVer.Process;
+using Winterborn.Tools.EasySemVer.Providers;
+using Winterborn.Tools.EasySemVer.Settings;
 
-namespace Winterborn.Library.EasySemVer;
+namespace Winterborn.Tools.EasySemVer;
 
 // ReSharper disable once ClassNeverInstantiated.Global
 public static class Program

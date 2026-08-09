@@ -1,6 +1,6 @@
-using Winterborn.Library.EasySemVer.Interfaces;
+using Winterborn.Tools.EasySemVer.Interfaces;
 
-namespace Winterborn.Library.EasySemVer.Evaluation;
+namespace Winterborn.Tools.EasySemVer.Evaluation;
 
 /// <inheritdoc cref="IUnitsToCompare"/>
 internal class UnitsToCompare(

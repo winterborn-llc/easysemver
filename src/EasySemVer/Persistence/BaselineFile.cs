@@ -1,12 +1,12 @@
 using System.Text;
 using System.Xml;
 using System.Xml.Linq;
-using Winterborn.Library.EasySemVer.DataObject;
-using Winterborn.Library.EasySemVer.Interfaces;
-using Winterborn.Library.EasySemVer.Providers;
-using Winterborn.Library.EasySemVer.Settings;
+using Winterborn.Tools.EasySemVer.DataObject;
+using Winterborn.Tools.EasySemVer.Interfaces;
+using Winterborn.Tools.EasySemVer.Providers;
+using Winterborn.Tools.EasySemVer.Settings;
 
-namespace Winterborn.Library.EasySemVer.Persistence;
+namespace Winterborn.Tools.EasySemVer.Persistence;
 
 /// <summary>
 /// Baseline v2 (§6): one file at the folder root whose content is a flat array of packageable

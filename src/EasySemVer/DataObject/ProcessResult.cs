@@ -1,4 +1,4 @@
-namespace Winterborn.Library.EasySemVer.DataObject;
+namespace Winterborn.Tools.EasySemVer.DataObject;
 
 /// <summary>The outcome of one external tool invocation (ML-07).</summary>
 [DebuggerDisplay("{CommandLine} -> {ExitCode}")]
