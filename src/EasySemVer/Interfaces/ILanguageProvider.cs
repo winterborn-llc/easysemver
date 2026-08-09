@@ -29,7 +29,13 @@ public interface ILanguageProvider
 
     public IReadOnlyList<Version> ReadVersions(IPackageableUnit unit);
 
-    public void WriteVersion(IPackageableUnit unit, Version version);
+    /// <summary>
+    /// Stamps the version into every writable source in the unit and returns the folder-root-relative
+    /// path of each file it changed (REP-10). A provider reports its own writes because only it knows
+    /// what it touched - the alternative, having the caller infer the list from the unit's sources,
+    /// would quietly go wrong the first time a provider wrote a file that was not one of them.
+    /// </summary>
+    public IReadOnlyList<string> WriteVersion(IPackageableUnit unit, Version version);
 
     /// <summary>
     /// Renders the unit's signature as the single child element of its baseline entry. Collections

@@ -20,6 +20,23 @@ Cross-project and NuGet types resolve as error symbols in the ad-hoc compilation
 names may lack namespaces. Stable run-to-run, so diffs work, but theoretically collidable.
 *Relates to:* SIG-01.
 
+**G-20 — ACT-10's release block is specified but not yet in force.** (Verified)
+CLI-10 and REP-10 are implemented and tested, but the copy-paste release block they exist to enable
+cannot be adopted until a release ships them: the Action runs a *published* binary (ACT-02), so a
+workflow using the block would download a binary that rejects `--github` and reports no
+`writtenFiles`. Until then [`dotnet.yml`](../.github/workflows/dotnet.yml) keeps the hand-written
+version, commit and tag steps — including the `git add EasySemVer.xml src/*/*.csproj` glob REP-10
+exists to retire, which stays silently wrong for any project it does not match.
+
+*Closing it* is one commit, taken after the release that carries CLI-10, REP-10 and ACT-11 lands on
+nuget.org and as a GitHub Release: bump ACT-02's pinned `version` default and every `uses:` ref in
+the README to that tag, replace the four steps in `dotnet.yml` with ACT-12's two invocations, and add the
+ACT-10 regression test asserting the workflow and the README agree.
+ℹ️ Only the *adoption* is blocked. ACT-11 itself is implemented and covered — `ActionRegression`
+exercises the commit step against a real repository with a real remote, including the atomicity
+guarantee, which was confirmed by removing `--atomic` and watching the test fail.
+*Relates to:* ACT-02, ACT-10, ACT-11, CLI-10, REP-10.
+
 ## Informative / hygiene
 
 **G-17 — Stale documentation.** ✅ Resolved by the doc-12 rewrite of

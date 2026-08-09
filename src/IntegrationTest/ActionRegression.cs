@@ -32,6 +32,8 @@ public class ActionRegression : IDisposable
 
     private string GithubOutput => Path.Combine(this._temp, "github-output");
 
+    private string GithubStepSummary => Path.Combine(this._temp, "github-step-summary");
+
     public void Dispose()
     {
         Directory.Delete(this._temp, recursive: true);
@@ -173,7 +175,11 @@ public class ActionRegression : IDisposable
     {
         ["RUNNER_OS"] = ThisRunner.Os,
         ["RUNNER_TEMP"] = this.RunnerTemp,
+
+        // Both destinations CLI-10 writes to. The runner provides them; the Action never names
+        // them, because it no longer does the writing.
         ["GITHUB_OUTPUT"] = this.GithubOutput,
+        ["GITHUB_STEP_SUMMARY"] = this.GithubStepSummary,
         ["EASYSEMVER_FOLDER"] = folder,
         ["EASYSEMVER_DRY_RUN"] = dryRun,
 
@@ -194,6 +200,93 @@ public class ActionRegression : IDisposable
             .Where(line => line.Contains('='))
             .ToDictionary(line => line[..line.IndexOf('=')], line => line[(line.IndexOf('=') + 1)..]);
     }
+
+    /// <summary>
+    /// ACT-11's environment: what the commit step reads, all of it from the run step's outputs
+    /// rather than from the inputs, so it describes what happened.
+    /// </summary>
+    private Dictionary<string, string> CommitEnvironment(
+        string folder,
+        string commit,
+        string tag,
+        string branch = "main")
+    {
+        return new Dictionary<string, string>
+        {
+            ["EASYSEMVER_COMMIT"] = commit,
+            ["EASYSEMVER_TAG"] = tag,
+
+            // Empty, as it is in the one-step form: the report comes from the run step. The
+            // two-step form is the same step with this set instead, which
+            // TheTwoStepFormCommitsTheEarlierVerdict exercises.
+            ["EASYSEMVER_REPORT"] = string.Empty,
+            ["EASYSEMVER_RUN_REPORT"] = this.PublishedOutputs().GetValueOrDefault("report", string.Empty),
+            ["GITHUB_REF_NAME"] = branch,
+
+            // The step runs where the workspace is, which for a caller is the checkout.
+            ["EASYSEMVER_WORKING_DIRECTORY"] = folder
+        };
+    }
+
+    private (int ExitCode, string Output) Git(string workingDirectory, params string[] arguments)
+    {
+        var start = new ProcessStartInfo("git")
+        {
+            WorkingDirectory = workingDirectory,
+            RedirectStandardOutput = true,
+            RedirectStandardError = true
+        };
+
+        foreach (var argument in arguments)
+        {
+            start.ArgumentList.Add(argument);
+        }
+
+        using var process = Process.Start(start)!;
+        var output = process.StandardOutput.ReadToEnd() + process.StandardError.ReadToEnd();
+        process.WaitForExit();
+        return (process.ExitCode, output);
+    }
+
+    /// <summary>
+    /// A folder that is a real git repository with a real remote, so the commit step's push is
+    /// exercised rather than stubbed. A bare repository beside it stands in for GitHub, which is
+    /// enough: `git push` cannot tell the difference, and the ref-level behaviour under test -
+    /// atomicity, rejection on a diverged branch - is git's, not GitHub's.
+    /// </summary>
+    private string CreateRepository(string version = "2.3.4")
+    {
+        var folder = this.CreateFolder(version);
+        var remote = Path.Combine(this._temp, Guid.NewGuid().ToString("N") + ".git");
+
+        this.Git(this._temp, "init", "--bare", "--initial-branch=main", remote);
+        this.Git(folder, "init", "--initial-branch=main");
+        this.Git(folder, "config", "user.name", "Fixture");
+        this.Git(folder, "config", "user.email", "fixture@example.invalid");
+        this.Git(folder, "remote", "add", "origin", remote);
+        this.Git(folder, "add", "-A");
+        this.Git(folder, "commit", "-m", "Initial");
+        this.Git(folder, "push", "-u", "origin", "main");
+
+        // What actions/checkout leaves behind, and the reason the step pushes `HEAD:<branch>`.
+        this.Git(folder, "checkout", "--detach", "HEAD");
+        return folder;
+    }
+
+    /// <summary>Runs the commit step (ACT-11) against a folder a real run has just versioned.</summary>
+    private (int ExitCode, string Output) RunCommitStep(
+        string folder,
+        string commit,
+        string tag,
+        string branch = "main")
+    {
+        var environment = this.CommitEnvironment(folder, commit, tag, branch);
+        var script = "cd \"$EASYSEMVER_WORKING_DIRECTORY\"\n" + Script(2);
+        return this.RunScript(script, environment);
+    }
+
+    private string RemoteOf(string folder) =>
+        this.Git(folder, "remote", "get-url", "origin").Output.Trim();
 
     private string CreateFolder(string version = "2.3.4")
     {
@@ -427,6 +520,54 @@ public class ActionRegression : IDisposable
     }
 
     /// <summary>
+    /// ACT-05 - the outputs `action.yml` promises and the outputs the tool publishes are one set.
+    /// They are wired at opposite ends of the file and nothing else connects them: an output added
+    /// to the yaml with no publisher behind it is silently empty on a runner, and a name published
+    /// by the tool that the yaml does not declare never reaches the caller at all.
+    /// </summary>
+    [Fact]
+    public void TheToolPublishesExactlyTheOutputsTheActionDeclares()
+    {
+        var result = this.InstallAndRun(this.CreateFolder(), "false");
+        Assert.True(result.ExitCode == 0, result.Output);
+
+        Assert.Equal(
+            Section(Action, "outputs").Keys.Select(key => (string)key)
+                .OrderBy(key => key, StringComparer.Ordinal),
+            this.PublishedOutputs().Keys.OrderBy(key => key, StringComparer.Ordinal));
+    }
+
+    /// <summary>
+    /// ACT-05 - the Action delegates the mapping rather than re-implementing it. It carried its own
+    /// `jq` block until CLI-10, and so did every workflow that called the CLI directly; a copy that
+    /// reappears here is a second thing to keep correct and will drift.
+    /// </summary>
+    [Fact]
+    public void TheActionAsksTheToolForTheOutputsRatherThanParsingTheReport()
+    {
+        Assert.Contains("--github", Script(1));
+        Assert.DoesNotContain("jq", Script(1));
+        Assert.DoesNotContain("GITHUB_OUTPUT", Script(1));
+    }
+
+    /// <summary>
+    /// CLI-10 - the job summary reaches the runner's file too, with the evidence behind the verdict
+    /// (REP-09) and not merely the number.
+    /// </summary>
+    [Fact]
+    public void TheRunPublishesAJobSummaryCarryingTheVerdictAndItsEvidence()
+    {
+        var result = this.InstallAndRun(this.CreateFolder(), "false");
+        Assert.True(result.ExitCode == 0, result.Output);
+
+        var summary = File.ReadAllText(this.GithubStepSummary);
+        Assert.Contains("### EasySemVer: 2.3.4 → 2.4.0 (minor)", summary);
+
+        // A first run has no baseline, so NCL-02 names the unit that is new.
+        Assert.Contains("Widgets", summary);
+    }
+
+    /// <summary>
     /// ACT-05 - `dry-run` is read from the report, not echoed from the input, and CLI-07 means
     /// the folder is untouched.
     /// </summary>
@@ -493,6 +634,302 @@ public class ActionRegression : IDisposable
 
         Assert.Equal(1, result.ExitCode);
         Assert.False(File.Exists(marker), "The folder input reached the shell as code");
+    }
+
+    // ----------------------------------------------------------------------------------------
+    // ACT-11 - commit and tag
+    // ----------------------------------------------------------------------------------------
+
+    /// <summary>
+    /// ACT-11 - the whole point: `commit: true` and `tag: true` replace the dozen lines of git
+    /// plumbing every consuming workflow used to carry. The bump is staged, committed, tagged and
+    /// pushed, and what lands on the remote is the version the run reported.
+    /// </summary>
+    [Fact]
+    public void CommitAndTagPushTheBumpAndTheTagTogether()
+    {
+        var folder = this.CreateRepository();
+
+        var run = this.InstallAndRun(folder, "false");
+        Assert.True(run.ExitCode == 0, run.Output);
+
+        var result = this.RunCommitStep(folder, commit: "true", tag: "true");
+        Assert.True(result.ExitCode == 0, result.Output);
+
+        var remote = this.RemoteOf(folder);
+        Assert.Contains("EasySemVer: 2.4.0", this.Git(remote, "log", "-1", "--pretty=%s").Output);
+        Assert.Contains("v2.4.0", this.Git(remote, "tag", "--list").Output);
+
+        // The tag names the commit that carries the bump, not the one the run started from.
+        Assert.Equal(
+            this.Git(remote, "rev-parse", "v2.4.0^{commit}").Output.Trim(),
+            this.Git(remote, "rev-parse", "main").Output.Trim());
+    }
+
+    /// <summary>
+    /// REP-10 is why this is a fix and not a convenience. The old hand-written
+    /// `git add EasySemVer.xml src/*/*.csproj` misses a project one level deeper *silently*: green
+    /// run, tag pushed, and the commit it points at has no bump in it.
+    /// </summary>
+    [Fact]
+    public void EveryVersionedFileIsStagedIncludingOnesAGlobWouldMiss()
+    {
+        var folder = this.CreateRepository();
+        var nested = Directory.CreateDirectory(Path.Combine(folder, "src", "deep", "Nested")).FullName;
+        File.WriteAllText(Path.Combine(nested, "Nested.csproj"), """
+            <Project Sdk="Microsoft.NET.Sdk">
+               <PropertyGroup>
+                  <AssemblyVersion>2.3.4</AssemblyVersion>
+               </PropertyGroup>
+            </Project>
+            """);
+        this.Git(folder, "add", "-A");
+        this.Git(folder, "commit", "-m", "Nested project");
+        this.Git(folder, "push", "origin", "HEAD:main");
+
+        var run = this.InstallAndRun(folder, "false");
+        Assert.True(run.ExitCode == 0, run.Output);
+
+        var result = this.RunCommitStep(folder, commit: "true", tag: "false");
+        Assert.True(result.ExitCode == 0, result.Output);
+
+        var committed = this.Git(this.RemoteOf(folder), "show", "--name-only", "--pretty=", "main").Output;
+        Assert.Contains("src/deep/Nested/Nested.csproj", committed);
+        Assert.Contains("EasySemVer.xml", committed);
+    }
+
+    /// <summary>
+    /// TST-05's integration step mutates the working copy on purpose, and a caller's job may build
+    /// into the tree as well. Staging by what the run wrote rather than by `git add -u` is what
+    /// keeps that debris out of a release commit.
+    /// </summary>
+    [Fact]
+    public void UnrelatedWorkingCopyChangesAreNotSweptIntoTheCommit()
+    {
+        var folder = this.CreateRepository();
+
+        var run = this.InstallAndRun(folder, "false");
+        Assert.True(run.ExitCode == 0, run.Output);
+
+        File.WriteAllText(Path.Combine(folder, "Widget.cs"), "namespace Widgets; public class Widget { int x; }");
+        File.WriteAllText(Path.Combine(folder, "test-debris.txt"), "left behind by a test run");
+
+        var result = this.RunCommitStep(folder, commit: "true", tag: "false");
+        Assert.True(result.ExitCode == 0, result.Output);
+
+        var committed = this.Git(this.RemoteOf(folder), "show", "--name-only", "--pretty=", "main").Output;
+        Assert.DoesNotContain("test-debris.txt", committed);
+        Assert.DoesNotContain("Widget.cs", committed);
+        Assert.Contains("Widgets.csproj", committed);
+    }
+
+    /// <summary>
+    /// ACT-11's two-step form, which is the one that matters for any pipeline that builds between
+    /// versioning and releasing. The version has to be stamped before the build so the artifacts
+    /// carry it, but the commit must not be pushed until the tests have passed - otherwise a
+    /// failing test leaves a release commit and a tag with nothing behind them.
+    /// <para>
+    /// The second invocation is handed the first one's report and commits exactly that verdict,
+    /// without downloading or running the tool again.
+    /// </para>
+    /// </summary>
+    [Fact]
+    public void TheTwoStepFormCommitsTheEarlierVerdict()
+    {
+        var folder = this.CreateRepository();
+
+        var run = this.InstallAndRun(folder, "false");
+        Assert.True(run.ExitCode == 0, run.Output);
+        var report = this.PublishedOutputs()["report"];
+
+        // What a build and its tests would do in between: the version is already on disk.
+        Assert.Contains("2.4.0", File.ReadAllText(Path.Combine(folder, "Widgets.csproj")));
+
+        var environment = this.CommitEnvironment(folder, commit: "true", tag: "true");
+        environment["EASYSEMVER_REPORT"] = report;
+        environment["EASYSEMVER_RUN_REPORT"] = string.Empty;
+
+        var result = this.RunScript("cd \"$EASYSEMVER_WORKING_DIRECTORY\"\n" + Script(2), environment);
+        Assert.True(result.ExitCode == 0, result.Output);
+
+        var remote = this.RemoteOf(folder);
+        Assert.Contains("EasySemVer: 2.4.0", this.Git(remote, "log", "-1", "--pretty=%s").Output);
+        Assert.Contains("v2.4.0", this.Git(remote, "tag", "--list").Output);
+    }
+
+    /// <summary>
+    /// The install and run steps are skipped when `report:` is set, which is what stops the
+    /// two-step form versioning twice in one job - a double bump that would be invisible until
+    /// someone noticed the minor number climbing two at a time.
+    /// </summary>
+    [Fact]
+    public void SupplyingAReportSkipsVersioningAltogether()
+    {
+        foreach (var index in (int[])[0, 1])
+        {
+            var step = (Dictionary<object, object>)Steps[index];
+
+            Assert.Equal("inputs.report == ''", step["if"]);
+        }
+
+        // ...and the commit step is not skipped, because it is what that invocation is for.
+        Assert.False(((Dictionary<object, object>)Steps[2]).ContainsKey("if"));
+    }
+
+    /// <summary>
+    /// `commit: true` with neither a `report:` nor a run behind it is named rather than left to
+    /// fail inside `jq` with something about a null input.
+    /// </summary>
+    [Fact]
+    public void CommittingWithNoReportAtAllIsNamed()
+    {
+        var folder = this.CreateRepository();
+        Assert.True(this.InstallAndRun(folder, "false").ExitCode == 0);
+
+        var environment = this.CommitEnvironment(folder, commit: "true", tag: "false");
+        environment["EASYSEMVER_RUN_REPORT"] = string.Empty;
+
+        var result = this.RunScript("cd \"$EASYSEMVER_WORKING_DIRECTORY\"\n" + Script(2), environment);
+
+        Assert.Equal(1, result.ExitCode);
+        Assert.Contains("No report to commit", result.Output);
+    }
+
+    /// <summary>ACT-06 - opt-in. The default leaves the repository exactly as it found it.</summary>
+    [Fact]
+    public void TheDefaultCommitsNothing()
+    {
+        var folder = this.CreateRepository();
+
+        var run = this.InstallAndRun(folder, "false");
+        Assert.True(run.ExitCode == 0, run.Output);
+
+        var result = this.RunCommitStep(folder, commit: "false", tag: "false");
+        Assert.True(result.ExitCode == 0, result.Output);
+
+        Assert.Equal("Initial", this.Git(this.RemoteOf(folder), "log", "-1", "--pretty=%s").Output.Trim());
+        Assert.NotEmpty(this.Git(folder, "status", "--porcelain").Output);
+    }
+
+    /// <summary>
+    /// ACT-11 - `tag: true` alone is rejected rather than quietly tagging whatever HEAD happens to
+    /// be, which on a caller's checkout is the commit *before* the bump.
+    /// </summary>
+    [Fact]
+    public void TaggingWithoutCommittingIsRejected()
+    {
+        var folder = this.CreateRepository();
+        Assert.True(this.InstallAndRun(folder, "false").ExitCode == 0);
+
+        var result = this.RunCommitStep(folder, commit: "false", tag: "true");
+
+        Assert.Equal(1, result.ExitCode);
+        Assert.Contains("requires commit: true", result.Output);
+        Assert.Empty(this.Git(this.RemoteOf(folder), "tag", "--list").Output.Trim());
+    }
+
+    /// <summary>
+    /// ACT-11 - committing a dry run is a contradiction: CLI-07 wrote nothing. Failing says so;
+    /// succeeding silently would leave someone hunting for a release that never happened.
+    /// </summary>
+    [Fact]
+    public void CommittingADryRunIsRejected()
+    {
+        var folder = this.CreateRepository();
+        Assert.True(this.InstallAndRun(folder, "true").ExitCode == 0);
+
+        var result = this.RunCommitStep(folder, commit: "true", tag: "true");
+
+        Assert.Equal(1, result.ExitCode);
+        Assert.Contains("dry run writes nothing", result.Output);
+        Assert.Equal("Initial", this.Git(this.RemoteOf(folder), "log", "-1", "--pretty=%s").Output.Trim());
+    }
+
+    /// <summary>ACT-04's rule again - anything but true/false is named, not treated as false.</summary>
+    [Theory]
+    [InlineData("yes", "false")]
+    [InlineData("True", "false")]
+    [InlineData("", "false")]
+    [InlineData("true", "yes")]
+    public void AnUnrecognisedCommitOrTagValueIsRejected(string commit, string tag)
+    {
+        var folder = this.CreateRepository();
+        Assert.True(this.InstallAndRun(folder, "false").ExitCode == 0);
+
+        var result = this.RunCommitStep(folder, commit, tag);
+
+        Assert.Equal(1, result.ExitCode);
+        Assert.Contains("must be 'true' or 'false'", result.Output);
+        Assert.Equal("Initial", this.Git(this.RemoteOf(folder), "log", "-1", "--pretty=%s").Output.Trim());
+    }
+
+    /// <summary>
+    /// CI-03's guarantee, at the level that actually provides it. Someone pushing to the branch
+    /// mid-run makes the branch push fail; `--atomic` is what stops the tag going anyway and
+    /// pointing at a commit the remote never received.
+    /// </summary>
+    [Fact]
+    public void ARejectedBranchPushTakesTheTagWithIt()
+    {
+        var folder = this.CreateRepository();
+        Assert.True(this.InstallAndRun(folder, "false").ExitCode == 0);
+
+        // A second clone lands a commit on main while this run was working.
+        var other = Path.Combine(this._temp, "other");
+        this.Git(this._temp, "clone", this.RemoteOf(folder), other);
+        this.Git(other, "config", "user.name", "Someone");
+        this.Git(other, "config", "user.email", "someone@example.invalid");
+        File.WriteAllText(Path.Combine(other, "Other.cs"), "namespace Widgets; public class Other { }");
+        this.Git(other, "add", "-A");
+        this.Git(other, "commit", "-m", "Landed first");
+        Assert.Equal(0, this.Git(other, "push", "origin", "main").ExitCode);
+
+        var result = this.RunCommitStep(folder, commit: "true", tag: "true");
+
+        Assert.Equal(1, result.ExitCode);
+
+        var remote = this.RemoteOf(folder);
+        Assert.Empty(this.Git(remote, "tag", "--list").Output.Trim());
+        Assert.Equal("Landed first", this.Git(remote, "log", "-1", "--pretty=%s").Output.Trim());
+    }
+
+    /// <summary>
+    /// A workflow that configured its own identity - a signing bot - keeps it, and needs no input
+    /// here to say so. The default is only a default.
+    /// </summary>
+    [Fact]
+    public void AnIdentityTheCallerAlreadySetIsNotOverwritten()
+    {
+        var folder = this.CreateRepository();
+        this.Git(folder, "config", "user.name", "Release Bot");
+        this.Git(folder, "config", "user.email", "release@example.invalid");
+
+        Assert.True(this.InstallAndRun(folder, "false").ExitCode == 0);
+        Assert.True(this.RunCommitStep(folder, commit: "true", tag: "false").ExitCode == 0);
+
+        Assert.Equal(
+            "Release Bot",
+            this.Git(this.RemoteOf(folder), "log", "-1", "--pretty=%an").Output.Trim());
+    }
+
+    /// <summary>
+    /// The branch comes from the workflow's own ref, not from a hardcoded `main`, which is what
+    /// lets the same block be copied into a repository whose default branch is something else.
+    /// </summary>
+    [Fact]
+    public void TheBranchPushedIsTheOneThatTriggeredTheWorkflow()
+    {
+        var folder = this.CreateRepository();
+        this.Git(folder, "checkout", "-b", "release");
+        this.Git(folder, "push", "-u", "origin", "release");
+        this.Git(folder, "checkout", "--detach", "HEAD");
+
+        Assert.True(this.InstallAndRun(folder, "false").ExitCode == 0);
+        Assert.True(this.RunCommitStep(folder, "true", "false", branch: "release").ExitCode == 0);
+
+        var remote = this.RemoteOf(folder);
+        Assert.Contains("EasySemVer: 2.4.0", this.Git(remote, "log", "-1", "--pretty=%s", "release").Output);
+        Assert.Equal("Initial", this.Git(remote, "log", "-1", "--pretty=%s", "main").Output.Trim());
     }
 
     /// <summary>

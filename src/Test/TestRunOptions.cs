@@ -102,4 +102,65 @@ public class TestRunOptions
         Assert.True(options.IsDryRun);
         Assert.Equal(new DirectoryInfo(Environment.CurrentDirectory).FullName, options.FolderRoot);
     }
+
+    // ------------------------------------------------------------------------------------------
+    // CLI-10 - the GitHub Actions surface
+    // ------------------------------------------------------------------------------------------
+
+    private static RunOptions Parse(string? githubActions, params string[] args) =>
+        RunOptions.Parse(name => name == "GITHUB_ACTIONS" ? githubActions : null, args);
+
+    /// <summary>
+    /// CLI-10 - detected, not asked for. A flag you must remember is a flag you will forget, and
+    /// the failure is silent: an empty `steps.version.outputs.version` two steps later.
+    /// </summary>
+    [Fact]
+    public void RunningUnderGitHubActionsIsDetected()
+    {
+        Assert.True(Parse("true").WritesGitHubActionsReport);
+    }
+
+    [Fact]
+    public void AnythingButTrueIsNotGitHubActions()
+    {
+        Assert.False(Parse(null).WritesGitHubActionsReport);
+        Assert.False(Parse("false").WritesGitHubActionsReport);
+        Assert.False(Parse(string.Empty).WritesGitHubActionsReport);
+    }
+
+    /// <summary>
+    /// GitHub sets it lower case, but the variable is not ours and reading it strictly would make
+    /// the surface vanish silently rather than fail - the one failure mode CLI-10 exists to avoid.
+    /// </summary>
+    [Fact]
+    public void TheDetectionIsCaseInsensitive()
+    {
+        Assert.True(Parse("TRUE").WritesGitHubActionsReport);
+    }
+
+    /// <summary>CLI-10 - an explicit flag wins over the detection, in both directions.</summary>
+    [Fact]
+    public void TheFlagsOverrideTheDetectionBothWays()
+    {
+        Assert.True(Parse(null, "--github").WritesGitHubActionsReport);
+        Assert.False(Parse("true", "--no-github").WritesGitHubActionsReport);
+    }
+
+    /// <summary>The last flag wins, so a wrapper can override what it was handed.</summary>
+    [Fact]
+    public void TheLastGitHubFlagWins()
+    {
+        Assert.False(Parse(null, "--github", "--no-github").WritesGitHubActionsReport);
+        Assert.True(Parse(null, "--no-github", "--github").WritesGitHubActionsReport);
+    }
+
+    /// <summary>CLI-02 again - neither flag is mistaken for the folder argument.</summary>
+    [Fact]
+    public void TheGitHubFlagsAreNotMistakenForTheFolder()
+    {
+        var options = Parse(null, "--github", "--json", "report.json");
+
+        Assert.Equal(new DirectoryInfo(Environment.CurrentDirectory).FullName, options.FolderRoot);
+        Assert.Equal("report.json", options.JsonReportPath);
+    }
 }

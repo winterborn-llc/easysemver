@@ -151,10 +151,11 @@ two dry runs produce byte-identical reports, and that a failed run leaves no rep
 | Suite | Result |
 |-------|--------|
 | `dotnet build` | ✅ success — **no warnings** (`NU5129` went with PKG-05) |
-| `Test` (unit) | ✅ **509/509 passed** |
-| `IntegrationTest` | ✅ **34/34 passed** (6 `Regression`, 6 `JsonReportRegression`, 15 `ActionRegression`, 4 SwiftPM, 3 Xcode) |
+| `Test` (unit) | ✅ **528/528 passed** |
+| `IntegrationTest` | ✅ **58/58 passed** (6 `Regression`, 9 `JsonReportRegression`, 36 `ActionRegression`, 4 SwiftPM, 3 Xcode) |
 
-ℹ️ `ActionRegression` (ACT-09) needs `bash`, `tar` and `jq`, which every GitHub-hosted runner has;
+ℹ️ `ActionRegression` (ACT-09) needs `bash` and `tar`, which every GitHub-hosted runner has (`jq`
+went with the `jq` block CLI-10 removed from `action.yml`);
 it is traited `Toolchain=Bash` so a machine without them can exclude it the way the Swift tests are
 excluded. Filtering it out costs 15 tests, and the whole integration suite takes about 18 minutes
 because of the Swift ones — `--filter Toolchain!=Swift` runs the other 27 in seconds.

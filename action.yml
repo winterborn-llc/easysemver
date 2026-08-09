@@ -1,7 +1,7 @@
 name: EasySemVer
 description: >-
-  Version a folder from what happened to its public API surface, and expose the verdict
-  (change type, old version, new version) as step outputs.
+  Version a folder from what happened to its public API surface, expose the verdict as step
+  outputs, and - if you ask it to - commit and tag the bump.
 author: Winterborn LLC
 
 branding:
@@ -24,6 +24,41 @@ inputs:
     required: false
     default: 'false'
 
+  commit:
+    description: >-
+      'true' to stage exactly the files the run wrote (REP-10), commit them, and push to the
+      branch that triggered the workflow. Defaults to 'false': pushing a version bump to
+      someone's repository is the caller's decision, and this input is where the caller makes
+      it (ACT-06). Requires `permissions: contents: write`.
+    required: false
+    default: 'false'
+
+  tag:
+    description: >-
+      'true' to also create and push 'v<version>'. Requires commit: true - the tag names a
+      commit, and tagging one this action did not make is not something it can do correctly.
+      The two are pushed atomically, so a tag can never survive a rejected branch push and
+      point at a commit that never landed.
+    required: false
+    default: 'false'
+
+  report:
+    description: >-
+      Act on a report an earlier step produced instead of versioning again. Pass the `report`
+      output of a previous invocation to split versioning from committing, so a build and its
+      tests can run in between and a failure releases nothing:
+
+        - uses: winterborn-llc/easysemver@<tag>
+          id: version
+        - ...build and test...
+        - uses: winterborn-llc/easysemver@<tag>
+          with: { commit: true, tag: true, report: '${{ steps.version.outputs.report }}' }
+
+      With this set the tool is neither downloaded nor run, so the version is computed exactly
+      once however many times the action appears in a job.
+    required: false
+    default: ''
+
   version:
     description: >-
       The EasySemVer release tag to run. Pinned deliberately rather than defaulting to the
@@ -39,9 +74,13 @@ inputs:
     required: false
     default: ${{ github.token }}
 
-# The action reports the verdict; it does not act on it. Committing the bumped versions and
-# the baseline, tagging, and publishing are all outward-facing acts left to the calling
-# workflow, for the same reason the tool reads git tags but never writes one.
+# ACT-06. The action never commits, tags or pushes unless a caller asks it to, because pushing
+# a version bump to someone's repository is not a decision a version calculator gets to make.
+# `commit:` and `tag:` are where that decision is made - and once it has been, making the caller
+# hand-write the mechanics of it buys nobody anything. Both default to false, so this is opt-in
+# and no existing workflow changes behaviour.
+#
+# Publishing is still not here. There is no one way to publish, so there is nothing to encode.
 outputs:
   version:
     description: The new version, e.g. '2.4.0'. On a dry run, the version that would be written.
@@ -92,8 +131,14 @@ runs:
     # ------------------------------------------------------------------------------------
     # Fetch the pinned release binary (PKG-02). `gh` is present on every GitHub-hosted
     # runner and works whether the release is public or private, which plain curl does not.
+    #
+    # Skipped entirely when `report:` names an earlier verdict: that invocation commits what
+    # has already been computed, so there is nothing to download and nothing to run. This is
+    # what makes the two-step form cost one download per job rather than two, and - far more
+    # importantly - what makes it impossible to bump the version twice in one job.
     # ------------------------------------------------------------------------------------
     - name: Install EasySemVer
+      if: inputs.report == ''
       shell: bash
       env:
         # Inputs are passed through the environment, never interpolated into the script.
@@ -148,10 +193,14 @@ runs:
         echo "$dir" >> "$GITHUB_PATH"
 
     # ------------------------------------------------------------------------------------
-    # Run it. The verdict comes from --json (REP-01), never from scraping the log.
+    # Run it. The tool publishes its own outputs and job summary (CLI-10) - this action does
+    # not read the report, and neither does a calling workflow. There used to be a `jq`
+    # block here doing that mapping, and a second copy of it in every workflow that used the
+    # CLI directly; both are gone.
     # ------------------------------------------------------------------------------------
     - name: Run EasySemVer
       id: run
+      if: inputs.report == ''
       shell: bash
       env:
         EASYSEMVER_FOLDER: ${{ inputs.folder }}
@@ -174,27 +223,113 @@ runs:
         esac
 
         # Exit 1 fails this step and stops the action, which is the whole point of CLI-06:
-        # a versioning failure on a release build should be impossible to miss. REP-08 means
-        # no report exists to read in that case, so nothing below runs on a half-truth.
+        # a versioning failure on a release build should be impossible to miss. REP-08 and
+        # ACT-07 then leave nothing behind - no report, and no outputs - so a later step
+        # cannot read a half-truth off a run that died.
+        #
+        # `--github` (CLI-10) is what publishes this action's outputs and the job summary,
+        # passed explicitly rather than left to the GITHUB_ACTIONS auto-detection: inside a
+        # composite action the tool is a step of someone else's workflow, and the outputs
+        # this action promises its callers should not hinge on an environment variable being
+        # what we expect.
         #
         # $dry_run is deliberately unquoted, so that empty expands to no argument at all
         # rather than to an empty one. It holds a literal set just above and never anything
         # a caller supplied, which is what makes that safe. The array form this replaces
         # tripped `set -u` on bash 3.2 - still what a macOS runner's /bin/bash is.
+        #
         # shellcheck disable=SC2086
-        easysemver "$EASYSEMVER_FOLDER" $dry_run --json "$report"
+        easysemver "$EASYSEMVER_FOLDER" $dry_run --github --json "$report"
 
-        # `changeType` is read, never derived from the two versions: VER-05's overflow
-        # rollover makes that inference wrong in both directions (REP-06).
-        {
-          echo "report=$report"
-          jq -r '
-            "change-type=" + .changeType,
-            "dry-run="     + (.dryRun | tostring),
-            "old-version=" + .oldVersion.version,
-            "version="     + .newVersion.version,
-            "major="       + (.newVersion.major | tostring),
-            "minor="       + (.newVersion.minor | tostring),
-            "patch="       + (.newVersion.patch | tostring)
-          ' "$report"
-        } >> "$GITHUB_OUTPUT"
+    # ------------------------------------------------------------------------------------
+    # ACT-11. Commit and tag, if the caller asked for it. Opt-in, and a no-op otherwise -
+    # this whole step is what `commit: true` replaces, and there is no reason for every
+    # consumer to keep a copy of it.
+    #
+    # The only step that runs in both forms: with the verdict from the run step above, or
+    # (ACT-12) with one an earlier invocation produced, when a build and its tests have to
+    # happen in between. It reads everything from the report either way, so the two cannot
+    # drift into committing a version different from the one that was stamped.
+    #
+    # It runs unconditionally and gates itself in bash rather than carrying a step-level
+    # `if:`, so that ActionRegression - which extracts and executes these `run:` bodies -
+    # exercises the gate too. A gate that only exists in yaml is a gate no test can reach.
+    # ------------------------------------------------------------------------------------
+    - name: Commit and tag
+      shell: bash
+      env:
+        EASYSEMVER_COMMIT: ${{ inputs.commit }}
+        EASYSEMVER_TAG: ${{ inputs.tag }}
+
+        # Either the caller's report, or the one the run step above just wrote. Everything this
+        # step needs comes out of that file rather than from the inputs, so it describes what
+        # happened and behaves identically whichever of the two forms produced it.
+        EASYSEMVER_REPORT: ${{ inputs.report }}
+        EASYSEMVER_RUN_REPORT: ${{ steps.run.outputs.report }}
+      run: |
+        set -euo pipefail
+
+        # ACT-04's rule, applied to these two as well: anything but true/false is rejected.
+        # A typo'd `commit: yes` that silently released nothing would be found days later, by
+        # someone wondering why the version on nuget.org has no commit behind it.
+        case "$EASYSEMVER_COMMIT" in
+          true|false) ;;
+          *) echo "::error::commit must be 'true' or 'false', got '$EASYSEMVER_COMMIT'." >&2; exit 1 ;;
+        esac
+
+        case "$EASYSEMVER_TAG" in
+          true|false) ;;
+          *) echo "::error::tag must be 'true' or 'false', got '$EASYSEMVER_TAG'." >&2; exit 1 ;;
+        esac
+
+        if [ "$EASYSEMVER_TAG" = "true" ] && [ "$EASYSEMVER_COMMIT" != "true" ]; then
+          echo "::error::tag: true requires commit: true - a tag names a commit, and this action will not tag one it did not make." >&2
+          exit 1
+        fi
+
+        if [ "$EASYSEMVER_COMMIT" != "true" ]; then
+          exit 0
+        fi
+
+        report="${EASYSEMVER_REPORT:-$EASYSEMVER_RUN_REPORT}"
+        if [ ! -f "$report" ]; then
+          echo "::error::No report to commit. Pass report: with the 'report' output of an earlier EasySemVer step, or drop it to version in this step." >&2
+          exit 1
+        fi
+
+        # The verdict is read from the report, never from the inputs, so the two-step form cannot
+        # commit a version different from the one that was stamped.
+        version=$(jq -r .newVersion.version "$report")
+
+        # A dry run wrote nothing (CLI-07), so there is nothing to commit. Asking for both is a
+        # contradiction, and silently doing nothing is the failure mode ACT-04 exists to avoid.
+        if [ "$(jq -r .dryRun "$report")" = "true" ]; then
+          echo "::error::commit: true cannot be combined with dry-run: true - a dry run writes nothing to commit." >&2
+          exit 1
+        fi
+
+        # Only if the caller has not set one. A workflow that configured its own identity - a
+        # signing bot, say - keeps it, and does not need an input here to say so.
+        git config user.name  >/dev/null 2>&1 || git config user.name  "github-actions[bot]"
+        git config user.email >/dev/null 2>&1 || \
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+        # REP-10: exactly what the run wrote, and nothing else. A hand-written path list goes
+        # stale silently, and `git add -u` would sweep in whatever else the job has touched -
+        # test debris, build output - and put it in a release commit.
+        jq -r '.writtenFiles[]' "$report" | git add --pathspec-from-file=-
+        git commit -m "EasySemVer: $version"
+
+        # `HEAD:` because actions/checkout leaves a detached HEAD at the triggering commit.
+        refs=("HEAD:$GITHUB_REF_NAME")
+        if [ "$EASYSEMVER_TAG" = "true" ]; then
+          git tag "v$version"
+          refs+=("v$version")
+        fi
+
+        # --atomic: both refs land or neither does. Without it a rejected branch push can still
+        # leave the tag behind, pointing at a commit that never reached the remote.
+        #
+        # The array always holds at least the branch, so expanding it cannot trip `set -u` on
+        # bash 3.2 the way an empty one did once before.
+        git push --atomic origin "${refs[@]}"

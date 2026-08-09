@@ -73,8 +73,9 @@ internal class CsharpLanguageProvider : ILanguageProvider
         return versions;
     }
 
-    public void WriteVersion(IPackageableUnit unit, Version version)
+    public IReadOnlyList<string> WriteVersion(IPackageableUnit unit, Version version)
     {
+        var written = new List<string>();
         foreach (var source in unit.VersionSources)
         {
             if (!source.IsWritable)
@@ -84,7 +85,10 @@ internal class CsharpLanguageProvider : ILanguageProvider
 
             source.Write(version);
             Log.WriteLine($"Wrote {version} to {source.Location}");
+            written.Add(source.Location);
         }
+
+        return written;
     }
 
     public XElement WriteSignature(IPackageableUnit unit)

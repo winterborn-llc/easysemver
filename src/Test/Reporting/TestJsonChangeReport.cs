@@ -29,10 +29,11 @@ public class TestJsonChangeReport
         ChangeReport report,
         string oldVersion = "2.3.4",
         string newVersion = "3.0.0",
-        bool isDryRun = false)
+        bool isDryRun = false,
+        IReadOnlyList<string>? writtenFiles = null)
     {
-        var json = JsonChangeReport.Render(
-            JsonChangeReport.Build(report, new Version(oldVersion), new Version(newVersion), isDryRun));
+        var json = JsonChangeReport.Render(JsonChangeReport.Build(
+            report, new Version(oldVersion), new Version(newVersion), isDryRun, writtenFiles));
         return JsonDocument.Parse(json).RootElement.Clone();
     }
 
@@ -42,18 +43,17 @@ public class TestJsonChangeReport
         var root = Render(Report(VersionType.Major));
 
         Assert.Equal(
-            ["formatVersion", "dryRun", "changeType", "oldVersion", "newVersion", "findings"],
+            ["formatVersion", "dryRun", "changeType", "oldVersion", "newVersion", "findings", "writtenFiles"],
             root.EnumerateObject().Select(p => p.Name));
     }
 
     /// <summary>
     /// REP-05 - the fields that were weighed and deliberately left out stay out. Findings were
-    /// among them until REP-09 gave them a consumer; discovered units and the written-file list
-    /// were not, and are still absent on the original grounds.
+    /// among them until REP-09 gave them a consumer and the written-file list until REP-10 did;
+    /// discovered units were not, and are still absent on the original grounds.
     /// </summary>
     [Theory]
     [InlineData("units")]
-    [InlineData("written")]
     [InlineData("folderRoot")]
     public void TheOmittedFieldsAreAbsent(string name)
     {
@@ -254,6 +254,51 @@ public class TestJsonChangeReport
             ["Alpha", "Zeta"],
             Render(report).GetProperty("findings").EnumerateArray()
                 .Select(finding => finding.GetProperty("symbol").GetString()));
+    }
+
+    // --------------------------------------------------------------------------------------
+    // REP-10 - the written-file list
+    // --------------------------------------------------------------------------------------
+
+    private static IEnumerable<string?> WrittenFiles(params string[] written) =>
+        Render(Report(), writtenFiles: written).GetProperty("writtenFiles")
+            .EnumerateArray().Select(file => file.GetString());
+
+    /// <summary>
+    /// REP-07 - sorted ordinally rather than left in the order the providers happened to write in,
+    /// so one tree gives one answer however discovery ordered it.
+    /// </summary>
+    [Fact]
+    public void TheWrittenFilesAreSorted()
+    {
+        Assert.Equal(
+            ["EasySemVer.xml", "src/App/App.csproj", "src/Widgets/Widgets.csproj"],
+            WrittenFiles("src/Widgets/Widgets.csproj", "EasySemVer.xml", "src/App/App.csproj"));
+    }
+
+    /// <summary>
+    /// Two units can legitimately share a version location. Staging the same path twice is
+    /// harmless; reporting it twice is a document that contradicts itself about what happened.
+    /// </summary>
+    [Fact]
+    public void ASharedLocationIsReportedOnce()
+    {
+        Assert.Equal(
+            ["EasySemVer.xml", "shared/Version.xml"],
+            WrittenFiles("shared/Version.xml", "EasySemVer.xml", "shared/Version.xml"));
+    }
+
+    /// <summary>
+    /// REP-10 - present and empty on a dry run, for the same reason as REP-09's findings: "wrote
+    /// nothing" and "an older writer" must never be the same observation to a consumer.
+    /// </summary>
+    [Fact]
+    public void ADryRunReportsAnEmptyArrayRatherThanNone()
+    {
+        var written = Render(Report(), isDryRun: true, writtenFiles: []).GetProperty("writtenFiles");
+
+        Assert.Equal(JsonValueKind.Array, written.ValueKind);
+        Assert.Empty(written.EnumerateArray());
     }
 
     /// <summary>REP-07 - nothing machine-specific, so two machines agree.</summary>

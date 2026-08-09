@@ -121,6 +121,66 @@ public class JsonReportRegression : IDisposable
             finding.GetProperty("symbol").GetString()!.Contains("One"));
     }
 
+    /// <summary>
+    /// REP-10 - the written-file list, from a real run. This is what a workflow stages, so the test
+    /// that matters is not that the array is populated but that **staging it is enough**: every path
+    /// resolves, and nothing the run touched is missing from it.
+    /// </summary>
+    [Fact]
+    public void TheReportNamesEveryFileTheRunActuallyChanged()
+    {
+        Assert.Equal(0, Program.Main(this._folderRoot, "--json", this.ReportPath));
+
+        var written = this.ReadReport().GetProperty("writtenFiles")
+            .EnumerateArray().Select(file => file.GetString()!).ToList();
+
+        Assert.Equal(["App.csproj", "EasySemVer.xml"], written);
+
+        foreach (var file in written)
+        {
+            Assert.DoesNotContain('\\', file);
+            Assert.False(Path.IsPathRooted(file), $"{file} is absolute, which REP-07 forbids");
+            Assert.True(
+                File.Exists(Path.Combine(this._folderRoot, file)),
+                $"{file} was reported as written but does not exist under the folder root");
+        }
+    }
+
+    /// <summary>
+    /// REP-10 - a unit nested under the folder root is reported by its relative path, which is the
+    /// case the hand-maintained `git add EasySemVer.xml src/*/*.csproj` glob used to miss silently.
+    /// </summary>
+    [Fact]
+    public void ANestedUnitIsNamedByItsPathRatherThanMissed()
+    {
+        var nested = Directory.CreateDirectory(
+            Path.Combine(this._folderRoot, "src", "deep", "Nested")).FullName;
+        File.WriteAllText(Path.Combine(nested, "Nested.csproj"), """
+            <Project Sdk="Microsoft.NET.Sdk">
+               <PropertyGroup>
+                  <AssemblyVersion>2.3.4</AssemblyVersion>
+               </PropertyGroup>
+            </Project>
+            """);
+
+        Assert.Equal(0, Program.Main(this._folderRoot, "--json", this.ReportPath));
+
+        Assert.Contains(
+            "src/deep/Nested/Nested.csproj",
+            this.ReadReport().GetProperty("writtenFiles")
+                .EnumerateArray().Select(file => file.GetString()));
+    }
+
+    /// <summary>REP-10 - a dry run wrote nothing, and says so with an empty array (CLI-07).</summary>
+    [Fact]
+    public void ADryRunReportsNoWrittenFiles()
+    {
+        Assert.Equal(0, Program.Main(this._folderRoot, "--dry-run", "--json", this.ReportPath));
+
+        Assert.Empty(this.ReadReport().GetProperty("writtenFiles").EnumerateArray());
+        Assert.False(File.Exists(Path.Combine(this._folderRoot, "EasySemVer.xml")));
+    }
+
     [Fact]
     public void NoFlagMeansNoReport()
     {

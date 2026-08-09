@@ -35,39 +35,60 @@ internal static class VersioningRun
         if (options.IsDryRun)
         {
             // Not "nothing written": a --json report is still produced, carrying dryRun: true. What
-            // a dry run does not write is the tree - no baseline, no stamped version.
+            // a dry run does not write is the tree - no baseline, no stamped version, and therefore
+            // an empty writtenFiles (REP-10).
             Log.WriteLine("Dry run: no baseline written and no version stamped");
-            WriteJsonReport(options, report, startingVersion, newVersion);
+            Publish(options, report, startingVersion, newVersion, writtenFiles: []);
             Log.Outdent();
             return;
         }
 
-        // PER-06: the baseline is written before any version is stamped.
+        // PER-06: the baseline is written before any version is stamped, and it is itself one of
+        // the files a caller has to stage (REP-10).
         BaselineFile.Write(options.FolderRoot, units, providers);
-        WriteVersions(units, providers, newVersion);
+        var writtenFiles = new List<string> { MagicValues.SignatureFileName };
+        writtenFiles.AddRange(WriteVersions(units, providers, newVersion));
 
         // REP-08: last, so that a report exists only if everything it describes actually happened.
-        WriteJsonReport(options, report, startingVersion, newVersion);
+        Publish(options, report, startingVersion, newVersion, writtenFiles);
         Log.Outdent();
     }
 
-    private static void WriteJsonReport(
+    /// <summary>
+    /// The two machine-readable surfaces, built from one document so they can never disagree about
+    /// the same run (REP-01, CLI-10).
+    /// </summary>
+    private static void Publish(
         RunOptions options,
         ChangeReport report,
         Version oldVersion,
-        Version newVersion)
+        Version newVersion,
+        IReadOnlyList<string> writtenFiles)
     {
-        if (options.JsonReportPath.Length < 1)
+        if (options.JsonReportPath.Length < 1 && !options.WritesGitHubActionsReport)
         {
             return;
         }
 
-        JsonChangeReport.Write(
-            options.JsonReportPath,
+        var document = JsonChangeReport.Build(
             report,
             oldVersion,
             newVersion,
-            options.IsDryRun);
+            options.IsDryRun,
+            writtenFiles);
+
+        if (options.JsonReportPath.Length > 0)
+        {
+            JsonChangeReport.Write(options.JsonReportPath, document);
+        }
+
+        if (options.WritesGitHubActionsReport)
+        {
+            GitHubActionsReport.Write(
+                document,
+                options.JsonReportPath,
+                Environment.GetEnvironmentVariable);
+        }
     }
 
     private static IReadOnlyList<IPackageableUnit> Discover(
@@ -134,12 +155,16 @@ internal static class VersioningRun
         return highest;
     }
 
-    /// <summary>MVR-05 - the one new version goes into every existing location in every unit.</summary>
-    private static void WriteVersions(
+    /// <summary>
+    /// MVR-05 - the one new version goes into every existing location in every unit. Returns what
+    /// each provider says it wrote, which is what REP-10 publishes.
+    /// </summary>
+    private static IReadOnlyList<string> WriteVersions(
         IReadOnlyList<IPackageableUnit> units,
         IReadOnlyList<ILanguageProvider> providers,
         Version version)
     {
+        var written = new List<string>();
         foreach (var unit in units)
         {
             var provider = LanguageProviders.Find(providers, unit.Language);
@@ -148,7 +173,9 @@ internal static class VersioningRun
                 continue;
             }
 
-            provider.WriteVersion(unit, version);
+            written.AddRange(provider.WriteVersion(unit, version));
         }
+
+        return written;
     }
 }

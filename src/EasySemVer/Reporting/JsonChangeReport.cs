@@ -26,7 +26,8 @@ internal static class JsonChangeReport
         ChangeReport report,
         Version oldVersion,
         Version newVersion,
-        bool isDryRun)
+        bool isDryRun,
+        IReadOnlyList<string>? writtenFiles = null)
     {
         return new JsonReportDocument
         {
@@ -40,7 +41,15 @@ internal static class JsonChangeReport
 
             // REP-09. The order is ChangeReport's, which is already the sorted one, so this
             // formatter stays a formatter: no re-sorting here, and REP-07 holds for free.
-            Findings = [.. report.Findings.Select(JsonReportFinding.From)]
+            Findings = [.. report.Findings.Select(JsonReportFinding.From)],
+
+            // REP-10. Sorted and deduplicated here rather than left to the order the providers
+            // happened to write in: two units can legitimately share a version location, and REP-07
+            // wants one answer for one tree however discovery ordered it.
+            WrittenFiles =
+            [
+                .. (writtenFiles ?? []).Distinct(StringComparer.Ordinal).Order(StringComparer.Ordinal)
+            ]
         };
     }
 
@@ -53,12 +62,7 @@ internal static class JsonChangeReport
         return JsonSerializer.Serialize(document, Options).ReplaceLineEndings("\n");
     }
 
-    internal static void Write(
-        string path,
-        ChangeReport report,
-        Version oldVersion,
-        Version newVersion,
-        bool isDryRun)
+    internal static void Write(string path, JsonReportDocument document)
     {
         var directory = Path.GetDirectoryName(Path.GetFullPath(path));
         if (directory != null && !Directory.Exists(directory))
@@ -67,7 +71,7 @@ internal static class JsonChangeReport
             Directory.CreateDirectory(directory);
         }
 
-        File.WriteAllText(path, Render(Build(report, oldVersion, newVersion, isDryRun)));
+        File.WriteAllText(path, Render(document));
         Log.WriteLine($"Wrote JSON report {path}");
     }
 }

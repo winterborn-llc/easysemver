@@ -4,12 +4,12 @@ using Winterborn.Tools.EasySemVer.Evaluation;
 namespace Winterborn.Tools.EasySemVer.Reporting;
 
 /// <summary>
-/// The shape of the <c>--json</c> report (REP-02). Deliberately small: discovered units and the
-/// written-file list were weighed and left out, because they belong in the log and no consumer
-/// for them exists. REP-04 makes adding a field backwards-compatible, so this can grow into
-/// whatever a real consumer turns out to need - which is what makes starting minimal safe rather
-/// than short-sighted, and is exactly how <see cref="Findings"/> arrived later (REP-09) without
-/// a format version bump.
+/// The shape of the <c>--json</c> report (REP-02). Deliberately small: discovered units were
+/// weighed and left out, because they belong in the log and no consumer for them exists. REP-04
+/// makes adding a field backwards-compatible, so this can grow into whatever a real consumer turns
+/// out to need - which is what makes starting minimal safe rather than short-sighted, and is
+/// exactly how <see cref="Findings"/> (REP-09) and then <see cref="WrittenFiles"/> (REP-10) both
+/// arrived later without a format version bump.
 /// <para>
 /// Property order is pinned rather than left to reflection, because REP-07 requires two runs over
 /// unchanged source to produce byte-identical output.
@@ -54,4 +54,19 @@ public class JsonReportDocument
     [JsonPropertyName("findings")]
     [JsonPropertyOrder(5)]
     public IReadOnlyList<JsonReportFinding> Findings { get; init; } = [];
+
+    /// <summary>
+    /// REP-10 - every file the run changed, folder-root-relative with forward slashes, sorted and
+    /// deduplicated. This is what a workflow stages: the alternative is a hand-maintained path list
+    /// in someone's YAML, which goes stale silently the first time a project moves and produces a
+    /// green run that tagged a commit without the bump in it.
+    /// <para>
+    /// Present and empty on a dry run rather than absent, for the same reason as
+    /// <see cref="Findings"/>: "wrote nothing" and "an older writer" must never be the same
+    /// observation.
+    /// </para>
+    /// </summary>
+    [JsonPropertyName("writtenFiles")]
+    [JsonPropertyOrder(6)]
+    public IReadOnlyList<string> WrittenFiles { get; init; } = [];
 }

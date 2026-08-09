@@ -68,19 +68,36 @@ repository URL `https://github.com/winterborn-llc/easysemver`, and the MIT licen
 ## Continuous integration / publishing
 
 **CI-01 — Pipeline.** ✅
-On every push to `main`, CI SHALL restore, build `Release`, run the unit suite, run the
-integration suite, and push the tool package to nuget.org with `--skip-duplicate` (idempotent
-republish). The build job runs on `macos-latest` because the Swift-traited tests need a Swift
-toolchain and Xcode.
-ℹ️ The integration step mutates the working copy by design (TST-05).
+On every push to `main`, CI SHALL version the repository, restore, build `Release`, run the unit
+suite, run the integration suite, commit and tag the bump, and push the tool package to nuget.org
+with `--skip-duplicate` (idempotent republish). The build job runs on `macos-latest` because the
+Swift-traited tests need a Swift toolchain and Xcode.
+ℹ️ The integration step mutates the working copy by design (TST-05), which is why the commit stages
+exactly what the run reported writing (REP-10) and never `git add -u`.
+ℹ️ One release at a time (`concurrency: release`, `cancel-in-progress: false`). Two pushes landing
+together would otherwise seed from the same version, compute the same next one, and race to push
+it; a half-finished release is worse than a queued one.
 
-**CI-02 — Version source of truth for publishing.** ✅ (by design)
-CI SHALL NOT compute versions itself; the version baked into the artifacts is whatever the
-committed `.csproj` files carry — versioning happens on the developer's release build via the
-tool, and CI merely publishes the committed result. `--skip-duplicate` makes a push of an
-unchanged version a no-op instead of an error.
+**CI-02 — CI computes the version, using the previous release.** ✅ *(revised; was "CI SHALL NOT compute versions")*
+CI SHALL run EasySemVer itself rather than publishing whatever the committed `.csproj` files
+happen to carry, and SHALL do so with the **previously published** tool, not the binary the run
+builds. Dogfooding with this run's own build would let a change that breaks versioning
+mis-version the very release that introduced it; using the published one means such a change
+breaks the *next* release instead, loudly and with the culprit already on `main`.
 
-**CI-03 — Releases are tag-driven.** ✅
-The binary matrix SHALL run only for a `v*` tag, not for every push to `main`, and SHALL attach
-its archives to that tag's GitHub Release. Runtime packs are downloadable for every target, so a
-single Linux runner cross-publishes all five.
+**CI-03 — Git before nuget.org.** ✅
+The version commit and the tag SHALL be pushed **before** the package. A package cannot be
+unpublished: if someone pushed to `main` mid-run, the branch push is rejected, the run fails, and
+nothing has been published — which is the right way round. The two are pushed atomically, so a tag
+can never survive a rejected branch and point at a commit that never landed.
+ℹ️ A `GITHUB_TOKEN` push raises no events, so neither the commit nor the tag can re-trigger this
+workflow. That is also why the tag must be consumed in the run that creates it, and why the binary
+matrix is a downstream job here rather than a separate tag-triggered workflow.
+
+**CI-04 — The release is drafted, filled, then published.** ✅
+The GitHub Release SHALL be created as a **draft**, have all five PKG-02 archives attached, and be
+published only once they are all on it. Publishing freezes a release — `Cannot upload assets to an
+immutable release`, HTTP 422 — so any asset attached afterwards fails. A draft is also invisible to
+everyone but the repository's maintainers, which is the correct state for a release that has no
+binaries on it yet. Creation is idempotent, because re-running the workflow is exactly what you do
+when one of the five publishes fails.
