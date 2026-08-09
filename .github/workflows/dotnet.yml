@@ -15,6 +15,13 @@ jobs:
     # runs anywhere.
     runs-on: macos-latest
 
+    # `id-token: write` is what lets nuget.org verify this workflow over OIDC - see the publish
+    # step. Naming any permission replaces the defaults wholesale, so `contents: read` has to be
+    # restated here or the checkout loses its access.
+    permissions:
+      id-token: write
+      contents: read
+
     steps:
     - uses: actions/checkout@v4
 
@@ -42,11 +49,28 @@ jobs:
       run: dotnet test IntegrationTest/IntegrationTest.csproj --no-build --verbosity normal --configuration ${{ env.configuration }}
 
     # PKG-01: a dotnet tool package, for anyone who already has a .NET SDK.
+    #
+    # Trusted publishing rather than a stored API key: nuget.org trades this job's OIDC token
+    # for a key that lives minutes. The NUGET_TOKEN secret this replaces had quietly expired,
+    # and the only symptom was a 403 on the very last step of an otherwise green build - a
+    # failure mode that returns every time a key ages out. There is now nothing to rotate.
+    #
+    # `user` is the nuget.org profile name that owns the trusted-publishing policy - a public
+    # handle, not a credential, so it lives in a variable where an `if:` can read it. Both steps
+    # skip until it is set, because an unset publisher should leave the build green rather than
+    # fail it: the package is a by-product here, and the tests are the point.
+    #
+    # The key is good for an hour, so it is fetched immediately before the push, not earlier.
+    - name: Authenticate to nuget.org
+      if: github.ref == 'refs/heads/main' && vars.NUGET_USER != ''
+      id: nuget-login
+      uses: NuGet/login@v1
+      with:
+        user: ${{ vars.NUGET_USER }}
+
     - name: Publish the tool to nuget.org
-      if: github.ref == 'refs/heads/main'
-      env:
-        NUGET_AUTH_TOKEN: ${{ secrets.NUGET_TOKEN }}
-      run: dotnet nuget push ./src/${{ env.project }}/bin/${{ env.configuration }}/*.nupkg -k ${{ env.NUGET_AUTH_TOKEN }} -s https://api.nuget.org/v3/index.json --skip-duplicate
+      if: github.ref == 'refs/heads/main' && vars.NUGET_USER != ''
+      run: dotnet nuget push ./src/${{ env.project }}/bin/${{ env.configuration }}/*.nupkg -k ${{ steps.nuget-login.outputs.NUGET_API_KEY }} -s https://api.nuget.org/v3/index.json --skip-duplicate
 
   # Pushing a tag creates a tag, not a Release, and `gh release upload` needs one to exist. This
   # is its own job rather than a step in the matrix below, so that five parallel jobs cannot race
