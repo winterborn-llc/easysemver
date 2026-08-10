@@ -4,9 +4,9 @@ using Winterborn.Tools.EasySemVer.Interfaces.Csharp;
 namespace Winterborn.Tools.EasySemVer.Evaluators.Csharp;
 
 /// <summary>
-/// Matches an old overload to the new overload that is recognisably the same one - same
-/// parameter count, names and types, in order - which is R02's matcher. The modifier rules
-/// (R36-R39) all need that pairing before they can ask what changed about it.
+/// Matches an old overload to the new overload that is recognisably the same one - same generic
+/// arity, and the same parameter count, names and types, in order - which is R02's matcher. The
+/// modifier rules (R36-R39) all need that pairing before they can ask what changed about it.
 /// </summary>
 internal static class Overloads
 {
@@ -64,6 +64,11 @@ internal static class Overloads
     {
         foreach (var newerOverride in newerMethod.Overrides)
         {
+            if (!DoGenericAritiesMatch(olderOverride, newerOverride))
+            {
+                continue;
+            }
+
             if (!DoParametersMatch(olderOverride, newerOverride))
             {
                 continue;
@@ -73,6 +78,24 @@ internal static class Overloads
         }
 
         return null;
+    }
+
+    /// <summary>
+    /// Arity is part of what makes an overload that overload: `M&lt;T&gt;(Type type)` and
+    /// `M(Type type)` are two different methods with identical parameter lists, and C# overloads on
+    /// exactly that. Without this the non-generic one matched the generic one - the first parameter
+    /// match wins - and every run reported a changed return type and a tightened constraint against
+    /// a tree nobody had touched, so an unchanged repository bumped a major on every release.
+    ///
+    /// Arity only, never the names or the constraints: R39 and R40 exist to compare the constraints
+    /// of a matched pair, and a matcher that required them to be equal would pair nothing for those
+    /// rules to fire on.
+    /// </summary>
+    private static bool DoGenericAritiesMatch(
+        ICsharpMethodOverride olderOverride,
+        ICsharpMethodOverride newerOverride)
+    {
+        return olderOverride.GenericParameters.Count == newerOverride.GenericParameters.Count;
     }
 
     private static bool DoParametersMatch(

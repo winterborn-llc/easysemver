@@ -1,4 +1,5 @@
 using Winterborn.Tools.EasySemVer.DataObject;
+using Winterborn.Tools.EasySemVer.DataObject.Csharp;
 using Winterborn.Tools.EasySemVer.Evaluators.Csharp;
 using Winterborn.Tools.EasySemVer.Interfaces.Csharp;
 
@@ -59,5 +60,48 @@ public class TestMethodReturnType
         Assert.Equal(
             ["Test.TestType.TestMethod([string input])"],
             Evaluator.FindDifferences(Build.Compare(older, newer)));
+    }
+
+    /// <summary>
+    /// Two overloads differing only in generic arity - PluginArchitecture's
+    /// `MakeInstance&lt;T&gt;(Type)` and `MakeInstance(Type)` - used to pair crosswise, because the
+    /// matcher keyed on the parameter list alone and both have `(Type type)`. The non-generic one
+    /// matched the generic one, its `object` return read as a change to `T`, and an untouched
+    /// repository bumped a major on every single run.
+    /// </summary>
+    [Fact]
+    public void OverloadsDifferingOnlyInGenericArityDoNotPairCrosswise()
+    {
+        Assert.Empty(Evaluator.FindDifferences(Build.Compare(MakeInstance(), MakeInstance())));
+    }
+
+    /// <summary>
+    /// The pairing is arity-aware, not arity-blind: the generic overload is still compared, and a
+    /// real change to it is still Major.
+    /// </summary>
+    [Fact]
+    public void ReturnTypeChangedOnTheGenericOverloadOnly()
+    {
+        Assert.Equal(
+            ["Test.TestType.MakeInstance([Type type])"],
+            Evaluator.FindDifferences(Build.Compare(MakeInstance(), MakeInstance("TOther"))));
+    }
+
+    /// <summary>
+    /// `public static T MakeInstance&lt;T&gt;(this Type type)` alongside
+    /// `public static object MakeInstance(this Type type)`, in that declaration order. The generic
+    /// overload's return type is a parameter so a test can change that one alone.
+    /// </summary>
+    private static CsharpClass MakeInstance(string genericReturns = "T")
+    {
+        return Build.Class().WithMethods(Build.Method(
+            name: "MakeInstance",
+            returns: "T",
+            overrides:
+            [
+                new CsharpMethodOverride(Build.Parameter("type", "Type")) { ReturnType = genericReturns }
+                    .WithGenerics(Build.Generic("T", "class")),
+                new(Build.Parameter("type", "Type")) { ReturnType = "object" }
+            ]));
     }
 }
