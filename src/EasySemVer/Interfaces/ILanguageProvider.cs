@@ -6,12 +6,13 @@ namespace Winterborn.Tools.EasySemVer.Interfaces;
 
 /// <summary>
 /// Everything one language contributes to a run (ML-02). Adding a language means writing one of
-/// these, adding its <see cref="DataObject.Language"/> member, and registering it - no edit to
-/// anything under Interfaces/, Evaluation/, or Persistence/.
+/// these and registering it - no edit to anything under Interfaces/, Evaluation/, Persistence/ or
+/// any other language's folders.
 /// </summary>
 public interface ILanguageProvider
 {
-    public Language Language { get; }
+    /// <inheritdoc cref="IPackageableUnit.LanguageId"/>
+    public string LanguageId { get; }
 
     /// <summary>Enumerates the folder root once per run (FLD-03) and returns this language's units.</summary>
     public IReadOnlyList<IPackageableUnit> Discover(string folderRoot);
@@ -40,12 +41,22 @@ public interface ILanguageProvider
     public void Extract(IPackageableUnit unit);
 
     /// <summary>
-    /// Compares two units of this language that exist on both sides (NCL-03). Unit existence is the
-    /// neutral core's business, so <paramref name="older"/> is only ever null defensively (NCL-04).
+    /// Every change this language found between the two runs. <paramref name="units"/> holds only
+    /// this language's units, already filtered for UNI-04, so a provider never sees another
+    /// language's work and never has to check.
+    /// <para>
+    /// Pairing units, and deciding what a unit appearing or disappearing means, are this
+    /// provider's job rather than the core's: every rule belongs to exactly one language, even
+    /// where several languages would answer alike. <c>UnitPairing</c> and the rule base classes
+    /// under Evaluators/ exist so that agreeing with the other languages costs a subclass and
+    /// disagreeing costs an override.
+    /// </para>
+    /// <para>
     /// Returns what it found rather than a verdict: the caller aggregates the impacts (CLS-03) and
     /// the same findings are what the run reports (§20 O-04). An empty list is a Patch.
+    /// </para>
     /// </summary>
-    public IReadOnlyList<ChangeFinding> Classify(IPackageableUnit? older, IPackageableUnit newer);
+    public IReadOnlyList<ChangeFinding> Classify(IUnitsToCompare units);
 
     public IReadOnlyList<Version> ReadVersions(IPackageableUnit unit);
 

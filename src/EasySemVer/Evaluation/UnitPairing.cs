@@ -14,7 +14,7 @@ internal static class UnitPairing
     {
         foreach (var candidate in candidates)
         {
-            if (candidate.Language != wanted.Language)
+            if (candidate.LanguageId != wanted.LanguageId)
             {
                 continue;
             }

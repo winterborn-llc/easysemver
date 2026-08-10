@@ -6,7 +6,7 @@ namespace Winterborn.Tools.EasySemVer.Evaluators.Csharp;
 /// <summary>R33 - a type lost sealed or abstract, which only widens what callers may do.</summary>
 public class TypeInheritanceRelaxed : IEvaluateCsharpSignatures
 {
-    public string RuleId => "R33";
+    public string Rule => "TypeInheritanceRelaxed";
 
     public VersionType EvaluationImpact => VersionType.Minor;
 

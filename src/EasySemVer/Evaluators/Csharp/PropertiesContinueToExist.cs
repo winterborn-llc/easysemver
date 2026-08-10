@@ -6,7 +6,7 @@ namespace Winterborn.Tools.EasySemVer.Evaluators.Csharp;
 /// <summary>R10 - a property the baseline recorded is gone from a type that still exists.</summary>
 public class PropertiesContinueToExist : IEvaluateCsharpSignatures
 {
-    public string RuleId => "R10";
+    public string Rule => "PropertiesContinueToExist";
 
     public VersionType EvaluationImpact => VersionType.Major;
 

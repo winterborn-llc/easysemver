@@ -9,12 +9,12 @@ namespace Winterborn.Tools.EasySemVer.Interfaces.Swift;
 public interface IEvaluateSwiftSignatures
 {
     /// <summary>
-    /// The rule's identifier from specs/12 §13 - "R02", "S18", "NCL-01". Published in the JSON report
-    /// (REP-02), so it is a contract: an id is never reused and never silently changes. It is
-    /// carried rather than derived from the class name precisely so that renaming the class
-    /// cannot break a consumer.
+    /// The rule's name from the spec table - "EnumCaseAdded". Published in the JSON report (REP-02) as half
+    /// of the (language, rule) key, so it is a contract: a name is never reused and never silently
+    /// changes. Carried rather than derived from the class name precisely so that renaming the
+    /// class cannot break a consumer.
     /// </summary>
-    public string RuleId { get; }
+    public string Rule { get; }
 
     public VersionType EvaluationImpact { get; }
 

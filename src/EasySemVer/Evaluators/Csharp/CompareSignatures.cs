@@ -71,10 +71,9 @@ internal static class CompareSignatures
             [
                 new ChangeFinding
                 {
-                    Language = unit.Language,
+                    LanguageId = unit.LanguageId,
                     UnitId = unit.UnitId,
-                    RuleName = nameof(CompareSignatures),
-                    RuleId = "CLS-04",
+                    Rule = "NoComparableBaseline",
                     Symbol = unit.UnitId,
                     Description = "has no comparable baseline signature, so it is treated as additive",
                     Impact = VersionType.Minor
@@ -90,10 +89,9 @@ internal static class CompareSignatures
             {
                 findings.Add(new ChangeFinding
                 {
-                    Language = unit.Language,
+                    LanguageId = unit.LanguageId,
                     UnitId = unit.UnitId,
-                    RuleName = evaluator.GetType().Name,
-                    RuleId = evaluator.RuleId,
+                    Rule = evaluator.Rule,
                     Symbol = symbol,
                     Description = evaluator.ChangeDescription,
                     Impact = evaluator.EvaluationImpact

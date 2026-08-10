@@ -7,7 +7,7 @@ namespace Winterborn.Tools.EasySemVer.Evaluators.Csharp;
 [DebuggerDisplay("{EvaluationImpact}")]
 public class PropertyType : IEvaluateCsharpSignatures
 {
-    public string RuleId => "R13";
+    public string Rule => "PropertyType";
 
     public VersionType EvaluationImpact => VersionType.Major;
 

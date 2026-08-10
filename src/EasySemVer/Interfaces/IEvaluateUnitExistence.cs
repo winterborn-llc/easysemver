@@ -3,19 +3,25 @@ using Winterborn.Tools.EasySemVer.DataObject;
 namespace Winterborn.Tools.EasySemVer.Interfaces;
 
 /// <summary>
-/// A neutral rule: "a shippable module appeared or disappeared" means the same thing in every
-/// language, so it lives here rather than being restated per provider (§7). Same rule-object
-/// discipline as the per-language evaluators (CLS-01, ML-04).
+/// A rule about a shippable module appearing or disappearing, rather than about what is inside
+/// one. Same rule-object discipline as the signature evaluators (CLS-01, ML-04), and the same
+/// ownership: it belongs to exactly one language, even though every language has one and most
+/// will answer alike. The shape is shared here; the answers are not.
+/// <para>
+/// This interface names no language because it needs none - it reads units, which are neutral.
+/// The rules that implement it live in their language's folder, and the base classes under
+/// Evaluators/ carry the diffing they mostly agree on.
+/// </para>
 /// </summary>
 public interface IEvaluateUnitExistence
 {
     /// <summary>
-    /// The rule's identifier from specs/12 §7 - "R02", "S18", "NCL-01". Published in the JSON report
-    /// (REP-02), so it is a contract: an id is never reused and never silently changes. It is
-    /// carried rather than derived from the class name precisely so that renaming the class
-    /// cannot break a consumer.
+    /// The rule's name from the spec tables - "UnitRemoved". Published in the JSON report
+    /// (REP-02) as half of the (language, rule) key, so it is a contract: a name is never reused
+    /// and never silently changes. Carried rather than derived from the class name precisely so
+    /// that renaming the class cannot break a consumer.
     /// </summary>
-    public string RuleId { get; }
+    public string Rule { get; }
 
     public VersionType EvaluationImpact { get; }
 

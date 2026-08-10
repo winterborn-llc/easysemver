@@ -9,7 +9,7 @@ namespace Winterborn.Tools.EasySemVer.Evaluators.Csharp;
 /// </summary>
 public class MemberOverridabilityReduced : IEvaluateCsharpSignatures
 {
-    public string RuleId => "R36";
+    public string Rule => "MemberOverridabilityReduced";
 
     public VersionType EvaluationImpact => VersionType.Major;
 

@@ -1,6 +1,6 @@
 using System.Xml.Linq;
-using Winterborn.Tools.EasySemVer.DataObject;
 using Winterborn.Tools.EasySemVer.DataObject.Csharp;
+using Winterborn.Tools.EasySemVer.DataObject;
 using Winterborn.Tools.EasySemVer.Interfaces;
 using Winterborn.Tools.EasySemVer.Persistence;
 using Winterborn.Tools.EasySemVer.Process;
@@ -82,7 +82,7 @@ public class TestBaselineFile
         var readBack = BaselineFile.ReadDocument(document, Providers);
 
         var unit = Assert.Single(readBack);
-        Assert.Equal(Language.Csharp, unit.Language);
+        Assert.Equal(CsharpLanguageProvider.CsharpLanguageId, unit.LanguageId);
         Assert.Equal("Widgets", unit.UnitId);
         Assert.Equal("csproj", unit.UnitKind);
         var project = Assert.IsType<CsharpProject>(unit.Signature);
@@ -144,7 +144,7 @@ public class TestBaselineFile
         Assert.Equal("EasySemVer", document.Root!.Name.LocalName);
         // Hardcoded rather than read from MagicValues: bumping the format is a deliberate act that
         // invalidates every baseline in the wild, so it should have to be made twice.
-        Assert.Equal("3", document.Root.Attribute("formatVersion")!.Value);
+        Assert.Equal("4", document.Root.Attribute("formatVersion")!.Value);
     }
 
     /// <summary>BAS-03 - an unknown or absent format version is unreadable, never guessed at.</summary>

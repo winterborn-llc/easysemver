@@ -3,10 +3,10 @@ using Winterborn.Tools.EasySemVer.Interfaces;
 namespace Winterborn.Tools.EasySemVer.DataObject;
 
 /// <inheritdoc cref="IPackageableUnit"/>
-[DebuggerDisplay("{Language} {UnitId}")]
+[DebuggerDisplay("{LanguageId} {UnitId}")]
 public class PackageableUnit : IPackageableUnit
 {
-    public Language Language { get; init; }
+    public string LanguageId { get; init; } = string.Empty;
 
     public string UnitId { get; init; } = string.Empty;
 
@@ -26,6 +26,6 @@ public class PackageableUnit : IPackageableUnit
     /// <summary>The identity used for pairing and for baseline ordering (ML-03, BAS-04).</summary>
     public static string GetSortKey(IPackageableUnit unit)
     {
-        return $"{unit.Language} {unit.UnitId}";
+        return $"{unit.LanguageId} {unit.UnitId}";
     }
 }

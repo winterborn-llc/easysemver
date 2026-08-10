@@ -58,7 +58,7 @@ public class TestChangeClassifier
 
         Assert.Equal(VersionType.Minor, report.ChangeType);
         var finding = Assert.Single(report.Findings);
-        Assert.Equal(nameof(UnitAdded), finding.RuleName);
+        Assert.Equal("UnitAdded", finding.Rule);
         Assert.Equal("Sources/Gadgets", finding.Symbol);
         Assert.Equal("was added", finding.Description);
     }
@@ -88,7 +88,7 @@ public class TestChangeClassifier
         // finding names the unit and never Gadgets.Gadget.
         Assert.Equal(VersionType.Major, report.ChangeType);
         var finding = Assert.Single(report.Findings);
-        Assert.Equal(nameof(UnitRemoved), finding.RuleName);
+        Assert.Equal("UnitRemoved", finding.Rule);
         Assert.Equal("Gadgets", finding.UnitId);
     }
 
@@ -110,8 +110,8 @@ public class TestChangeClassifier
         var report = ChangeClassifier.Classify(older, newer, Providers);
 
         Assert.Equal(
-            ["Csharp Alpha", "Swift Sources/Zebra:Zebra"],
-            report.Findings.Select(finding => $"{finding.Language} {finding.UnitId}"));
+            ["csharp Alpha", "swift Sources/Zebra:Zebra"],
+            report.Findings.Select(finding => $"{finding.LanguageId} {finding.UnitId}"));
     }
 
     /// <summary>NCL-04 / CLS-04 - a null signature list fails safe towards additive.</summary>
@@ -217,7 +217,7 @@ public class TestChangeClassifier
         // Widgets really did go, and Gadgets really did arrive.
         Assert.Equal(VersionType.Major, report.ChangeType);
         Assert.Equal(
-            [nameof(UnitAdded), nameof(UnitRemoved)],
-            report.Findings.Select(finding => finding.RuleName).Order());
+            ["UnitAdded", "UnitRemoved"],
+            report.Findings.Select(finding => finding.Rule).Order());
     }
 }

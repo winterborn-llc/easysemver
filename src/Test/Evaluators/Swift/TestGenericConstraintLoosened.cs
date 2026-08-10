@@ -1,0 +1,48 @@
+using Winterborn.Tools.EasySemVer.DataObject;
+using Winterborn.Tools.EasySemVer.DataObject.Swift;
+using Winterborn.Tools.EasySemVer.Evaluators.Swift;
+using Winterborn.Tools.EasySemVer.Interfaces.Swift;
+using Test.Swift;
+
+namespace Test.Evaluators.Swift;
+
+/// <summary>S13 - directional against S12.</summary>
+public class TestSwiftGenericConstraintLoosened
+{
+    private static IEvaluateSwiftSignatures Evaluator => new GenericConstraintLoosened();
+
+    [Fact]
+    public void ChangeTypeIsExpected()
+    {
+        Assert.Equal(VersionType.Minor, Evaluator.EvaluationImpact);
+    }
+
+    [Fact]
+    public void ConstraintsAreUnchanged()
+    {
+        Assert.Empty(Evaluator.FindDifferences(Compare("conformance Equatable", "conformance Equatable")));
+    }
+
+    [Fact]
+    public void ConstraintIsRemoved()
+    {
+        Assert.Equal(
+            [BuildSwift.DefaultTypeName],
+            Evaluator.FindDifferences(
+                Compare("conformance Equatable, conformance Hashable", "conformance Equatable")));
+    }
+
+    [Fact]
+    public void AddingAConstraintDoesNotFire()
+    {
+        Assert.Empty(Evaluator.FindDifferences(
+            Compare("conformance Equatable", "conformance Equatable, conformance Hashable")));
+    }
+
+    private static ISwiftSignaturesToCompare Compare(string older, string newer)
+    {
+        return BuildSwift.Compare(
+            BuildSwift.Struct().WithGenerics(BuildSwift.Generic(constraints: older)),
+            BuildSwift.Struct().WithGenerics(BuildSwift.Generic(constraints: newer)));
+    }
+}

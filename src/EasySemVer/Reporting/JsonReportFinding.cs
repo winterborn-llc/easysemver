@@ -5,25 +5,31 @@ namespace Winterborn.Tools.EasySemVer.Reporting;
 
 /// <summary>
 /// One piece of the evidence behind the verdict (REP-09). The array these sit in is what makes a
-/// run auditable in a machine's hands rather than only a reader's - <see cref="RuleId"/> lets a
-/// consumer point at the rule that cost it a Major without matching on prose.
+/// run auditable in a machine's hands rather than only a reader's - <see cref="Language"/> and
+/// <see cref="Rule"/> together let a consumer point at the rule that cost it a Major without
+/// matching on prose.
 /// <para>
-/// <see cref="ChangeFinding.RuleName"/> is deliberately absent: a class name is an implementation
-/// detail, and a consumer keyed to it would break on a rename that changed no behaviour.
+/// The two are one key, which is why the rule name carries no language of its own: a Swift rule
+/// reported under <c>swift</c> would only be saying so twice. It also means two languages may
+/// each have a <c>UnitRemoved</c>, and a consumer can gate on one without gating on the other.
 /// </para>
 /// </summary>
 public class JsonReportFinding
 {
-    /// <summary>The rule's identifier from the spec tables - "R02", "S18", "NCL-01".</summary>
-    [JsonPropertyName("ruleId")]
+    /// <summary>
+    /// The rule's name from the spec tables - "MethodReturnType", "UnitRemoved". Unique within
+    /// <see cref="Language"/>, not globally.
+    /// </summary>
+    [JsonPropertyName("rule")]
     [JsonPropertyOrder(0)]
-    public string RuleId { get; init; } = string.Empty;
+    public string Rule { get; init; } = string.Empty;
 
     /// <summary>"major" | "minor" | "patch", lower case like every enum-valued field (REP-02).</summary>
     [JsonPropertyName("impact")]
     [JsonPropertyOrder(1)]
     public string Impact { get; init; } = string.Empty;
 
+    /// <summary>The other half of the key: "csharp", "swift".</summary>
     [JsonPropertyName("language")]
     [JsonPropertyOrder(2)]
     public string Language { get; init; } = string.Empty;
@@ -39,7 +45,7 @@ public class JsonReportFinding
 
     /// <summary>
     /// Completes "&lt;symbol&gt; ..." - "was removed". Prose for a human reading the document;
-    /// nothing should match on it, which is what <see cref="RuleId"/> is for.
+    /// nothing should match on it, which is what <see cref="Rule"/> is for.
     /// </summary>
     [JsonPropertyName("description")]
     [JsonPropertyOrder(5)]
@@ -49,9 +55,9 @@ public class JsonReportFinding
     {
         return new JsonReportFinding
         {
-            RuleId = finding.RuleId,
+            Rule = finding.Rule,
             Impact = finding.Impact.ToString().ToLowerInvariant(),
-            Language = finding.Language.ToString().ToLowerInvariant(),
+            Language = finding.LanguageId,
             UnitId = finding.UnitId,
             Symbol = finding.Symbol,
             Description = finding.Description

@@ -6,7 +6,7 @@ namespace Winterborn.Tools.EasySemVer.Evaluators.Csharp;
 /// <summary>R16 - a type that exists on both sides gained a property.</summary>
 public class PropertyAdded : IEvaluateCsharpSignatures
 {
-    public string RuleId => "R16";
+    public string Rule => "PropertyAdded";
 
     public VersionType EvaluationImpact => VersionType.Minor;
 

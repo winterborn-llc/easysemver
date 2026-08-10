@@ -18,11 +18,13 @@ internal static class LanguageProviders
         ];
     }
 
-    internal static ILanguageProvider? Find(IReadOnlyList<ILanguageProvider> providers, Language language)
+    internal static ILanguageProvider? Find(
+        IReadOnlyList<ILanguageProvider> providers,
+        string languageId)
     {
         foreach (var provider in providers)
         {
-            if (provider.Language != language)
+            if (!string.Equals(provider.LanguageId, languageId, StringComparison.Ordinal))
             {
                 continue;
             }

@@ -9,7 +9,7 @@ namespace Winterborn.Tools.EasySemVer.Evaluators.Csharp;
 /// </summary>
 public class MemberStaticnessChanged : IEvaluateCsharpSignatures
 {
-    public string RuleId => "R38";
+    public string Rule => "MemberStaticnessChanged";
 
     public VersionType EvaluationImpact => VersionType.Major;
 

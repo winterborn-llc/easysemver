@@ -7,7 +7,7 @@ namespace Winterborn.Tools.EasySemVer.Evaluators.Csharp;
 /// <summary>R26 - a delegate's parameters or return type changed.</summary>
 public class DelegateSignatureChanged : IEvaluateCsharpSignatures
 {
-    public string RuleId => "R26";
+    public string Rule => "DelegateSignatureChanged";
 
     public VersionType EvaluationImpact => VersionType.Major;
 

@@ -1,5 +1,6 @@
 using Winterborn.Tools.EasySemVer.DataObject;
 using Winterborn.Tools.EasySemVer.Evaluation;
+using Winterborn.Tools.EasySemVer.Providers;
 using Winterborn.Tools.EasySemVer.Reporting;
 using Version = Winterborn.Tools.EasySemVer.DataObject.Version;
 
@@ -45,10 +46,9 @@ public class TestGitHubActionsReport : IDisposable
         string symbol = "Widgets.Gone") =>
         new()
         {
-            Language = Language.Csharp,
+            LanguageId = CsharpLanguageProvider.CsharpLanguageId,
             UnitId = "Widgets",
-            RuleId = "R18",
-            RuleName = "TypeRemoved",
+            Rule = "TypeRemoved",
             Symbol = symbol,
             Description = "was removed",
             Impact = impact
@@ -179,8 +179,8 @@ public class TestGitHubActionsReport : IDisposable
             this.Environment());
 
         var summary = File.ReadAllText(this.SummaryPath);
-        Assert.Contains("- **major** `R18` `Widgets.Gone` was removed", summary);
-        Assert.Contains("- **minor** `R18` `Widgets.Added` was removed", summary);
+        Assert.Contains("- **major** `csharp/TypeRemoved` `Widgets.Gone` was removed", summary);
+        Assert.Contains("- **minor** `csharp/TypeRemoved` `Widgets.Added` was removed", summary);
     }
 
     /// <summary>

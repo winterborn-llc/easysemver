@@ -6,7 +6,7 @@ namespace Winterborn.Tools.EasySemVer.Evaluators.Csharp;
 /// <summary>R31 - a public event appeared on an existing type.</summary>
 public class EventAdded : IEvaluateCsharpSignatures
 {
-    public string RuleId => "R31";
+    public string Rule => "EventAdded";
 
     public VersionType EvaluationImpact => VersionType.Minor;
 

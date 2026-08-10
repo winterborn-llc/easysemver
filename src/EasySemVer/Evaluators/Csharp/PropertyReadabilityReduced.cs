@@ -6,7 +6,7 @@ namespace Winterborn.Tools.EasySemVer.Evaluators.Csharp;
 /// <summary>R12 - a property lost its getter.</summary>
 public class PropertyReadabilityReduced : IEvaluateCsharpSignatures
 {
-    public string RuleId => "R12";
+    public string Rule => "PropertyReadabilityReduced";
 
     public VersionType EvaluationImpact => VersionType.Major;
 

@@ -6,7 +6,7 @@ namespace Winterborn.Tools.EasySemVer.Evaluators.Csharp;
 /// <summary>R30 - a public event was removed or its handler type changed.</summary>
 public class EventContractReduced : IEvaluateCsharpSignatures
 {
-    public string RuleId => "R30";
+    public string Rule => "EventContractReduced";
 
     public VersionType EvaluationImpact => VersionType.Major;
 

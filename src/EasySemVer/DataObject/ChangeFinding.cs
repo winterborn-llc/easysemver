@@ -10,21 +10,27 @@ namespace Winterborn.Tools.EasySemVer.DataObject;
 [DebuggerDisplay("{Impact} {Symbol} {Description}")]
 public class ChangeFinding
 {
-    /// <summary>The language of the unit the change was found in, for grouping the report.</summary>
-    public Language Language { get; init; }
+    /// <summary>
+    /// The language of the unit the change was found in. Half of the finding's published key: a
+    /// rule is identified by <see cref="LanguageId"/> and <see cref="Rule"/> together, so two
+    /// languages may each carry a rule called <c>UnitRemoved</c> without collision.
+    /// </summary>
+    public string LanguageId { get; init; } = string.Empty;
 
     /// <summary>Machine-stable and free of absolute paths, exactly as on the unit (ML-03).</summary>
     public string UnitId { get; init; } = string.Empty;
 
-    /// <summary>The rule class that fired, so a surprising line can be traced to its rule.</summary>
-    public string RuleName { get; init; } = string.Empty;
-
     /// <summary>
-    /// The rule's identifier from the specs - "R02", "S18", "NCL-01". Published in the JSON
-    /// report (REP-02) where <see cref="RuleName"/> is not, because a class name is an
-    /// implementation detail a consumer should not be keyed to.
+    /// The rule that fired, named rather than numbered, and unique within
+    /// <see cref="LanguageId"/> rather than globally. Published in the JSON report (REP-02), so it
+    /// is a contract: a name is never reused and never silently changes.
+    /// <para>
+    /// Every rule carries this as a literal instead of deriving it from its class name, so that
+    /// renaming the class cannot move the published key and changing the key is a visible edit.
+    /// A base class must therefore declare it <c>abstract</c> and never default it.
+    /// </para>
     /// </summary>
-    public string RuleId { get; init; } = string.Empty;
+    public string Rule { get; init; } = string.Empty;
 
     /// <summary>
     /// What the change is about, named the way the language names it: a namespace-qualified type

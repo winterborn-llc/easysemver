@@ -7,7 +7,7 @@ namespace Winterborn.Tools.EasySemVer.Evaluators.Csharp;
 /// <summary>R06 - a public class the baseline recorded is gone, renamed, or moved namespace.</summary>
 public class ProjectClassesContinueToExist : IEvaluateCsharpSignatures
 {
-    public string RuleId => "R06";
+    public string Rule => "ProjectClassesContinueToExist";
 
     public VersionType EvaluationImpact => VersionType.Major;
 

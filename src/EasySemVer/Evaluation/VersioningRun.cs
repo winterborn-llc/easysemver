@@ -108,7 +108,7 @@ internal static class VersioningRun
                 unit.HasPublicApiSurface = !provider.IsTestCode(unit);
             }
 
-            Log.WriteLine($"{provider.Language}: {found.Count} units");
+            Log.WriteLine($"{provider.LanguageId}: {found.Count} units");
             units.AddRange(found);
         }
 
@@ -127,20 +127,20 @@ internal static class VersioningRun
     {
         foreach (var unit in units)
         {
-            var provider = LanguageProviders.Find(providers, unit.Language)
+            var provider = LanguageProviders.Find(providers, unit.LanguageId)
                            ?? throw new InvalidOperationException(
-                               $"No provider is registered for {unit.Language}");
+                               $"No provider is registered for {unit.LanguageId}");
 
             // UNI-04. Nothing downstream reads a signature this unit does not have, and building
             // one would be work spent on a graph that classification, the baseline and the report
             // all ignore. Its versions are still read and written by the stages after this one.
             if (!unit.HasPublicApiSurface)
             {
-                Log.WriteLine($"Versioning {unit.Language} {unit.UnitId} ({unit.RelativePath}) without reading its API surface");
+                Log.WriteLine($"Versioning {unit.LanguageId} {unit.UnitId} ({unit.RelativePath}) without reading its API surface");
                 continue;
             }
 
-            Log.WriteLine($"Reading {unit.Language} {unit.UnitId} ({unit.RelativePath})");
+            Log.WriteLine($"Reading {unit.LanguageId} {unit.UnitId} ({unit.RelativePath})");
             provider.Extract(unit);
         }
     }
@@ -153,7 +153,7 @@ internal static class VersioningRun
         var highest = new Version("0.0.0");
         foreach (var unit in units)
         {
-            var provider = LanguageProviders.Find(providers, unit.Language);
+            var provider = LanguageProviders.Find(providers, unit.LanguageId);
             if (provider == null)
             {
                 continue;
@@ -185,7 +185,7 @@ internal static class VersioningRun
         var written = new List<string>();
         foreach (var unit in units)
         {
-            var provider = LanguageProviders.Find(providers, unit.Language);
+            var provider = LanguageProviders.Find(providers, unit.LanguageId);
             if (provider == null)
             {
                 continue;

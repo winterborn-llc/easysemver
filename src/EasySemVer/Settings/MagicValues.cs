@@ -13,8 +13,14 @@ internal static class MagicValues
     /// when signature extraction stopped recording metadata types (SIG-03): a version-2 baseline
     /// holds framework symbols that a version-3 run will never produce, so diffing the two would
     /// report their disappearance as a Major change. Rejecting it costs one Minor bump instead.
+    /// <para>
+    /// Bumped to 4 when the language stopped being an enum member and became a provider-owned id
+    /// (ML-02). A version-3 baseline spells it "Csharp" where a version-4 run writes "csharp", so
+    /// every unit in it would fail to resolve a provider and read as removed - Major, for a rename
+    /// nobody made.
+    /// </para>
     /// </summary>
-    internal const string BaselineFormatVersion = "3";
+    internal const string BaselineFormatVersion = "4";
 
     internal static readonly string[] VersionPropertyNames =
         ["AssemblyVersion", "PackageVersion", "FileVersion"];

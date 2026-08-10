@@ -9,7 +9,7 @@ namespace Winterborn.Tools.EasySemVer.Evaluators.Csharp;
 /// </summary>
 public class FieldContractReduced : IEvaluateCsharpSignatures
 {
-    public string RuleId => "R28";
+    public string Rule => "FieldContractReduced";
 
     public VersionType EvaluationImpact => VersionType.Major;
 

@@ -67,20 +67,45 @@ public class TestLanguageSeam
         Assert.Empty(offences);
     }
 
-    /// <summary>Every registered language has exactly one provider, and every provider is reachable.</summary>
+    /// <summary>
+    /// Every registered language has exactly one provider, and every provider is reachable by its
+    /// own id. There is no enum to enumerate any more - the ids are whatever the providers say
+    /// they are - so this asserts against the registry itself rather than against a list that a
+    /// new language would have to be added to.
+    /// </summary>
     [Fact]
     public void EveryLanguageHasExactlyOneProvider()
     {
         var providers = LanguageProviders.Create(new ProcessRunner());
 
-        foreach (var language in Enum.GetValues<Language>())
+        foreach (var provider in providers)
         {
-            var matching = providers.Where(p => p.Language == language).ToArray();
-            Assert.Single(matching);
-            Assert.NotNull(LanguageProviders.Find(providers, language));
-        }
+            var matching = providers
+                .Where(p => p.LanguageId == provider.LanguageId)
+                .ToArray();
 
-        Assert.Equal(Enum.GetValues<Language>().Length, providers.Count);
+            Assert.Single(matching);
+            Assert.Same(provider, LanguageProviders.Find(providers, provider.LanguageId));
+        }
+    }
+
+    /// <summary>
+    /// A language id is persisted in the baseline and published in the report, so it is a
+    /// contract before it is a label. Case and whitespace are the two ways a new provider would
+    /// break it without noticing: "CSharp" reads back as a different language from "csharp" and
+    /// silently loses every unit the old baseline recorded.
+    /// </summary>
+    [Fact]
+    public void EveryLanguageIdIsLowerCaseAndBare()
+    {
+        foreach (var provider in LanguageProviders.Create(new ProcessRunner()))
+        {
+            var id = provider.LanguageId;
+
+            Assert.False(string.IsNullOrWhiteSpace(id));
+            Assert.Equal(id.ToLowerInvariant(), id);
+            Assert.Equal(id.Trim(), id);
+        }
     }
 
     /// <summary>
@@ -106,7 +131,7 @@ public class TestLanguageSeam
 
             Assert.True(
                 declared?.DeclaringType == provider.GetType(),
-                $"{provider.Language} inherits ILanguageProvider.IsTestCode's default. Its test "
+                $"{provider.LanguageId} inherits ILanguageProvider.IsTestCode's default. Its test "
                 + "code will be compared like production code and vote on the version (UNI-04).");
         }
     }

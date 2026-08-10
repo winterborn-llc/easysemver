@@ -1,5 +1,6 @@
 using Winterborn.Tools.EasySemVer.DataObject;
 using Winterborn.Tools.EasySemVer.Interfaces;
+using Winterborn.Tools.EasySemVer.Providers;
 
 namespace Test;
 
@@ -13,7 +14,7 @@ internal static class Units
     {
         return new PackageableUnit
         {
-            Language = Language.Csharp,
+            LanguageId = CsharpLanguageProvider.CsharpLanguageId,
             UnitId = unitId,
             DisplayName = unitId,
             UnitKind = "csproj",
@@ -27,7 +28,7 @@ internal static class Units
     {
         return new PackageableUnit
         {
-            Language = Language.Swift,
+            LanguageId = SwiftLanguageProvider.SwiftLanguageId,
             UnitId = unitId,
             DisplayName = unitId,
             UnitKind = "swiftpm-target",

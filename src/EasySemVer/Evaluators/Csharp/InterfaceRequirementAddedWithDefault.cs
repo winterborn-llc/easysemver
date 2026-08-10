@@ -9,7 +9,7 @@ namespace Winterborn.Tools.EasySemVer.Evaluators.Csharp;
 /// </summary>
 public class InterfaceRequirementAddedWithDefault : IEvaluateCsharpSignatures
 {
-    public string RuleId => "R21";
+    public string Rule => "InterfaceRequirementAddedWithDefault";
 
     public VersionType EvaluationImpact => VersionType.Minor;
 

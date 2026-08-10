@@ -6,7 +6,7 @@ namespace Winterborn.Tools.EasySemVer.Evaluators.Csharp;
 /// <summary>R11 - a write-only property gained a getter.</summary>
 public class PropertyReadabilityEnhanced : IEvaluateCsharpSignatures
 {
-    public string RuleId => "R11";
+    public string Rule => "PropertyReadabilityEnhanced";
 
     public VersionType EvaluationImpact => VersionType.Minor;
 

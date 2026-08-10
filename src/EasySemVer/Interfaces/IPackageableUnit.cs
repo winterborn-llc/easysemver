@@ -10,7 +10,13 @@ namespace Winterborn.Tools.EasySemVer.Interfaces;
 /// </summary>
 public interface IPackageableUnit
 {
-    public Language Language { get; }
+    /// <summary>
+    /// The owning language's id, lower case and stable: "csharp", "swift". Owned by the provider
+    /// rather than by any shared enum, so adding a language touches nothing outside its own
+    /// folders (ML-02). It is persisted in the baseline and published in the report, which makes
+    /// it a contract: an id is never reused and never silently changes.
+    /// </summary>
+    public string LanguageId { get; }
 
     /// <summary>
     /// Stable across machines and checkouts, and free of absolute paths (ML-03). Renaming a unit

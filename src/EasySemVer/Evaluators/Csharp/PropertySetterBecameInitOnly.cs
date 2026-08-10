@@ -9,7 +9,7 @@ namespace Winterborn.Tools.EasySemVer.Evaluators.Csharp;
 /// </summary>
 public class PropertySetterBecameInitOnly : IEvaluateCsharpSignatures
 {
-    public string RuleId => "R42";
+    public string Rule => "PropertySetterBecameInitOnly";
 
     public VersionType EvaluationImpact => VersionType.Major;
 

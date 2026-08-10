@@ -68,25 +68,25 @@ verdict; only the whole-run case has nothing to name.
 
 ## The rules
 
-| ID | Rule (class) | Fires when… | Impact |
-|----|--------------|-------------|:------:|
-| R01 | [`MethodsContinueToExist`](../src/EasySemVer/Evaluators/Csharp/MethodsContinueToExist.cs) | a method name present in the old paired class is absent from the new one | **Major** |
-| R02 | [`MethodInputParameterOverrideRemoved`](../src/EasySemVer/Evaluators/Csharp/MethodInputParameterOverrideRemoved.cs) | an old overload has no new overload with the same parameter count, names, and types, in order (requiredness deliberately ignored — a requiredness-only change is not a *removed* overload; direction-sensitive handling is R17's job) | **Major** |
-| R03 | [`MethodReturnType`](../src/EasySemVer/Evaluators/Csharp/MethodReturnType.cs) | a paired method name's recorded return type differs | **Major** |
-| R04 | [`MethodOverrideAdded`](../src/EasySemVer/Evaluators/Csharp/MethodOverrideAdded.cs) | a method that exists on both sides gains an overload whose canonical signature string (SIG-09, requiredness included) is absent from the old side | **Minor** |
-| R05 | [`ProjectClassAdded`](../src/EasySemVer/Evaluators/Csharp/ProjectClassAdded.cs) | a paired project contains a class name absent from the old side | **Minor** |
-| R06 | [`ProjectClassesContinueToExist`](../src/EasySemVer/Evaluators/Csharp/ProjectClassesContinueToExist.cs) | a class in an old paired project is absent from the new side | **Major** |
-| ~~R07~~ | *retired* | ~~a project in the old signature is absent from the new one~~ — re-homed to the neutral **NCL-01** (`UnitRemoved`), which covers every language. The ID is retired, not reused. | — |
-| R08 | [`PropertyEditabilityEnhanced`](../src/EasySemVer/Evaluators/Csharp/PropertyEditabilityEnhanced.cs) | a paired property goes not-writable → writable | **Minor** |
-| R09 | [`PropertyEditabilityReduced`](../src/EasySemVer/Evaluators/Csharp/PropertyEditabilityReduced.cs) | a paired property goes writable → not-writable | **Major** |
-| R10 | [`PropertiesContinueToExist`](../src/EasySemVer/Evaluators/Csharp/PropertiesContinueToExist.cs) | a property name in an old paired class is absent from the new one | **Major** |
-| R11 | [`PropertyReadabilityEnhanced`](../src/EasySemVer/Evaluators/Csharp/PropertyReadabilityEnhanced.cs) | a paired property goes not-readable → readable | **Minor** |
-| R12 | [`PropertyReadabilityReduced`](../src/EasySemVer/Evaluators/Csharp/PropertyReadabilityReduced.cs) | a paired property goes readable → not-readable | **Major** |
-| R13 | [`PropertyType`](../src/EasySemVer/Evaluators/Csharp/PropertyType.cs) | a paired property's type name differs | **Major** |
-| ~~R14~~ | *retired* | ~~the new signature contains a project name absent from the old one~~ — re-homed to the neutral **NCL-02** (`UnitAdded`). The ID is retired, not reused. | — |
-| R15 | [`MethodAdded`](../src/EasySemVer/Evaluators/Csharp/MethodAdded.cs) | a paired class contains a method name absent from the old side | **Minor** |
-| R16 | [`PropertyAdded`](../src/EasySemVer/Evaluators/Csharp/PropertyAdded.cs) | a paired class contains a property name absent from the old side | **Minor** |
-| R17 | [`MethodInputParameterMadeRequired`](../src/EasySemVer/Evaluators/Csharp/MethodInputParameterMadeRequired.cs) | for overloads matched on parameter count, names, and types (R02's matcher), a parameter is `IsRequired = false` in the old side and `IsRequired = true` in the new one | **Major** |
+| Rule | Was | Fires when… | Impact |
+|------|-----|-------------|:------:|
+| MethodsContinueToExist | R01 | a method name present in the old paired class is absent from the new one | **Major** |
+| MethodInputParameterOverrideRemoved | R02 | an old overload has no new overload with the same parameter count, names, and types, in order (requiredness deliberately ignored — a requiredness-only change is not a *removed* overload; direction-sensitive handling is R17's job) | **Major** |
+| MethodReturnType | R03 | a paired method name's recorded return type differs | **Major** |
+| MethodOverrideAdded | R04 | a method that exists on both sides gains an overload whose canonical signature string (SIG-09, requiredness included) is absent from the old side | **Minor** |
+| ProjectClassAdded | R05 | a paired project contains a class name absent from the old side | **Minor** |
+| ProjectClassesContinueToExist | R06 | a class in an old paired project is absent from the new side | **Major** |
+| ~~R07~~ | *retired* | ~~a project in the old signature is absent from the new one~~ — re-homed to C#'s own **UnitRemoved**, which covers every language. The ID is retired, not reused. | — |
+| PropertyEditabilityEnhanced | R08 | a paired property goes not-writable → writable | **Minor** |
+| PropertyEditabilityReduced | R09 | a paired property goes writable → not-writable | **Major** |
+| PropertiesContinueToExist | R10 | a property name in an old paired class is absent from the new one | **Major** |
+| PropertyReadabilityEnhanced | R11 | a paired property goes not-readable → readable | **Minor** |
+| PropertyReadabilityReduced | R12 | a paired property goes readable → not-readable | **Major** |
+| PropertyType | R13 | a paired property's type name differs | **Major** |
+| ~~R14~~ | *retired* | ~~the new signature contains a project name absent from the old one~~ — re-homed to C#'s own **UnitAdded**. The ID is retired, not reused. | — |
+| MethodAdded | R15 | a paired class contains a method name absent from the old side | **Minor** |
+| PropertyAdded | R16 | a paired class contains a property name absent from the old side | **Minor** |
+| MethodInputParameterMadeRequired | R17 | for overloads matched on parameter count, names, and types (R02's matcher), a parameter is `IsRequired = false` in the old side and `IsRequired = true` in the new one | **Major** |
 
 R15/R16 are the additive complements of R01/R10 and, per CLS-02, only inspect `ClassHistory`
 pairs — members of a brand-new class are R05's concern, not theirs.
@@ -98,38 +98,41 @@ R17 is deliberately **directional**: only optional→required fires. The reverse
 Added when the C# model grew to the full topology; each is a class in
 [`Evaluators/Csharp/`](../src/EasySemVer/Evaluators/Csharp) with its own test class.
 
-| ID | Rule (class) | Fires when… | Impact |
-|----|--------------|-------------|:------:|
-| R18 | `TypeRemoved` | a public interface / struct / record / enum / delegate is removed (classes are R06) | **Major** |
-| R19 | `TypeAdded` | a public interface / struct / record / enum / delegate is added (classes are R05) | **Minor** |
-| R20 | `InterfaceRequirementAdded` | an interface gains a requirement with **no** default implementation | **Major** |
-| R21 | `InterfaceRequirementAddedWithDefault` | an interface gains a requirement **with** a default implementation | **Minor** |
-| R22 | `EnumMemberRemoved` | an enum member is removed or renamed | **Major** |
-| R23 | `EnumMemberAdded` | an enum member is added | **Minor** |
-| R24 | `EnumMemberValueChanged` | an enum member's explicit value changes | **Major** |
-| R25 | `EnumUnderlyingTypeChanged` | an enum's underlying type changes | **Major** |
-| R26 | `DelegateSignatureChanged` | a delegate's parameters or return type change | **Major** |
-| R27 | `RecordPositionalParametersChanged` | a record's positional parameter list changes | **Major** |
-| R28 | `FieldContractReduced` | a public field is removed, retyped, or gains `readonly` | **Major** |
-| R29 | `FieldAdded` | a public field is added | **Minor** |
-| R30 | `EventContractReduced` | a public event is removed or its handler type changes | **Major** |
-| R31 | `EventAdded` | a public event is added | **Minor** |
-| R32 | `TypeInheritanceRestricted` | a type gains `sealed`, `abstract` or `static`, or changes base class | **Major** |
-| R33 | `TypeInheritanceRelaxed` | a type loses `sealed` or `abstract` | **Minor** |
-| R34 | `ImplementedInterfaceRemoved` | an implemented interface is removed from a public type | **Major** |
-| R35 | `ImplementedInterfaceAdded` | an implemented interface is added to a public type | **Minor** |
-| R36 | `MemberOverridabilityReduced` | a member loses `virtual`/`abstract`, or gains `abstract`/`sealed` | **Major** |
-| R37 | `ParameterModifierChanged` | a parameter's `ref`/`out`/`in`/`params` modifier changes | **Major** |
-| R38 | `MemberStaticnessChanged` | a member's static-vs-instance-ness changes | **Major** |
-| R39 | `GenericConstraintTightened` | generic parameter count changes, or a constraint is added/tightened | **Major** |
-| R40 | `GenericConstraintLoosened` | a generic constraint is removed or loosened | **Minor** |
-| R41 | `NestedTypeRemoved` / `NestedTypeAdded` | a public nested type is removed / added | **Major** / **Minor** |
-| R42 | `PropertySetterBecameInitOnly` | a property's `set` accessor changes to `init` | **Major** |
+| Rule | Was | Fires when… | Impact |
+|------|-----|-------------|:------:|
+| TypeRemoved | R18 | a public interface / struct / record / enum / delegate is removed (classes are R06) | **Major** |
+| TypeAdded | R19 | a public interface / struct / record / enum / delegate is added (classes are R05) | **Minor** |
+| InterfaceRequirementAdded | R20 | an interface gains a requirement with **no** default implementation | **Major** |
+| InterfaceRequirementAddedWithDefault | R21 | an interface gains a requirement **with** a default implementation | **Minor** |
+| EnumMemberRemoved | R22 | an enum member is removed or renamed | **Major** |
+| EnumMemberAdded | R23 | an enum member is added | **Minor** |
+| EnumMemberValueChanged | R24 | an enum member's explicit value changes | **Major** |
+| EnumUnderlyingTypeChanged | R25 | an enum's underlying type changes | **Major** |
+| DelegateSignatureChanged | R26 | a delegate's parameters or return type change | **Major** |
+| RecordPositionalParametersChanged | R27 | a record's positional parameter list changes | **Major** |
+| FieldContractReduced | R28 | a public field is removed, retyped, or gains `readonly` | **Major** |
+| FieldAdded | R29 | a public field is added | **Minor** |
+| EventContractReduced | R30 | a public event is removed or its handler type changes | **Major** |
+| EventAdded | R31 | a public event is added | **Minor** |
+| TypeInheritanceRestricted | R32 | a type gains `sealed`, `abstract` or `static`, or changes base class | **Major** |
+| TypeInheritanceRelaxed | R33 | a type loses `sealed` or `abstract` | **Minor** |
+| ImplementedInterfaceRemoved | R34 | an implemented interface is removed from a public type | **Major** |
+| ImplementedInterfaceAdded | R35 | an implemented interface is added to a public type | **Minor** |
+| MemberOverridabilityReduced | R36 | a member loses `virtual`/`abstract`, or gains `abstract`/`sealed` | **Major** |
+| ParameterModifierChanged | R37 | a parameter's `ref`/`out`/`in`/`params` modifier changes | **Major** |
+| MemberStaticnessChanged | R38 | a member's static-vs-instance-ness changes | **Major** |
+| GenericConstraintTightened | R39 | generic parameter count changes, or a constraint is added/tightened | **Major** |
+| GenericConstraintLoosened | R40 | a generic constraint is removed or loosened | **Minor** |
+| NestedTypeRemoved | R41 | a public nested type is removed | **Major** |
+| NestedTypeAdded | R41 | a public nested type is added | **Minor** |
+| PropertySetterBecameInitOnly | R42 | a property's `set` accessor changes to `init` | **Major** |
+| UnitRemoved | R07 | a project the baseline recorded is absent from this run | **Major** |
+| UnitAdded | R14 | a project exists this run that the baseline never saw | **Minor** |
 
-ℹ️ R41 is one requirement implemented as two classes, one per direction, so that each has a
-single declared impact and its own test class.
+ℹ️ R41 was one id shared by two classes, one per direction. Now that a rule is named rather than
+numbered they are simply two rules, and the shared-id exception is gone.
 
-All 41 live rule classes are covered by dedicated test classes asserting impact, a no-change negative
+All 43 live rule classes are covered by dedicated test classes asserting impact, a no-change negative
 case, and a positive case; directional pairs additionally assert the non-firing direction
 ([11-testing.md](11-testing.md)).
 

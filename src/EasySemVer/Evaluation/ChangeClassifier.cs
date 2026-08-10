@@ -1,25 +1,22 @@
 using Winterborn.Tools.EasySemVer.DataObject;
-using Winterborn.Tools.EasySemVer.Evaluators;
 using Winterborn.Tools.EasySemVer.Interfaces;
-using Winterborn.Tools.EasySemVer.Providers;
 
 namespace Winterborn.Tools.EasySemVer.Evaluation;
 
 /// <summary>
-/// ML-05 - the run's change type is the highest impact across the neutral unit-existence rules
-/// and every language provider's findings, defaulting to Patch. A Swift-only change therefore
-/// moves the C# projects' versions too, because there is one version per folder (ML-06).
-/// Nothing is logged here: classification produces findings, and formatting them is the
-/// reporter's job, so a machine-readable format is a second formatter and not a second run.
+/// ML-05 - the run's change type is the highest impact across every language provider's findings,
+/// defaulting to Patch. A Swift-only change therefore moves the C# projects' versions too, because
+/// there is one version per folder (ML-06).
+/// <para>
+/// This runs no rules of its own. It applies UNI-04, splits the units by language, and hands each
+/// provider its own slice: every rule belongs to exactly one language, so there is nothing left
+/// here for a rule to be neutral about. Nothing is logged either - classification produces
+/// findings, and formatting them is the reporter's job, so a machine-readable format is a second
+/// formatter and not a second run.
+/// </para>
 /// </summary>
 internal static class ChangeClassifier
 {
-    private static readonly IEvaluateUnitExistence[] ExistenceRules =
-    [
-        new UnitRemoved(),
-        new UnitAdded()
-    ];
-
     internal static ChangeReport Classify(
         IReadOnlyList<IPackageableUnit>? older,
         IReadOnlyList<IPackageableUnit>? newer,
@@ -45,36 +42,21 @@ internal static class ChangeClassifier
         var comparableOlder = Where(older, unit => UnitPairing.Find(surfaceless, unit) == null);
 
         var findings = new List<ChangeFinding>();
-        var units = new UnitsToCompare(comparableOlder, comparableNewer);
-        foreach (var rule in ExistenceRules)
+        foreach (var provider in providers)
         {
-            foreach (var unit in rule.FindDifferences(units))
-            {
-                findings.Add(new ChangeFinding
-                {
-                    Language = unit.Language,
-                    UnitId = unit.UnitId,
-                    RuleName = rule.GetType().Name,
-                    RuleId = rule.RuleId,
+            // A provider is handed its own language and no other, so it never has to filter. A
+            // baseline unit whose language is no longer registered is simply never classified -
+            // the same silence BaselineFile already chose when it could not resolve a provider.
+            var units = new UnitsToCompare(
+                Where(comparableOlder, unit => unit.LanguageId == provider.LanguageId),
+                Where(comparableNewer, unit => unit.LanguageId == provider.LanguageId));
 
-                    // A unit-level finding names where the unit lives rather than repeating the
-                    // unit id the report has already grouped it under. BAS-04 keeps it relative.
-                    Symbol = unit.RelativePath,
-                    Description = rule.ChangeDescription,
-                    Impact = rule.EvaluationImpact
-                });
-            }
-        }
-
-        foreach (var pair in UnitPairing.GetUnitsInBoth(comparableOlder, comparableNewer))
-        {
-            var provider = LanguageProviders.Find(providers, pair.Newer.Language);
-            if (provider == null)
+            if (units.Older.Count < 1 && units.Newer.Count < 1)
             {
                 continue;
             }
 
-            findings.AddRange(provider.Classify(pair.Older, pair.Newer));
+            findings.AddRange(provider.Classify(units));
         }
 
         return new ChangeReport(findings);

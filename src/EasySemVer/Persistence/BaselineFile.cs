@@ -108,13 +108,13 @@ internal static class BaselineFile
                 continue;
             }
 
-            var provider = LanguageProviders.Find(providers, unit.Language)
+            var provider = LanguageProviders.Find(providers, unit.LanguageId)
                            ?? throw new InvalidOperationException(
-                               $"No provider is registered for {unit.Language}");
+                               $"No provider is registered for {unit.LanguageId}");
 
             root.Add(new XElement(
                 UnitElementName,
-                new XAttribute(LanguageAttributeName, unit.Language),
+                new XAttribute(LanguageAttributeName, unit.LanguageId),
                 new XAttribute(UnitIdAttributeName, unit.UnitId),
                 new XAttribute(UnitKindAttributeName, unit.UnitKind),
                 new XAttribute(PathAttributeName, unit.RelativePath),
@@ -162,24 +162,22 @@ internal static class BaselineFile
         XElement unitElement,
         IReadOnlyList<ILanguageProvider> providers)
     {
-        var languageText = unitElement.Attribute(LanguageAttributeName)?.Value ?? string.Empty;
-        if (!Enum.TryParse<Language>(languageText, out var language))
-        {
-            Log.WriteLine($"Ignoring a baseline unit written in unknown language '{languageText}'");
-            return null;
-        }
+        var languageId = unitElement.Attribute(LanguageAttributeName)?.Value ?? string.Empty;
 
-        var provider = LanguageProviders.Find(providers, language);
+        // BAS-05's spirit: a baseline written by a build that had a language this one does not is
+        // an ordinary input, not a failure. The unit is skipped, so it is neither compared nor
+        // rewritten, and the language it belongs to keeps its own units to itself.
+        var provider = LanguageProviders.Find(providers, languageId);
         if (provider == null)
         {
-            Log.WriteLine($"Ignoring a baseline unit for unregistered language '{language}'");
+            Log.WriteLine($"Ignoring a baseline unit for unregistered language '{languageId}'");
             return null;
         }
 
         var payload = unitElement.Elements().FirstOrDefault();
         return new PackageableUnit
         {
-            Language = language,
+            LanguageId = languageId,
             UnitId = unitElement.Attribute(UnitIdAttributeName)?.Value ?? string.Empty,
             DisplayName = unitElement.Attribute(UnitIdAttributeName)?.Value ?? string.Empty,
             UnitKind = unitElement.Attribute(UnitKindAttributeName)?.Value ?? string.Empty,

@@ -9,7 +9,7 @@ namespace Winterborn.Tools.EasySemVer.Evaluators.Csharp;
 /// </summary>
 public class EnumMemberAdded : IEvaluateCsharpSignatures
 {
-    public string RuleId => "R23";
+    public string Rule => "EnumMemberAdded";
 
     public VersionType EvaluationImpact => VersionType.Minor;
 

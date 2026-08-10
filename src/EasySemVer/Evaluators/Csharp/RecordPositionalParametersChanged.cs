@@ -10,7 +10,7 @@ namespace Winterborn.Tools.EasySemVer.Evaluators.Csharp;
 /// </summary>
 public class RecordPositionalParametersChanged : IEvaluateCsharpSignatures
 {
-    public string RuleId => "R27";
+    public string Rule => "RecordPositionalParametersChanged";
 
     public VersionType EvaluationImpact => VersionType.Major;
 

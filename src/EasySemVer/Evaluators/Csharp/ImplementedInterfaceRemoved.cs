@@ -6,7 +6,7 @@ namespace Winterborn.Tools.EasySemVer.Evaluators.Csharp;
 /// <summary>R34 - a public type stopped implementing an interface, so every cast to it fails.</summary>
 public class ImplementedInterfaceRemoved : IEvaluateCsharpSignatures
 {
-    public string RuleId => "R34";
+    public string Rule => "ImplementedInterfaceRemoved";
 
     public VersionType EvaluationImpact => VersionType.Major;
 

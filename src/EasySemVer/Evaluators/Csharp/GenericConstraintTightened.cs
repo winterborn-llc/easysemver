@@ -9,7 +9,7 @@ namespace Winterborn.Tools.EasySemVer.Evaluators.Csharp;
 /// </summary>
 public class GenericConstraintTightened : IEvaluateCsharpSignatures
 {
-    public string RuleId => "R39";
+    public string Rule => "GenericConstraintTightened";
 
     public VersionType EvaluationImpact => VersionType.Major;
 

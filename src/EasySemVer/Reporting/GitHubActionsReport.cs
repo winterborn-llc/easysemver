@@ -78,7 +78,10 @@ internal static class GitHubActionsReport
         summary.Append('\n');
         foreach (var finding in document.Findings)
         {
-            summary.Append("- **").Append(finding.Impact).Append("** `").Append(finding.RuleId)
+            // Both halves of the key, because a bare "UnitRemoved" no longer says which language
+            // lost a unit - and the summary is read by someone deciding whether to care.
+            summary.Append("- **").Append(finding.Impact)
+                .Append("** `").Append(finding.Language).Append('/').Append(finding.Rule)
                 .Append("` `").Append(finding.Symbol.Length > 0 ? finding.Symbol : finding.UnitId)
                 .Append("` ").Append(finding.Description).Append('\n');
         }

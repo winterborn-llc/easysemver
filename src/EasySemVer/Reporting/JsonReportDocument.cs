@@ -20,10 +20,16 @@ public class JsonReportDocument
     /// <summary>
     /// REP-03. Versioned independently of the baseline's own format version: the two documents
     /// have different audiences and different failure modes.
+    /// <para>
+    /// Bumped to 2 when a finding's <c>ruleId</c> ("R02") became a <c>rule</c> named within its
+    /// language ("MethodReturnType"). REP-04 makes an added field backwards-compatible, which is
+    /// why <see cref="Findings"/> and <see cref="WrittenFiles"/> both arrived without a bump; a
+    /// renamed one is not, and a consumer matching on the old key has to be told.
+    /// </para>
     /// </summary>
     [JsonPropertyName("formatVersion")]
     [JsonPropertyOrder(0)]
-    public int FormatVersion { get; init; } = 1;
+    public int FormatVersion { get; init; } = 2;
 
     /// <summary>The only signal that a report describes a preview rather than something that happened.</summary>
     [JsonPropertyName("dryRun")]

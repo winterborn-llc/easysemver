@@ -409,7 +409,7 @@ limitation ends here.
 Each is a rule class in `Evaluators/Csharp/` with a dedicated test class (TST-01). R01–R17
 keep their current semantics; these are additive.
 
-| ID | Fires when… | Impact |
+| Rule | Was | Fires when… | Impact |
 |----|-------------|:------:|
 | R18 | a public interface / struct / record / enum / delegate is removed | Major |
 | R19 | a public interface / struct / record / enum / delegate is added | Minor |
@@ -553,46 +553,48 @@ Same discipline as CLS-01: one class per rule in `Evaluators/Swift/`, one test c
 (TST-01). Rules operate only on **paired units of the same module** (NCL-03), and within a
 unit, member rules operate only on **paired types**.
 
-| ID | Fires when… | Impact |
+| Rule | Was | Fires when… | Impact |
 |----|-------------|:------:|
-| S01 | a public type (class/struct/enum/protocol/actor/typealias) is removed | Major |
-| S02 | a public type is added | Minor |
-| S03 | a type's kind changes (struct↔class, enum↔struct, …) | Major |
-| S04 | a class goes `open` → `public` (subclassing/overriding withdrawn) | Major |
-| S05 | a class goes `public` → `open` | Minor |
-| S06 | a class gains `final` | Major |
-| S07 | a class loses `final` | Minor |
-| S08 | a superclass is changed or removed | Major |
-| S09 | a protocol conformance is removed from a public type | Major |
-| S10 | a protocol conformance is added | Minor |
-| S11 | a generic parameter count changes | Major |
-| S12 | a generic constraint is added or tightened | Major |
-| S13 | a generic constraint is removed or loosened | Minor |
-| S14 | `@frozen` is removed from a public struct/enum | Major |
-| S15 | `@frozen` is added | Minor |
-| S16 | a public member (func/property/init/subscript/nested type) is removed | Major |
-| S17 | a public member is added to an existing type | Minor |
-| S18 | an enum case is added | **Major** — a client's exhaustive `switch` stops compiling |
-| S19 | an enum case is removed, renamed, or its associated values / raw value change | Major |
-| S20 | a protocol gains a requirement with **no** default implementation | Major |
-| S21 | a protocol gains a requirement **with** a default implementation in an extension | Minor |
-| S22 | a function's parameter labels, types, order, count, or return type change | Major |
-| S23 | `throws` or `async` is added to an existing declaration | Major |
-| S24 | `throws` or `async` is removed | Minor |
-| S25 | a declaration becomes `unavailable` or gains an `obsoleted:` availability | Major |
-| S26 | a declaration is marked `deprecated` (and nothing else changed) | Patch |
-| S27 | ObjC exposure (`@objc`) is removed from a public declaration | Major |
-| S28 | ObjC exposure is added | Minor |
-| S29 | `mutating` is added to a member of a value type | Major |
-| S30 | `mutating` is removed | Minor |
-| S31 | a default argument value is removed from a parameter | Major |
-| S32 | a default argument value is added to a parameter | Minor |
-| S33 | a parameter's `inout` / variadic / ownership modifier changes | Major |
-| S34 | a member's static-vs-instance-ness changes | Major |
-| S35 | a property's setter is removed (settable → get-only) | Major |
-| S36 | a property gains a setter | Minor |
-| S37 | a property's type changes | Major |
-| S38 | an operator declaration or its precedence group changes | Major |
+| TypeRemoved | S01 | a public type (class/struct/enum/protocol/actor/typealias) is removed | Major |
+| TypeAdded | S02 | a public type is added | Minor |
+| TypeKindChanged | S03 | a type's kind changes (struct↔class, enum↔struct, …) | Major |
+| ClassSubclassingWithdrawn | S04 | a class goes `open` → `public` (subclassing/overriding withdrawn) | Major |
+| ClassSubclassingOffered | S05 | a class goes `public` → `open` | Minor |
+| ClassMadeFinal | S06 | a class gains `final` | Major |
+| ClassFinalRemoved | S07 | a class loses `final` | Minor |
+| SuperclassChanged | S08 | a superclass is changed or removed | Major |
+| ConformanceRemoved | S09 | a protocol conformance is removed from a public type | Major |
+| ConformanceAdded | S10 | a protocol conformance is added | Minor |
+| GenericParameterCountChanged | S11 | a generic parameter count changes | Major |
+| GenericConstraintTightened | S12 | a generic constraint is added or tightened | Major |
+| GenericConstraintLoosened | S13 | a generic constraint is removed or loosened | Minor |
+| FrozenRemoved | S14 | `@frozen` is removed from a public struct/enum | Major |
+| FrozenAdded | S15 | `@frozen` is added | Minor |
+| MemberRemoved | S16 | a public member (func/property/init/subscript/nested type) is removed | Major |
+| MemberAdded | S17 | a public member is added to an existing type | Minor |
+| EnumCaseAdded | S18 | an enum case is added | **Major** — a client's exhaustive `switch` stops compiling |
+| EnumCaseChanged | S19 | an enum case is removed, renamed, or its associated values / raw value change | Major |
+| ProtocolRequirementAdded | S20 | a protocol gains a requirement with **no** default implementation | Major |
+| ProtocolRequirementAddedWithDefault | S21 | a protocol gains a requirement **with** a default implementation in an extension | Minor |
+| FunctionSignatureChanged | S22 | a function's parameter labels, types, order, count, or return type change | Major |
+| EffectAdded | S23 | `throws` or `async` is added to an existing declaration | Major |
+| EffectRemoved | S24 | `throws` or `async` is removed | Minor |
+| DeclarationWithdrawn | S25 | a declaration becomes `unavailable` or gains an `obsoleted:` availability | Major |
+| DeclarationDeprecated | S26 | a declaration is marked `deprecated` (and nothing else changed) | Patch |
+| ObjCExposureRemoved | S27 | ObjC exposure (`@objc`) is removed from a public declaration | Major |
+| ObjCExposureAdded | S28 | ObjC exposure is added | Minor |
+| MutatingAdded | S29 | `mutating` is added to a member of a value type | Major |
+| MutatingRemoved | S30 | `mutating` is removed | Minor |
+| DefaultArgumentRemoved | S31 | a default argument value is removed from a parameter | Major |
+| DefaultArgumentAdded | S32 | a default argument value is added to a parameter | Minor |
+| ParameterModifierChanged | S33 | a parameter's `inout` / variadic / ownership modifier changes | Major |
+| MemberStaticnessChanged | S34 | a member's static-vs-instance-ness changes | Major |
+| PropertySetterRemoved | S35 | a property's setter is removed (settable → get-only) | Major |
+| PropertySetterAdded | S36 | a property gains a setter | Minor |
+| PropertyTypeChanged | S37 | a property's type changes | Major |
+| OperatorChanged | S38 | an operator declaration or its precedence group changes | Major |
+| UnitRemoved | — | a target the baseline recorded is absent from this run | Major |
+| UnitAdded | — | a target exists this run that the baseline never saw | Minor |
 
 **SCL-01 — S18 rationale, and the one knob worth exposing.** ℹ️
 Adding a case to a public enum is source-breaking for any client that switches exhaustively —
@@ -622,7 +624,7 @@ The starting version SHALL be the highest version found across **all** sources i
 units:
 
 | Language | Source | Read | Write |
-|----------|--------|:----:|:-----:|
+|------|-----|-------------|:------:|
 | C# | `.csproj` `AssemblyVersion`, `PackageVersion`, `FileVersion` | ✅ | ✅ |
 | Swift/Xcode | `MARKETING_VERSION` in build settings (`xcodebuild -showBuildSettings -json`, written back into `project.pbxproj`) | ✅ | ✅ |
 | Swift/Xcode | `CFBundleShortVersionString` in `Info.plist` | ✅ | ✅ |

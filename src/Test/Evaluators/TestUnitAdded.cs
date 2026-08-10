@@ -1,33 +1,52 @@
 using Winterborn.Tools.EasySemVer.DataObject;
 using Winterborn.Tools.EasySemVer.Evaluation;
-using Winterborn.Tools.EasySemVer.Evaluators;
 using Winterborn.Tools.EasySemVer.Interfaces;
 
 namespace Test.Evaluators;
 
-/// <summary>NCL-02, tested across languages (TST-M2).</summary>
+/// <summary>
+/// "A unit was added", tested through every language that owns a copy of it (TST-M2). Each
+/// language declares its own rule, so each is exercised here rather than one standing in for all:
+/// the day a language overrides the shared diffing instead of inheriting it, these are what say
+/// whether it still agrees with everyone else.
+/// </summary>
 public class TestUnitAdded
 {
-    private static IEvaluateUnitExistence Evaluator => new UnitAdded();
+    public static TheoryData<IEvaluateUnitExistence> Evaluators =>
+    [
+        new Winterborn.Tools.EasySemVer.Evaluators.Csharp.UnitAdded(),
+        new Winterborn.Tools.EasySemVer.Evaluators.Swift.UnitAdded()
+    ];
 
-    [Fact]
-    public void ChangeTypeIsExpected()
+    [Theory]
+    [MemberData(nameof(Evaluators))]
+    public void ChangeTypeIsExpected(IEvaluateUnitExistence evaluator)
     {
-        Assert.Equal(VersionType.Minor, Evaluator.EvaluationImpact);
+        Assert.Equal(VersionType.Minor, evaluator.EvaluationImpact);
     }
 
-    [Fact]
-    public void UnitsAreUnchanged()
+    /// <summary>The published half of the key, which a class rename must not be able to move.</summary>
+    [Theory]
+    [MemberData(nameof(Evaluators))]
+    public void RuleIsNamedTheSameInEveryLanguage(IEvaluateUnitExistence evaluator)
+    {
+        Assert.Equal("UnitAdded", evaluator.Rule);
+    }
+
+    [Theory]
+    [MemberData(nameof(Evaluators))]
+    public void UnitsAreUnchanged(IEvaluateUnitExistence evaluator)
     {
         var units = new UnitsToCompare(
             older: [Units.Csharp("Widgets"), Units.Swift("Sources/Gadgets:Gadgets")],
             newer: [Units.Csharp("Widgets"), Units.Swift("Sources/Gadgets:Gadgets")]);
 
-        Assert.Empty(Evaluator.FindDifferences(units));
+        Assert.Empty(evaluator.FindDifferences(units));
     }
 
-    [Fact]
-    public void CsharpUnitIsAdded()
+    [Theory]
+    [MemberData(nameof(Evaluators))]
+    public void UnitIsAdded(IEvaluateUnitExistence evaluator)
     {
         var units = new UnitsToCompare(
             older: [Units.Csharp("Widgets")],
@@ -36,27 +55,29 @@ public class TestUnitAdded
         // The rule yields the unit itself, so the report can name what appeared (§20 O-04).
         Assert.Equal(
             ["Gadgets"],
-            Evaluator.FindDifferences(units).Select(unit => unit.UnitId));
+            evaluator.FindDifferences(units).Select(unit => unit.UnitId));
     }
 
     /// <summary>An empty baseline makes a first run Minor (BAS-05).</summary>
-    [Fact]
-    public void FirstRunHasNoBaselineAtAll()
+    [Theory]
+    [MemberData(nameof(Evaluators))]
+    public void FirstRunHasNoBaselineAtAll(IEvaluateUnitExistence evaluator)
     {
         var units = new UnitsToCompare(
             older: [],
             newer: [Units.Csharp("Widgets")]);
 
-        Assert.NotEmpty(Evaluator.FindDifferences(units));
+        Assert.NotEmpty(evaluator.FindDifferences(units));
     }
 
-    [Fact]
-    public void RemovingAUnitDoesNotFire()
+    [Theory]
+    [MemberData(nameof(Evaluators))]
+    public void RemovingAUnitDoesNotFire(IEvaluateUnitExistence evaluator)
     {
         var units = new UnitsToCompare(
             older: [Units.Csharp("Widgets"), Units.Csharp("Gadgets")],
             newer: [Units.Csharp("Widgets")]);
 
-        Assert.Empty(Evaluator.FindDifferences(units));
+        Assert.Empty(evaluator.FindDifferences(units));
     }
 }

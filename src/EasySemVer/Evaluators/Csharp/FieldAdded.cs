@@ -6,7 +6,7 @@ namespace Winterborn.Tools.EasySemVer.Evaluators.Csharp;
 /// <summary>R29 - a public field appeared on an existing type.</summary>
 public class FieldAdded : IEvaluateCsharpSignatures
 {
-    public string RuleId => "R29";
+    public string Rule => "FieldAdded";
 
     public VersionType EvaluationImpact => VersionType.Minor;
 

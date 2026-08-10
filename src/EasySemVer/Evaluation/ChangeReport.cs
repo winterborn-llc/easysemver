@@ -77,12 +77,12 @@ internal class ChangeReport
             return bySymbol;
         }
 
-        return string.CompareOrdinal(left.RuleName, right.RuleName);
+        return string.CompareOrdinal(left.Rule, right.Rule);
     }
 
     /// <summary>Mirrors <see cref="PackageableUnit.GetSortKey"/>, which findings cannot reach.</summary>
     private static string GetUnitSortKey(ChangeFinding finding)
     {
-        return $"{finding.Language} {finding.UnitId}";
+        return $"{finding.LanguageId} {finding.UnitId}";
     }
 }

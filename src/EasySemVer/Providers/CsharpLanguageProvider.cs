@@ -3,6 +3,7 @@ using Winterborn.Tools.EasySemVer.CodeReader.Csharp;
 using Winterborn.Tools.EasySemVer.DataObject;
 using Winterborn.Tools.EasySemVer.DataObject.Csharp;
 using Winterborn.Tools.EasySemVer.Evaluation;
+using Winterborn.Tools.EasySemVer.Evaluators;
 using Winterborn.Tools.EasySemVer.Evaluators.Csharp;
 using Winterborn.Tools.EasySemVer.Extensions;
 using Winterborn.Tools.EasySemVer.Interfaces;
@@ -13,11 +14,24 @@ namespace Winterborn.Tools.EasySemVer.Providers;
 /// <summary>Everything C# contributes to a run (ML-02). One .csproj is one unit (UNI-02).</summary>
 internal class CsharpLanguageProvider : ILanguageProvider
 {
+    internal const string CsharpLanguageId = "csharp";
+
     internal const string CsprojUnitKind = "csproj";
+
+    /// <summary>
+    /// C#'s unit-existence rules (§7). Owned here rather than by the core: every rule belongs to
+    /// exactly one language, and these two agree with the other languages only because they chose
+    /// to subclass rather than override.
+    /// </summary>
+    private static readonly IEvaluateUnitExistence[] ExistenceRules =
+    [
+        new UnitRemoved(),
+        new UnitAdded()
+    ];
 
     private string _folderRoot = string.Empty;
 
-    public Language Language => Language.Csharp;
+    public string LanguageId => CsharpLanguageId;
 
     public IReadOnlyList<IPackageableUnit> Discover(string folderRoot)
     {
@@ -28,7 +42,7 @@ internal class CsharpLanguageProvider : ILanguageProvider
             var relativePath = FolderScanner.GetRelativePath(folderRoot, projectFilePath);
             units.Add(new PackageableUnit
             {
-                Language = Language.Csharp,
+                LanguageId = CsharpLanguageId,
 
                 // DSC-05: identity is the filename without extension, so a rename reads as
                 // remove + add and a move within the tree does not.
@@ -58,12 +72,22 @@ internal class CsharpLanguageProvider : ILanguageProvider
         unit.Signature = CsharpUnitBuilder.GetProjectSignature(this.GetProjectFilePath(unit));
     }
 
-    public IReadOnlyList<ChangeFinding> Classify(IPackageableUnit? older, IPackageableUnit newer)
+    public IReadOnlyList<ChangeFinding> Classify(IUnitsToCompare units)
     {
-        return CompareSignatures.GetFindings(
-            newer,
-            older?.Signature as CsharpProject,
-            newer.Signature as CsharpProject);
+        var findings = new List<ChangeFinding>(
+            UnitExistence.GetFindings(CsharpLanguageId, ExistenceRules, units));
+
+        // NCL-03: units are paired before any signature rule runs, so a removed project is
+        // reported once as a removal and never again as everything inside it disappearing.
+        foreach (var pair in UnitPairing.GetUnitsInBoth(units.Older, units.Newer))
+        {
+            findings.AddRange(CompareSignatures.GetFindings(
+                pair.Newer,
+                pair.Older.Signature as CsharpProject,
+                pair.Newer.Signature as CsharpProject));
+        }
+
+        return findings;
     }
 
     public IReadOnlyList<Version> ReadVersions(IPackageableUnit unit)

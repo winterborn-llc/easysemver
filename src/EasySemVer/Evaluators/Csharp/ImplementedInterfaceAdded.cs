@@ -6,7 +6,7 @@ namespace Winterborn.Tools.EasySemVer.Evaluators.Csharp;
 /// <summary>R35 - a public type started implementing another interface.</summary>
 public class ImplementedInterfaceAdded : IEvaluateCsharpSignatures
 {
-    public string RuleId => "R35";
+    public string Rule => "ImplementedInterfaceAdded";
 
     public VersionType EvaluationImpact => VersionType.Minor;
 

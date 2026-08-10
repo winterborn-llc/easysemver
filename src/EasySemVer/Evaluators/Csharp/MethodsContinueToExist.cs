@@ -6,7 +6,7 @@ namespace Winterborn.Tools.EasySemVer.Evaluators.Csharp;
 /// <summary>R01 - a method the baseline recorded is gone from a type that still exists.</summary>
 public class MethodsContinueToExist : IEvaluateCsharpSignatures
 {
-    public string RuleId => "R01";
+    public string Rule => "MethodsContinueToExist";
 
     public VersionType EvaluationImpact => VersionType.Major;
 

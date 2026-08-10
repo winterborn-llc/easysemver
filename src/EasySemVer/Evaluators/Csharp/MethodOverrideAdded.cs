@@ -7,7 +7,7 @@ namespace Winterborn.Tools.EasySemVer.Evaluators.Csharp;
 /// <summary>R04 - an existing method gained an overload.</summary>
 internal class MethodOverrideAdded : IEvaluateCsharpSignatures
 {
-    public string RuleId => "R04";
+    public string Rule => "MethodOverrideAdded";
 
     public VersionType EvaluationImpact => VersionType.Minor;
 

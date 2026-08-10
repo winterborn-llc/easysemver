@@ -7,7 +7,7 @@ namespace Winterborn.Tools.EasySemVer.Evaluators.Csharp;
 /// <summary>R17 - a parameter that used to be optional now has to be passed.</summary>
 internal class MethodInputParameterMadeRequired : IEvaluateCsharpSignatures
 {
-    public string RuleId => "R17";
+    public string Rule => "MethodInputParameterMadeRequired";
 
     public VersionType EvaluationImpact => VersionType.Major;
 

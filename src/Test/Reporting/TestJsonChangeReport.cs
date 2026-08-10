@@ -1,6 +1,7 @@
 using System.Text.Json;
 using Winterborn.Tools.EasySemVer.DataObject;
 using Winterborn.Tools.EasySemVer.Evaluation;
+using Winterborn.Tools.EasySemVer.Providers;
 using Winterborn.Tools.EasySemVer.Reporting;
 using Version = Winterborn.Tools.EasySemVer.DataObject.Version;
 
@@ -13,10 +14,9 @@ public class TestJsonChangeReport
     {
         var findings = impacts.Select((impact, index) => new ChangeFinding
         {
-            Language = Language.Csharp,
+            LanguageId = CsharpLanguageProvider.CsharpLanguageId,
             UnitId = "Widgets",
-            RuleId = "R18",
-            RuleName = "TypeRemoved",
+            Rule = "TypeRemoved",
             Symbol = $"Widgets.Gone{index}",
             Description = "was removed",
             Impact = impact
@@ -61,9 +61,9 @@ public class TestJsonChangeReport
     }
 
     [Fact]
-    public void FormatVersionIsOne()
+    public void FormatVersionIsTwo()
     {
-        Assert.Equal(1, Render(Report()).GetProperty("formatVersion").GetInt32());
+        Assert.Equal(2, Render(Report()).GetProperty("formatVersion").GetInt32());
     }
 
     /// <summary>REP-02 - enum-valued fields are lower case, because this is a wire format.</summary>
@@ -162,20 +162,21 @@ public class TestJsonChangeReport
     public void AFindingIsExactlyTheAgreedShape()
     {
         Assert.Equal(
-            ["ruleId", "impact", "language", "unitId", "symbol", "description"],
+            ["rule", "impact", "language", "unitId", "symbol", "description"],
             OnlyFinding(Report(VersionType.Major)).EnumerateObject().Select(p => p.Name));
     }
 
     /// <summary>
-    /// REP-09 - the rule id is the point of the array: it is what lets a consumer name the rule
-    /// that cost it a Major without matching on prose.
+    /// REP-09 - the rule is the point of the array: with its language it is what lets a consumer
+    /// name the rule that cost it a Major without matching on prose.
     /// </summary>
     [Fact]
-    public void AFindingCarriesItsRuleIdAndTheRestOfItsEvidence()
+    public void AFindingCarriesItsRuleAndTheRestOfItsEvidence()
     {
         var finding = OnlyFinding(Report(VersionType.Major));
 
-        Assert.Equal("R18", finding.GetProperty("ruleId").GetString());
+        Assert.Equal("TypeRemoved", finding.GetProperty("rule").GetString());
+        Assert.Equal("csharp", finding.GetProperty("language").GetString());
         Assert.Equal("major", finding.GetProperty("impact").GetString());
         Assert.Equal("Widgets", finding.GetProperty("unitId").GetString());
         Assert.Equal("Widgets.Gone0", finding.GetProperty("symbol").GetString());
@@ -183,27 +184,38 @@ public class TestJsonChangeReport
     }
 
     /// <summary>
-    /// REP-09 - the rule's class name is an implementation detail. A consumer keyed to it would
-    /// break on a rename that changed no behaviour, which is what the id exists to prevent.
+    /// REP-09 - one field carries the rule, not two. A finding used to publish an opaque
+    /// <c>ruleId</c> and withhold the class name behind it; it now publishes the rule's own name,
+    /// which the rule carries as a literal so that renaming its class cannot move the key. The
+    /// separate <c>ruleName</c> is therefore gone rather than renamed, and a consumer reading it
+    /// should fail loudly rather than find a second, subtly different answer.
+    /// <para>
+    /// <c>TestRuleIds</c> is what holds the other half of that promise: it asserts every rule
+    /// declares its own name rather than inheriting one.
+    /// </para>
     /// </summary>
     [Fact]
-    public void TheRuleClassNameIsNotPublished()
+    public void TheRuleIsPublishedExactlyOnce()
     {
-        Assert.False(OnlyFinding(Report(VersionType.Major)).TryGetProperty("ruleName", out _));
+        var finding = OnlyFinding(Report(VersionType.Major));
 
-        Assert.DoesNotContain("TypeRemoved", JsonChangeReport.Render(
-            JsonChangeReport.Build(Report(VersionType.Major),
-                new Version("2.3.4"), new Version("3.0.0"), isDryRun: false)));
+        Assert.True(finding.TryGetProperty("rule", out _));
+        Assert.False(finding.TryGetProperty("ruleName", out _));
+        Assert.False(finding.TryGetProperty("ruleId", out _));
     }
 
-    /// <summary>REP-02 - impact and language are lower case, like every enum-valued field.</summary>
+    /// <summary>
+    /// REP-02 - impact is lower case, and a language id is published exactly as its provider
+    /// spells it rather than being case-folded on the way out. The ids are lower case by
+    /// convention, and this is what would notice a provider that broke the convention.
+    /// </summary>
     [Theory]
-    [InlineData(Language.Csharp, "csharp")]
-    [InlineData(Language.Swift, "swift")]
-    public void ImpactAndLanguageAreLowerCase(Language language, string expected)
+    [InlineData(CsharpLanguageProvider.CsharpLanguageId, "csharp")]
+    [InlineData(SwiftLanguageProvider.SwiftLanguageId, "swift")]
+    public void ImpactAndLanguageAreLowerCase(string languageId, string expected)
     {
         var report = new ChangeReport([
-            new ChangeFinding { Language = language, Impact = VersionType.Minor, UnitId = "U" }
+            new ChangeFinding { LanguageId = languageId, Impact = VersionType.Minor, UnitId = "U" }
         ]);
 
         var finding = OnlyFinding(report);

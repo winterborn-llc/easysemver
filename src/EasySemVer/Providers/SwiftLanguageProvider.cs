@@ -3,6 +3,7 @@ using Winterborn.Tools.EasySemVer.CodeReader.Swift;
 using Winterborn.Tools.EasySemVer.DataObject;
 using Winterborn.Tools.EasySemVer.DataObject.Swift;
 using Winterborn.Tools.EasySemVer.Evaluation;
+using Winterborn.Tools.EasySemVer.Evaluators;
 using Winterborn.Tools.EasySemVer.Evaluators.Swift;
 using Winterborn.Tools.EasySemVer.Extensions;
 using Winterborn.Tools.EasySemVer.Interfaces;
@@ -16,6 +17,8 @@ namespace Winterborn.Tools.EasySemVer.Providers;
 /// </summary>
 internal class SwiftLanguageProvider(IRunProcess runProcess) : ILanguageProvider
 {
+    internal const string SwiftLanguageId = "swift";
+
     internal const string SwiftPackageTargetUnitKind = "swiftpm-target";
 
     internal const string XcodeTargetUnitKind = "xcode-target";
@@ -40,7 +43,19 @@ internal class SwiftLanguageProvider(IRunProcess runProcess) : ILanguageProvider
     /// </summary>
     private readonly HashSet<string> _testUnitIds = [];
 
-    public Language Language => Language.Swift;
+    /// <summary>
+    /// Swift's unit-existence rules (§7), owned here because every rule belongs to exactly one
+    /// language. They subclass the shared bases rather than overriding them, so a target
+    /// disappearing means today what it means everywhere else - but a target is not a package, and
+    /// this is where that would be said if it ever stops being true.
+    /// </summary>
+    private static readonly IEvaluateUnitExistence[] ExistenceRules =
+    [
+        new UnitRemoved(),
+        new UnitAdded()
+    ];
+
+    public string LanguageId => SwiftLanguageId;
 
     /// <summary>
     /// UNI-04 - answered from what discovery read. A target that was never discovered is not test
@@ -75,7 +90,7 @@ internal class SwiftLanguageProvider(IRunProcess runProcess) : ILanguageProvider
             {
                 units.Add(new PackageableUnit
                 {
-                    Language = Language.Swift,
+                    LanguageId = SwiftLanguageId,
 
                     // ML-03/SWD-03: package-relative directory plus target name, so the id is
                     // stable across machines and unique when two packages share a target name.
@@ -111,7 +126,7 @@ internal class SwiftLanguageProvider(IRunProcess runProcess) : ILanguageProvider
             {
                 units.Add(new PackageableUnit
                 {
-                    Language = Language.Swift,
+                    LanguageId = SwiftLanguageId,
                     UnitId = $"{projectRelativePath}:{targetName}",
                     DisplayName = targetName,
                     RelativePath = projectRelativePath,
@@ -212,12 +227,22 @@ internal class SwiftLanguageProvider(IRunProcess runProcess) : ILanguageProvider
         return sources.ToArray();
     }
 
-    public IReadOnlyList<ChangeFinding> Classify(IPackageableUnit? older, IPackageableUnit newer)
+    public IReadOnlyList<ChangeFinding> Classify(IUnitsToCompare units)
     {
-        return CompareSwiftSignatures.GetFindings(
-            newer,
-            older?.Signature as SwiftModule,
-            newer.Signature as SwiftModule);
+        var findings = new List<ChangeFinding>(
+            UnitExistence.GetFindings(SwiftLanguageId, ExistenceRules, units));
+
+        // NCL-03: units are paired before any signature rule runs, so a removed target is
+        // reported once as a removal and never again as everything inside it disappearing.
+        foreach (var pair in UnitPairing.GetUnitsInBoth(units.Older, units.Newer))
+        {
+            findings.AddRange(CompareSwiftSignatures.GetFindings(
+                pair.Newer,
+                pair.Older.Signature as SwiftModule,
+                pair.Newer.Signature as SwiftModule));
+        }
+
+        return findings;
     }
 
     public IReadOnlyList<Version> ReadVersions(IPackageableUnit unit)

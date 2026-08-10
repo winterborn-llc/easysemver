@@ -44,7 +44,7 @@ internal static class TextChangeReport
         var areInUnit = false;
         foreach (var finding in report.Findings)
         {
-            var unit = $"{finding.Language} {finding.UnitId}";
+            var unit = $"{finding.LanguageId} {finding.UnitId}";
             if (unit != currentUnit)
             {
                 if (areInUnit)
@@ -73,12 +73,13 @@ internal static class TextChangeReport
         var alreadyWritten = new HashSet<string>(StringComparer.Ordinal);
         foreach (var finding in report.Findings)
         {
-            if (!alreadyWritten.Add($"{finding.Language} {finding.UnitId} {finding.RuleName}"))
+            if (!alreadyWritten.Add($"{finding.LanguageId} {finding.UnitId} {finding.Rule}"))
             {
                 continue;
             }
 
-            Log.WriteLine($"{finding.RuleId} {finding.RuleName}: {finding.Impact} in {finding.UnitId}");
+            Log.WriteLine(
+                $"{finding.LanguageId}/{finding.Rule}: {finding.Impact} in {finding.UnitId}");
         }
     }
 

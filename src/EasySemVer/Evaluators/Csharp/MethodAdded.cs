@@ -6,7 +6,7 @@ namespace Winterborn.Tools.EasySemVer.Evaluators.Csharp;
 /// <summary>R15 - a type that exists on both sides gained a method.</summary>
 public class MethodAdded : IEvaluateCsharpSignatures
 {
-    public string RuleId => "R15";
+    public string Rule => "MethodAdded";
 
     public VersionType EvaluationImpact => VersionType.Minor;
 

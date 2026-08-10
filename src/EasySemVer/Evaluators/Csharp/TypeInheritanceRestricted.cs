@@ -9,7 +9,7 @@ namespace Winterborn.Tools.EasySemVer.Evaluators.Csharp;
 /// </summary>
 public class TypeInheritanceRestricted : IEvaluateCsharpSignatures
 {
-    public string RuleId => "R32";
+    public string Rule => "TypeInheritanceRestricted";
 
     public VersionType EvaluationImpact => VersionType.Major;
 
