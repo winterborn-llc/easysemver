@@ -185,7 +185,7 @@ Reading the verdict is three lines. If what you want is the whole file to paste 
 - uses: actions/checkout@v4
 
 - id: version
-  uses: winterborn-llc/easysemver@v17
+  uses: winterborn-llc/easysemver@v18
 
 - run: echo "${{ steps.version.outputs.change-type }} → ${{ steps.version.outputs.version }}"
 ```
@@ -247,7 +247,7 @@ path, no project, no branch and no language:
 ```yaml
 - name: Version, commit and tag
   id: version
-  uses: winterborn-llc/easysemver@v17
+  uses: winterborn-llc/easysemver@v18
   with:
     commit: true
     tag: true
@@ -264,12 +264,12 @@ one's report and it commits that verdict instead of computing a new one:
 ```yaml
 - name: Compute and apply the version
   id: version
-  uses: winterborn-llc/easysemver@v17
+  uses: winterborn-llc/easysemver@v18
 
 # ...restore, build, test...
 
 - name: Commit and tag the release
-  uses: winterborn-llc/easysemver@v17
+  uses: winterborn-llc/easysemver@v18
   with:
     commit: true
     tag: true
@@ -339,14 +339,14 @@ jobs:
 
     - name: Compute and apply the version
       id: version
-      uses: winterborn-llc/easysemver@v17
+      uses: winterborn-llc/easysemver@v18
 
     # Your build, your tests, your packaging. The version is already stamped on disk, so
     # whatever you produce here carries it — and nothing has been committed yet, so a failure
     # anywhere in between releases nothing.
 
     - name: Commit and tag the release
-      uses: winterborn-llc/easysemver@v17
+      uses: winterborn-llc/easysemver@v18
       with:
         commit: true
         tag: true
