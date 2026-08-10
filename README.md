@@ -1,7 +1,7 @@
 # EasySemVer from Winterborn
 
 EasySemVer works out what your next version number is, from what actually changed in your public
-API, and writes it wherever versions live in your code.
+API, and writes it into every place a version already lives in your code.
 
 Nobody decides the number and nobody has to remember to bump it. A removed method is Major because
 it is Major, on the run that removed it.
@@ -20,6 +20,15 @@ Patch, because it assumes it is running for a release.
 It reads **C#** and **Swift** — `.csproj` projects, SwiftPM targets, Xcode targets — and it reads
 them from source rather than from compiled assemblies, so it does not care whether your build has
 run yet.
+
+**It reads the objects you declared, and only those.** Types, members, signatures, conformances,
+as they are written down. It does not interpret your logic, so an API you assemble at runtime is
+not one it can see: a surface built by reflection, dispatch on a string key, endpoints registered
+from configuration, a wire contract that only exists once something is serialized. None of that is
+declared, so none of it is compared, and changing it reads as an implementation change — a Patch.
+The assumption is that **the objects as represented are your contract**. Where that is not true of
+part of your API, treat the version EasySemVer computes as a floor rather than the whole verdict,
+and keep deciding that part yourself.
 
 Two ways to use it. The **GitHub Action** is the whole of the setup for most repositories and is
 what the next section covers. If your release does not live in GitHub Actions,
@@ -171,32 +180,6 @@ goes into any repository unedited:
 Split it the moment something is built between the two, for the reasons in the comments above:
 the version has to be stamped before the build, and nothing may be pushed until the tests pass.
 
-## Reading the verdict
-
-Every invocation publishes its verdict as step outputs, whether or not it commits anything:
-
-```yaml
-- id: version
-  uses: winterborn-llc/easysemver@v18
-
-- run: echo "${{ steps.version.outputs.change-type }} → ${{ steps.version.outputs.version }}"
-```
-
-| Output | Example |
-|--------|---------|
-| `version` | `2.4.0` |
-| `old-version` | `2.3.4` |
-| `change-type` | `major`, `minor` or `patch` |
-| `dry-run` | `true` if the run wrote nothing |
-| `major` / `minor` / `patch` | `2` / `4` / `0`, for a `2` / `2.4` / `2.4.0` tag set |
-| `report` | Path to the raw JSON, for anything the outputs above don't cover |
-
-Read `change-type` rather than comparing the two versions: across an overflow rollover a Patch
-bump can look like a Minor one, so the comparison is wrong in a way that is very hard to spot.
-
-The run also appends a job summary naming the verdict and the changes behind it, so a release
-explains itself in the run page without anyone opening a log.
-
 ## Configuring it
 
 | Input | Default | |
@@ -257,7 +240,33 @@ instead if you would rather nothing changed until you changed it. Either way you
 published alongside the manifest you pointed at — the release stamps the two together, so a moving
 tag never means a new wrapper around an old tool.
 
-### Without the Action
+## Reading the verdict
+
+Every invocation publishes its verdict as step outputs, whether or not it commits anything:
+
+```yaml
+- id: version
+  uses: winterborn-llc/easysemver@v18
+
+- run: echo "${{ steps.version.outputs.change-type }} → ${{ steps.version.outputs.version }}"
+```
+
+| Output | Example |
+|--------|---------|
+| `version` | `2.4.0` |
+| `old-version` | `2.3.4` |
+| `change-type` | `major`, `minor` or `patch` |
+| `dry-run` | `true` if the run wrote nothing |
+| `major` / `minor` / `patch` | `2` / `4` / `0`, for a `2` / `2.4` / `2.4.0` tag set |
+| `report` | Path to the raw JSON, for anything the outputs above don't cover |
+
+Read `change-type` rather than comparing the two versions: across an overflow rollover a Patch
+bump can look like a Minor one, so the comparison is wrong in a way that is very hard to spot.
+
+The run also appends a job summary naming the verdict and the changes behind it, so a release
+explains itself in the run page without anyone opening a log.
+
+## Without the Action
 
 The same outputs are available from the CLI, because the tool publishes them itself. Under GitHub
 Actions it writes `$GITHUB_OUTPUT` and the job summary without being asked, so the step is the
@@ -349,13 +358,7 @@ EasySemVer is a command; wire it in with whatever your build already uses. It de
 no MSBuild integration of its own — a tool whose unit of work is *a folder* does not belong
 bolted to one arbitrary project inside it.
 
-From a release script or CI step:
-
-```bash
-easysemver "$CI_WORKSPACE"
-```
-
-Or from MSBuild, if that is where your release process lives:
+From MSBuild, if that is where your release process lives:
 
 ```xml
 <Target Name="EasySemVer" BeforeTargets="Build" Condition="'$(Configuration)' == 'Release'">
@@ -383,6 +386,29 @@ not from compiled assemblies, so the run works equally well before or after the 
 
 Every successful run increments by at least a Patch: the tool assumes it runs for builds that are
 releases. Gate it accordingly.
+
+## What counts as a change
+
+Roughly eighty rules, each one a small class with its own test. The full tables are in
+[specs/07](specs/07-change-classification.md) for C# and
+[specs/12 §13](specs/12-multi-language-swift-and-folder-model.md) for Swift, but the shape is:
+
+- **Major** — anything a caller could be relying on that no longer works: a type or member
+  removed, a signature or return type changed, a parameter made required, a property setter
+  withdrawn, an interface gaining an undefaulted requirement, an enum member renamed or
+  revalued, a class sealed, a conformance dropped.
+- **Minor** — anything additive: a new unit, type, member or overload; a constraint loosened; a
+  setter gained; an interface requirement that ships with a default implementation.
+- **Patch** — everything else, including implementation-only changes and a declaration merely
+  being marked deprecated.
+
+One rule differs deliberately between the two languages: **adding a case to a public Swift enum
+is Major**, because a client switching exhaustively over it stops compiling. Adding a member to a
+C# enum is Minor, because C# has no such requirement.
+
+Every rule reads declarations, never behaviour. A method that keeps its signature and changes what
+it does is a Patch, and so is a change to anything your code builds at runtime rather than
+declares — the disclaimer at the top of this file is the long version.
 
 ## Seeding versions
 
@@ -447,25 +473,6 @@ history the run was supposed to classify against, and releasing a version with n
 is worse than stopping. Delete the file to start from an empty baseline; that costs one release
 classified as if every unit were new, which is the point at which you get to decide that is
 acceptable rather than finding out afterwards.
-
-## What counts as a change
-
-Roughly eighty rules, each one a small class with its own test. The full tables are in
-[specs/07](specs/07-change-classification.md) for C# and
-[specs/12 §13](specs/12-multi-language-swift-and-folder-model.md) for Swift, but the shape is:
-
-- **Major** — anything a caller could be relying on that no longer works: a type or member
-  removed, a signature or return type changed, a parameter made required, a property setter
-  withdrawn, an interface gaining an undefaulted requirement, an enum member renamed or
-  revalued, a class sealed, a conformance dropped.
-- **Minor** — anything additive: a new unit, type, member or overload; a constraint loosened; a
-  setter gained; an interface requirement that ships with a default implementation.
-- **Patch** — everything else, including implementation-only changes and a declaration merely
-  being marked deprecated.
-
-One rule differs deliberately between the two languages: **adding a case to a public Swift enum
-is Major**, because a client switching exhaustively over it stops compiling. Adding a member to a
-C# enum is Minor, because C# has no such requirement.
 
 ## Excluded directories
 
