@@ -42,6 +42,13 @@ Action is a thin wrapper around the binary.
 Add it to a workflow and the repository versions, commits and tags itself. Nothing needs .NET
 installed: the Action downloads a self-contained binary for the runner's platform.
 
+**Seed a version first.** EasySemVer only writes into version properties that already exist, so
+put a starting value wherever you want the number to land — an `<AssemblyVersion>`, a
+`MARKETING_VERSION`, a `.podspec` — and commit it before the first run. With nothing seeded
+anywhere the run still succeeds and still tags a release, but no file in your source carries the
+version, and your artifacts go out with whatever they had. [Seeding versions](#seeding-versions)
+is the full list of places that count.
+
 ## The whole workflow
 
 Save this as `.github/workflows/release.yml`. The steps marked **YOUR …** are the ones you almost
@@ -266,7 +273,7 @@ bump can look like a Minor one, so the comparison is wrong in a way that is very
 The run also appends a job summary naming the verdict and the changes behind it, so a release
 explains itself in the run page without anyone opening a log.
 
-## Without the Action
+## In a workflow, without the Action
 
 The same outputs are available from the CLI, because the tool publishes them itself. Under GitHub
 Actions it writes `$GITHUB_OUTPUT` and the job summary without being asked, so the step is the
@@ -287,6 +294,9 @@ same in every workflow, so it lives in the tool rather than in each of them.
 ---
 
 # Running it yourself
+
+The same tool, without the workflow: install it once and call it from whatever runs your release.
+The seeding note above applies here too.
 
 ## Installing
 
@@ -373,6 +383,9 @@ not from compiled assemblies, so the run works equally well before or after the 
 ---
 
 # How it decides
+
+Reference for everything the two sections above assume: what a run does, what moves the number,
+and where the number is read from and written to.
 
 ## What it does, in order
 
@@ -564,7 +577,7 @@ here. Do not hand-edit either — a stale pin used to be a routine bug and is no
 
 | | |
 |-|-|
-| [`src/Test`](src/Test) | Unit tests. Host-free, and built from hand-constructed signature graphs rather than live extraction, so a failing rule test means the rule is wrong and nothing else. |
+| [`src/Test`](src/Test) | Unit tests, needing no toolchain and nothing launched. Built from hand-constructed signature graphs rather than live extraction, so a failing rule test means the rule is wrong and nothing else. |
 | [`src/IntegrationTest`](src/IntegrationTest) | End to end: the real tool, the real Action scripts pulled out of `action.yml`, real git repositories with real remotes. |
 
 ```bash
