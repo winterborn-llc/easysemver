@@ -1,13 +1,10 @@
 # EasySemVer from Winterborn
 
-EasySemVer computes and applies Semantic Versioning for **a folder** by watching what happens to
-the public API surface inside it. Point it at a directory; it finds every packageable unit in the
-tree — C# `.csproj` projects, SwiftPM targets, Xcode targets — reads every version already
-written anywhere in it, diffs each unit's API against the previous run, and moves one
-folder-wide version by Major, Minor or Patch accordingly.
+EasySemVer works out what your next version number is, from what actually changed in your public
+API, and writes it wherever versions live in your code.
 
-Nobody decides the number. A removed method is Major because it is Major, on the run that removed
-it, whether or not anyone remembered.
+Nobody decides the number and nobody has to remember to bump it. A removed method is Major because
+it is Major, on the run that removed it.
 
 - **Major** — something a caller relied on stopped working: a type or member removed, a signature
   or return type changed, a parameter made required, an interface gaining an undefaulted
@@ -19,6 +16,10 @@ it, whether or not anyone remembered.
 Roughly eighty rules sit behind those three lines; [what counts as a change](#what-counts-as-a-change)
 has the shape of them and the specs have the tables. Every successful run increments by at least a
 Patch, because it assumes it is running for a release.
+
+It reads **C#** and **Swift** — `.csproj` projects, SwiftPM targets, Xcode targets — and it reads
+them from source rather than from compiled assemblies, so it does not care whether your build has
+run yet.
 
 Two ways to use it. The **GitHub Action** is the whole of the setup for most repositories and is
 what the next section covers. If your release does not live in GitHub Actions,
@@ -507,9 +508,13 @@ gaps list if the change opens or closes one.
 These are settled and load-bearing. Read them before proposing an alternative shape, because most
 of them exist to prevent a specific failure that has already happened once.
 
-**The folder is the unit.** One version per folder root, seeded from the highest value found
-anywhere inside it, written back to every location that already exists. Not per-project, not
-per-language, not per-target.
+**The folder is the unit.** The directory the tool is pointed at *is* the root: no walk-up, no
+solution file, no project graph. Inside it, a **packageable unit** is anything independently
+shippable — a `.csproj`, a SwiftPM target, an Xcode target — and units are the atoms of add/remove
+detection and of version write-back, not of versioning itself. One version per folder root, seeded
+from the highest value found anywhere inside it, incremented once, and written back to every
+location that already exists. A Swift-only change moves the C# projects' versions too. Per-unit and
+per-language version streams are out of scope, and asking for them is asking for a different tool.
 
 **Every run is a release.** There is no "no change" outcome: a successful run always increments by
 at least a Patch. Gating is the caller's job.
