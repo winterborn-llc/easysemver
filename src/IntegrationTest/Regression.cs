@@ -185,7 +185,7 @@ public class Regression
 
             var report = CaptureOutput(() => Assert.Equal(0, Program.Main(folderRoot, "--dry-run")));
 
-            Assert.Contains("Csharp Widgets", report);
+            Assert.Contains("csharp Widgets", report);
             Assert.Contains("Major  Widgets.Widget.Weigh was removed", report);
             Assert.Contains("Minor  Widgets.Widget.Describe was added", report);
             Assert.Contains("Change Type: Major (1 major, 1 minor, 0 patch)", report);

@@ -89,7 +89,7 @@ public class JsonReportRegression : IDisposable
     }
 
     /// <summary>
-    /// REP-09 - the evidence reaches the document from a real run, carrying a real rule id from
+    /// REP-09 - the evidence reaches the document from a real run, carrying a real rule name from
     /// the spec tables rather than a placeholder. A unit test can only prove the formatter copies
     /// the field; this proves the rules actually populate it on the way through.
     /// </summary>
@@ -110,8 +110,8 @@ public class JsonReportRegression : IDisposable
         foreach (var finding in findings)
         {
             Assert.False(
-                string.IsNullOrWhiteSpace(finding.GetProperty("ruleId").GetString()),
-                $"A finding for {finding.GetProperty("symbol")} reached the report with no rule id");
+                string.IsNullOrWhiteSpace(finding.GetProperty("rule").GetString()),
+                $"A finding for {finding.GetProperty("symbol")} reached the report with no rule");
             Assert.Equal("csharp", finding.GetProperty("language").GetString());
         }
 

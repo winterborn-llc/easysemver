@@ -15,14 +15,14 @@ without writing anything, and `--json <path>` to drop the verdict somewhere a sc
 
 ```json
 {
-  "formatVersion": 1,
+  "formatVersion": 2,
   "dryRun": false,
   "changeType": "major",
   "oldVersion": { "version": "2.3.4", "major": 2, "minor": 3, "patch": 4 },
   "newVersion": { "version": "3.0.0", "major": 3, "minor": 0, "patch": 0 },
   "findings": [
     {
-      "ruleId": "R02",
+      "rule": "MethodsContinueToExist",
       "impact": "major",
       "language": "csharp",
       "unitId": "Widgets",
@@ -36,10 +36,12 @@ without writing anything, and `--json <path>` to drop the verdict somewhere a sc
 The report is always a file — never stdout — so the log stream stays exactly where it was. A run
 that fails leaves no report behind.
 
-Each finding carries the `ruleId` of the rule that fired, so a verdict can be audited by a script
-and not just read: that is the id from the rule tables in [specs/07](specs/07-change-classification.md)
-and [specs/12](specs/12-multi-language-swift-and-folder-model.md). Match on `ruleId`, never on
-`description` — the prose is for people. Take the verdict from `changeType` rather than from the
+Each finding carries the `language` and `rule` of the rule that fired, so a verdict can be audited
+by a script and not just read: that pair is the key in the rule tables in
+[specs/07](specs/07-change-classification.md) and
+[specs/12](specs/12-multi-language-swift-and-folder-model.md), and a rule name is unique within a
+language rather than globally. Match on `language` and `rule`, never on `description` — the prose
+is for people. Take the verdict from `changeType` rather than from the
 array: a run with no comparable baseline reports no findings and still classifies above Patch.
 
 ## Installing
@@ -77,11 +79,11 @@ rather than every developer build.
 It is a flat array of packageable units, each carrying its own language's signature:
 
 ```xml
-<EasySemVer formatVersion="3">
-   <Unit language="Csharp" unitId="Widgets" unitKind="csproj" path="src/Widgets/Widgets.csproj">
+<EasySemVer formatVersion="4">
+   <Unit language="csharp" unitId="Widgets" unitKind="csproj" path="src/Widgets/Widgets.csproj">
       <CsharpProject name="Widgets"> … </CsharpProject>
    </Unit>
-   <Unit language="Swift" unitId="Sources/Gadgets:Gadgets" unitKind="swiftpm-target" path="Sources/Gadgets">
+   <Unit language="swift" unitId="Sources/Gadgets:Gadgets" unitKind="swiftpm-target" path="Sources/Gadgets">
       <SwiftModule name="Gadgets"> … </SwiftModule>
    </Unit>
 </EasySemVer>

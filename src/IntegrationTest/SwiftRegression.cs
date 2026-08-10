@@ -38,8 +38,8 @@ public class SwiftRegression
         Assert.Equal(0, Program.Main(fixture.FolderRoot));
 
         var baseline = File.ReadAllText(Path.Combine(fixture.FolderRoot, "EasySemVer.xml"));
-        Assert.Contains("language=\"Csharp\"", baseline);
-        Assert.Contains("language=\"Swift\"", baseline);
+        Assert.Contains("language=\"csharp\"", baseline);
+        Assert.Contains("language=\"swift\"", baseline);
         Assert.Contains("unitKind=\"swiftpm-target\"", baseline);
         Assert.Contains("<SwiftModule name=\"Widgets\"", baseline);
 
@@ -106,7 +106,10 @@ public class SwiftRegression
             ["SwiftPackage:WidgetsTests"],
             units.Where(provider.IsTestCode).Select(u => u.UnitId).Order());
 
-        foreach (var discovered in units)
+        // UNI-04, applied the way the run applies it: a test target is versioned but never
+        // extracted, so asking for its graph would ask the toolchain to build a bundle no
+        // classification, baseline or report ever reads.
+        foreach (var discovered in units.Where(u => !provider.IsTestCode(u)))
         {
             provider.Extract(discovered);
         }

@@ -259,11 +259,11 @@ content is a **flat array of packageable-unit entries**. Each entry carries its 
 id, unit kind, relative path, and that language's native signature payload. Sketch:
 
 ```xml
-<EasySemVer formatVersion="2">
-   <Unit language="Csharp" unitId="EasySemVer" unitKind="csproj" path="src/EasySemVer/EasySemVer.csproj">
+<EasySemVer formatVersion="4">
+   <Unit language="csharp" unitId="EasySemVer" unitKind="csproj" path="src/EasySemVer/EasySemVer.csproj">
       <CsharpProject> … classes, interfaces, enums, … </CsharpProject>
    </Unit>
-   <Unit language="Swift" unitId="Sources/Widgets:Widgets" unitKind="swiftpm-target" path="Sources/Widgets">
+   <Unit language="swift" unitId="Sources/Widgets:Widgets" unitKind="swiftpm-target" path="Sources/Widgets">
       <SwiftModule> … structs, protocols, actors, … </SwiftModule>
    </Unit>
 </EasySemVer>
@@ -278,7 +278,7 @@ provide an explicit mapping layer to/from the DTOs. Round-tripping SHALL be veri
 `Serialize(Deserialize(Serialize(x))) == Serialize(x)` (TST-M4).
 
 **BAS-03 — `formatVersion` is mandatory.** ✅ required
-The root element SHALL carry `formatVersion="2"`. An unknown or absent version SHALL be
+The root element SHALL carry `formatVersion="4"`. An unknown or absent version SHALL be
 treated as unreadable → PER-04 (warn, proceed with an empty baseline). No migration from v1 is
 needed or wanted: because of G-01 the v1 writer never succeeded, so no valid v1 file exists
 anywhere.
@@ -799,8 +799,15 @@ skipping. Report the measured cost from the fixture project when P5 lands.
 > one Swift file — a full run takes **4.1 s**: ~1.0 s for `xcodebuild -list -json` and ~3.1 s for
 > the symbol-graph build. That is the floor, not the typical case: it is what `xcodebuild` costs
 > before compiling anything of consequence, and a real app target's build time is added to it in
-> full. On the same machine a one-target SwiftPM package costs ~1.3 s, rising to ~16 s once
-> `--build-tests` compiles the test target as well (which UNI-03 requires).
+> full. On the same machine a one-target SwiftPM package costs ~1.3 s, which at the time rose to
+> ~16 s because `--build-tests` compiled the test target as well (which UNI-03 was read as
+> requiring).
+>
+> **Re-measured after UNI-04:** the SwiftPM figure is ~1.3 s again. UNI-04 means a test target's
+> API surface is never read, so `--build-tests` was building an XCTest bundle for a graph nothing
+> consumes; the flag is gone and a plain `swift build` still emits a graph for every non-test
+> target, including one no product exposes. The Xcode figure is unchanged — that path is per-target
+> and never built a test target in the first place.
 >
 > No opt-out was added: nothing measured here proves the tool impractical, and adding a config
 > file to skip units is a bigger decision than a timing number justifies. The recommendation

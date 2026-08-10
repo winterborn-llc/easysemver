@@ -151,17 +151,23 @@ two dry runs produce byte-identical reports, and that a failed run leaves no rep
 | Suite | Result |
 |-------|--------|
 | `dotnet build` | ✅ success — **no warnings** (`NU5129` went with PKG-05) |
-| `Test` (unit) | ✅ **554/554 passed** |
-| `IntegrationTest` | ✅ **65/65 passed** (6 `Regression`, 9 `JsonReportRegression`, 43 `ActionRegression`, 4 SwiftPM, 3 Xcode) |
+| `Test` (unit) | ✅ **575/575 passed** in under a second |
+| `IntegrationTest` | ✅ **65/65 passed** in about 30 seconds (6 `Regression`, 9 `JsonReportRegression`, 43 `ActionRegression`, 4 SwiftPM, 3 Xcode) |
 
 ℹ️ `ActionRegression` (ACT-09) needs `bash` and `tar`, which every GitHub-hosted runner has (`jq`
 went with the `jq` block CLI-10 removed from `action.yml`);
 it is traited `Toolchain=Bash` so a machine without them can exclude it the way the Swift tests are
-excluded. Filtering it out costs 43 tests. The seven Swift ones dominate the wall clock rather than
-the count: `--filter Toolchain!=Swift` runs the other 58 in about 20 seconds, against a minute and
-a quarter for the whole suite.
+excluded. Filtering it out costs 43 tests. The seven Swift-traited ones now cost about 8 seconds
+together, against 28 for the other 58: the wall clock is `ActionRegression` shelling out to `bash`
+and `git` 43 times, not the toolchains.
 
-ℹ️ The Swift-traited tests shell out to `swift` and `xcodebuild` and are therefore sensitive to
-machine load: on a box already saturated with another Swift build they will hit the five-minute
-manifest timeout and fail. On an idle machine the SwiftPM suite takes about 90 seconds (most of
-it `--build-tests`) and the Xcode suite about 10.
+ℹ️ That is a recent reversal. The SwiftPM suite used to take about 90 seconds on an idle machine,
+nearly all of it `--build-tests` compiling and linking an XCTest bundle for a symbol graph UNI-04
+had already made unreadable. Dropping the flag took one SwiftPM run from ~11-20 seconds to ~1.3,
+and the whole suite from about a minute and a half to about 30 seconds;
+[`TestSwiftBuildCommand`](../src/Test/Swift/TestSwiftBuildCommand.cs) pins the argument list so it
+cannot come back as a silent slowdown.
+
+ℹ️ The Swift-traited tests still shell out to `swift` and `xcodebuild` and are therefore sensitive
+to machine load: on a box already saturated with another Swift build they will hit the five-minute
+manifest timeout and fail.

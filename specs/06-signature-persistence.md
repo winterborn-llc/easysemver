@@ -40,16 +40,16 @@ run mutates nothing.
 
 **PER-07 — Format.** ✅ *(BAS-01…BAS-04)*
 The baseline SHALL be a self-contained, indented XML document whose root is
-`<EasySemVer formatVersion="3">` and whose content is a **flat array of packageable units**, each
+`<EasySemVer formatVersion="4">` and whose content is a **flat array of packageable units**, each
 carrying its language, unit id, unit kind, folder-root-relative path, and that language's native
 signature payload:
 
 ```xml
-<EasySemVer formatVersion="3">
-   <Unit language="Csharp" unitId="EasySemVer" unitKind="csproj" path="src/EasySemVer/EasySemVer.csproj">
+<EasySemVer formatVersion="4">
+   <Unit language="csharp" unitId="EasySemVer" unitKind="csproj" path="src/EasySemVer/EasySemVer.csproj">
       <CsharpProject name="EasySemVer"> … </CsharpProject>
    </Unit>
-   <Unit language="Swift" unitId="Sources/Widgets:Widgets" unitKind="swiftpm-target" path="Sources/Widgets">
+   <Unit language="swift" unitId="Sources/Widgets:Widgets" unitKind="swiftpm-target" path="Sources/Widgets">
       <SwiftModule name="Widgets"> … </SwiftModule>
    </Unit>
 </EasySemVer>

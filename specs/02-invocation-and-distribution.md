@@ -93,7 +93,7 @@ parse a log, and no existing stream contract changes.
 **REP-02 — The document.** ✅
 ```json
 {
-  "formatVersion": 1,
+  "formatVersion": 2,
   "dryRun": false,
   "changeType": "major",
   "oldVersion": { "version": "2.3.4", "major": 2, "minor": 3, "patch": 4 },
@@ -113,7 +113,8 @@ parse a log, and no existing stream contract changes.
   happened, so it is always present.
 
 **REP-03 — `formatVersion` has its own lifecycle.** ✅
-It starts at `1` and is versioned independently of the baseline's `formatVersion` (currently 3).
+It started at `1`, is currently `2`, and is versioned independently of the baseline's
+`formatVersion` (currently 4).
 The two documents have different audiences and different failure modes — a JSON consumer breaking
 is not a versioning run breaking — so sharing a number would couple them for no reason.
 
@@ -154,7 +155,7 @@ them — unit, then symbol, then rule — so REP-07 holds for the array as it do
 ```json
 "findings": [
   {
-    "ruleId": "R02",
+    "rule": "MethodsContinueToExist",
     "impact": "major",
     "language": "csharp",
     "unitId": "Widgets",
@@ -163,16 +164,18 @@ them — unit, then symbol, then rule — so REP-07 holds for the array as it do
   }
 ]
 ```
-- `ruleId` is the rule's identifier from the tables in
-  [07](07-change-classification.md) and [12 §13](12-multi-language-swift-and-folder-model.md).
-  It is what makes a verdict auditable in a machine's hands rather than only a reader's: a
-  consumer can point at the rule that cost it a Major without matching on prose.
-- The rule's **class name is not published.** It is an implementation detail, and a consumer keyed
-  to it would break on a rename that changed no behavior. `ruleId` is the stable identity, which
-  is the reason [`TestRuleIds`](../src/Test/TestRuleIds.cs) pins every id to its spec row.
+- `language` and `rule` together are the finding's key. `rule` is the rule's name from the tables
+  in [07](07-change-classification.md) and [12 §13](12-multi-language-swift-and-folder-model.md),
+  and is unique within its language rather than globally — two languages may each carry a
+  `UnitRemoved` without collision. The pair is what makes a verdict auditable in a machine's hands
+  rather than only a reader's: a consumer can point at the rule that cost it a Major without
+  matching on prose.
+- Every rule **carries its name as a literal** rather than deriving it from its class name, so a
+  class rename cannot move the published key and changing the key is a visible edit. That is the
+  reason [`TestRuleIds`](../src/Test/TestRuleIds.cs) pins every name to its spec row.
 - `impact` and `language` are lower case, like every other enum-valued field (REP-02).
 - `description` completes "*symbol* …" — "was removed". It is prose for a human reading the
-  document, and nothing should match on it; `ruleId` is there for that.
+  document, and nothing should match on it; `rule` is there for that.
 - The array SHALL be present and empty rather than absent when a run found nothing. An absent
   array would make "no changes" and "an older writer" indistinguishable.
 ℹ️ A run can legitimately report an empty array and a `changeType` above `patch`: CLS-04's

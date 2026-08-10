@@ -25,10 +25,13 @@ internal class SwiftSymbolGraphExtractor(IRunProcess runProcess)
                 [
                     "build",
 
-                    // Test targets are units too (UNI-03), and a plain `swift build` does not
-                    // build them - so without this a package with tests fails SWE-05 for a
-                    // target that was never compiled.
-                    "--build-tests",
+                    // Deliberately *not* `--build-tests`. It was here because UNI-03 makes a test
+                    // target a unit, and SWE-05 fails a unit with no graph - but UNI-04 means a
+                    // test target's API surface is never read, so the flag compiled and linked an
+                    // XCTest bundle to produce a graph nothing consumes. It dominated the run: on
+                    // the fixture package a plain build is ~1.3s against ~11-20s with it. A plain
+                    // `swift build` still emits a graph for every non-test target, including one
+                    // no product exposes, which is exactly the set that UNI-04 leaves to extract.
                     "--package-path", packageDirectory,
                     "-Xswiftc", "-emit-symbol-graph",
                     "-Xswiftc", "-emit-symbol-graph-dir",
