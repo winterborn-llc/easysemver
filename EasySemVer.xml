@@ -4299,6 +4299,16 @@
                         </Override>
                      </Overrides>
                   </Method>
+                  <Method name="IsTestCode" returns="bool">
+                     <Overrides>
+                        <Override returns="bool" static="false" virtual="true" abstract="false" override="false" sealed="false" hasDefaultImplementation="true">
+                           <GenericParameters />
+                           <Parameters>
+                              <Parameter name="unit" type="Winterborn.Tools.EasySemVer.Interfaces.IPackageableUnit" required="true" refKind="None" params="false" />
+                           </Parameters>
+                        </Override>
+                     </Overrides>
+                  </Method>
                   <Method name="ReadSignature" returns="object">
                      <Overrides>
                         <Override returns="object" static="false" virtual="false" abstract="true" override="false" sealed="false" hasDefaultImplementation="false">
@@ -4353,7 +4363,7 @@
                <Methods />
                <Properties>
                   <Property name="DisplayName" type="string" readable="true" writable="false" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
-                  <Property name="HasPublicApiSurface" type="bool" readable="true" writable="false" initOnly="false" static="false" required="false" hasDefaultImplementation="true" />
+                  <Property name="HasPublicApiSurface" type="bool" readable="true" writable="true" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
                   <Property name="Language" type="Winterborn.Tools.EasySemVer.DataObject.Language" readable="true" writable="false" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
                   <Property name="RelativePath" type="string" readable="true" writable="false" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
                   <Property name="Signature" type="object" readable="true" writable="true" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
