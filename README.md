@@ -54,9 +54,14 @@ is the full list of places that count.
 
 ## The whole workflow
 
-Save this as `.github/workflows/release.yml`. The steps marked **YOUR …** are the ones you almost
-certainly already have in some form — they are here to show *where EasySemVer's two steps sit
-relative to them, and why that ordering is the only one that works*.
+Two steps go into your release workflow, in these two places:
+
+```
+checkout → [ EasySemVer: version ] → your build and tests → [ EasySemVer: commit and tag ] → your publish
+```
+
+Save this as `.github/workflows/release.yml`, or lift the two marked steps into the workflow you
+already have:
 
 ```yaml
 name: Release
@@ -65,10 +70,7 @@ on:
   push:
     branches: [ main ]
 
-# One release at a time. Two runs landing together would both seed from the same version, compute
-# the same next one, and race to push it. `cancel-in-progress: false` deliberately: a
-# half-finished release - package pushed, commit not - is worse than a queued one.
-concurrency:
+concurrency:                     # never two releases at once
   group: release
   cancel-in-progress: false
 
@@ -76,59 +78,24 @@ jobs:
   release:
     runs-on: ubuntu-latest
 
-    # Naming any permission replaces the defaults wholesale, so every one you need has to be
-    # listed. `contents: write` is what lets the second EasySemVer step push the commit and the
-    # tag. If you publish over OIDC, `id-token: write` belongs here too.
     permissions:
-      contents: write
+      contents: write            # to push the commit and the tag
 
     steps:
-    # YOUR CHECKOUT - with one requirement on it. `fetch-depth: 0` brings the tags down, and git
-    # tags are one of the places EasySemVer looks for the version to seed from. A shallow clone
-    # hides them, and the run seeds from something older than your last release.
     - uses: actions/checkout@v5
       with:
-        fetch-depth: 0
+        fetch-depth: 0           # tags are one of the places the version is read from
 
-    # YOUR TOOLCHAIN - setup-dotnet, setup-node, setup-swift, whatever your build needs.
-    # EasySemVer needs none of it and does not care whether this runs before or after it; the
-    # exception is a folder containing Swift, which needs a real toolchain for the extraction
-    # itself (see "If your repository has Swift in it" below).
-    - uses: actions/setup-dotnet@v5
-      with:
-        dotnet-version: 10.0.x
-
-    # ---------------------------------------------------------------------------------------
-    # EASYSEMVER, 1 of 2. Reads the API surface of every unit in the folder, diffs it against
-    # the committed EasySemVer.xml, and writes the new version into every version location that
-    # already exists. Publishes the verdict as step outputs.
-    #
-    # BEFORE your build, so that everything the build produces carries the new version. Nothing
-    # is committed here - the bump exists only in the runner's working copy so far.
-    # ---------------------------------------------------------------------------------------
+    # ── EasySemVer ── before your build, so what you build carries the new version
     - name: Compute and apply the version
       id: version
       uses: winterborn-llc/easysemver@v18
 
-    # YOUR BUILD, PACKAGE AND TESTS - unchanged, and now carrying the version stamped above.
-    # Nothing has been committed or pushed yet, so a failure anywhere in here ends the run having
-    # released nothing at all: no commit, no tag, no package, nothing to retract.
+    # Your build, package and tests, unchanged.
     - run: dotnet build --configuration Release
     - run: dotnet test --configuration Release --no-build
 
-    # ---------------------------------------------------------------------------------------
-    # EASYSEMVER, 2 of 2. Stages exactly the files the first step wrote, commits them as
-    # `EasySemVer: 2.4.0`, tags `v2.4.0`, and pushes the branch and the tag atomically.
-    #
-    # `report:` hands it the first step's verdict, so the version is computed exactly once
-    # however many times this action appears in the job. With it set, the tool is neither
-    # downloaded nor run again.
-    #
-    # AFTER your tests, so a failing test cannot leave a release commit and a tag behind with no
-    # release under them. BEFORE you publish anything, because a package cannot be unpublished:
-    # if someone pushed to the branch mid-run, this push is rejected and the run dies while there
-    # is still nothing outside this repository to take back.
-    # ---------------------------------------------------------------------------------------
+    # ── EasySemVer ── after your tests, before you publish
     - name: Commit and tag the release
       uses: winterborn-llc/easysemver@v18
       with:
@@ -136,20 +103,26 @@ jobs:
         tag: true
         report: ${{ steps.version.outputs.report }}
 
-    # YOUR PUBLISH - last, and now every artifact you push is accounted for by a commit and a tag
-    # anyone can find. EasySemVer stops short of this on purpose: there is no one way to publish,
-    # so there is nothing here for it to get right on your behalf.
-    - run: dotnet nuget push bin/Release/*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json
+    # Your publish, if you have one.
 ```
 
-Those two steps are not an illustration. They are lifted from
+The ordering is the part worth getting right:
+
+- **Version before the build**, or your artifacts go out carrying the previous number.
+- **Commit and tag after the tests.** Nothing is committed until that second step, so a failure
+  anywhere in between ends the run having released nothing at all.
+- **Publish after the commit**, because a package cannot be unpublished. If someone pushed to the
+  branch mid-run, the commit is rejected and the run dies while there is still nothing outside
+  your repository to take back.
+
+`report:` hands the second step the first one's verdict, so the version is computed once no matter
+how many times the action appears. Those two steps are lifted from
 [`.github/workflows/dotnet.yml`](.github/workflows/dotnet.yml), the workflow EasySemVer releases
 *itself* with, and a test fails if the two ever differ.
 
-## The two steps, on their own
+## Adding them to a workflow you already have
 
-If you already have a release workflow, this is the whole of what you append to it — the first
-before your build, the second after your tests:
+The two steps, on their own — the first before your build, the second after your tests:
 
 ```yaml
 - name: Compute and apply the version
@@ -187,8 +160,7 @@ goes into any repository unedited:
     tag: true
 ```
 
-Split it the moment something is built between the two, for the reasons in the comments above:
-the version has to be stamped before the build, and nothing may be pushed until the tests pass.
+Split it the moment something is built between the two, for the ordering reasons above.
 
 ## Configuring it
 
