@@ -58,7 +58,7 @@ public class XcodeRegression
     {
         using var fixture = new XcodeProjectFixture();
 
-        var provider = new SwiftLanguageProvider(new ProcessRunner());
+        var provider = new SwiftLanguageProvider(new ProcessRunner(), VersionSourceFactories.Create(new ProcessRunner()));
         var unit = Assert.Single(provider.Discover(fixture.FolderRoot));
         Assert.Equal("xcode-target", unit.UnitKind);
 

@@ -12,7 +12,8 @@ using Version = Winterborn.Tools.EasySemVer.DataObject.Version;
 namespace Winterborn.Tools.EasySemVer.Providers;
 
 /// <summary>Everything C# contributes to a run (ML-02). One .csproj is one unit (UNI-02).</summary>
-internal class CsharpLanguageProvider : ILanguageProvider
+internal class CsharpLanguageProvider(
+    IReadOnlyList<IDiscoverVersionSources> versionSources) : ILanguageProvider
 {
     internal const string CsharpLanguageId = "csharp";
 
@@ -50,7 +51,10 @@ internal class CsharpLanguageProvider : ILanguageProvider
                 DisplayName = Path.GetFileName(projectFilePath),
                 RelativePath = relativePath,
                 UnitKind = CsprojUnitKind,
-                VersionSources = [new CsProjVersionSource(projectFilePath, relativePath)]
+                VersionSources = VersionSourceFactories.For(
+                    versionSources,
+                    CsharpLanguageId,
+                    new VersionSourceScope(folderRoot, projectFilePath, CsprojUnitKind))
             });
         }
 

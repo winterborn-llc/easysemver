@@ -15,7 +15,9 @@ namespace Winterborn.Tools.EasySemVer.Providers;
 /// Everything Swift contributes to a run (ML-02). A unit is a target, not a product and not a
 /// package (D-05, UNI-03).
 /// </summary>
-internal class SwiftLanguageProvider(IRunProcess runProcess) : ILanguageProvider
+internal class SwiftLanguageProvider(
+    IRunProcess runProcess,
+    IReadOnlyList<IDiscoverVersionSources> versionSources) : ILanguageProvider
 {
     internal const string SwiftLanguageId = "swift";
 
@@ -77,7 +79,10 @@ internal class SwiftLanguageProvider(IRunProcess runProcess) : ILanguageProvider
         {
             var packageDirectory = Path.GetDirectoryName(manifestPath)!;
             var packageRelativePath = FolderScanner.GetRelativePath(folderRoot, packageDirectory);
-            var versionSources = this.GetVersionSources(folderRoot, packageDirectory);
+            var sources = VersionSourceFactories.For(
+                versionSources,
+                SwiftLanguageId,
+                new VersionSourceScope(folderRoot, packageDirectory, SwiftPackageTargetUnitKind));
 
             // One dump, both answers: which targets are units, and which of those are tests.
             var manifestJson = SwiftPackageManifest.Dump(runProcess, packageDirectory);
@@ -98,7 +103,7 @@ internal class SwiftLanguageProvider(IRunProcess runProcess) : ILanguageProvider
                     DisplayName = targetName,
                     RelativePath = packageRelativePath,
                     UnitKind = SwiftPackageTargetUnitKind,
-                    VersionSources = versionSources
+                    VersionSources = sources
                 });
             }
         }
@@ -112,7 +117,10 @@ internal class SwiftLanguageProvider(IRunProcess runProcess) : ILanguageProvider
         foreach (var projectPath in FolderScanner.FindDirectories(folderRoot, "*.xcodeproj"))
         {
             var projectRelativePath = FolderScanner.GetRelativePath(folderRoot, projectPath);
-            var versionSources = GetXcodeVersionSources(folderRoot, projectPath);
+            var sources = VersionSourceFactories.For(
+                versionSources,
+                SwiftLanguageId,
+                new VersionSourceScope(folderRoot, projectPath, XcodeTargetUnitKind));
 
             // UNI-04. From the project file, because the xcodebuild listing below carries names
             // and nothing else - see XcodeTestTarget for why that is not worth a process per target.
@@ -131,7 +139,7 @@ internal class SwiftLanguageProvider(IRunProcess runProcess) : ILanguageProvider
                     DisplayName = targetName,
                     RelativePath = projectRelativePath,
                     UnitKind = XcodeTargetUnitKind,
-                    VersionSources = versionSources
+                    VersionSources = sources
                 });
             }
         }
@@ -189,42 +197,6 @@ internal class SwiftLanguageProvider(IRunProcess runProcess) : ILanguageProvider
             + "graph; treating it as version-sync-only. If it does contain Swift, the build "
             + "settings are not emitting symbol graphs.");
         unit.Signature = new SwiftModule(unit.DisplayName);
-    }
-
-    /// <summary>MVR-03/MVR-04 - MARKETING_VERSION and CFBundleShortVersionString, where they exist.</summary>
-    private static IVersionSource[] GetXcodeVersionSources(string folderRoot, string projectPath)
-    {
-        var sources = new List<IVersionSource>();
-
-        var pbxprojPath = Path.Combine(projectPath, XcodeProjectFileName);
-        if (File.Exists(pbxprojPath)
-            && MarketingVersionSource.HasLiteralVersion(File.ReadAllText(pbxprojPath)))
-        {
-            sources.Add(new MarketingVersionSource(
-                pbxprojPath,
-                FolderScanner.GetRelativePath(folderRoot, pbxprojPath)));
-        }
-
-        // The Info.plist belongs to the target, which lives beside the project, not inside it.
-        var projectParent = Path.GetDirectoryName(projectPath);
-        if (projectParent == null)
-        {
-            return sources.ToArray();
-        }
-
-        foreach (var plistPath in FolderScanner.FindFiles(projectParent, "Info.plist"))
-        {
-            if (!InfoPlistVersionSource.HasShortVersionString(File.ReadAllText(plistPath)))
-            {
-                continue;
-            }
-
-            sources.Add(new InfoPlistVersionSource(
-                plistPath,
-                FolderScanner.GetRelativePath(folderRoot, plistPath)));
-        }
-
-        return sources.ToArray();
     }
 
     public IReadOnlyList<ChangeFinding> Classify(IUnitsToCompare units)
@@ -290,40 +262,5 @@ internal class SwiftLanguageProvider(IRunProcess runProcess) : ILanguageProvider
     public object ReadSignature(XElement element)
     {
         return element.DeserializeElement<SwiftModule>();
-    }
-
-    /// <summary>
-    /// MVR-03/MVR-04 - a source exists only because the value it wraps already exists on disk.
-    /// Every target of a package shares the package's version locations.
-    /// </summary>
-    private IVersionSource[] GetVersionSources(string folderRoot, string packageDirectory)
-    {
-        var sources = new List<IVersionSource> { new GitTagVersionSource(runProcess, folderRoot) };
-
-        foreach (var podspecPath in FolderScanner.FindFiles(packageDirectory, "*.podspec"))
-        {
-            if (!PodspecVersionSource.HasLiteralVersion(File.ReadAllText(podspecPath)))
-            {
-                continue;
-            }
-
-            sources.Add(new PodspecVersionSource(
-                podspecPath,
-                FolderScanner.GetRelativePath(folderRoot, podspecPath)));
-        }
-
-        foreach (var swiftPath in FolderScanner.FindFiles(packageDirectory, "*Version.swift"))
-        {
-            if (!SwiftVersionFileSource.HasVersionConstant(File.ReadAllText(swiftPath)))
-            {
-                continue;
-            }
-
-            sources.Add(new SwiftVersionFileSource(
-                swiftPath,
-                FolderScanner.GetRelativePath(folderRoot, swiftPath)));
-        }
-
-        return sources.ToArray();
     }
 }

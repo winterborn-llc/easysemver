@@ -11,10 +11,11 @@ internal static class LanguageProviders
 {
     internal static IReadOnlyList<ILanguageProvider> Create(IRunProcess runProcess)
     {
+        var versionSources = VersionSourceFactories.Create(runProcess);
         return
         [
-            new CsharpLanguageProvider(),
-            new SwiftLanguageProvider(runProcess)
+            new CsharpLanguageProvider(versionSources),
+            new SwiftLanguageProvider(runProcess, versionSources)
         ];
     }
 

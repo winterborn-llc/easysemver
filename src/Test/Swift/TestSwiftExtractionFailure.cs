@@ -1,3 +1,4 @@
+using Winterborn.Tools.EasySemVer.Process;
 using Winterborn.Tools.EasySemVer.DataObject;
 using Winterborn.Tools.EasySemVer.Interfaces;
 using Winterborn.Tools.EasySemVer.Providers;
@@ -60,7 +61,7 @@ public class TestSwiftExtractionFailure
         var runner = new StubProcessRunner(failure);
 
         var exception = Assert.ThrowsAny<Exception>(
-            () => new SwiftLanguageProvider(runner).Discover(fixture.FolderRoot));
+            () => new SwiftLanguageProvider(runner, VersionSourceFactories.Create(runner)).Discover(fixture.FolderRoot));
 
         Assert.Contains("swift package dump-package", exception.Message);
         Assert.Contains("SwiftPackage", exception.Message);
@@ -73,7 +74,7 @@ public class TestSwiftExtractionFailure
         var runner = new StubProcessRunner(NonZeroExit);
 
         var exception = Assert.ThrowsAny<Exception>(
-            () => new SwiftLanguageProvider(runner).Discover(fixture.FolderRoot));
+            () => new SwiftLanguageProvider(runner, VersionSourceFactories.Create(runner)).Discover(fixture.FolderRoot));
 
         Assert.Contains("SwiftPackage", exception.Message);
         Assert.Contains("swift package dump-package", exception.Message);
@@ -88,7 +89,9 @@ public class TestSwiftExtractionFailure
         var before = Snapshot(fixture.FolderRoot);
 
         Assert.ThrowsAny<Exception>(
-            () => new SwiftLanguageProvider(new StubProcessRunner(CommandNotFound))
+            () => new SwiftLanguageProvider(
+                    new StubProcessRunner(CommandNotFound),
+                    VersionSourceFactories.Create(new StubProcessRunner(CommandNotFound)))
                 .Discover(fixture.FolderRoot));
 
         Assert.Equal(before, Snapshot(fixture.FolderRoot));

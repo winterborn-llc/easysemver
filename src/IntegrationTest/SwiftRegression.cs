@@ -92,7 +92,7 @@ public class SwiftRegression
     {
         using var fixture = new SwiftPackageFixture();
 
-        var provider = new SwiftLanguageProvider(new ProcessRunner());
+        var provider = new SwiftLanguageProvider(new ProcessRunner(), VersionSourceFactories.Create(new ProcessRunner()));
         var units = provider.Discover(fixture.FolderRoot);
 
         // UNI-03: test targets are units too, and a plain `swift build` does not build them.

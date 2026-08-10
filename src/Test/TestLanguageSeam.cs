@@ -137,6 +137,25 @@ public class TestLanguageSeam
     }
 
     /// <summary>
+    /// A version convention is registered against a language and a set of unit kinds, and a typo
+    /// in either is silent: the factory simply never fires, the unit reports no version location,
+    /// and the run seeds from 0.0.0 without complaining. This is what would say so.
+    /// </summary>
+    [Fact]
+    public void EveryVersionConventionIsRegisteredAgainstARealLanguageAndUnitKind()
+    {
+        var providers = LanguageProviders.Create(new ProcessRunner());
+        var languages = providers.Select(p => p.LanguageId).ToHashSet(StringComparer.Ordinal);
+
+        foreach (var factory in VersionSourceFactories.Create(new ProcessRunner()))
+        {
+            Assert.Contains(factory.LanguageId, languages);
+            Assert.NotEmpty(factory.UnitKinds);
+            Assert.DoesNotContain(string.Empty, factory.UnitKinds);
+        }
+    }
+
+    /// <summary>
     /// The neutral core reaches a signature only as <see cref="object"/>: if it could see the
     /// concrete type it would eventually be tempted to look inside it (ML-01).
     /// </summary>

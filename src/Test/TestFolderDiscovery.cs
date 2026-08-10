@@ -1,3 +1,4 @@
+using Winterborn.Tools.EasySemVer.Process;
 using Winterborn.Tools.EasySemVer.Evaluation;
 using Winterborn.Tools.EasySemVer.Providers;
 
@@ -27,7 +28,7 @@ public class TestFolderDiscovery : IDisposable
     {
         this.WriteFile("app/Widgets.csproj");
 
-        var units = new CsharpLanguageProvider().Discover(this._folderRoot);
+        var units = new CsharpLanguageProvider(VersionSourceFactories.Create(new ProcessRunner())).Discover(this._folderRoot);
 
         var unit = Assert.Single(units);
         Assert.Equal("Widgets", unit.UnitId);
@@ -50,7 +51,7 @@ public class TestFolderDiscovery : IDisposable
         this.WriteFile("app/Widgets.csproj");
         this.WriteFile(ghostPath);
 
-        var units = new CsharpLanguageProvider().Discover(this._folderRoot);
+        var units = new CsharpLanguageProvider(VersionSourceFactories.Create(new ProcessRunner())).Discover(this._folderRoot);
 
         var unit = Assert.Single(units);
         Assert.Equal("Widgets", unit.UnitId);
@@ -62,7 +63,7 @@ public class TestFolderDiscovery : IDisposable
     {
         this.WriteFile("notes/README.md", "nothing to version here");
 
-        Assert.Empty(new CsharpLanguageProvider().Discover(this._folderRoot));
+        Assert.Empty(new CsharpLanguageProvider(VersionSourceFactories.Create(new ProcessRunner())).Discover(this._folderRoot));
     }
 
     /// <summary>Discovery order does not depend on the file system's enumeration order (BAS-04).</summary>
@@ -73,7 +74,7 @@ public class TestFolderDiscovery : IDisposable
         this.WriteFile("a/Aardvark.csproj");
         this.WriteFile("m/Mongoose.csproj");
 
-        var units = new CsharpLanguageProvider().Discover(this._folderRoot);
+        var units = new CsharpLanguageProvider(VersionSourceFactories.Create(new ProcessRunner())).Discover(this._folderRoot);
 
         Assert.Equal(["Aardvark", "Mongoose", "Zebra"], units.Select(u => u.UnitId).ToArray());
     }
@@ -83,7 +84,7 @@ public class TestFolderDiscovery : IDisposable
     {
         this.WriteFile("src/nested/deep/Widgets.csproj");
 
-        var units = new CsharpLanguageProvider().Discover(this._folderRoot);
+        var units = new CsharpLanguageProvider(VersionSourceFactories.Create(new ProcessRunner())).Discover(this._folderRoot);
 
         Assert.Equal("src/nested/deep/Widgets.csproj", Assert.Single(units).RelativePath);
     }
