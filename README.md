@@ -35,6 +35,9 @@ what the next section covers. If your release does not live in GitHub Actions,
 [install it and run the command](#running-it-yourself) instead — it is the same tool, and the
 Action is a thin wrapper around the binary.
 
+Looking to contribute? The architecture, the settled design rules and what a change is expected to
+bring with it are in the [contributors' guide](readme-contributors.md).
+
 ---
 
 # The GitHub Action
@@ -508,106 +511,3 @@ parser in this tool.
 
 A folder with no Swift in it needs none of this.
 
----
-
-# Contributing
-
-## The specs are the contract
-
-[`specs/`](specs/) is the requirement set, not a description written afterwards. Every requirement
-has an id (`CLS-03`, `ML-02`, `ACT-11`) and a status marker, code is traced back to it, and
-[99-known-gaps.md](specs/99-known-gaps.md) is the honest list of everything that still diverges.
-Start at [specs/README.md](specs/README.md).
-
-A change either conforms to the requirements or changes them. Both are fine; doing neither is not.
-If behaviour moves, the spec doc moves in the same commit — including its status marker, and the
-gaps list if the change opens or closes one.
-
-## Rules of the design
-
-These are settled and load-bearing. Read them before proposing an alternative shape, because most
-of them exist to prevent a specific failure that has already happened once.
-
-**The folder is the unit.** The directory the tool is pointed at *is* the root: no walk-up, no
-solution file, no project graph. Inside it, a **packageable unit** is anything independently
-shippable — a `.csproj`, a SwiftPM target, an Xcode target — and units are the atoms of add/remove
-detection and of version write-back, not of versioning itself. One version per folder root, seeded
-from the highest value found anywhere inside it, incremented once, and written back to every
-location that already exists. A Swift-only change moves the C# projects' versions too. Per-unit and
-per-language version streams are out of scope, and asking for them is asking for a different tool.
-
-**Every run is a release.** There is no "no change" outcome: a successful run always increments by
-at least a Patch. Gating is the caller's job.
-
-**Never create a version location.** The tool only updates what a team already seeded. A
-`.podspec` with no literal version, a target with no `MARKETING_VERSION`, are read-skipped and
-write-skipped.
-
-**The neutral core knows three things** — the packageable unit, the `VersionType` verdict, the
-`Version` value. There is no shared abstraction of "type" or "member", and there never will be:
-each language is modelled in its own topology, with its own vocabulary
-([specs/12 §3](specs/12-multi-language-swift-and-folder-model.md)).
-
-**A language is a plugin.** Adding one means a provider implementing `ILanguageProvider`, its own
-`Interfaces/`, `DataObject/`, `CodeReader/` and `Evaluators/` subfolders, and **one registration
-line** in [`Providers/LanguageProviders.cs`](src/EasySemVer/Providers/LanguageProviders.cs) — with
-no edits to the neutral core. If a change to the core is needed to add a language, the seam is
-wrong and that is the bug to fix.
-
-**A classification rule is one small class.** It declares its `Rule` name, its
-`EvaluationImpact`, and a `ChangeDescription`, and yields the symbols it found. It is registered
-in its language's `CompareSignatures` list. Findings are keyed `(language, rule)`, so a rule name
-must be unique within its language but may repeat across languages.
-
-**The baseline is deterministic.** Two runs over unchanged source on two machines produce
-byte-identical `EasySemVer.xml`. Anything machine-dependent — absolute paths, timestamps,
-toolchain versions, hash iteration order — is a defect, because it makes every checkout report a
-change that is not one.
-
-**Failure is fatal and loud.** Exit 1, print the exception, write nothing. No partial baselines,
-no skip-and-warn: a baseline missing a unit under-reports the *next* change, silently, on a run
-nobody is watching.
-
-**Documentation is executed.** The release steps in this README are asserted against
-[`.github/workflows/dotnet.yml`](.github/workflows/dotnet.yml) byte for byte by
-`ActionRegression`, and the release rewrites the version pins in `action.yml` and the `uses:` refs
-here. Do not hand-edit either — a stale pin used to be a routine bug and is now a test failure.
-
-## Tests
-
-| | |
-|-|-|
-| [`src/Test`](src/Test) | Unit tests, needing no toolchain and nothing launched. Built from hand-constructed signature graphs rather than live extraction, so a failing rule test means the rule is wrong and nothing else. |
-| [`src/IntegrationTest`](src/IntegrationTest) | End to end: the real tool, the real Action scripts pulled out of `action.yml`, real git repositories with real remotes. |
-
-```bash
-dotnet test src/Test/Test.csproj
-dotnet test src/IntegrationTest/IntegrationTest.csproj
-```
-
-Every classification rule has a dedicated test class asserting at minimum its declared impact, a
-no-difference case that does not fire, and a representative difference that does; directional
-rules assert the non-firing direction too ([specs/11](specs/11-testing.md)). A rule without one is
-not finished.
-
-The Swift and Xcode suites shell out to a real toolchain, so the full run wants macOS with Xcode
-configured; CI keeps that requirement inside a single job. Be aware that the integration
-regression versions this repository on purpose, so it leaves the working copy dirty.
-
-## Pull requests
-
-- **Branch, push, and let CI run.** [`ci.yml`](.github/workflows/ci.yml) builds and tests every
-  branch but `main`, using the same reusable job that gates the release — a branch cannot go green
-  against a weaker suite than the one guarding `main`. Fork PRs are not built today: `ci.yml` has
-  no `pull_request` trigger, and adding one is the change to make when this repository starts
-  taking them.
-- **Do not touch versions by hand.** Not the `.csproj` properties, not `EasySemVer.xml`, not
-  `action.yml`'s `default: v…`, not this README's `uses:` refs. A push to `main` versions, commits,
-  tags, publishes and repoints all of them. A hand-edit is either overwritten or a merge conflict.
-- **Bring the spec with you.** New behaviour gets a requirement; changed behaviour edits the one
-  it breaks; a known limitation goes in the gaps list rather than being left for the next person
-  to rediscover.
-- **Say why in the commit.** Subjects are imperative and sentence case ("Match an overload on its
-  generic arity as well as its parameters"). The body carries the reasoning, and so do the
-  comments — this codebase explains *why* at the point the decision lives, and a change that
-  removes that reasoning is a change that will be undone by accident later.
