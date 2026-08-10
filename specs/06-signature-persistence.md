@@ -18,11 +18,21 @@ release builds. The README now states this explicitly.
 If the file does not exist, the run SHALL proceed with an **empty** baseline. Under the
 classification rules this makes a first run register every unit as added → **Minor** (NCL-02).
 
-**PER-04 — Unreadable baseline → warn and continue.** ✅
+**PER-04 — Unreadable baseline → fail the run.** ✅
 If the file exists but cannot be read — malformed XML, wrong root element, or a `formatVersion`
-that is absent or not `2` (BAS-03) — the tool SHALL print a warning including the path and the
-exception, and proceed with an empty baseline. A damaged baseline heals itself on the next
-successful save; it never blocks a release.
+that is absent or not the current one (BAS-03) — the tool SHALL fail the run, exiting 1 with the
+path, the underlying exception, and the remedy. It SHALL write nothing first: no baseline, no
+version stamped (PER-06), so the damaged file is left as it was found.
+
+This is deliberately not self-healing. A missing baseline (PER-03) is a first run and "everything
+is new" is the honest verdict; a baseline that is present and unreadable is history the run was
+supposed to classify against, and proceeding past it publishes a version with nothing behind it —
+formerly as a warning inside a run that still exited 0, which is where a warning goes unread. A
+release cannot be recalled once a package manager has it, so the run stops instead.
+
+Deleting the baseline is the documented way through, and the failure message says so. It costs one
+release classified against an empty history — the same cost the old fallback imposed, except that
+someone chooses it knowingly.
 
 **PER-05 — Save the new baseline.** ✅ **Resolved** *(was G-01, the blocking defect)*
 After classification, the tool SHALL serialize the new signatures and replace the baseline file.

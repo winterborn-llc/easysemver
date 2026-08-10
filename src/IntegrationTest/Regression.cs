@@ -134,6 +134,32 @@ public class Regression
     }
 
     /// <summary>
+    /// PER-04 - a baseline that exists but cannot be read fails the run, and fails it having
+    /// written nothing: no version stamped, and the unreadable file left exactly as it was for
+    /// whoever has to look at it. Warning and carrying on would have stamped a version off an
+    /// empty history, in a run that still exited 0.
+    /// </summary>
+    [Fact]
+    public void UnreadableBaselineFailsTheRunAndWritesNothing()
+    {
+        var folderRoot = CreateWidgetTree(out var projectPath, out _);
+        try
+        {
+            var baselinePath = Path.Combine(folderRoot, "EasySemVer.xml");
+            File.WriteAllText(baselinePath, "<EasySemVer formatVersion=\"3\" />");
+
+            Assert.Equal(1, Program.Main(folderRoot));
+
+            Assert.Equal("<EasySemVer formatVersion=\"3\" />", File.ReadAllText(baselinePath));
+            Assert.Equal("1.2.3", new CsProjFile(projectPath).Version.ToString());
+        }
+        finally
+        {
+            Directory.Delete(folderRoot, recursive: true);
+        }
+    }
+
+    /// <summary>
     /// O-04 - a dry run classifies and reports without writing, so it is not a release. This is the
     /// mode a pull-request check runs in, where mutating the tree would be wrong.
     /// </summary>

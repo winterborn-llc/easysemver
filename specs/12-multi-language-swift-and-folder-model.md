@@ -291,9 +291,11 @@ identity key). Two runs over unchanged source on two machines SHALL produce byte
 files. Symbol-graph JSON ordering is **not** guaranteed by the toolchain — sorting is the
 implementer's job, not the tool's.
 
-**BAS-05 — Self-healing preserved.** ✅ required
-PER-03 and PER-04 carry over unchanged: missing file → empty baseline; unreadable file → warn
-and proceed with an empty baseline. A first run therefore classifies Minor via NCL-02.
+**BAS-05 — Missing and unreadable are not the same thing.** ✅ required
+PER-03 and PER-04 carry over: missing file → empty baseline, so a first run classifies Minor via
+NCL-02; unreadable file → the run fails, having written nothing. A baseline that is present and
+unreadable is history the run could not compare against, and releasing past it is worse than
+stopping.
 
 **BAS-06 — Write atomically, and only on success.** ✅ required — *tightens PER-06*
 The baseline SHALL be written to a temporary file in the same directory and moved into place.

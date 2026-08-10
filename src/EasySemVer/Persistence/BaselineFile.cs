@@ -28,8 +28,18 @@ internal static class BaselineFile
     }
 
     /// <summary>
-    /// BAS-05 - a missing file is an empty baseline and an unreadable one is a warning plus an
-    /// empty baseline. Neither ever blocks a release.
+    /// BAS-05 - a missing file is an empty baseline, and a file that exists but cannot be read
+    /// fails the run.
+    ///
+    /// The two are not the same thing. Nothing on disk is a first run and the only honest verdict
+    /// is that everything is new; a baseline that is present and unreadable is history the run was
+    /// meant to compare against and could not, and continuing past it silently publishes a verdict
+    /// with nothing behind it. That used to be a warning in a green run, which is exactly where a
+    /// warning goes unread - and a release cannot be recalled once a package manager has it.
+    ///
+    /// Deleting the baseline is the way through, and the message says so: it costs one release
+    /// classified against an empty history, which is the same cost the fallback imposed except
+    /// that someone chooses it.
     /// </summary>
     internal static IReadOnlyList<IPackageableUnit> Read(
         string folderRoot,
@@ -48,8 +58,11 @@ internal static class BaselineFile
         }
         catch (Exception e)
         {
-            Log.WriteLine($"Unable to read the baseline at {path}; continuing with an empty one:\n{e}");
-            return [];
+            throw new InvalidDataException(
+                $"Unable to read the baseline at {path}, so this run has no history to classify "
+                + "against. Fix the file, or delete it to start from an empty baseline - that "
+                + "costs one release classified as if every unit were new.",
+                e);
         }
     }
 

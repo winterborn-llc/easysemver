@@ -90,8 +90,15 @@ It is a flat array of packageable units, each carrying its own language's signat
 ```
 
 Two runs over unchanged source on two machines produce byte-identical files: there are no
-absolute paths, timestamps, machine names or toolchain versions in it. A missing or unreadable
-baseline is never fatal — it is treated as "no history", and the next successful run heals it.
+absolute paths, timestamps, machine names or toolchain versions in it.
+
+A **missing** baseline is a first run: it is treated as "no history", every unit reads as added,
+and the run classifies Minor. A baseline that is **present but unreadable** — damaged, or written
+in an older `formatVersion` — fails the run instead, exiting 1 having written nothing. It is
+history the run was supposed to classify against, and releasing a version with nothing behind it
+is worse than stopping. Delete the file to start from an empty baseline; that costs one release
+classified as if every unit were new, which is the point at which you get to decide that is
+acceptable rather than finding out afterwards.
 
 ## Version locations
 

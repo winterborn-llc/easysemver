@@ -161,16 +161,26 @@ public class TestBaselineFile
             () => BaselineFile.ReadDocument(XDocument.Parse(xml), Providers));
     }
 
-    /// <summary>BAS-05 / PER-04 - an unreadable file on disk degrades to an empty baseline.</summary>
-    [Fact]
-    public void UnreadableFileOnDiskDegradesToEmpty()
+    /// <summary>
+    /// BAS-05 / PER-04 - an unreadable file on disk fails the run rather than degrading to an
+    /// empty baseline, which would publish a verdict with no history behind it.
+    /// </summary>
+    [Theory]
+    [InlineData("this is not xml at all")]
+    [InlineData("<EasySemVer formatVersion=\"3\" />")]
+    public void UnreadableFileOnDiskFailsTheRun(string content)
     {
         var folderRoot = Directory.CreateTempSubdirectory("easysemver-baseline").FullName;
         try
         {
-            File.WriteAllText(BaselineFile.GetPath(folderRoot), "this is not xml at all");
+            File.WriteAllText(BaselineFile.GetPath(folderRoot), content);
 
-            Assert.Empty(BaselineFile.Read(folderRoot, Providers));
+            var exception = Assert.Throws<InvalidDataException>(
+                () => BaselineFile.Read(folderRoot, Providers));
+
+            // The path, so the file can be found, and the way out, so nobody has to guess at it.
+            Assert.Contains(BaselineFile.GetPath(folderRoot), exception.Message);
+            Assert.Contains("delete it", exception.Message);
         }
         finally
         {
