@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<EasySemVer formatVersion="3">
-   <Unit language="Csharp" unitId="EasySemVer" unitKind="csproj" path="src/EasySemVer/EasySemVer.csproj">
+<EasySemVer formatVersion="4">
+   <Unit language="csharp" unitId="EasySemVer" unitKind="csproj" path="src/EasySemVer/EasySemVer.csproj">
       <CsharpProject name="EasySemVer">
          <Classes>
             <Class name="Winterborn.Tools.EasySemVer.CodeReader.Csharp.CsProjFile" declaringType="" static="false" abstract="false" sealed="false" base="">

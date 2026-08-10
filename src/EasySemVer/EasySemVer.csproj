@@ -2,9 +2,9 @@
   <PropertyGroup>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <PackageVersion>18.0.0</PackageVersion>
-    <AssemblyVersion>18.0.0</AssemblyVersion>
-    <FileVersion>18.0.0</FileVersion>
+    <PackageVersion>18.1.0</PackageVersion>
+    <AssemblyVersion>18.1.0</AssemblyVersion>
+    <FileVersion>18.1.0</FileVersion>
     <Title>EasySemVer by Winterborn</Title>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <RootNamespace>Winterborn.Tools.EasySemVer</RootNamespace>
