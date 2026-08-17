@@ -170,6 +170,45 @@ The comment above the class carries the reasoning and the spec id, as in the exa
 severity is surprising — and several are — is a rule whose comment has to say why, because the next
 person's instinct will be to "fix" it.
 
+### A rule is one traversal and one predicate
+
+The predicate is the rule. The traversal — walking the paired types, finding the member with the
+same name on the other side — is not, and it belongs in a helper beside the rules that share it:
+[`SwiftMembers.GetPairedFunctions`](src/EasySemVer/Evaluators/Swift/SwiftMembers.cs),
+[`Properties.GetPaired`](src/EasySemVer/Evaluators/Csharp/Properties.cs),
+`Overloads.GetMatchedOverloads`. Write those first, then the rules that consume them.
+
+```csharp
+foreach (var pair in Properties.GetPaired(signatures))
+{
+    if (pair.Older.IsWritable) { continue; }
+    if (!pair.Newer.IsWritable) { continue; }
+
+    yield return $"{pair.DeclaringType.Name}.{pair.Newer.Name}";
+}
+```
+
+Helpers hand back **entities and their scope, never a formatted symbol** — the qualifier differs
+per rule and only the rule knows it — and they yield `Older` before `Newer` so that a directional
+rule cannot read the pair backwards.
+
+This is not a style preference. The [census in specs/13](specs/13-shared-rule-bases.md) counted
+every rule in the tool by shape: **34 of 79 are "pair first, then compare one facet"**, the largest
+family by a wide margin. Swift's are six lines each because it had the helpers from the start. C#'s
+were fifteen to twenty for years, because eight rules each opened with their own copy of the same
+eight-line `Contains`-then-index loop before reaching the one line that was the point.
+
+**Helpers stay per-language.** `Evaluators/Csharp/` and `Evaluators/Swift/` each get their own, and
+they are `internal`. Two languages having a `GetPaired` of the same shape is the seam working, not
+duplication to be hoisted — a neutral one would have to know what a member is, and the core knows
+exactly three things, none of which is that. The generic base class that was proposed to share them
+across languages is written up and withdrawn in [specs/13](specs/13-shared-rule-bases.md), with the
+numbers that killed it.
+
+So a new language inherits **a shape, not a library** (RUL-14). [`SwiftMembers`](src/EasySemVer/Evaluators/Swift/SwiftMembers.cs)
+is the worked example to copy the structure of. There is nothing to subclass, and that is deliberate:
+those 34 rules pair over a topology only their own language has.
+
 ---
 
 # Working on it

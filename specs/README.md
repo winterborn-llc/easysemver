@@ -31,7 +31,7 @@ folder-based, multi-language system that exists today.
 | [11-testing.md](11-testing.md) | Required test coverage and current verification results |
 | [99-known-gaps.md](99-known-gaps.md) | Consolidated list of deviations, defects, and dead code |
 | [12-multi-language-swift-and-folder-model.md](12-multi-language-swift-and-folder-model.md) | The multi-language rework, **implemented**: folder-based invocation, per-language native topologies (`ICsharp*` / `ISwift*`), serializable baseline v2, Swift and Xcode support. Holds the Swift rule table (§13) and the settled decisions (§1). |
-| [13-shared-rule-bases.md](13-shared-rule-bases.md) | **Not implemented.** Holds the census of all 79 rules by diffing shape (§6). The generic base it originally proposed is withdrawn by its own criterion; what remains is three per-language C# pairing helpers and the seven rules that collapse onto them. |
+| [13-shared-rule-bases.md](13-shared-rule-bases.md) | **Implemented.** Holds the census of all 79 rules by diffing shape (§6). The generic base it originally proposed is withdrawn by its own criterion; what shipped is two per-language C# pairing helpers and the eight rules that collapsed onto them. |
 
 > Doc 12 is the design record for the rework; docs 01–11 and 99 were updated as it landed and
 > describe the result. Where a requirement was replaced or retired, the older document says so

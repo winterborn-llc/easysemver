@@ -1,7 +1,7 @@
 # 13 — Shared Rule Bases
 
-**Status: implemented, 2026-08-17 — as two pairing helpers, not as a base class.** §7 is built and
-green (§9); only RUL-14's contributor-guide note is outstanding.
+**Status: implemented and complete, 2026-08-17 — as two pairing helpers, not as a base class.** §7
+is built and green (§9), and every step in §8 is done.
 
 **How it got here: census complete, base class withdrawn by its own criterion.** RUL-10 required a full
 reading of all 79 registered rules before any base was written, and specified withdrawal if the
@@ -343,10 +343,14 @@ because nothing crosses a language boundary.
 It does. The question dissolves once the machinery is a per-language static rather than a neutral
 base.
 
-**RUL-14 — A new language gets the pattern, not the code.** ✅ required
+**RUL-14 — A new language gets the pattern, not the code.** ✅ **implemented, 2026-08-17**
 The contributor guide SHALL record that a provider is expected to write its own pairing helpers for
 its own topology, before it writes the rules that consume them, and that the rules should read as a
 traversal plus a predicate. Swift's `SwiftMembers` is the worked example.
+
+Recorded in [readme-contributors.md](../readme-contributors.md) as *"A rule is one traversal and one
+predicate"*, under **Rules** — the section a new provider's author is already reading when they
+write their first rule, rather than in a spec they would have to know to look for.
 
 ℹ️ This is the honest answer to what a twelfth language inherits: a documented shape, not a library.
 The census shows why — 43% of rules pair over a topology only that language has, and no amount of
@@ -359,7 +363,7 @@ Each step ends green: build clean, full suite passing, working tree committable.
 - ~~**B1 — Census.**~~ ✅ done, §6.
 - ~~**B2 — The C# helpers and their tests (§7, RUL-11).**~~ ✅ done, 2026-08-17.
 - ~~**B3 — Migrate the C# rules onto them.**~~ ✅ done, 2026-08-17 — eight rules.
-- **B4 — Contributor guide (RUL-14).** Outstanding.
+- ~~**B4 — Contributor guide (RUL-14).**~~ ✅ done, 2026-08-17.
 - ~~**B3–B5 — base class and rule migration.**~~ ❌ withdrawn, §6.
 
 ## 9. Acceptance criteria
