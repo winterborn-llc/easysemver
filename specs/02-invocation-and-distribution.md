@@ -123,7 +123,7 @@ never learn you need is a footgun.
 **CLI-13 — `--vnext-token-name <name>` renames the token TOK-01 stamps.** ✅ *(added 2026-08-16)*
 It SHALL consume the following argument as the name **inside** the braces and SHALL fail if none
 follows, or if the value contains a brace or any whitespace. Absent, the name is `vnext` and the
-literal searched for is `{{vnext}}`.
+literal searched for is `20.0.3`.
 
 Both rejections are silent-failure guards, on CLI-11's reasoning. A caller who passes the whole
 token would be searching for `{{{{release}}}}` and matching nothing; a value arriving from a

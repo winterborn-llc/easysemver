@@ -36,7 +36,7 @@ internal static class MagicValues
 
     /// <summary>
     /// TOK-02. The name inside the braces that <c>--vnext-token-name</c> replaces, so the literal
-    /// a run searches for is <c>{{vnext}}</c> by default. "vnext" rather than "version" because
+    /// a run searches for is <c>20.0.3</c> by default. "vnext" rather than "version" because
     /// the word has to be one that does not appear in ordinary prose by accident, and because it
     /// says which version it means: the one this run is about to produce, not the current one.
     /// </summary>

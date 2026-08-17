@@ -307,7 +307,7 @@ everything else is a flag:
 | `--max-minor <n>` | Carry minor into major once it passes `n`. No ceiling by default |
 | `--max-patch <n>` | Carry patch into minor once it passes `n`. No ceiling by default |
 | `--do-not-exclude <name>` | Keep a directory discovery would skip. Repeatable; a bare name, not a path |
-| `--vnext-token-name <name>` | Stamp `{{`name`}}` with the new version instead of `{{vnext}}`. The name, not the braces |
+| `--vnext-token-name <name>` | Stamp `{{`name`}}` with the new version instead of `20.0.3`. The name, not the braces |
 
 `0` on success. `1` on any failure, with the exception printed — deliberate, so that a versioning
 failure on a release build is impossible to miss.
@@ -379,7 +379,7 @@ and where the number is read from and written to.
 4. Runs the classification rules and takes the highest impact anything reported.
 5. Seeds from the highest version found in any version location in any unit, increments it, and
    writes that one version into every location that already exists.
-6. Replaces every `{{vnext}}` under the folder root with that same version, for the places no
+6. Replaces every `20.0.3` under the folder root with that same version, for the places no
    version location covers.
 
 Every successful run increments by at least a Patch: the tool assumes it runs for builds that are
@@ -479,11 +479,11 @@ versions and Win32 `FILEVERSION` fields cap every segment at 65535.
 ## Putting the version in your own text
 
 The table above is every place EasySemVer knows the shape of. For everywhere else — a changelog
-heading, a Helm chart, a docs page, an installer script — mark the spot with `{{vnext}}` and the
+heading, a Helm chart, a docs page, an installer script — mark the spot with `20.0.3` and the
 run replaces it with the version it just computed:
 
 ```markdown
-## {{vnext}} — unreleased
+## 20.0.3 — unreleased
 
 - The thing you did.
 ```
@@ -499,7 +499,7 @@ becomes
 Every occurrence in every file under the folder root, in files of any kind. The stamped files are
 reported like every other write, so `commit: true` stages them and the release commit carries them.
 
-**The token is consumed.** After the run the file says `2.4.0`, not `{{vnext}}` — which is the
+**The token is consumed.** After the run the file says `2.4.0`, not `20.0.3` — which is the
 point, and the thing to understand before adopting it. A file that wants the version every release
 has to be marked again every release; for a changelog, writing the next entry is what does that.
 
@@ -507,7 +507,7 @@ Skipped without asking: excluded directories (the same list [discovery
 uses](#excluded-directories)), the `EasySemVer.xml` baseline, binary files, and text that is not
 UTF-8. Everything else in a stamped file survives byte for byte, a byte-order mark included.
 
-If `{{vnext}}` legitimately means something else in your repository, rename the one EasySemVer
+If `20.0.3` legitimately means something else in your repository, rename the one EasySemVer
 stamps:
 
 ```bash

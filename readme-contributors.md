@@ -46,7 +46,7 @@ Program.Main
        ├─ GetSeedVersion         highest version in any source in any unit, else 0.0.0
        ├─ BaselineFile.Write     before anything is stamped
        ├─ provider.WriteVersion  the one new version into every existing location
-       ├─ VersionTokens.Stamp    the same version into every {{vnext}} under the folder root
+       ├─ VersionTokens.Stamp    the same version into every 20.0.3 under the folder root
        └─ Publish                text, JSON and GitHub Actions renderings of one document
 ```
 
@@ -217,7 +217,7 @@ it is cutting. **Do not hand-edit either.** A stale pin used to be a routine bug
 test failure.
 
 **Never run the tool against this repository without `--vnext-token-name`.** TOK-01 replaces
-`{{vnext}}` everywhere it appears under the folder root, and this is the repository that documents
+`20.0.3` everywhere it appears under the folder root, and this is the repository that documents
 that token — a bare `easysemver .` here stamps the version over every mention of it in the README,
 the specs and the source comments. The release workflow passes a name nobody writes for exactly
 this reason; a local run needs the same:

@@ -9,7 +9,7 @@ namespace Winterborn.Tools.EasySemVer.Persistence;
 /// version location it knows the shape of: an element in a .csproj, an assignment in a
 /// project.pbxproj, a constant in a .swift file. This is the surface for the places it cannot
 /// know about - a changelog heading, a Helm chart, a docs page, an installer script - where the
-/// consuming project marks the spot itself with <c>{{vnext}}</c> and the run replaces it.
+/// consuming project marks the spot itself with <c>20.0.3</c> and the run replaces it.
 /// <para>
 /// It is a **consuming** replacement: the token is gone after the run that stamps it, because
 /// what is left behind has to be the version, not a placeholder. That is the right behaviour for
