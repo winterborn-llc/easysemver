@@ -79,7 +79,7 @@ inputs:
       release pipeline rewrites the default below to the release it is cutting, which is what
       lets the moving 'v<major>' tag carry a manifest and a binary from the same release.
     required: false
-    default: v19.0.0
+    default: v20.0.0
 
   token:
     description: >-

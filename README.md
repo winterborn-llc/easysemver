@@ -92,13 +92,13 @@ jobs:
     # Increment our new versions before we build, so what the build carries the new version
     - name: Compute and apply the version
       id: version
-      uses: winterborn-llc/easysemver@v19
+      uses: winterborn-llc/easysemver@v20
 
     # Your build, package and tests, unchanged.
 
     # After your tests, before you publish, commit the version details and apply the tags
     - name: Commit and tag the release
-      uses: winterborn-llc/easysemver@v19
+      uses: winterborn-llc/easysemver@v20
       with:
         commit: true
         tag: true
@@ -128,12 +128,12 @@ The two steps, on their own — the first before your build, the second after yo
 ```yaml
 - name: Compute and apply the version
   id: version
-  uses: winterborn-llc/easysemver@v19
+  uses: winterborn-llc/easysemver@v20
 ```
 
 ```yaml
 - name: Commit and tag the release
-  uses: winterborn-llc/easysemver@v19
+  uses: winterborn-llc/easysemver@v20
   with:
     commit: true
     tag: true
@@ -155,7 +155,7 @@ goes into any repository unedited:
 ```yaml
 - name: Version, commit and tag
   id: version
-  uses: winterborn-llc/easysemver@v19
+  uses: winterborn-llc/easysemver@v20
   with:
     commit: true
     tag: true
@@ -188,7 +188,7 @@ from the tool falling over.
 ### Versioning a subdirectory
 
 ```yaml
-- uses: winterborn-llc/easysemver@v19
+- uses: winterborn-llc/easysemver@v20
   with:
     folder: src
 ```
@@ -203,7 +203,7 @@ PR check that says what merging would do:
 
 ```yaml
 - id: version
-  uses: winterborn-llc/easysemver@v19
+  uses: winterborn-llc/easysemver@v20
   with:
     dry-run: true
 
@@ -230,7 +230,7 @@ Every invocation publishes its verdict as step outputs, whether or not it commit
 
 ```yaml
 - id: version
-  uses: winterborn-llc/easysemver@v19
+  uses: winterborn-llc/easysemver@v20
 
 - run: echo "${{ steps.version.outputs.change-type }} → ${{ steps.version.outputs.version }}"
 ```

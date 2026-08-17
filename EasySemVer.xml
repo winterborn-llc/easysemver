@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <EasySemVer formatVersion="4">
-   <Unit language="csharp" unitId="EasySemVer" unitKind="csproj" path="src/EasySemVer/EasySemVer.csproj">
+   <Unit language="csharp" unitId="EasySemVer" unitKind="csproj" path="src/EasySemVer/EasySemVer.csproj" signatureVersion="1">
       <CsharpProject name="EasySemVer">
          <Classes>
             <Class name="Winterborn.Tools.EasySemVer.CodeReader.Csharp.CsProjFile" declaringType="" static="false" abstract="false" sealed="false" base="">
@@ -1130,6 +1130,8 @@
                            <GenericParameters />
                            <Parameters>
                               <Parameter name="type" type="Winterborn.Tools.EasySemVer.DataObject.VersionType" required="true" refKind="None" params="false" />
+                              <Parameter name="maximumMinor" type="int?" required="false" refKind="None" params="false" />
+                              <Parameter name="maximumPatch" type="int?" required="false" refKind="None" params="false" />
                            </Parameters>
                         </Override>
                      </Overrides>
