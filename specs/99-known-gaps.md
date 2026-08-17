@@ -20,22 +20,6 @@ Cross-project and NuGet types resolve as error symbols in the ad-hoc compilation
 names may lack namespaces. Stable run-to-run, so diffs work, but theoretically collidable.
 *Relates to:* SIG-01.
 
-**G-25 — This repository's own release cannot pass `vnext-token-name` yet.** (Verified)
-CLI-13's input is absent from [`dotnet.yml`](../.github/workflows/dotnet.yml) for exactly one
-release. TOK-01 stamps the default token everywhere it appears under the folder root, and this
-repository's README, specs and source comments document that token — so its release step has to
-name a token nobody writes (see CLI-13). It cannot yet: ACT-02's step runs the **published**
-binary, and every release published so far rejects the flag by name.
-
-The release that ships TOK-01 publishes the first binary that understands it, so the input lands in
-the commit after that release. This is G-20's two-step shape, unavoidable for the same reason: an
-Action running a published binary cannot consume a capability in the commit that introduces it.
-
-ℹ️ Nothing is at risk in the window. The binary that cannot be told about the token is the binary
-that does not have the feature, so it stamps nothing. The exposure begins at the *next* release and
-ends with the commit that closes this gap, which is why that commit comes first, not eventually.
-*Relates to:* ACT-02, ACT-10, CLI-13, TOK-01, G-20.
-
 ## Informative / hygiene
 
 **G-17 — Stale documentation.** ✅ Resolved by the doc-12 rewrite of
@@ -213,6 +197,26 @@ where the tool now lives. What is fixed is that the *next* one will not happen t
 ℹ️ The versions of test projects are deliberately still written. They are assemblies that ship in
 a build output and get stamped like anything else; what changed is only whose changes get a vote.
 *Satisfies:* UNI-04. *Relates to:* ML-02, UNI-02, UNI-03, NCL-03, BAS-01, R02.
+
+**G-25 — This repository's own release could not pass `vnext-token-name`.** ✅ Resolved by adoption
+TOK-01 stamps the default token everywhere it appears under the folder root, and this repository's
+README, specs and source comments *document* that token — so its release step has to name a token
+nobody writes (CLI-13), or the version is stamped over every mention of it and committed, one
+release at a time, until the documentation says nothing.
+
+The input could not ship in the commit that introduced the flag. ACT-02's step runs the
+**published** binary, and v20.0.1 rejected `--vnext-token-name` by name — which is not a
+hypothetical: the first push did pass it, and the run died at the version step with
+`EasySemVer does not recognise the option --vnext-token-name`. CI-03's ordering held and nothing was
+released: no build, no commit, no tag, nothing on nuget.org.
+
+The commit after it removed the input, its release published **v20.0.2** — the first binary that
+understands the flag — and the commit after *that* put the input back. Same two-step as G-20, same
+cause: an Action running a published binary cannot consume a capability in the commit that
+introduces it. Expect it again for anything this repository's own pipeline consumes.
+ℹ️ The window between the two was safe by construction, not by luck: the binary that could not be
+told about the token was the binary that did not have the feature.
+*Satisfies:* CLI-13. *Relates to:* ACT-02, ACT-10, TOK-01, G-20.
 
 **G-24 — Reading Swift needed a Swift toolchain, and that failed in the field.** ✅ Resolved by
 **SIG-20**
