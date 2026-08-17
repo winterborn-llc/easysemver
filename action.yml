@@ -42,6 +42,24 @@ inputs:
     required: false
     default: 'false'
 
+  max-minor:
+    description: >-
+      Cap the minor segment: once it passes this, it resets to zero and major is raised by one
+      (CLI-11). Empty by default, meaning no ceiling. Set this only when the target cannot hold
+      an arbitrary integer per segment - a carried segment reports a Minor bump on a run where
+      nothing was added, so the number stops meaning what it says everywhere else.
+    required: false
+    default: ''
+
+  max-patch:
+    description: >-
+      Cap the patch segment, carrying into minor. Empty by default. The case that needs it is a
+      framework or dylib target in an .xcodeproj: DYLIB_CURRENT_VERSION derives from
+      CURRENT_PROJECT_VERSION, which this tool writes, and caps the lower two segments at 255,
+      so set both to 255 there. App targets and SwiftPM packages have no such limit.
+    required: false
+    default: ''
+
   report:
     description: >-
       Act on a report an earlier step produced instead of versioning again. Pass this the `report`
@@ -202,6 +220,8 @@ runs:
       env:
         EASYSEMVER_FOLDER: ${{ inputs.folder }}
         EASYSEMVER_DRY_RUN: ${{ inputs.dry-run }}
+        EASYSEMVER_MAX_MINOR: ${{ inputs.max-minor }}
+        EASYSEMVER_MAX_PATCH: ${{ inputs.max-patch }}
       run: |
         set -euo pipefail
 
@@ -219,6 +239,31 @@ runs:
             ;;
         esac
 
+        # CLI-11's ceilings. Empty means no ceiling and contributes no argument, which is what
+        # keeps every workflow that has not asked for this byte-identical. Anything that is not
+        # a run of digits is rejected on the same reasoning as dry-run above: `max-patch: '255 '`
+        # or a templated empty expression should say so, not silently version differently for
+        # months. That check also leaves the value safe to expand unquoted below, because by
+        # then it provably holds nothing but digits.
+        caps=
+        case "$EASYSEMVER_MAX_MINOR" in
+          '') ;;
+          *[!0-9]*)
+            echo "::error::max-minor must be a whole number of zero or more, got '$EASYSEMVER_MAX_MINOR'." >&2
+            exit 1
+            ;;
+          *) caps="--max-minor $EASYSEMVER_MAX_MINOR" ;;
+        esac
+
+        case "$EASYSEMVER_MAX_PATCH" in
+          '') ;;
+          *[!0-9]*)
+            echo "::error::max-patch must be a whole number of zero or more, got '$EASYSEMVER_MAX_PATCH'." >&2
+            exit 1
+            ;;
+          *) caps="$caps --max-patch $EASYSEMVER_MAX_PATCH" ;;
+        esac
+
         # Exit 1 fails this step and stops the action, which is the whole point of CLI-06:
         # a versioning failure on a release build should be impossible to miss. REP-08 and
         # ACT-07 then leave nothing behind - no report, and no outputs - so a later step
@@ -230,13 +275,14 @@ runs:
         # this action promises its callers should not hinge on an environment variable being
         # what we expect.
         #
-        # $dry_run is deliberately unquoted, so that empty expands to no argument at all
-        # rather than to an empty one. It holds a literal set just above and never anything
-        # a caller supplied, which is what makes that safe. The array form this replaces
-        # tripped `set -u` on bash 3.2 - still what a macOS runner's /bin/bash is.
+        # $dry_run and $caps are deliberately unquoted, so that empty expands to no argument at
+        # all rather than to an empty one. $dry_run holds a literal set just above; $caps holds
+        # only flag names and values the case blocks have proven to be digits. Neither can carry
+        # anything else a caller supplied, which is what makes that safe. The array form this
+        # replaces tripped `set -u` on bash 3.2 - still what a macOS runner's /bin/bash is.
         #
         # shellcheck disable=SC2086
-        easysemver "$EASYSEMVER_FOLDER" $dry_run --github --json "$report"
+        easysemver "$EASYSEMVER_FOLDER" $dry_run $caps --github --json "$report"
 
     # ------------------------------------------------------------------------------------
     # ACT-11. Commit and tag, if the caller asked for it. Opt-in, and a no-op otherwise -

@@ -32,8 +32,9 @@ public class XcodeRegression
         var pbxproj = File.ReadAllText(fixture.ProjectFilePath);
         Assert.Contains("MARKETING_VERSION = 3.3.0;", pbxproj);
 
-        // MVR-06 / §20 O-01: the build counter is not a version and is left alone.
-        Assert.Contains("CURRENT_PROJECT_VERSION = 42;", pbxproj);
+        // The build counter is mirrored, so it moves on every run without hand-maintenance - but
+        // the 42 it started at never seeded the version, or this would read 43.0.0.
+        Assert.Contains("CURRENT_PROJECT_VERSION = 3.3.0;", pbxproj);
     }
 
     [Fact]

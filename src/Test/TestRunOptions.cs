@@ -94,6 +94,59 @@ public class TestRunOptions
         Assert.Throws<InvalidOperationException>(() => RunOptions.Parse("--dryrun"));
     }
 
+    /// <summary>The ceilings are opt-in: absent flags mean no ceiling, not a platform default.</summary>
+    [Fact]
+    public void SegmentCeilingsAreAbsentByDefault()
+    {
+        var options = RunOptions.Parse();
+
+        Assert.Null(options.MaximumMinor);
+        Assert.Null(options.MaximumPatch);
+    }
+
+    [Fact]
+    public void SegmentCeilingsAreRead()
+    {
+        var options = RunOptions.Parse("--max-minor", "65535", "--max-patch", "255");
+
+        Assert.Equal(65535, options.MaximumMinor);
+        Assert.Equal(255, options.MaximumPatch);
+    }
+
+    /// <summary>Either ceiling stands alone - a target may constrain one segment and not the other.</summary>
+    [Fact]
+    public void OneCeilingCanBeSetWithoutTheOther()
+    {
+        var options = RunOptions.Parse("--max-patch", "255");
+
+        Assert.Null(options.MaximumMinor);
+        Assert.Equal(255, options.MaximumPatch);
+    }
+
+    [Theory]
+    [InlineData("--max-patch", "255.0")]
+    [InlineData("--max-patch", "-1")]
+    [InlineData("--max-minor", "lots")]
+    public void ACeilingThatIsNotAWholeNumberIsAnError(string flag, string value)
+    {
+        Assert.Throws<InvalidOperationException>(() => RunOptions.Parse(flag, value));
+    }
+
+    [Fact]
+    public void CeilingFlagWithoutAValueIsAnError()
+    {
+        Assert.Throws<InvalidOperationException>(() => RunOptions.Parse("--max-patch"));
+    }
+
+    /// <summary>A ceiling's value must not be mistaken for the folder argument.</summary>
+    [Fact]
+    public void CeilingValueIsNotMistakenForTheFolder()
+    {
+        var options = RunOptions.Parse("--max-patch", "255");
+
+        Assert.Equal(new DirectoryInfo(Environment.CurrentDirectory).FullName, options.FolderRoot);
+    }
+
     [Fact]
     public void DryRunFlagIsNotMistakenForTheFolder()
     {

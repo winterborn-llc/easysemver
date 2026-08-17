@@ -664,6 +664,7 @@ units:
 |------|-----|-------------|:------:|
 | C# | `.csproj` `AssemblyVersion`, `PackageVersion`, `FileVersion` | ✅ | ✅ |
 | Swift/Xcode | `MARKETING_VERSION` in build settings (`xcodebuild -showBuildSettings -json`, written back into `project.pbxproj`) | ✅ | ✅ |
+| Swift/Xcode | `CURRENT_PROJECT_VERSION` in `project.pbxproj` | ❌ never (MVR-06) | ✅ |
 | Swift/Xcode | `CFBundleShortVersionString` in `Info.plist` | ✅ | ✅ |
 | Swift | `.podspec` `s.version` | ✅ | ✅ |
 | Swift | git tags matching `v?MAJOR.MINOR.PATCH` | ✅ | opt-in, §20 O-02 |
@@ -682,9 +683,16 @@ The single new version SHALL be written to every existing version location in ev
 unit across all languages. SYN-04 (DOM rewrite, normalized formatting) and SYN-05 (no
 transactionality; next run self-corrects via highest-wins) carry over.
 
-**MVR-06 — Non-semver build counters are out of scope.** ⚠️ decision needed
-`CURRENT_PROJECT_VERSION` / `CFBundleVersion` are build numbers, frequently a bare integer
-that VER-01 cannot parse. Default behavior: **read-skip and write-skip them**. See §20 O-01.
+**MVR-06 — Build counters are written, never read.** ✅ required *(supersedes the original
+read-skip/write-skip; §20 O-01 resolved)*
+`CURRENT_PROJECT_VERSION` SHALL be written with the new version wherever it exists as a literal,
+and SHALL NOT be read as a seed. Writing it is what keeps the counter moving without hand
+maintenance, now that the version changes on every run. Reading it is forbidden because the value
+is routinely a bare integer that VER-01 normalises to `<n>.0.0`, and MVR-03's highest-wins seed
+would let one counter capture the folder's version irreversibly.
+
+`CFBundleVersion` in `Info.plist` is not a separate source: in a stock project it interpolates
+`$(CURRENT_PROJECT_VERSION)`, and an interpolated value is write-skipped like any other (MVR-04).
 
 ## 15. Errors, logging, exit codes
 
@@ -815,11 +823,16 @@ test is green — Swift work built on an unwritable baseline cannot be verified.
 
 ## 20. Open items — raise these, do not silently decide
 
-**O-01 — Build counters.** MVR-06 proposes skipping `CURRENT_PROJECT_VERSION` /
-`CFBundleVersion` because they are usually bare integers that VER-01 rejects. The stated
-decision was "read all version sources and take the highest," which arguably includes them.
-Recommend: skip them for seeding, and optionally mirror `MARKETING_VERSION` into them only when
-the existing value already parses as ≥2 segments. **Confirm before implementing.**
+**O-01 — Build counters.** ✅ resolved — write, never read; see MVR-06.
+The concern that stopped this originally was the App Store's requirement that a build number
+increase within a version train: a mirrored counter only moves when the version does, so two
+uploads of one release would collide. That does not apply here, because EasySemVer runs on every
+check-in to main and so the version — and with it the counter — moves on every upload. The
+seeding half of the objection stands unchanged and is why the counter is never read.
+
+The unconditional mirror was chosen over the proposed "only when the existing value already parses
+as ≥2 segments" guard: the guard was there to stop an integer counter regressing, which the
+every-run cadence already prevents, and MVR-05 says every location gets the version.
 
 **O-02 — Git tags.** Reading the highest semver tag as a seed input is safe and is specified.
 *Writing* a tag is an outward-facing, effectively irreversible act. Recommend: `--tag` opt-in,

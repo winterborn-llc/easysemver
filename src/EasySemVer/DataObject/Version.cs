@@ -82,7 +82,19 @@ public class Version
         return value;
     }
 
-    public void Increment(VersionType type)
+    /// <summary>
+    /// Raises the segment the change type calls for, then carries any segment that has passed the
+    /// caller's ceiling into the one above it.
+    /// <para>
+    /// The ceilings are opt-in and have no default, because they trade truthfulness for
+    /// representability: a patch carried into minor publishes a Minor bump on a run where nothing
+    /// was added. That is only worth doing when the target genuinely cannot hold the number -
+    /// Mach-O's <c>DYLIB_CURRENT_VERSION</c> caps the lower two segments at 255, .NET assembly
+    /// versions and Win32 FILEVERSION fields cap every segment at 65535 - and it is the caller,
+    /// not this class, that knows whether it is.
+    /// </para>
+    /// </summary>
+    public void Increment(VersionType type, int? maximumMinor = null, int? maximumPatch = null)
     {
         var index = GetIndexFromChangeType(type);
         if (this.List[index] == int.MaxValue)
@@ -97,6 +109,12 @@ public class Version
 
         this.IncrementCounterAt(index);
         this.ResetSubsequentCounters(index);
+
+        // Patch first: a patch that carries into minor can push minor past its own ceiling in the
+        // same run, and that second carry has to happen too. Major has nothing above it to carry
+        // into, so it is uncapped and overflows through the OverflowException above instead.
+        this.CarryIfAbove(IndexOfPatch, maximumPatch);
+        this.CarryIfAbove(IndexOfMinor, maximumMinor);
     }
 
     private static int GetIndexFromChangeType(VersionType type)
@@ -119,6 +137,24 @@ public class Version
         }
 
         this.List[indexToIncrement] += 1;
+    }
+
+    /// <summary>
+    /// A segment past its ceiling becomes zero and adds one to the segment above it, so the result
+    /// still sorts above what it replaced: 1.0.256 capped at 255 becomes 1.1.0, and 1.1.0 is the
+    /// higher version. Everything below the carried segment is zeroed with it, so the result never
+    /// keeps a stale lower segment.
+    /// </summary>
+    private void CarryIfAbove(int index, int? maximum)
+    {
+        if (maximum == null || this.List[index] <= maximum)
+        {
+            return;
+        }
+
+        this.List[index] = 0;
+        this.ResetSubsequentCounters(index);
+        this.IncrementCounterAt(index - 1);
     }
 
     private void ResetSubsequentCounters(int indexOfValueToKeep)

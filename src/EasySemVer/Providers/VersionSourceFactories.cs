@@ -26,6 +26,7 @@ internal static class VersionSourceFactories
             new PodspecVersionSources(),
             new SwiftVersionFileSources(),
             new MarketingVersionSources(),
+            new BuildCounterVersionSources(),
             new InfoPlistVersionSources()
         ];
     }

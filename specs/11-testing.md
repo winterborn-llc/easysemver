@@ -35,8 +35,8 @@ covers the csproj rows of VER-06;
 [`TestSwiftVersionSources`](../src/Test/Swift/TestSwiftVersionSources.cs) and
 [`TestXcodeVersionSources`](../src/Test/Swift/TestXcodeVersionSources.cs) cover podspec, Swift
 version file, git tag, `MARKETING_VERSION` and `CFBundleShortVersionString` — including that a
-non-literal value is read-skipped and write-skipped (MVR-04) and that build counters are left
-alone (MVR-06).
+non-literal value is read-skipped and write-skipped (MVR-04) and that `CURRENT_PROJECT_VERSION` is
+written but never seeds (MVR-06).
 
 **TST-04 — Extraction against real source.** ✅
 [`TestCsharpExtraction`](../src/Test/TestCsharpExtraction.cs) SHALL run real extraction over a
@@ -114,8 +114,8 @@ tree and every run over it, including TST-05, would discover targets that are fi
 [`XcodeRegression`](../src/IntegrationTest/XcodeRegression.cs) exercises the Xcode path end to
 end against [`src/TestFixtures/XcodeProject/`](../src/TestFixtures/XcodeProject): target discovery
 from `project.pbxproj`, source resolution through the group hierarchy, extraction,
-`MARKETING_VERSION` read and written back, `CURRENT_PROJECT_VERSION` left untouched, and a
-byte-identical baseline on a second run. No trait, and no Xcode.
+`MARKETING_VERSION` read and written back, `CURRENT_PROJECT_VERSION` mirrored without ever
+seeding, and a byte-identical baseline on a second run. No trait, and no Xcode.
 ℹ️ The project bundle is checked in as `App.xcodeproj.template` and renamed by the fixture, for
 the same reason the SwiftPM manifest is.
 

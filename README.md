@@ -70,7 +70,8 @@ on:
   push:
     branches: [ main ]
 
-concurrency:                     # never two releases at once
+# never two releases at once
+concurrency:
   group: release
   cancel-in-progress: false
 
@@ -79,23 +80,23 @@ jobs:
     runs-on: ubuntu-latest
 
     permissions:
-      contents: write            # to push the commit and the tag
+      # to push the updated versions and tags back into the repo
+      contents: write
 
     steps:
     - uses: actions/checkout@v5
       with:
-        fetch-depth: 0           # tags are one of the places the version is read from
+        # tags are one of the places the version is read from
+        fetch-depth: 0
 
-    # ── EasySemVer ── before your build, so what you build carries the new version
+    # Increment our new versions before we build, so what the build carries the new version
     - name: Compute and apply the version
       id: version
       uses: winterborn-llc/easysemver@v19
 
     # Your build, package and tests, unchanged.
-    - run: dotnet build --configuration Release
-    - run: dotnet test --configuration Release --no-build
 
-    # ── EasySemVer ── after your tests, before you publish
+    # After your tests, before you publish, commit the version details and apply the tags
     - name: Commit and tag the release
       uses: winterborn-llc/easysemver@v19
       with:
@@ -170,6 +171,8 @@ Split it the moment something is built between the two, for the ordering reasons
 | `dry-run` | `false` | `true` classifies and reports without writing anything |
 | `commit` | `false` | `true` commits the bump and pushes it |
 | `tag` | `false` | `true` also creates and pushes `v<version>`. Needs `commit: true` |
+| `max-minor` | — | Cap the minor segment, carrying into major. See [Segment ceilings](#segment-ceilings-and-the-255-limit) |
+| `max-patch` | — | Cap the patch segment, carrying into minor. Set both to `255` if you ship a framework or dylib target |
 | `report` | — | Act on an earlier step's `report` output instead of versioning again |
 | `version` | the release this manifest shipped with | Which EasySemVer release to run |
 | `token` | `${{ github.token }}` | Only needs overriding if this repository is private to you |
@@ -209,10 +212,9 @@ PR check that says what merging would do:
 
 ### If your repository has Swift in it
 
-Swift signatures come from the Swift toolchain's own symbol graph, and Xcode targets from
-`xcodebuild`, so the job needs `runs-on: macos-latest` and a toolchain it can reach. See
-[Swift prerequisites](#swift-prerequisites) — including that a Swift unit whose signature cannot
-be extracted fails the run rather than being skipped.
+Nothing extra. Swift is read from your source files, so the job runs on whatever runner you were
+already using and needs neither a Swift toolchain nor Xcode. See
+[How Swift is read](#how-swift-is-read) for what that does and does not see.
 
 ### Which release you get
 
@@ -300,6 +302,8 @@ everything else is a flag:
 | `--dry-run` | Classify and report without writing anything — no version, no baseline |
 | `--json <path>` | Write the verdict to a file a script can read |
 | `--github` / `--no-github` | Force the GitHub Actions outputs and job summary on or off |
+| `--max-minor <n>` | Carry minor into major once it passes `n`. No ceiling by default |
+| `--max-patch <n>` | Carry patch into minor once it passes `n`. No ceiling by default |
 
 `0` on success. `1` on any failure, with the exception printed — deliberate, so that a versioning
 failure on a release build is impossible to miss.
@@ -423,14 +427,48 @@ written back to every one of them that already exists.
 |----------|----------|:----:|:-----:|
 | C# | `.csproj` `AssemblyVersion`, `PackageVersion`, `FileVersion` | ✅ | ✅ |
 | Swift / Xcode | `MARKETING_VERSION` in `project.pbxproj` | ✅ | ✅ |
+| Swift / Xcode | `CURRENT_PROJECT_VERSION` in `project.pbxproj` | ❌ never | ✅ |
 | Swift / Xcode | `CFBundleShortVersionString` in `Info.plist` | ✅ | ✅ |
 | Swift | `s.version` in a `.podspec` | ✅ | ✅ |
 | Swift | a `*Version.swift` constant, e.g. `static let version = "1.2.3"` | ✅ | ✅ |
 | any | git tags matching `v?MAJOR.MINOR.PATCH` | ✅ | ❌ never |
 
-`CURRENT_PROJECT_VERSION` and `CFBundleVersion` are build counters, not versions, and are left
-alone entirely. Git tags are read as a seed but never written: creating a tag is an
-outward-facing act EasySemVer will not take on your behalf.
+`CURRENT_PROJECT_VERSION` is **written but never read**. Writing it means the build counter moves
+on every run without anyone maintaining it by hand, which is what Xcode and the App Store want.
+Reading it would be a disaster: the value is routinely a bare integer like `87`, which parses as
+`87.0.0`, and since the seed is the highest version found anywhere, one build counter would drag
+the whole folder's version up with no way back down. `CFBundleVersion` in `Info.plist` is usually
+`$(CURRENT_PROJECT_VERSION)` and follows from it.
+
+Git tags are read as a seed but never written: creating a tag is an outward-facing act EasySemVer
+will not take on your behalf.
+
+### Segment ceilings, and the 255 limit
+
+`--max-minor` and `--max-patch` cap a segment: instead of ticking past the ceiling, it resets to
+zero and adds one to the segment above, so `1.0.255` with `--max-patch 255` becomes `1.1.0`. The
+result always sorts above what it replaced, so a version never goes backwards.
+
+**There is no default, and that is deliberate.** A carried patch publishes a Minor bump on a run
+where nothing was added — the number stops meaning what the rest of this README says it means.
+That is worth paying only when the target genuinely cannot hold the number.
+
+The case where it can't is **Mach-O `DYLIB_CURRENT_VERSION`**, which caps the second and third
+segments at 255 (and the first at 65535). In a stock Xcode project that setting derives from
+`CURRENT_PROJECT_VERSION` — which EasySemVer now writes — so on a **framework or dylib target**,
+the first run after patch passes 255 fails to link. Apps don't link that setting and are unaffected.
+
+So set the ceilings if you ship a framework or dylib target from an `.xcodeproj`:
+
+```bash
+easysemver /path/to/your/folder --max-minor 255 --max-patch 255
+```
+
+To be clear about what this is *not*: Swift Package Manager package versions are git tags and have
+no such limit, and neither do `MARKETING_VERSION`, `CFBundleShortVersionString`, or `.podspec`
+versions. If you ship only apps, packages, or pods, leave the ceilings off and keep versions that
+mean what they say. Other ecosystems have their own ceilings if you ever need them — .NET assembly
+versions and Win32 `FILEVERSION` fields cap every segment at 65535.
 
 ## The baseline file
 
@@ -469,17 +507,37 @@ Discovery skips, at any depth: any directory whose name begins with `.` (so `.gi
 `node_modules` and `Packages`. This is not politeness — an unexcluded dependency checkout would
 pull other people's source into your signature and make every dependency update a Major change.
 
-## Swift prerequisites
+## How Swift is read
 
-Swift signatures come from the Swift toolchain's own symbol graph. There is no hand-rolled Swift
-parser in this tool.
+**There are no prerequisites.** Targets come from the text of `Package.swift` and
+`project.pbxproj`, and signatures come from your `.swift` files. No Swift toolchain, no Xcode, no
+network, no build. A folder with Swift in it costs about as much to version as a folder without.
 
-- A folder containing a `Package.swift` needs a **Swift toolchain** on the path.
-- A folder containing an `.xcodeproj` needs **Xcode** configured, and pays a full `xcodebuild` on
-  every versioned run.
-- If Swift units are present and their signatures cannot be extracted — no toolchain, a failed
-  build, a timeout — **the run fails with exit 1 and writes nothing**. There is no skip-and-warn:
-  a partial baseline would silently under-report the next change.
+Earlier versions asked the toolchain instead: `swift package dump-package` and `xcodebuild -list`
+to find the targets, then a `swift build` or `xcodebuild build` per package to emit symbol graphs.
+That was more accurate, because the compiler had resolved the program — and it meant every
+versioned run needed Xcode, a network, and credentials for every private package dependency, and
+failed outright when any of those was missing.
 
-A folder with no Swift in it needs none of this.
+Reading source instead is an approximation, in the same way the C# reader is one. What it costs:
+
+- **An inferred type is not recorded.** `public let store = Store()` has no written type, so a
+  change of type there is invisible. Write the type if it is part of your contract.
+- **Macro-generated declarations are not seen**, because they are not in the file.
+- **Every branch of an `#if` is read**, because picking one needs the build configuration.
+- **A class's first inheritance entry is read as its superclass** unless the module declares it as
+  a protocol. `class Foo: Codable` reads `Codable` as a superclass. It is wrong in the same way on
+  every run, so it never churns your baseline.
+- **A target whose name is computed** rather than written as a literal in `Package.swift` is not
+  discovered. It says so in the log.
+
+Every one of those errs towards reporting more surface than you have, never less. What still fails
+the run with exit 1 and writes nothing: a manifest or project that declares a target whose source
+is nowhere to be found. A target that exists and simply has no Swift in it — an Objective-C or C
+target — is versioned like anything else and compared against nothing.
+
+**Upgrading from v18 or earlier:** your existing baseline is kept, but its Swift units are dropped
+and re-seeded, because the old signatures described the same API in different words. Expect one
+release in which every Swift target reads as new. Nothing else in the baseline is affected, and a
+repository with no Swift in it sees no change at all.
 

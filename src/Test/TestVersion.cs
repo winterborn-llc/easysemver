@@ -28,6 +28,53 @@ public class TestVersion
     }
 
     /// <summary>
+    /// Opt-in segment ceilings: a segment past its cap carries into the one above. The result is
+    /// always the higher version, so a run never publishes a number below the one before it.
+    /// </summary>
+    [Theory]
+    [InlineData("1.0.255", VersionType.Patch, "1.1.0")]
+    [InlineData("1.0.254", VersionType.Patch, "1.0.255")]
+    [InlineData("1.255.0", VersionType.Minor, "2.0.0")]
+    [InlineData("1.255.255", VersionType.Patch, "2.0.0")]
+    [InlineData("1.0.300", VersionType.Patch, "1.1.0")]
+    public void SegmentsCarryWhenTheyPassTheirCeiling(
+        string given,
+        VersionType incrementer,
+        string expected)
+    {
+        var version = new Version(given);
+
+        version.Increment(incrementer, maximumMinor: 255, maximumPatch: 255);
+
+        Assert.Equal(expected, version.ToString());
+    }
+
+    /// <summary>
+    /// The ceilings are independent: capping patch alone lets minor climb past 255 unchecked, which
+    /// is what a target that constrains one segment and not the other needs.
+    /// </summary>
+    [Fact]
+    public void AnUncappedSegmentNeverCarries()
+    {
+        var version = new Version("1.255.255");
+
+        version.Increment(VersionType.Patch, maximumMinor: null, maximumPatch: 255);
+
+        Assert.Equal("1.256.0", version.ToString());
+    }
+
+    /// <summary>No ceiling is the default, so nobody who has not asked for this sees it.</summary>
+    [Fact]
+    public void WithoutCeilingsSegmentsClimbFreely()
+    {
+        var version = new Version("1.0.255");
+
+        version.Increment(VersionType.Patch);
+
+        Assert.Equal("1.0.256", version.ToString());
+    }
+
+    /// <summary>
     /// MVR-02 (was G-11) - short versions normalise to three segments on parse instead of
     /// crashing Increment. A two-segment MARKETING_VERSION is routine input now.
     /// </summary>

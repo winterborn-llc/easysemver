@@ -171,7 +171,11 @@ public class ActionRegression : IDisposable
         ["PATH"] = Path.Combine(this._temp, "stub-bin") + ":" + Environment.GetEnvironmentVariable("PATH")
     };
 
-    private Dictionary<string, string> RunEnvironment(string folder, string dryRun) => new()
+    private Dictionary<string, string> RunEnvironment(
+        string folder,
+        string dryRun,
+        string maxMinor = "",
+        string maxPatch = "") => new()
     {
         ["RUNNER_OS"] = ThisRunner.Os,
         ["RUNNER_TEMP"] = this.RunnerTemp,
@@ -182,6 +186,11 @@ public class ActionRegression : IDisposable
         ["GITHUB_STEP_SUMMARY"] = this.GithubStepSummary,
         ["EASYSEMVER_FOLDER"] = folder,
         ["EASYSEMVER_DRY_RUN"] = dryRun,
+
+        // A runner always supplies every input, defaulting to '' - and the run body reads them
+        // under `set -u`, so omitting them here would fail the step for a reason no workflow has.
+        ["EASYSEMVER_MAX_MINOR"] = maxMinor,
+        ["EASYSEMVER_MAX_PATCH"] = maxPatch,
 
         // What appending to $GITHUB_PATH does for every later step.
         ["PATH"] = Path.Combine(this.RunnerTemp, "easysemver") + ":" +
@@ -303,14 +312,18 @@ public class ActionRegression : IDisposable
     }
 
     /// <summary>Installs, then runs, returning what the run step published.</summary>
-    private (int ExitCode, string Output) InstallAndRun(string folder, string dryRun)
+    private (int ExitCode, string Output) InstallAndRun(
+        string folder,
+        string dryRun,
+        string maxMinor = "",
+        string maxPatch = "")
     {
         this.StubTheRelease(RidFor(ThisRunner.Os, ThisRunner.Arch)!);
 
         var install = this.RunScript(Script(0), this.InstallEnvironment(ThisRunner.Os, ThisRunner.Arch));
         Assert.True(install.ExitCode == 0, install.Output);
 
-        return this.RunScript(Script(1), this.RunEnvironment(folder, dryRun));
+        return this.RunScript(Script(1), this.RunEnvironment(folder, dryRun, maxMinor, maxPatch));
     }
 
     // ----------------------------------------------------------------------------------------
@@ -765,6 +778,68 @@ public class ActionRegression : IDisposable
 
         Assert.Equal(1, result.ExitCode);
         Assert.Contains("dry-run must be", result.Output);
+        Assert.Empty(this.PublishedOutputs());
+        Assert.False(File.Exists(Path.Combine(folder, "EasySemVer.xml")));
+    }
+
+    /// <summary>
+    /// CLI-11 through the Action: the input reaches the tool and the segment carries. A ceiling of
+    /// 1 rather than 255 so the run count stays at three - a first run is Minor because the unit is
+    /// new, so patch only starts moving on the second.
+    /// </summary>
+    [Fact]
+    public void SegmentCeilingsReachTheTool()
+    {
+        var folder = this.CreateFolder();
+
+        Assert.True(this.InstallAndRun(folder, "false", maxPatch: "1").ExitCode == 0);
+        Assert.True(this.InstallAndRun(folder, "false", maxPatch: "1").ExitCode == 0);
+
+        // $GITHUB_OUTPUT is appended to, never truncated, so three runs leave three sets of keys
+        // in it. Only the last one is under test.
+        File.Delete(this.GithubOutput);
+        var result = this.InstallAndRun(folder, "false", maxPatch: "1");
+
+        // 2.3.4 -> Minor 2.4.0 -> Patch 2.4.1 -> Patch would be 2.4.2, so it carries.
+        Assert.Equal(0, result.ExitCode);
+        Assert.Equal("2.5.0", this.PublishedOutputs()["version"]);
+    }
+
+    /// <summary>
+    /// The ceilings are opt-in, and a workflow that has not asked for them must be unaffected: an
+    /// absent input contributes no argument at all rather than an empty one.
+    /// </summary>
+    [Fact]
+    public void NoCeilingInputsMeansNoCeiling()
+    {
+        var folder = this.CreateFolder();
+
+        Assert.True(this.InstallAndRun(folder, "false").ExitCode == 0);
+        Assert.True(this.InstallAndRun(folder, "false").ExitCode == 0);
+
+        File.Delete(this.GithubOutput);
+        var result = this.InstallAndRun(folder, "false");
+
+        Assert.Equal(0, result.ExitCode);
+        Assert.Equal("2.4.2", this.PublishedOutputs()["version"]);
+    }
+
+    /// <summary>
+    /// ACT-04's rule again: a ceiling that is not a whole number is named, not ignored. Silently
+    /// dropping it would version differently from what the workflow asked for, for months.
+    /// </summary>
+    [Theory]
+    [InlineData("255.0", "")]
+    [InlineData("-1", "")]
+    [InlineData("", "two hundred")]
+    public void ACeilingThatIsNotAWholeNumberIsRejected(string maxMinor, string maxPatch)
+    {
+        var folder = this.CreateFolder();
+
+        var result = this.InstallAndRun(folder, "false", maxMinor, maxPatch);
+
+        Assert.Equal(1, result.ExitCode);
+        Assert.Contains("must be a whole number", result.Output);
         Assert.Empty(this.PublishedOutputs());
         Assert.False(File.Exists(Path.Combine(folder, "EasySemVer.xml")));
     }

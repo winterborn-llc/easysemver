@@ -68,15 +68,65 @@ public class TestXcodeVersionSources : IDisposable
         Assert.Equal(2, written.Split("MARKETING_VERSION = 2.0.0;").Length - 1);
     }
 
-    /// <summary>MVR-06 / §20 O-01 - build counters are neither read nor written.</summary>
+    /// <summary>The two rows are separate sources; neither writer may bleed into the other's row.</summary>
     [Fact]
-    public void BuildCounterIsLeftAlone()
+    public void MarketingVersionWriteLeavesTheCounterAlone()
     {
         var path = this.Write("project.pbxproj", Pbxproj);
 
         new MarketingVersionSource(path, "App.xcodeproj/project.pbxproj").Write(new Version("2.0.0"));
 
         Assert.Contains("CURRENT_PROJECT_VERSION = 87;", File.ReadAllText(path));
+    }
+
+    /// <summary>SYN-02 - every occurrence, so conditional configurations converge.</summary>
+    [Fact]
+    public void EveryBuildCounterOccurrenceIsWritten()
+    {
+        var path = this.Write("project.pbxproj", Pbxproj);
+
+        new BuildCounterVersionSource(path, "App.xcodeproj/project.pbxproj").Write(new Version("2.0.0"));
+
+        var written = File.ReadAllText(path);
+        Assert.Equal(2, written.Split("CURRENT_PROJECT_VERSION = 2.0.0;").Length - 1);
+    }
+
+    /// <summary>The counter is written but never seeds: a bare 87 must not become version 87.0.0.</summary>
+    [Fact]
+    public void BuildCounterIsNeverAVersionSeed()
+    {
+        var path = this.Write("project.pbxproj", Pbxproj);
+
+        Assert.Null(new BuildCounterVersionSource(path, "App.xcodeproj/project.pbxproj").Read());
+    }
+
+    [Fact]
+    public void BuildCounterWriteLeavesTheMarketingVersionAlone()
+    {
+        var path = this.Write("project.pbxproj", Pbxproj);
+
+        new BuildCounterVersionSource(path, "App.xcodeproj/project.pbxproj").Write(new Version("2.0.0"));
+
+        Assert.Equal(2, File.ReadAllText(path).Split("MARKETING_VERSION = 1.4.2;").Length - 1);
+    }
+
+    /// <summary>Xcode writes the value bare or quoted depending on how it was edited.</summary>
+    [Fact]
+    public void QuotedBuildCounterIsAlsoALiteral()
+    {
+        var path = this.Write("project.pbxproj", "{ CURRENT_PROJECT_VERSION = \"87\"; }");
+
+        new BuildCounterVersionSource(path, "project.pbxproj").Write(new Version("2.0.0"));
+
+        Assert.Contains("CURRENT_PROJECT_VERSION = \"2.0.0\";", File.ReadAllText(path));
+    }
+
+    /// <summary>MVR-04 - an interpolated counter is write-skipped, exactly as the version row is.</summary>
+    [Fact]
+    public void ProjectWithoutALiteralCounterIsNotAVersionSource()
+    {
+        Assert.False(BuildCounterVersionSource.HasLiteralCounter(
+            "{ buildSettings = { CURRENT_PROJECT_VERSION = \"$(BUILD_NUMBER)\"; }; }"));
     }
 
     /// <summary>Xcode writes the value bare or quoted depending on how it was edited.</summary>

@@ -29,7 +29,7 @@ internal static class VersioningRun
 
         var startingVersion = GetSeedVersion(units, providers);
         var newVersion = new Version(startingVersion);
-        newVersion.Increment(report.ChangeType);
+        newVersion.Increment(report.ChangeType, options.MaximumMinor, options.MaximumPatch);
         Log.WriteLine($"Version: {startingVersion} -> {newVersion}");
 
         if (options.IsDryRun)

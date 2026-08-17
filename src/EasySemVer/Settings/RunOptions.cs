@@ -12,6 +12,10 @@ internal class RunOptions
 
     private const string NoGitHubFlag = "--no-github";
 
+    private const string MaxMinorFlag = "--max-minor";
+
+    private const string MaxPatchFlag = "--max-patch";
+
     /// <summary>FLD-01 - the folder handed to the CLI is the root, full stop.</summary>
     internal string FolderRoot { get; private init; } = string.Empty;
 
@@ -35,6 +39,24 @@ internal class RunOptions
     /// </summary>
     internal bool WritesGitHubActionsReport { get; private init; }
 
+    /// <summary>
+    /// The highest value the minor and patch segments may reach before carrying into the segment
+    /// above, or null - the default - for no ceiling at all.
+    /// <para>
+    /// There is deliberately no default value. A ceiling makes the version representable in a
+    /// target that cannot hold an arbitrary integer per segment, at the cost of the number's
+    /// meaning: a carried patch reads as a Minor bump on a run where nothing was added. Which
+    /// ceiling applies is a property of what the version is being written into and differs per
+    /// ecosystem - 255 for the lower two segments of a Mach-O <c>DYLIB_CURRENT_VERSION</c>, 65535
+    /// for .NET assembly versions and Win32 FILEVERSION fields - so guessing one on the caller's
+    /// behalf would silently distort versions in every folder that did not need it.
+    /// </para>
+    /// </summary>
+    internal int? MaximumMinor { get; private init; }
+
+    /// <inheritdoc cref="MaximumMinor"/>
+    internal int? MaximumPatch { get; private init; }
+
     internal static RunOptions Parse(params string[] args)
     {
         return Parse(Environment.GetEnvironmentVariable, args);
@@ -49,7 +71,12 @@ internal class RunOptions
         var isDryRun = false;
         var jsonReportPath = string.Empty;
         var directories = new List<string>();
-        var isReadingJsonPath = false;
+        int? maximumMinor = null;
+        int? maximumPatch = null;
+
+        // The flag whose value the next argument is, or null when the next argument is a flag or
+        // the directory. One field rather than one bool per option, now that three flags take one.
+        string? flagAwaitingValue = null;
 
         // CLI-10: detected, then overridden by an explicit flag either way.
         var writesGitHubActionsReport = string.Equals(
@@ -59,10 +86,22 @@ internal class RunOptions
 
         foreach (var arg in args)
         {
-            if (isReadingJsonPath)
+            if (flagAwaitingValue != null)
             {
-                jsonReportPath = arg;
-                isReadingJsonPath = false;
+                if (string.Equals(flagAwaitingValue, JsonFlag, StringComparison.Ordinal))
+                {
+                    jsonReportPath = arg;
+                }
+                else if (string.Equals(flagAwaitingValue, MaxMinorFlag, StringComparison.Ordinal))
+                {
+                    maximumMinor = ParseSegmentMaximum(flagAwaitingValue, arg);
+                }
+                else
+                {
+                    maximumPatch = ParseSegmentMaximum(flagAwaitingValue, arg);
+                }
+
+                flagAwaitingValue = null;
                 continue;
             }
 
@@ -74,7 +113,19 @@ internal class RunOptions
 
             if (string.Equals(arg, JsonFlag, StringComparison.OrdinalIgnoreCase))
             {
-                isReadingJsonPath = true;
+                flagAwaitingValue = JsonFlag;
+                continue;
+            }
+
+            if (string.Equals(arg, MaxMinorFlag, StringComparison.OrdinalIgnoreCase))
+            {
+                flagAwaitingValue = MaxMinorFlag;
+                continue;
+            }
+
+            if (string.Equals(arg, MaxPatchFlag, StringComparison.OrdinalIgnoreCase))
+            {
+                flagAwaitingValue = MaxPatchFlag;
                 continue;
             }
 
@@ -98,9 +149,14 @@ internal class RunOptions
             directories.Add(arg);
         }
 
-        if (isReadingJsonPath)
+        if (string.Equals(flagAwaitingValue, JsonFlag, StringComparison.Ordinal))
         {
             throw new InvalidOperationException($"{JsonFlag} requires a file path");
+        }
+
+        if (flagAwaitingValue != null)
+        {
+            throw new InvalidOperationException($"{flagAwaitingValue} requires a whole number");
         }
 
         // CLI-02: at most one directory.
@@ -122,7 +178,23 @@ internal class RunOptions
             FolderRoot = new DirectoryInfo(folderRoot).FullName,
             IsDryRun = isDryRun,
             JsonReportPath = jsonReportPath,
-            WritesGitHubActionsReport = writesGitHubActionsReport
+            WritesGitHubActionsReport = writesGitHubActionsReport,
+            MaximumMinor = maximumMinor,
+            MaximumPatch = maximumPatch
         };
+    }
+
+    /// <summary>
+    /// A ceiling of zero is legal and means the segment may never be anything but zero, so every
+    /// increment of it carries. A negative ceiling is not, since no segment could ever satisfy it.
+    /// </summary>
+    private static int ParseSegmentMaximum(string flag, string text)
+    {
+        if (!int.TryParse(text, out var maximum) || maximum < 0)
+        {
+            throw new InvalidOperationException($"{flag} requires a whole number of zero or more");
+        }
+
+        return maximum;
     }
 }

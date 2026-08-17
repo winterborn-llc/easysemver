@@ -82,6 +82,28 @@ summary is shared with every other step in the job.
 The versioning run has already succeeded by then, and failing a release over a report would be the
 wrong trade in a way REP-08 makes clear.
 
+**CLI-11 — `--max-minor` / `--max-patch` cap a segment, and have no default.** ✅
+Each SHALL consume the following argument as a whole number of zero or more and SHALL fail if none
+follows or it is not one. When a ceiling is set and its segment passes it after an increment, that
+segment SHALL become zero, everything below it SHALL be zeroed with it, and the segment above it
+SHALL be raised by one. Patch carries before minor, so a single increment can carry twice. Major is
+uncapped — it has nothing above it to carry into, and overflows via VER-07 instead. Absent flags
+mean no ceiling.
+
+There is deliberately **no default**. A carried patch publishes a Minor verdict on a run where
+nothing was added, which is the one thing this tool exists to prevent, so a ceiling is only correct
+when the target genuinely cannot represent the number — and which ceiling applies is a property of
+the target, not of versioning: 255 on the lower two segments of a Mach-O `DYLIB_CURRENT_VERSION`,
+65535 on .NET assembly versions and Win32 `FILEVERSION` fields. Since a folder produces one version
+for every unit in it (ML-06), a default guessed for one ecosystem would distort every other one
+sharing that folder. Carrying always yields a version above the one it replaced, so a ceiling never
+moves a version backwards.
+
+ℹ️ The concrete case is a framework or dylib target in an `.xcodeproj`: `DYLIB_CURRENT_VERSION`
+derives from `CURRENT_PROJECT_VERSION`, which MVR-06 now writes, so the first run past patch 255
+fails to link. App targets do not link that setting, and SwiftPM package versions — git tags — have
+no such ceiling.
+
 ## Machine-readable report
 
 **REP-01 — `--json <path>` writes the run's verdict as a file.** ✅

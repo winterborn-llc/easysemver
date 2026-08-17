@@ -95,8 +95,8 @@ failure — leaves the working tree untouched.
   dotted integers.
 - Per-unit or per-language independent version streams.
 - Writing git tags. Tags are read as a seed input and never created (§20 O-02).
-- Build counters (`CURRENT_PROJECT_VERSION`, `CFBundleVersion`); they are neither read nor
-  written (MVR-06, §20 O-01).
+- Build counters as *seeds*. `CURRENT_PROJECT_VERSION` is written so it keeps moving, but it is
+  never read back as a version (MVR-06, §20 O-01).
 - Configuration files / tuning knobs; behavior is fixed by
   [`MagicValues`](../src/EasySemVer/Settings/MagicValues.cs). The one exception is the
   `--dry-run` flag (§20 O-04).
