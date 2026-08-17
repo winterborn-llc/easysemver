@@ -120,6 +120,22 @@ silent. The pairing is deliberate: the run names what it skipped, and this flag 
 does about it. Neither alone is enough — a list you cannot override is a wall, and an override you
 never learn you need is a footgun.
 
+**CLI-13 — `--vnext-token-name <name>` renames the token TOK-01 stamps.** ✅ *(added 2026-08-16)*
+It SHALL consume the following argument as the name **inside** the braces and SHALL fail if none
+follows, or if the value contains a brace or any whitespace. Absent, the name is `vnext` and the
+literal searched for is `{{vnext}}`.
+
+Both rejections are silent-failure guards, on CLI-11's reasoning. A caller who passes the whole
+token would be searching for `{{{{release}}}}` and matching nothing; a value arriving from a
+templated workflow input with a trailing space would match nothing either, for months, with a green
+run every time.
+
+ℹ️ A name rather than an on/off switch. The only reason to change it is that the default literal
+means something else in this repository — documentation about this tool, most obviously — and
+naming a token you never write turns the replacement off as a side effect, leaving no second flag
+to keep in step with this one. This repository's own release workflow is that case, and is the
+proof the escape hatch works.
+
 ## Machine-readable report
 
 **REP-01 — `--json <path>` writes the run's verdict as a file.** ✅
@@ -335,7 +351,8 @@ the cause.
 
 **ACT-04 — Inputs.** ✅
 `folder` (default `.`), `dry-run` (default `false`), `commit` (default `false`), `tag` (default
-`false`), `version`, and `token`. Every boolean input SHALL accept only `true` or `false` and SHALL
+`false`), `vnext-token-name` (default empty, meaning the tool's own), `version`, and `token`. Every
+boolean input SHALL accept only `true` or `false` and SHALL
 fail on anything else rather than treating it as false: a typo'd `dry-run: yes` that silently
 stamped versions and rewrote the baseline would be a bad way to find out about the typo, and a
 typo'd `commit: yes` that silently released nothing would be found days later by someone wondering
@@ -492,6 +509,12 @@ path, a project, a branch or a language, so there is nothing to adapt on paste: 
 git mechanics, REP-10 the paths, `$GITHUB_REF_NAME` the branch. What stays repo-specific — the
 build, the tests, the publish — sits outside it.
 
+ℹ️ The executed block may carry an input the documented one does not, and one does: this
+repository passes `vnext-token-name` (CLI-13), because its own README and specs document the
+default token and a run would otherwise stamp the version over every mention of it. The test
+asserts the documented step is *contained in* the executed one for exactly this reason — a
+repository-specific input is allowed to exist, and every line the README does show still has to
+match. Nothing else belongs in that gap.
 ℹ️ Anything a caller must still hand-write here is a defect in this requirement, not an exercise for
 the caller. Every line of `git` in a consuming workflow is a line that can be subtly wrong in a way
 that only shows up on a release: staged too little, tagged the wrong commit, pushed non-atomically.

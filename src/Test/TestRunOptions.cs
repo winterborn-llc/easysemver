@@ -168,6 +168,53 @@ public class TestRunOptions
         Assert.Throws<InvalidOperationException>(() => RunOptions.Parse("--do-not-exclude"));
     }
 
+    // ------------------------------------------------------------------------------------------
+    // CLI-13 - the version token's name
+    // ------------------------------------------------------------------------------------------
+
+    /// <summary>TOK-02 - unconfigured runs look for the default name.</summary>
+    [Fact]
+    public void TheVersionTokenNameDefaultsToVnext()
+    {
+        Assert.Equal("vnext", RunOptions.Parse().VersionTokenName);
+    }
+
+    [Fact]
+    public void TheVersionTokenNameIsRead()
+    {
+        Assert.Equal("release", RunOptions.Parse("--vnext-token-name", "release").VersionTokenName);
+    }
+
+    /// <summary>
+    /// The flag takes the name inside the braces. A caller who writes the delimiters out as well
+    /// would otherwise be searching for a four-brace token and never match, silently.
+    /// </summary>
+    [Theory]
+    [InlineData("{{release}}")]
+    [InlineData("rel ease")]
+    [InlineData("release ")]
+    [InlineData("")]
+    public void ATokenNameCarryingBracesOrWhitespaceIsAnError(string value)
+    {
+        Assert.Throws<InvalidOperationException>(
+            () => RunOptions.Parse("--vnext-token-name", value));
+    }
+
+    [Fact]
+    public void TheVersionTokenFlagWithoutANameIsAnError()
+    {
+        Assert.Throws<InvalidOperationException>(() => RunOptions.Parse("--vnext-token-name"));
+    }
+
+    /// <summary>CLI-02 again - the name is not mistaken for the folder argument.</summary>
+    [Fact]
+    public void TheVersionTokenNameIsNotMistakenForTheFolder()
+    {
+        var options = RunOptions.Parse("--vnext-token-name", "release");
+
+        Assert.Equal(new DirectoryInfo(Environment.CurrentDirectory).FullName, options.FolderRoot);
+    }
+
     /// <summary>A ceiling's value must not be mistaken for the folder argument.</summary>
     [Fact]
     public void CeilingValueIsNotMistakenForTheFolder()

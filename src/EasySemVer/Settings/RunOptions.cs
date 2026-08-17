@@ -18,6 +18,8 @@ internal class RunOptions
 
     private const string DoNotExcludeFlag = "--do-not-exclude";
 
+    private const string VnextTokenNameFlag = "--vnext-token-name";
+
     /// <summary>FLD-01 - the folder handed to the CLI is the root, full stop.</summary>
     internal string FolderRoot { get; private init; } = string.Empty;
 
@@ -66,6 +68,20 @@ internal class RunOptions
     /// </summary>
     internal IReadOnlyList<string> DoNotExclude { get; private init; } = [];
 
+    /// <summary>
+    /// CLI-13 - the name inside the braces of the token TOK-01 replaces, defaulting to
+    /// <see cref="MagicValues.DefaultVersionTokenName"/> so that <c>{{vnext}}</c> is what a run
+    /// searches for unless told otherwise.
+    /// <para>
+    /// It is a name rather than an on/off switch because the only reason to change it is that the
+    /// default literal means something else in this repository - documentation about this tool,
+    /// most obviously, which is why the tool's own release run sets it. Naming a token you never
+    /// write turns the feature off as a side effect, and there is no second flag to keep in step
+    /// with this one.
+    /// </para>
+    /// </summary>
+    internal string VersionTokenName { get; private init; } = MagicValues.DefaultVersionTokenName;
+
     internal static RunOptions Parse(params string[] args)
     {
         return Parse(Environment.GetEnvironmentVariable, args);
@@ -83,6 +99,7 @@ internal class RunOptions
         int? maximumMinor = null;
         int? maximumPatch = null;
         var doNotExclude = new List<string>();
+        var versionTokenName = MagicValues.DefaultVersionTokenName;
 
         // The flag whose value the next argument is, or null when the next argument is a flag or
         // the directory. One field rather than one bool per option, now that three flags take one.
@@ -109,6 +126,10 @@ internal class RunOptions
                 else if (string.Equals(flagAwaitingValue, MaxPatchFlag, StringComparison.Ordinal))
                 {
                     maximumPatch = ParseSegmentMaximum(flagAwaitingValue, arg);
+                }
+                else if (string.Equals(flagAwaitingValue, VnextTokenNameFlag, StringComparison.Ordinal))
+                {
+                    versionTokenName = ParseTokenName(arg);
                 }
                 else
                 {
@@ -149,6 +170,12 @@ internal class RunOptions
                 continue;
             }
 
+            if (string.Equals(arg, VnextTokenNameFlag, StringComparison.OrdinalIgnoreCase))
+            {
+                flagAwaitingValue = VnextTokenNameFlag;
+                continue;
+            }
+
             if (string.Equals(arg, GitHubFlag, StringComparison.OrdinalIgnoreCase))
             {
                 writesGitHubActionsReport = true;
@@ -179,6 +206,11 @@ internal class RunOptions
             throw new InvalidOperationException($"{DoNotExcludeFlag} requires a directory name");
         }
 
+        if (string.Equals(flagAwaitingValue, VnextTokenNameFlag, StringComparison.Ordinal))
+        {
+            throw new InvalidOperationException($"{VnextTokenNameFlag} requires a token name");
+        }
+
         if (flagAwaitingValue != null)
         {
             throw new InvalidOperationException($"{flagAwaitingValue} requires a whole number");
@@ -206,8 +238,31 @@ internal class RunOptions
             WritesGitHubActionsReport = writesGitHubActionsReport,
             MaximumMinor = maximumMinor,
             MaximumPatch = maximumPatch,
-            DoNotExclude = doNotExclude
+            DoNotExclude = doNotExclude,
+            VersionTokenName = versionTokenName
         };
+    }
+
+    /// <summary>
+    /// The name inside the braces, not the whole token: <c>--vnext-token-name release</c> searches
+    /// for <c>{{release}}</c>. A value carrying a brace is a caller who has written the delimiters
+    /// out as well, and would silently search for <c>{{{{release}}}}</c>; a value carrying
+    /// whitespace is the <c>'255 '</c> failure CLI-11 already guards against, arriving through a
+    /// templated workflow input and matching nothing for months.
+    /// </summary>
+    private static string ParseTokenName(string text)
+    {
+        if (text.Length < 1 ||
+            text.Contains('{', StringComparison.Ordinal) ||
+            text.Contains('}', StringComparison.Ordinal) ||
+            text.Any(char.IsWhiteSpace))
+        {
+            throw new InvalidOperationException(
+                $"{VnextTokenNameFlag} takes the name inside the braces, with no braces and no "
+                + $"whitespace in it, and got '{text}'");
+        }
+
+        return text;
     }
 
     /// <summary>

@@ -174,6 +174,7 @@ Split it the moment something is built between the two, for the ordering reasons
 | `max-minor` | — | Cap the minor segment, carrying into major. See [Segment ceilings](#segment-ceilings-and-the-255-limit) |
 | `max-patch` | — | Cap the patch segment, carrying into minor. Set both to `255` if you ship a framework or dylib target |
 | `do-not-exclude` | — | Directory names discovery should keep, one per line. See [Excluded directories](#excluded-directories) |
+| `vnext-token-name` | `vnext` | The token stamped with the new version is `{{`this`}}`. See [Putting the version in your own text](#putting-the-version-in-your-own-text) |
 | `report` | — | Act on an earlier step's `report` output instead of versioning again |
 | `version` | the release this manifest shipped with | Which EasySemVer release to run |
 | `token` | `${{ github.token }}` | Only needs overriding if this repository is private to you |
@@ -306,6 +307,7 @@ everything else is a flag:
 | `--max-minor <n>` | Carry minor into major once it passes `n`. No ceiling by default |
 | `--max-patch <n>` | Carry patch into minor once it passes `n`. No ceiling by default |
 | `--do-not-exclude <name>` | Keep a directory discovery would skip. Repeatable; a bare name, not a path |
+| `--vnext-token-name <name>` | Stamp `{{`name`}}` with the new version instead of `{{vnext}}`. The name, not the braces |
 
 `0` on success. `1` on any failure, with the exception printed — deliberate, so that a versioning
 failure on a release build is impossible to miss.
@@ -377,6 +379,8 @@ and where the number is read from and written to.
 4. Runs the classification rules and takes the highest impact anything reported.
 5. Seeds from the highest version found in any version location in any unit, increments it, and
    writes that one version into every location that already exists.
+6. Replaces every `{{vnext}}` under the folder root with that same version, for the places no
+   version location covers.
 
 Every successful run increments by at least a Patch: the tool assumes it runs for builds that are
 releases. Gate it accordingly.
@@ -471,6 +475,54 @@ no such limit, and neither do `MARKETING_VERSION`, `CFBundleShortVersionString`,
 versions. If you ship only apps, packages, or pods, leave the ceilings off and keep versions that
 mean what they say. Other ecosystems have their own ceilings if you ever need them — .NET assembly
 versions and Win32 `FILEVERSION` fields cap every segment at 65535.
+
+## Putting the version in your own text
+
+The table above is every place EasySemVer knows the shape of. For everywhere else — a changelog
+heading, a Helm chart, a docs page, an installer script — mark the spot with `{{vnext}}` and the
+run replaces it with the version it just computed:
+
+```markdown
+## {{vnext}} — unreleased
+
+- The thing you did.
+```
+
+becomes
+
+```markdown
+## 2.4.0 — unreleased
+
+- The thing you did.
+```
+
+Every occurrence in every file under the folder root, in files of any kind. The stamped files are
+reported like every other write, so `commit: true` stages them and the release commit carries them.
+
+**The token is consumed.** After the run the file says `2.4.0`, not `{{vnext}}` — which is the
+point, and the thing to understand before adopting it. A file that wants the version every release
+has to be marked again every release; for a changelog, writing the next entry is what does that.
+
+Skipped without asking: excluded directories (the same list [discovery
+uses](#excluded-directories)), the `EasySemVer.xml` baseline, binary files, and text that is not
+UTF-8. Everything else in a stamped file survives byte for byte, a byte-order mark included.
+
+If `{{vnext}}` legitimately means something else in your repository, rename the one EasySemVer
+stamps:
+
+```bash
+easysemver . --vnext-token-name release   # now it looks for {{release}}
+```
+
+```yaml
+- uses: winterborn-llc/easysemver@v20
+  with:
+    vnext-token-name: release
+```
+
+Pass the name, not the braces. Naming a token you never write is also how you turn the replacement
+off — which is what this repository does to its own release run, since the file you are reading
+documents the default.
 
 ## The baseline file
 

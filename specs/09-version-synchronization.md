@@ -48,3 +48,67 @@ trusting any in-memory state.
 **SYN-07 — Nothing is written when anything failed.** ✅ *(BAS-06/SWE-05)*
 If any discovered unit failed extraction, neither the baseline nor any version location is
 written. A failed run leaves the working tree byte-identical.
+
+## The version token
+
+Source: [`VersionTokens.cs`](../src/EasySemVer/Persistence/VersionTokens.cs).
+
+**TOK-01 — `{{vnext}}` becomes the new version.** ✅ *(added 2026-08-16)*
+After every version location has been written, the run SHALL replace every occurrence of the token
+under the folder root with the same version, in files of any kind, and SHALL report each file it
+changed as a written file (REP-10).
+
+SYN-01 through SYN-04 cover every location whose *shape* this tool knows: an element in a
+`.csproj`, an assignment in a `project.pbxproj`, a constant in a `.swift` file. A release also puts
+its number in places that have no shape to know — a changelog heading, a Helm chart's
+`appVersion`, a docs page, an installer script — and until now every one of those was somebody's
+hand-written `sed` in a release workflow, running against a version scraped from an output. This is
+that job, done once, by the thing that already knows the number.
+
+ℹ️ It runs last, after the version locations, and its files join theirs in `writtenFiles`. A
+workflow staging that list (ACT-11) therefore commits the stamped changelog with the bump, which is
+the only ordering that makes a release commit whole.
+
+**TOK-02 — The token is `{{` + a name + `}}`, and the name defaults to `vnext`.** ✅
+The delimiters SHALL be fixed and only the name SHALL be configurable (CLI-13). A caller needs a
+way to say "not that word"; letting the delimiters move as well would buy nothing and give a run a
+second way to match nothing.
+
+`vnext` rather than `version` because the word must not turn up in ordinary prose by accident, and
+because it says *which* version it means: the one this run is about to publish.
+
+**TOK-03 — Every occurrence, in every file.** ✅
+Within the folder root, **every** occurrence SHALL be replaced, exactly as SYN-02 treats a version
+location. A half-stamped document with no way to tell which half is worse than an unstamped one.
+
+**TOK-04 — The same walk, and the same exclusions.** ✅
+The search SHALL use the discovery walk and FLD-04's exclusion list, so `node_modules`, `bin` and a
+dependency checkout cost nothing here and cannot be stamped. It SHALL NOT rewrite `EasySemVer.xml`:
+the baseline is this tool's own file, written moments earlier by the same run (PER-06), and editing
+it here would be a run altering the history the next run reads back.
+
+**TOK-05 — The replacement consumes the token.** ℹ️
+After a run the file carries the version, not the placeholder. That is the requirement, not a
+limitation of it — what a released changelog must contain is the number — and it is the property to
+understand before adopting the feature: a file that wants stamping every release has to be marked
+every release, which for a changelog is what writing the next entry does anyway.
+
+**TOK-06 — A dry run names the files and changes none.** ✅
+`--dry-run` (CLI-07) SHALL perform the search and log each file it would stamp, and SHALL write
+nothing and report an empty `writtenFiles`. The scan is read-only and this is the one write in a run
+that consumes what it replaces, so "which files would this take my token out of" is exactly the
+question the mode exists to answer.
+
+**TOK-07 — Only text, and everything else survives byte for byte.** ✅
+A file whose first 8000 bytes contain a NUL SHALL be treated as binary and skipped, as SHALL a file
+that is not valid UTF-8; both are skipped silently, because a repository holding a few hundred
+images would otherwise emit a few hundred log lines carrying no decision for a reader to make. A
+file that *is* rewritten SHALL be byte-identical outside the replaced token, a leading byte-order
+mark included — unlike a `.csproj`, this is somebody's prose, and a diff that should carry one line
+must not carry a re-encoding.
+
+ℹ️ A file that cannot be read at all — a dangling symlink, a locked file — is named in the log and
+skipped rather than failing the run. The walk reaches every file in the folder, and one unreadable
+file is not a reason to lose a release.
+ℹ️ The binary sniff reads its own 8000 bytes rather than the whole file, so a repository of large
+assets is not loaded into memory to be told what it obviously is.

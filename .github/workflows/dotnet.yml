@@ -89,6 +89,18 @@ jobs:
     - name: Compute and apply the version
       id: version
       uses: ./
+      with:
+        # CLI-13, and the one line here that is this repository's rather than every repository's.
+        # TOK-01 replaces the default token everywhere it appears under the folder root - and the
+        # folder root here is a repository whose README, specs and tests *document* that token.
+        # Left alone, this step would stamp the version over every mention of it and then commit
+        # the result, one release at a time, until the documentation said nothing.
+        #
+        # Naming a token nobody writes is how the escape hatch turns the replacement off, which is
+        # exactly the situation the input exists for. It is deliberately not in the README's block:
+        # no other repository needs it, and ACT-10's test asserts the documented step is contained
+        # in this one rather than identical to it.
+        vnext-token-name: easysemver-does-not-stamp-this
 
     # ------------------------------------------------------------------------------------------
     # CI-05. The manifest about to be tagged is repointed at the release this run is cutting, and

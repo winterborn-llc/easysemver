@@ -1,5 +1,6 @@
 using Winterborn.Tools.EasySemVer;
 using Winterborn.Tools.EasySemVer.CodeReader.Csharp;
+using Winterborn.Tools.EasySemVer.Persistence;
 using Xunit;
 
 namespace IntegrationTest;
@@ -219,6 +220,62 @@ public class Regression
 
             // Explaining itself is still not releasing: nothing on disk moved.
             Assert.Equal("1.3.0", new CsProjFile(projectPath).Version.ToString());
+        }
+        finally
+        {
+            Directory.Delete(folderRoot, recursive: true);
+        }
+    }
+
+    /// <summary>
+    /// TOK-01 through a whole run: a token in a file no provider knows anything about becomes the
+    /// same version the .csproj got. The two are asserted together, because a token stamped with
+    /// anything other than the version this run published would be worse than one left alone.
+    /// <para>
+    /// The token is built from its name rather than written out, so that running the tool against
+    /// this repository does not rewrite this file - CLI-13's case, in the repository that owns it.
+    /// </para>
+    /// </summary>
+    [Fact]
+    public void TheVersionTokenIsStampedIntoFreeText()
+    {
+        var folderRoot = CreateWidgetTree(out var projectPath, out _);
+        try
+        {
+            var notes = Path.Combine(folderRoot, "CHANGELOG.md");
+            File.WriteAllText(notes, $"# {VersionTokens.GetToken("vnext")}\n\n- The first release.\n");
+
+            Assert.Equal(0, Program.Main(folderRoot));
+
+            Assert.Equal("1.3.0", new CsProjFile(projectPath).Version.ToString());
+            Assert.Equal("# 1.3.0\n\n- The first release.\n", File.ReadAllText(notes));
+        }
+        finally
+        {
+            Directory.Delete(folderRoot, recursive: true);
+        }
+    }
+
+    /// <summary>
+    /// CLI-13 - the escape hatch. A project that legitimately writes the default token renames the
+    /// one this run stamps, and the default literal is then ordinary text like any other.
+    /// </summary>
+    [Fact]
+    public void RenamingTheTokenLeavesTheDefaultOneAlone()
+    {
+        var folderRoot = CreateWidgetTree(out _, out _);
+        try
+        {
+            var page = Path.Combine(folderRoot, "docs.md");
+            var original = $"Write {VersionTokens.GetToken("vnext")} to mark a spot. "
+                           + $"This release is {VersionTokens.GetToken("ours")}.";
+            File.WriteAllText(page, original);
+
+            Assert.Equal(0, Program.Main(folderRoot, "--vnext-token-name", "ours"));
+
+            Assert.Equal(
+                $"Write {VersionTokens.GetToken("vnext")} to mark a spot. This release is 1.3.0.",
+                File.ReadAllText(page));
         }
         finally
         {

@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
+using Winterborn.Tools.EasySemVer.Persistence;
 using YamlDotNet.Serialization;
 using Xunit;
 
@@ -176,7 +177,8 @@ public class ActionRegression : IDisposable
         string dryRun,
         string maxMinor = "",
         string maxPatch = "",
-        string doNotExclude = "") => new()
+        string doNotExclude = "",
+        string vnextTokenName = "") => new()
     {
         ["RUNNER_OS"] = ThisRunner.Os,
         ["RUNNER_TEMP"] = this.RunnerTemp,
@@ -193,6 +195,7 @@ public class ActionRegression : IDisposable
         ["EASYSEMVER_MAX_MINOR"] = maxMinor,
         ["EASYSEMVER_MAX_PATCH"] = maxPatch,
         ["EASYSEMVER_DO_NOT_EXCLUDE"] = doNotExclude,
+        ["EASYSEMVER_VNEXT_TOKEN_NAME"] = vnextTokenName,
 
         // What appending to $GITHUB_PATH does for every later step.
         ["PATH"] = Path.Combine(this.RunnerTemp, "easysemver") + ":" +
@@ -319,7 +322,8 @@ public class ActionRegression : IDisposable
         string dryRun,
         string maxMinor = "",
         string maxPatch = "",
-        string doNotExclude = "")
+        string doNotExclude = "",
+        string vnextTokenName = "")
     {
         this.StubTheRelease(RidFor(ThisRunner.Os, ThisRunner.Arch)!);
 
@@ -328,7 +332,7 @@ public class ActionRegression : IDisposable
 
         return this.RunScript(
             Script(1),
-            this.RunEnvironment(folder, dryRun, maxMinor, maxPatch, doNotExclude));
+            this.RunEnvironment(folder, dryRun, maxMinor, maxPatch, doNotExclude, vnextTokenName));
     }
 
     // ----------------------------------------------------------------------------------------
@@ -853,6 +857,62 @@ public class ActionRegression : IDisposable
 
         Assert.Equal(0, result.ExitCode);
         Assert.Contains("Feature.csproj", File.ReadAllText(Path.Combine(folder, "EasySemVer.xml")));
+    }
+
+    /// <summary>
+    /// TOK-01 through the Action: with no input at all, the tool's own default token is stamped -
+    /// the default lives in one place and the manifest does not restate it.
+    /// </summary>
+    [Fact]
+    public void TheDefaultVersionTokenIsStampedWithNoInputAtAll()
+    {
+        var folder = this.CreateFolder();
+        var notes = Path.Combine(folder, "CHANGELOG.md");
+        File.WriteAllText(notes, "# " + VersionTokens.GetToken("vnext"));
+
+        var result = this.InstallAndRun(folder, "false");
+
+        Assert.Equal(0, result.ExitCode);
+        Assert.Equal("# 2.4.0", File.ReadAllText(notes));
+    }
+
+    /// <summary>
+    /// CLI-13 through the Action: the name reaches the tool, so a repository whose text
+    /// legitimately contains the default token can say which one it means. This repository's own
+    /// release workflow is that case.
+    /// </summary>
+    [Fact]
+    public void TheVersionTokenNameReachesTheTool()
+    {
+        var folder = this.CreateFolder();
+        var notes = Path.Combine(folder, "CHANGELOG.md");
+        var original = VersionTokens.GetToken("vnext") + " " + VersionTokens.GetToken("ours");
+        File.WriteAllText(notes, original);
+
+        var result = this.InstallAndRun(folder, "false", vnextTokenName: "ours");
+
+        Assert.Equal(0, result.ExitCode);
+        Assert.Equal(VersionTokens.GetToken("vnext") + " 2.4.0", File.ReadAllText(notes));
+    }
+
+    /// <summary>
+    /// ACT-04's rule: a token name carrying the braces as well would silently match nothing, so
+    /// the tool names it and the step fails. The Action does not re-implement that check - the
+    /// value reaches the tool quoted, and one implementation of a rule is enough.
+    /// </summary>
+    [Fact]
+    public void ATokenNameCarryingItsOwnBracesIsRejected()
+    {
+        var folder = this.CreateFolder();
+
+        var result = this.InstallAndRun(
+            folder,
+            "false",
+            vnextTokenName: VersionTokens.GetToken("ours"));
+
+        Assert.Equal(1, result.ExitCode);
+        Assert.Contains("--vnext-token-name", result.Output);
+        Assert.Empty(this.PublishedOutputs());
     }
 
     /// <summary>A path cannot match a single path segment, so it is named rather than ignored.</summary>

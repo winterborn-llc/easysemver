@@ -42,6 +42,16 @@ internal static class VersioningRun
             // a dry run does not write is the tree - no baseline, no stamped version, and therefore
             // an empty writtenFiles (REP-10).
             Log.WriteLine("Dry run: no baseline written and no version stamped");
+
+            // TOK-06. Named, not written. The token replacement is the one write here that
+            // consumes what it replaces, so "which files would this take my token out of" is
+            // worth answering before a run does it - and answering it costs a read-only walk.
+            VersionTokens.Stamp(
+                options.FolderRoot,
+                options.VersionTokenName,
+                newVersion,
+                isDryRun: true);
+
             Publish(options, report, startingVersion, newVersion, writtenFiles: []);
             Log.Outdent();
             return;
@@ -52,6 +62,15 @@ internal static class VersioningRun
         BaselineFile.Write(options.FolderRoot, units, providers);
         var writtenFiles = new List<string> { MagicValues.SignatureFileName };
         writtenFiles.AddRange(WriteVersions(units, providers, newVersion));
+
+        // TOK-01, last of the writes: the version locations belong to units a provider found, and
+        // this is the free text around them, which belongs to nobody. Its files are reported like
+        // any other write (REP-10), because a workflow that commits the bump has to stage them.
+        writtenFiles.AddRange(VersionTokens.Stamp(
+            options.FolderRoot,
+            options.VersionTokenName,
+            newVersion,
+            isDryRun: false));
 
         // REP-08: last, so that a report exists only if everything it describes actually happened.
         Publish(options, report, startingVersion, newVersion, writtenFiles);

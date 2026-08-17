@@ -1,5 +1,6 @@
 using System.Text.Json;
 using Winterborn.Tools.EasySemVer;
+using Winterborn.Tools.EasySemVer.Persistence;
 using Xunit;
 
 namespace IntegrationTest;
@@ -169,6 +170,27 @@ public class JsonReportRegression : IDisposable
             "src/deep/Nested/Nested.csproj",
             this.ReadReport().GetProperty("writtenFiles")
                 .EnumerateArray().Select(file => file.GetString()));
+    }
+
+    /// <summary>
+    /// REP-10 and TOK-04 together - a file stamped by the token replacement is a file the run
+    /// changed, so it is in the list a workflow stages. Left out, ACT-11 would commit a release
+    /// whose changelog still said <c>{{…}}</c> where the version belongs, and nothing would say so.
+    /// </summary>
+    [Fact]
+    public void AFileStampedByTheVersionTokenIsReportedAsWritten()
+    {
+        File.WriteAllText(
+            Path.Combine(this._folderRoot, "CHANGELOG.md"),
+            $"# {VersionTokens.GetToken("vnext")}");
+
+        Assert.Equal(0, Program.Main(this._folderRoot, "--json", this.ReportPath));
+
+        var written = this.ReadReport().GetProperty("writtenFiles")
+            .EnumerateArray().Select(file => file.GetString()!).ToList();
+
+        Assert.Equal(["App.csproj", "CHANGELOG.md", "EasySemVer.xml"], written);
+        Assert.Equal("# 2.4.0", File.ReadAllText(Path.Combine(this._folderRoot, "CHANGELOG.md")));
     }
 
     /// <summary>REP-10 - a dry run wrote nothing, and says so with an empty array (CLI-07).</summary>

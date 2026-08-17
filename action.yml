@@ -70,6 +70,17 @@ inputs:
     required: false
     default: ''
 
+  vnext-token-name:
+    description: >-
+      The name inside the braces of the text token the run stamps with the new version, in files
+      of any kind under the folder (TOK-01). It defaults to the tool's own default, which is
+      'vnext' - so a heading written as a double-braced vnext becomes the version this run
+      published. Pass the name only, never the braces. Set it when that literal legitimately
+      means something else in your repository; a name you never write turns the replacement off
+      as a side effect, which is how a repository documenting this feature keeps its own docs.
+    required: false
+    default: ''
+
   report:
     description: >-
       Act on a report an earlier step produced instead of versioning again. Pass this the `report`
@@ -233,6 +244,7 @@ runs:
         EASYSEMVER_MAX_MINOR: ${{ inputs.max-minor }}
         EASYSEMVER_MAX_PATCH: ${{ inputs.max-patch }}
         EASYSEMVER_DO_NOT_EXCLUDE: ${{ inputs.do-not-exclude }}
+        EASYSEMVER_VNEXT_TOKEN_NAME: ${{ inputs.vnext-token-name }}
       run: |
         set -euo pipefail
 
@@ -292,6 +304,16 @@ runs:
           keep+=(--do-not-exclude "$name")
         done <<< "$EASYSEMVER_DO_NOT_EXCLUDE"
 
+        # CLI-13's token name. Empty contributes no argument, so the tool's own default stays the
+        # one place the default token is written down and a workflow that has not asked for this
+        # is unaffected. Unlike the ceilings above there is no validation here: the value is
+        # expanded quoted out of an array, so nothing a caller supplies can be anything but one
+        # argument, and the tool already rejects a name carrying braces or whitespace by name.
+        token=()
+        if [ -n "$EASYSEMVER_VNEXT_TOKEN_NAME" ]; then
+          token=(--vnext-token-name "$EASYSEMVER_VNEXT_TOKEN_NAME")
+        fi
+
         # Exit 1 fails this step and stops the action, which is the whole point of CLI-06:
         # a versioning failure on a release build should be impossible to miss. REP-08 and
         # ACT-07 then leave nothing behind - no report, and no outputs - so a later step
@@ -310,7 +332,7 @@ runs:
         # replaces tripped `set -u` on bash 3.2 - still what a macOS runner's /bin/bash is.
         #
         # shellcheck disable=SC2086
-        easysemver "$EASYSEMVER_FOLDER" $dry_run $caps ${keep[@]+"${keep[@]}"} --github --json "$report"
+        easysemver "$EASYSEMVER_FOLDER" $dry_run $caps ${keep[@]+"${keep[@]}"} ${token[@]+"${token[@]}"} --github --json "$report"
 
     # ------------------------------------------------------------------------------------
     # ACT-11. Commit and tag, if the caller asked for it. Opt-in, and a no-op otherwise -

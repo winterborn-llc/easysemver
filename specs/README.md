@@ -26,7 +26,7 @@ folder-based, multi-language system that exists today.
 | [06-signature-persistence.md](06-signature-persistence.md) | The `EasySemVer.xml` baseline file: format, read/write rules |
 | [07-change-classification.md](07-change-classification.md) | The evaluator rules that map API diffs to Major/Minor/Patch |
 | [08-version-model.md](08-version-model.md) | Version parsing, comparison, incrementing, seed resolution |
-| [09-version-synchronization.md](09-version-synchronization.md) | Writing the new version back into every version location |
+| [09-version-synchronization.md](09-version-synchronization.md) | Writing the new version back into every version location, and into `{{vnext}}` anywhere else |
 | [10-logging-and-error-handling.md](10-logging-and-error-handling.md) | Console output and failure behavior |
 | [11-testing.md](11-testing.md) | Required test coverage and current verification results |
 | [99-known-gaps.md](99-known-gaps.md) | Consolidated list of deviations, defects, and dead code |
