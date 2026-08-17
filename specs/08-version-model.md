@@ -56,7 +56,8 @@ mechanism that re-synchronizes drifted counters: whatever the highest is, everyo
 ℹ️ Two deliberate departures from the table as originally specified, both reported at the time:
 `MARKETING_VERSION` is read from the pbxproj literal rather than through
 `xcodebuild -showBuildSettings -json`, because only a literal can be written back (MVR-04) and
-that avoids an extra xcodebuild per project; and build counters `CURRENT_PROJECT_VERSION` /
+at the time that avoided an extra xcodebuild per project — G-24 has since removed every other one,
+so the pbxproj is now simply where Xcode projects are read from; and build counters `CURRENT_PROJECT_VERSION` /
 `CFBundleVersion` are neither read nor written (MVR-06, §20 O-01).
 
 **VER-07 — Robustness edges.** ✅ *(G-11 resolved)*

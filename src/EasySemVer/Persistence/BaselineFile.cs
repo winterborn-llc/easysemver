@@ -21,6 +21,13 @@ internal static class BaselineFile
     private const string UnitIdAttributeName = "unitId";
     private const string UnitKindAttributeName = "unitKind";
     private const string PathAttributeName = "path";
+    private const string SignatureVersionAttributeName = "signatureVersion";
+
+    /// <summary>
+    /// BAS-07 - what a unit written before signature versions existed is read as. The first
+    /// generation of every language's signatures is the one that was not stamped.
+    /// </summary>
+    private const string FirstSignatureVersion = "1";
 
     internal static string GetPath(string folderRoot)
     {
@@ -131,6 +138,7 @@ internal static class BaselineFile
                 new XAttribute(UnitIdAttributeName, unit.UnitId),
                 new XAttribute(UnitKindAttributeName, unit.UnitKind),
                 new XAttribute(PathAttributeName, unit.RelativePath),
+                new XAttribute(SignatureVersionAttributeName, provider.SignatureVersion),
                 provider.WriteSignature(unit)));
         }
 
@@ -184,6 +192,22 @@ internal static class BaselineFile
         if (provider == null)
         {
             Log.WriteLine($"Ignoring a baseline unit for unregistered language '{languageId}'");
+            return null;
+        }
+
+        // BAS-07: a signature written by a generation this provider no longer speaks is not
+        // history it can compare against, and reading it as if it were would report the change in
+        // wording as a change in API. Dropping the unit re-seeds that unit and nothing else - the
+        // languages that did not change keep every bit of their history.
+        var signatureVersion = unitElement.Attribute(SignatureVersionAttributeName)?.Value
+                               ?? FirstSignatureVersion;
+        if (signatureVersion != provider.SignatureVersion)
+        {
+            Log.WriteLine(
+                $"Ignoring the baseline signature for {languageId} unit "
+                + $"'{unitElement.Attribute(UnitIdAttributeName)?.Value}': it was written as "
+                + $"signature version {signatureVersion} and this run reads "
+                + $"{provider.SignatureVersion}. It will be classified as if it were new.");
             return null;
         }
 

@@ -132,46 +132,71 @@ on any overload is detectable; R03's first-overload limitation is gone.
 
 ## Swift extraction requirements
 
-**SIG-20 — The symbol graph is the only source.** ✅ *(SWE-01, D-02)*
-Swift signatures SHALL be read from the toolchain's symbol-graph JSON, produced by `swift build`
-(or `xcodebuild` for Xcode targets) with `-emit-symbol-graph`,
-`-emit-symbol-graph-dir`, `-emit-extension-block-symbols` and
-`-symbol-graph-minimum-access-level public`. There is no hand-rolled Swift parser.
+**SIG-20 — The source is the only source.** ✅ *(SWE-01, D-02)*
+Swift signatures SHALL be read from the target's `.swift` files. No compiler, no toolchain and no
+process of any kind is involved: a declaration is what the file says it is.
+ℹ️ This replaced the toolchain's symbol-graph JSON, produced by `swift build` (or `xcodebuild`)
+with `-emit-symbol-graph`. The graph was more accurate — it had resolved the program — but getting
+it meant building the package on every versioned run, which needed Swift, Xcode, a network and
+credentials for every private dependency, and failed the run whenever any of those was missing. See
+G-24 for what the accuracy was worth and what it cost.
 
 **SIG-21 — Access-level filter.** ✅ *(SWE-02)*
-Only `public` and `open` declarations enter the signature. The filter is applied to the parsed
-graph, not trusted from the flag. A declaration dropping to `internal` therefore surfaces as a
-removal (Major) via S01/S16, which is correct.
+Only `public` and `open` declarations enter the signature. The level is the one written, or the one
+inherited from where the declaration sits: a protocol's requirements take the protocol's level, an
+enum's cases take the enum's, and a member of an extension written `public extension` takes that.
+Everything else defaults to `internal` and is therefore absent. A declaration dropping to
+`internal` surfaces as a removal (Major) via S01/S16, which is correct.
+ℹ️ A type that is not public stops the walk: nothing nested inside it is API however it is marked.
 
 **SIG-22 — Identity is declaration-derived.** ✅ *(SWE-03)*
-Identity SHALL be the symbol's `pathComponents` joined with dots and, for functions, the full
-Swift name **including argument labels** (`Gadget.move(to:animated:)`). The mangled precise
-identifier joins relationships during parsing and is never persisted: mangling schemes change
-between toolchain versions and would churn the baseline.
+Identity SHALL be the declaration's name qualified by the types it is nested in and, for anything
+callable, the full Swift name **including argument labels** (`Gadget.move(to:animated:)`). An
+omitted label is written `_`, and an operator's labels are all `_` because an operator takes its
+operands positionally.
 
 **SIG-23 — Synthesized members are excluded.** ✅
-Symbols whose precise identifier carries `::SYNTHESIZED::` SHALL be dropped. Those are members
-the compiler derives from a protocol conformance — `Equatable.!=`, `Hashable.hashValue`, actor
-plumbing — and keeping them would make a toolchain upgrade look like an API change.
+Members the compiler derives from a conformance — `Equatable.!=`, `Hashable.hashValue`, a
+memberwise initializer, an enum's `RawValue` init — SHALL NOT appear in the signature. Reading
+source rather than a built module makes this structural rather than a filter: they are not written
+down, so there is nothing to exclude.
 
 **SIG-24 — Extensions.** ✅ *(SWM-02)*
 Members an extension adds to a type declared in the **same** module SHALL be folded into that
 type, tagged with the extension's constraints. Extensions on types from **other** modules SHALL
-be recorded as their own entities keyed by extended type plus constraints.
+be recorded as their own entities keyed by extended type plus constraints, and several extensions
+of the same type under the same constraints are one entity.
+ℹ️ A member reached through an extension of a protocol is recorded as having a default
+implementation, whether or not it also appears as a requirement. It is available to every conformer
+without them writing anything, which is what a default implementation is; S21 (Minor) is therefore
+what fires when one is added, where the symbol graph's narrower answer used to fire S20 (Major).
 
-**SIG-25 — Determinism over toolchain output.** ✅ *(SWE-04)*
-Only modelled fields are persisted; raw JSON is never stored. All collections are sorted by
-identity before persistence. Nothing toolchain-version-dependent — mangled names, symbol
-ordering, source locations, doc comments — enters the file.
+**SIG-25 — Determinism.** ✅ *(SWE-04)*
+Only modelled fields are persisted; no file contents, paths or line numbers are stored. All
+collections are sorted by identity before persistence. Whitespace inside a declaration is collapsed
+to one form, so that reformatting a signature across lines is not a change.
 
 **SIG-26 — Extraction failure is fatal.** ✅ *(SWE-05, D-03)*
-If Swift units are discovered and `swift`/`xcodebuild` is missing, exits non-zero, times out, or
-produces no graph for a discovered target, the run SHALL fail with exit 1. The message names the
-unit, the exact command, and the tool's stderr. No baseline is written, no version is stamped,
-the working tree is untouched.
-ℹ️ One deliberate exception: a discovered **Xcode** target that produces no Swift graph at all is
-treated as version-sync-only and logged, rather than failing the run — a pure Objective-C target
-legitimately has no Swift symbol graph (§20 O-06).
+If a manifest or project file declares a target whose source cannot be found at all, the run SHALL
+fail with exit 1. The message names the target and says where it looked. No baseline is written, no
+version is stamped, the working tree is untouched.
+ℹ️ A target whose source directory exists but holds no Swift is the other case entirely: an
+Objective-C or C target legitimately has no Swift surface, and is recorded as a unit with no API
+surface rather than failing the run (§20 O-06). It still carries versions, and its disappearance is
+still a real change.
+
+**SIG-27 — What reading source cannot see.** ✅ *(G-24)*
+The following are known and accepted limits, all of which fail towards reporting more surface than
+exists rather than less:
+- A property with no written type (`public let store = Store()`) records no type, so a change of
+  inferred type is invisible.
+- Macro-generated declarations are not seen, because they are not written.
+- Every branch of an `#if` is read, because choosing one needs the build configuration.
+- A class's first inheritance entry is its superclass unless the module declares it as a protocol,
+  so a foreign protocol written first reads as a superclass (SWM-03). It is stable, so it cannot
+  churn a baseline.
+- A target whose name is computed rather than written in Package.swift is not discovered, and says
+  so in the log.
 
 **SIG-27 — Temp artifacts.** ✅ *(SWE-06)*
 Symbol graphs SHALL be emitted to a temporary directory outside the folder root and cleaned up

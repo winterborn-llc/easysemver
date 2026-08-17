@@ -15,7 +15,7 @@ internal static class LanguageProviders
         return
         [
             new CsharpLanguageProvider(versionSources),
-            new SwiftLanguageProvider(runProcess, versionSources)
+            new SwiftLanguageProvider(versionSources)
         ];
     }
 

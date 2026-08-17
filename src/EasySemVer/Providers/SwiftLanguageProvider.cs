@@ -14,9 +14,13 @@ namespace Winterborn.Tools.EasySemVer.Providers;
 /// <summary>
 /// Everything Swift contributes to a run (ML-02). A unit is a target, not a product and not a
 /// package (D-05, UNI-03).
+/// <para>
+/// Nothing here runs a process. Targets come from the text of Package.swift and project.pbxproj,
+/// and signatures come from the Swift files themselves - so a versioning run needs neither a Swift
+/// toolchain nor Xcode, and cannot fail because a dependency could not be resolved.
+/// </para>
 /// </summary>
 internal class SwiftLanguageProvider(
-    IRunProcess runProcess,
     IReadOnlyList<IDiscoverVersionSources> versionSources) : ILanguageProvider
 {
     internal const string SwiftLanguageId = "swift";
@@ -27,21 +31,18 @@ internal class SwiftLanguageProvider(
 
     private const string PackageManifestFileName = "Package.swift";
 
-    private const string XcodeProjectFileName = "project.pbxproj";
-
     private string _folderRoot = string.Empty;
 
     /// <summary>
-    /// One build per package produces every one of its targets' graphs, so they are extracted
-    /// together and cached rather than rebuilt per unit.
+    /// The Swift files behind each unit, worked out while discovery was already reading the
+    /// manifests and project files. Re-deriving them per unit would mean parsing the same
+    /// project.pbxproj once per target it declares.
     /// </summary>
-    private readonly Dictionary<string, Dictionary<string, SwiftModule>> _modulesByPackage = [];
+    private readonly Dictionary<string, IReadOnlyList<string>> _sourceFilesByUnitId = [];
 
     /// <summary>
-    /// UNI-04. Collected while discovery is already reading the manifests and project files, and
-    /// keyed by ML-03 unit id so that two packages with a target of the same name stay distinct.
-    /// Re-deriving it per unit would mean another `swift package dump-package` each time, which is
-    /// a compile.
+    /// UNI-04, keyed by ML-03 unit id so that two packages with a target of the same name stay
+    /// distinct.
     /// </summary>
     private readonly HashSet<string> _testUnitIds = [];
 
@@ -60,6 +61,16 @@ internal class SwiftLanguageProvider(
     public string LanguageId => SwiftLanguageId;
 
     /// <summary>
+    /// BAS-07. Generation 1 was the toolchain's symbol graph. It described the same API in
+    /// different words: the graph qualified every type it did not have to resolve, so a superclass
+    /// was "ObjectiveC.NSObject" where the source says "NSObject", and an extension of
+    /// "Swift.String" is written as an extension of "String". Diffing generation 1 against
+    /// generation 2 would report every one of those as an API change - a Major release for a
+    /// change in wording nobody made. Swift units re-seed once instead.
+    /// </summary>
+    public string SignatureVersion => "2";
+
+    /// <summary>
     /// UNI-04 - answered from what discovery read. A target that was never discovered is not test
     /// code as far as this provider knows, which is the same answer it gave before the question
     /// existed.
@@ -73,8 +84,17 @@ internal class SwiftLanguageProvider(
     {
         this._folderRoot = folderRoot;
         this._testUnitIds.Clear();
+        this._sourceFilesByUnitId.Clear();
+
         var units = new List<IPackageableUnit>();
         this.DiscoverXcodeProjects(folderRoot, units);
+        this.DiscoverSwiftPackages(folderRoot, units);
+        return units;
+    }
+
+    /// <summary>SWD-01 - one unit per SwiftPM target, read from the manifest's text.</summary>
+    private void DiscoverSwiftPackages(string folderRoot, List<IPackageableUnit> units)
+    {
         foreach (var manifestPath in FolderScanner.FindFiles(folderRoot, PackageManifestFileName))
         {
             var packageDirectory = Path.GetDirectoryName(manifestPath)!;
@@ -84,31 +104,30 @@ internal class SwiftLanguageProvider(
                 SwiftLanguageId,
                 new VersionSourceScope(folderRoot, packageDirectory, SwiftPackageTargetUnitKind));
 
-            // One dump, both answers: which targets are units, and which of those are tests.
-            var manifestJson = SwiftPackageManifest.Dump(runProcess, packageDirectory);
-            foreach (var testTarget in SwiftPackageManifest.ReadTestTargetNames(manifestJson))
+            foreach (var target in SwiftPackageManifest.Read(File.ReadAllText(manifestPath)))
             {
-                this._testUnitIds.Add($"{packageRelativePath}:{testTarget}");
-            }
+                // ML-03/SWD-03: package-relative directory plus target name, so the id is stable
+                // across machines and unique when two packages share a target name.
+                var unitId = $"{packageRelativePath}:{target.Name}";
+                if (target.IsTest)
+                {
+                    this._testUnitIds.Add(unitId);
+                }
 
-            foreach (var targetName in SwiftPackageManifest.ReadTargetNames(manifestJson))
-            {
+                this._sourceFilesByUnitId[unitId] =
+                    SwiftPackageSources.Find(packageDirectory, target);
+
                 units.Add(new PackageableUnit
                 {
                     LanguageId = SwiftLanguageId,
-
-                    // ML-03/SWD-03: package-relative directory plus target name, so the id is
-                    // stable across machines and unique when two packages share a target name.
-                    UnitId = $"{packageRelativePath}:{targetName}",
-                    DisplayName = targetName,
+                    UnitId = unitId,
+                    DisplayName = target.Name,
                     RelativePath = packageRelativePath,
                     UnitKind = SwiftPackageTargetUnitKind,
                     VersionSources = sources
                 });
             }
         }
-
-        return units;
     }
 
     /// <summary>SWD-02/SWD-03 - one unit per Xcode target, identified by project path plus name.</summary>
@@ -122,21 +141,21 @@ internal class SwiftLanguageProvider(
                 SwiftLanguageId,
                 new VersionSourceScope(folderRoot, projectPath, XcodeTargetUnitKind));
 
-            // UNI-04. From the project file, because the xcodebuild listing below carries names
-            // and nothing else - see XcodeTestTarget for why that is not worth a process per target.
-            foreach (var testTarget in XcodeTestTarget.Read(
-                         Path.Combine(projectPath, XcodeProjectFileName)))
+            foreach (var target in XcodeProject.Read(projectPath))
             {
-                this._testUnitIds.Add($"{projectRelativePath}:{testTarget}");
-            }
+                var unitId = $"{projectRelativePath}:{target.Name}";
+                if (target.IsTest)
+                {
+                    this._testUnitIds.Add(unitId);
+                }
 
-            foreach (var targetName in XcodeProject.GetTargetNames(runProcess, projectPath))
-            {
+                this._sourceFilesByUnitId[unitId] = target.SourceFiles;
+
                 units.Add(new PackageableUnit
                 {
                     LanguageId = SwiftLanguageId,
-                    UnitId = $"{projectRelativePath}:{targetName}",
-                    DisplayName = targetName,
+                    UnitId = unitId,
+                    DisplayName = target.Name,
                     RelativePath = projectRelativePath,
                     UnitKind = XcodeTargetUnitKind,
                     VersionSources = sources
@@ -145,58 +164,30 @@ internal class SwiftLanguageProvider(
         }
     }
 
+    /// <summary>
+    /// SWE-01. A target with no Swift in it at all - an Objective-C or C target, which both
+    /// SwiftPM and Xcode allow - is recorded as an empty module rather than failing the run: it
+    /// still carries versions, and it is still a unit whose disappearance is a real change (O-06).
+    /// </summary>
     public void Extract(IPackageableUnit unit)
     {
-        if (unit.UnitKind == XcodeTargetUnitKind)
+        var files = this._sourceFilesByUnitId.GetValueOrDefault(unit.UnitId, []);
+        if (files.Count < 1)
         {
-            this.ExtractXcodeTarget(unit);
+            Log.WriteLine(
+                $"Swift target '{unit.DisplayName}' in {unit.RelativePath} has no Swift source; "
+                + "treating it as version-sync-only.");
+            unit.Signature = new SwiftModule(unit.DisplayName);
             return;
         }
 
-        var packageDirectory = Path.Combine(this._folderRoot, unit.RelativePath);
-        if (!this._modulesByPackage.TryGetValue(packageDirectory, out var modules))
+        var texts = new List<string>();
+        foreach (var file in files)
         {
-            modules = new SwiftSymbolGraphExtractor(runProcess)
-                .ExtractPackage(packageDirectory, $"{unit.RelativePath} ({PackageManifestFileName})");
-            this._modulesByPackage[packageDirectory] = modules;
+            texts.Add(File.ReadAllText(file));
         }
 
-        if (!modules.TryGetValue(unit.DisplayName, out var module))
-        {
-            // SWE-05: a discovered target with no graph is a failure, not something to skip. A
-            // test-only target that compiles to nothing public still emits a graph.
-            throw new InvalidOperationException(
-                $"Swift extraction produced no symbol graph for target '{unit.DisplayName}' "
-                + $"in {unit.RelativePath}. Modules found: "
-                + $"{(modules.Count < 1 ? "none" : string.Join(", ", modules.Keys.Order()))}.");
-        }
-
-        unit.Signature = module;
-    }
-
-    /// <summary>
-    /// §20 O-06 - a discovered Xcode target that turns out to be pure Objective-C has no Swift
-    /// symbol graph at all. Rather than failing the run per SWE-05, it is recorded as an empty
-    /// module and logged loudly: it still carries versions, and it is still a unit whose
-    /// disappearance is a real change.
-    /// </summary>
-    private void ExtractXcodeTarget(IPackageableUnit unit)
-    {
-        var projectPath = Path.Combine(this._folderRoot, unit.RelativePath);
-        var modules = new XcodeSymbolGraphExtractor(runProcess)
-            .ExtractTarget(projectPath, unit.DisplayName, unit.UnitId);
-
-        if (modules.TryGetValue(unit.DisplayName, out var module))
-        {
-            unit.Signature = module;
-            return;
-        }
-
-        Log.WriteLine(
-            $"Xcode target '{unit.DisplayName}' in {unit.RelativePath} produced no Swift symbol "
-            + "graph; treating it as version-sync-only. If it does contain Swift, the build "
-            + "settings are not emitting symbol graphs.");
-        unit.Signature = new SwiftModule(unit.DisplayName);
+        unit.Signature = SwiftSourceReader.Read(unit.DisplayName, texts);
     }
 
     public IReadOnlyList<ChangeFinding> Classify(IUnitsToCompare units)

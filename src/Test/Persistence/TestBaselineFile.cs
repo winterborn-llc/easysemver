@@ -147,6 +147,38 @@ public class TestBaselineFile
         Assert.Equal("4", document.Root.Attribute("formatVersion")!.Value);
     }
 
+    /// <summary>
+    /// BAS-07 - a unit whose signature was written by a generation its provider no longer speaks
+    /// is dropped, and everything around it is kept. This is the whole reason the per-unit version
+    /// exists rather than another bump of the file's: Swift changing how it words a signature must
+    /// not re-seed a repository's C# history, and must not re-seed anything at all in a repository
+    /// with no Swift in it.
+    /// </summary>
+    [Fact]
+    public void AUnitWrittenByAnotherSignatureGenerationIsDroppedAndTheRestIsKept()
+    {
+        var baseline = XDocument.Parse(
+            """
+            <EasySemVer formatVersion="4">
+               <Unit language="swift" unitId="Pkg:Widgets" unitKind="swiftpm-target" path="Pkg" signatureVersion="1">
+                  <SwiftModule name="Widgets" />
+               </Unit>
+               <Unit language="swift" unitId="Pkg:Gears" unitKind="swiftpm-target" path="Pkg" signatureVersion="2">
+                  <SwiftModule name="Gears" />
+               </Unit>
+               <Unit language="csharp" unitId="Widgets" unitKind="csproj" path="Widgets.csproj">
+                  <CsharpProject name="Widgets" />
+               </Unit>
+            </EasySemVer>
+            """);
+
+        var units = BaselineFile.ReadDocument(baseline, Providers);
+
+        // The C# unit predates signature versions entirely and is read as the first generation,
+        // which is still what the C# provider writes - so it survives untouched.
+        Assert.Equal(["Pkg:Gears", "Widgets"], units.Select(u => u.UnitId).Order());
+    }
+
     /// <summary>BAS-03 - an unknown or absent format version is unreadable, never guessed at.</summary>
     [Theory]
     [InlineData("<EasySemVer formatVersion=\"1\" />")]

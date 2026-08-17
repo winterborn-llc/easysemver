@@ -1,23 +1,27 @@
 namespace Test.Swift;
 
 /// <summary>
-/// Copies src/TestFixtures/SwiftPackage into a temporary directory and renames its manifest into
-/// place. The manifest is checked in as Package.swift.template so this repository does not become
-/// a Swift tree in its own right - see the comment in that file.
+/// Copies src/TestFixtures/XcodeProject into a temporary directory and renames the project bundle
+/// into place. It is checked in as <c>App.xcodeproj.template</c> so this repository does not
+/// itself become an Xcode tree that every run has to read - see that fixture's README.
 /// </summary>
-internal class SwiftPackageFixture : IDisposable
+internal class XcodeProjectFixture : IDisposable
 {
+    private const string TemplateName = "App.xcodeproj.template";
+
+    private const string ProjectName = "App.xcodeproj";
+
     internal string FolderRoot { get; }
 
-    internal string PackageDirectory => Path.Combine(this.FolderRoot, "SwiftPackage");
+    internal string ProjectPath => Path.Combine(this.FolderRoot, ProjectName);
 
-    internal SwiftPackageFixture()
+    internal XcodeProjectFixture()
     {
-        this.FolderRoot = Directory.CreateTempSubdirectory("easysemver-swift").FullName;
-        CopyDirectory(GetSourceDirectory(), this.PackageDirectory);
-        File.Move(
-            Path.Combine(this.PackageDirectory, "Package.swift.template"),
-            Path.Combine(this.PackageDirectory, "Package.swift"));
+        this.FolderRoot = Directory.CreateTempSubdirectory("easysemver-xcode").FullName;
+        CopyDirectory(GetSourceDirectory(), this.FolderRoot);
+        Directory.Move(
+            Path.Combine(this.FolderRoot, TemplateName),
+            Path.Combine(this.FolderRoot, ProjectName));
     }
 
     public void Dispose()
@@ -39,7 +43,7 @@ internal class SwiftPackageFixture : IDisposable
         var directory = new DirectoryInfo(AppContext.BaseDirectory);
         while (directory != null)
         {
-            var candidate = Path.Combine(directory.FullName, "TestFixtures", "SwiftPackage");
+            var candidate = Path.Combine(directory.FullName, "TestFixtures", "XcodeProject");
             if (Directory.Exists(candidate))
             {
                 return candidate;
@@ -48,7 +52,7 @@ internal class SwiftPackageFixture : IDisposable
             directory = directory.Parent;
         }
 
-        throw new DirectoryNotFoundException("Unable to locate src/TestFixtures/SwiftPackage");
+        throw new DirectoryNotFoundException("Unable to locate src/TestFixtures/XcodeProject");
     }
 
     private static void CopyDirectory(string source, string destination)

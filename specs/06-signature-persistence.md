@@ -72,8 +72,18 @@ provider, so `Persistence/` names no language type and adding a language require
 The file SHALL contain no absolute paths, timestamps, machine names, toolchain versions or raw
 tool output. Units SHALL be written sorted by `(Language, UnitId)`, and every collection inside a
 unit signature sorted by its entity's identity key. Two runs over unchanged source on two
-machines SHALL produce byte-identical files. Symbol-graph ordering is not guaranteed by the
-toolchain, so the sorting is EasySemVer's job, not the tool's.
+machines SHALL produce byte-identical files. Whitespace inside a Swift declaration is collapsed to
+one form before it is recorded, so that reformatting a signature across lines is not a change.
+
+**PER-10 — Per-language signature versions.** ✅ *(BAS-07)*
+Each `<Unit>` SHALL carry a `signatureVersion` written by its provider, and a unit whose recorded
+version is not the one its provider now writes SHALL be dropped on read and classified as new. A
+unit written before the attribute existed reads as version `1`.
+ℹ️ This exists so that changing how one language describes its signatures does not invalidate
+another's. The alternative is bumping `formatVersion`, which rejects the whole file — and would
+hand a repository with no code in the changed language at all a release it did not earn. It is for
+a change in *wording*, not in model: a new field on a modelled entity diffs as an ordinary change
+and should.
 
 **PER-09 — Atomic write.** ✅ *(BAS-06)*
 The baseline SHALL be written to a temporary file in the same directory and moved into place, so

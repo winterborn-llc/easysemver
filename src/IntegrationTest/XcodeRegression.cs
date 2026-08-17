@@ -7,11 +7,10 @@ using Xunit;
 namespace IntegrationTest;
 
 /// <summary>
-/// §18 P5 against a real toolchain: Xcode target discovery, symbol-graph extraction, and
-/// `MARKETING_VERSION` write-back. Traited alongside the SwiftPM suite so a machine without
-/// Xcode can run everything else.
+/// §18 P5 over a real .xcodeproj: target discovery, extraction, and `MARKETING_VERSION`
+/// write-back. All three read project.pbxproj and the source it points at, so none of it needs
+/// Xcode installed and the suite is no longer traited away from machines without it.
 /// </summary>
-[Trait("Toolchain", "Swift")]
 public class XcodeRegression
 {
     [Fact]
@@ -25,7 +24,7 @@ public class XcodeRegression
         Assert.Contains("unitKind=\"xcode-target\"", baseline);
         Assert.Contains("unitId=\"App.xcodeproj:App\"", baseline);
 
-        // The graph really was extracted - this is not the empty-module O-06 fallback.
+        // The surface really was extracted - this is not the empty-module O-06 fallback.
         Assert.Contains("name=\"Widget\"", baseline);
         Assert.Contains("name=\"Widget.describe()\"", baseline);
 
@@ -58,7 +57,7 @@ public class XcodeRegression
     {
         using var fixture = new XcodeProjectFixture();
 
-        var provider = new SwiftLanguageProvider(new ProcessRunner(), VersionSourceFactories.Create(new ProcessRunner()));
+        var provider = new SwiftLanguageProvider(VersionSourceFactories.Create(new ProcessRunner()));
         var unit = Assert.Single(provider.Discover(fixture.FolderRoot));
         Assert.Equal("xcode-target", unit.UnitKind);
 

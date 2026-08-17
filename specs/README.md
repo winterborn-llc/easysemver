@@ -59,6 +59,6 @@ Statuses were verified on **2026-08-03** on macOS with .NET SDK 10.0.100 and Swi
 - `dotnet test` (unit project `Test`) — **509/509 pass**.
 - `dotnet test` (project `IntegrationTest`) — **34/34 pass**: 6 `Regression`,
   6 `JsonReportRegression`, 15 `ActionRegression`, 4 SwiftPM, 3 Xcode. G-01 is dead.
-- The Swift-traited integration tests shell out to `swift` and `xcodebuild`; skip them on a
-  machine without a toolchain with `dotnet test --filter Toolchain!=Swift`. They dominate the
-  runtime — the suite is about 18 minutes with them and seconds without.
+- The Swift and Xcode integration tests need no toolchain and are no longer traited: they read
+  Package.swift, project.pbxproj and .swift files as text. They used to dominate the runtime — the
+  suite was about 18 minutes with them — and now cost fractions of a second.

@@ -1,98 +1,60 @@
+using Winterborn.Tools.EasySemVer.CodeReader.Swift;
+using Winterborn.Tools.EasySemVer.DataObject.Swift;
+using Winterborn.Tools.EasySemVer.Interfaces.Swift;
 using Winterborn.Tools.EasySemVer.Process;
-using Winterborn.Tools.EasySemVer.DataObject;
-using Winterborn.Tools.EasySemVer.Interfaces;
 using Winterborn.Tools.EasySemVer.Providers;
 
 namespace Test.Swift;
 
 /// <summary>
-/// TST-M7 - with Swift units present and the toolchain unavailable, the run fails, names the unit
-/// and the command, and leaves every file on disk byte-identical. D-03 is explicit that there is
-/// no skip-and-warn here: a partial baseline would silently under-report the next change.
+/// TST-M7 - what SWE-05 still fails on now that no toolchain is involved. A manifest that declares
+/// a target whose source is nowhere to be found is a broken package: the run fails, names the
+/// target, says where it looked, and leaves every file on disk byte-identical. D-03 is explicit
+/// that there is no skip-and-warn here - recording an empty surface for a target that has one
+/// would silently under-report the next change.
+/// <para>
+/// A target with a source directory and no Swift in it is the other case entirely, and is an
+/// ordinary Objective-C or C target rather than a failure (O-06).
+/// </para>
 /// </summary>
 public class TestSwiftExtractionFailure
 {
-    private class StubProcessRunner(ProcessResult result) : IRunProcess
+    private static SwiftLanguageProvider CreateProvider()
     {
-        internal List<string> Commands { get; } = [];
-
-        public ProcessResult Run(
-            string executable,
-            IReadOnlyList<string> arguments,
-            string workingDirectory,
-            TimeSpan timeout)
-        {
-            var commandLine = $"{executable} {string.Join(' ', arguments)}";
-            this.Commands.Add(commandLine);
-            return new ProcessResult
-            {
-                CommandLine = commandLine,
-                ExitCode = result.ExitCode,
-                StandardOutput = result.StandardOutput,
-                StandardError = result.StandardError,
-                WasExecutableFound = result.WasExecutableFound,
-                DidTimeOut = result.DidTimeOut
-            };
-        }
+        return new SwiftLanguageProvider(VersionSourceFactories.Create(new ProcessRunner()));
     }
 
-    private static ProcessResult CommandNotFound => new() { WasExecutableFound = false };
-
-    private static ProcessResult NonZeroExit => new()
+    private static void DeclareTarget(SwiftPackageFixture fixture, string name)
     {
-        ExitCode = 70,
-        StandardError = "error: no such module 'Missing'"
-    };
-
-    private static ProcessResult TimedOut => new() { DidTimeOut = true };
-
-    public static TheoryData<ProcessResult> EveryFailureMode() =>
-    [
-        CommandNotFound,
-        NonZeroExit,
-        TimedOut
-    ];
-
-    [Theory]
-    [MemberData(nameof(EveryFailureMode))]
-    public void DiscoveryFailsWhenTheToolchainCannotRun(ProcessResult failure)
-    {
-        using var fixture = new SwiftPackageFixture();
-        var runner = new StubProcessRunner(failure);
-
-        var exception = Assert.ThrowsAny<Exception>(
-            () => new SwiftLanguageProvider(runner, VersionSourceFactories.Create(runner)).Discover(fixture.FolderRoot));
-
-        Assert.Contains("swift package dump-package", exception.Message);
-        Assert.Contains("SwiftPackage", exception.Message);
+        var manifestPath = Path.Combine(fixture.PackageDirectory, "Package.swift");
+        File.WriteAllText(
+            manifestPath,
+            File.ReadAllText(manifestPath).Replace(
+                ".target(name: \"Widgets\"),",
+                $".target(name: \"Widgets\"),\n        .target(name: \"{name}\"),"));
     }
 
     [Fact]
-    public void FailureMessageNamesTheUnitTheCommandAndTheToolsStderr()
+    public void DiscoveryFailsWhenADeclaredTargetHasNoSource()
     {
         using var fixture = new SwiftPackageFixture();
-        var runner = new StubProcessRunner(NonZeroExit);
+        DeclareTarget(fixture, "Ghost");
 
-        var exception = Assert.ThrowsAny<Exception>(
-            () => new SwiftLanguageProvider(runner, VersionSourceFactories.Create(runner)).Discover(fixture.FolderRoot));
+        var exception = Assert.Throws<SwiftSourceException>(
+            () => CreateProvider().Discover(fixture.FolderRoot));
 
-        Assert.Contains("SwiftPackage", exception.Message);
-        Assert.Contains("swift package dump-package", exception.Message);
-        Assert.Contains("exited with code 70", exception.Message);
-        Assert.Contains("no such module 'Missing'", exception.Message);
+        Assert.Contains("Ghost", exception.Message);
+        Assert.Contains("Sources/Ghost", exception.Message);
     }
 
     [Fact]
     public void NothingOnDiskIsTouchedWhenExtractionFails()
     {
         using var fixture = new SwiftPackageFixture();
+        DeclareTarget(fixture, "Ghost");
         var before = Snapshot(fixture.FolderRoot);
 
-        Assert.ThrowsAny<Exception>(
-            () => new SwiftLanguageProvider(
-                    new StubProcessRunner(CommandNotFound),
-                    VersionSourceFactories.Create(new StubProcessRunner(CommandNotFound)))
-                .Discover(fixture.FolderRoot));
+        Assert.ThrowsAny<Exception>(() => CreateProvider().Discover(fixture.FolderRoot));
 
         Assert.Equal(before, Snapshot(fixture.FolderRoot));
     }
@@ -105,6 +67,7 @@ public class TestSwiftExtractionFailure
     public void TheRunExitsOneAndWritesNothing()
     {
         using var fixture = new SwiftPackageFixture();
+        DeclareTarget(fixture, "Ghost");
         File.WriteAllText(
             Path.Combine(fixture.FolderRoot, "Widget.csproj"),
             """
@@ -116,20 +79,42 @@ public class TestSwiftExtractionFailure
             """);
         var before = Snapshot(fixture.FolderRoot);
 
-        var exitCode = RunWithStubbedSwift(fixture.FolderRoot, CommandNotFound);
+        var exitCode = Run(fixture.FolderRoot);
 
         Assert.Equal(1, exitCode);
         Assert.Equal(before, Snapshot(fixture.FolderRoot));
         Assert.False(File.Exists(Path.Combine(fixture.FolderRoot, "EasySemVer.xml")));
     }
 
-    private static int RunWithStubbedSwift(string folderRoot, ProcessResult failure)
+    /// <summary>
+    /// O-06 - a target that exists but holds no Swift is a unit with no API surface, not a broken
+    /// package. It keeps its versions and its disappearance is still a real change.
+    /// </summary>
+    [Fact]
+    public void ATargetWithNoSwiftInItIsAnEmptyModuleRatherThanAFailure()
+    {
+        using var fixture = new SwiftPackageFixture();
+        DeclareTarget(fixture, "CLib");
+        Directory.CreateDirectory(Path.Combine(fixture.PackageDirectory, "Sources", "CLib"));
+        File.WriteAllText(
+            Path.Combine(fixture.PackageDirectory, "Sources", "CLib", "clib.c"),
+            "int answer(void) { return 42; }");
+
+        var provider = CreateProvider();
+        var unit = provider.Discover(fixture.FolderRoot).First(u => u.DisplayName == "CLib");
+        provider.Extract(unit);
+
+        var module = Assert.IsType<SwiftModule>(unit.Signature);
+        Assert.Empty(((ISwiftModule)module).Types);
+    }
+
+    private static int Run(string folderRoot)
     {
         try
         {
             Winterborn.Tools.EasySemVer.Evaluation.VersioningRun.Execute(
                 Winterborn.Tools.EasySemVer.Settings.RunOptions.Parse(folderRoot),
-                LanguageProviders.Create(new StubProcessRunner(failure)));
+                LanguageProviders.Create(new ProcessRunner()));
             return 0;
         }
         catch (Exception)

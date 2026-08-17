@@ -109,16 +109,30 @@ symbol reached through metadata would make the baseline a property of the machin
 A test asserts that a unit's signature contains what the unit's own source declares and nothing
 else.
 
-**Swift** comes from the toolchain's own symbol graph — `swift build` for SwiftPM,
-`xcodebuild` for Xcode targets, both with symbol-graph flags, read back by
-[`SymbolGraphReader`](src/EasySemVer/CodeReader/Swift/SymbolGraphReader.cs). There is no
-hand-rolled Swift parser and there will not be one. One build produces every target's graph in a
-package, so they are extracted together and cached rather than rebuilt per unit.
+**Swift** is parsed from source too, by
+[`SwiftSourceReader`](src/EasySemVer/CodeReader/Swift/SwiftSourceReader.cs). It reads declarations,
+not the language: a file is blanked of comments and string literals so brackets can be matched
+([`SwiftSourceText`](src/EasySemVer/CodeReader/Swift/SwiftSourceText.cs)), split into declaration
+headers and bodies ([`SwiftSourceWalker`](src/EasySemVer/CodeReader/Swift/SwiftSourceWalker.cs)),
+and each header taken apart into the pieces the model needs
+([`SwiftDeclarationHeader`](src/EasySemVer/CodeReader/Swift/SwiftDeclarationHeader.cs)). Function
+bodies are never entered — nothing declared in one is API.
 
-Everything that shells out — swift, xcodebuild, git — goes through
-[`IRunProcess`](src/EasySemVer/Interfaces/IRunProcess.cs). That is the seam that lets the tests
-stand in for all three without any of them being installed, and the reason the C# suite runs
-anywhere.
+Which files belong to which target is read the same way: `Package.swift` as text
+([`SwiftPackageManifest`](src/EasySemVer/CodeReader/Swift/SwiftPackageManifest.cs)) and
+`project.pbxproj` as the OpenStep property list it is
+([`PbxprojParser`](src/EasySemVer/CodeReader/Swift/PbxprojParser.cs)).
+
+This used to be the toolchain's symbol graph, and the argument for changing it is in
+[G-24](specs/99-known-gaps.md). The short version: the graph was more accurate and cost a full
+`swift build` or `xcodebuild` on every versioned run, plus a network and credentials for every
+private package dependency, and failed the run when any of that was missing.
+[`TestSwiftNeedsNoToolchain`](src/Test/Swift/TestSwiftNeedsNoToolchain.cs) is what stops it coming
+back: a process runner reaching the Swift reader again would leave every other test passing.
+
+The only thing left that shells out is **git**, for reading tags as a version seed, and it goes
+through [`IRunProcess`](src/EasySemVer/Interfaces/IRunProcess.cs) — the seam that lets the tests
+stand in for it, and that keeps a missing git an ordinary input rather than a failure.
 
 ## Rules
 
@@ -179,11 +193,8 @@ no-difference case that does not fire, and a representative difference that does
 correctness is *directional* asserts the non-firing direction too. A rule without one of those is
 not finished. See [specs/11](specs/11-testing.md).
 
-Two things to know before the suite surprises you:
+One thing to know before the suite surprises you:
 
-- The **Swift and Xcode suites shell out to a real toolchain**, so a full local run wants macOS
-  with Xcode configured. CI keeps that requirement inside a single job, which is what lets the
-  release job run on Linux.
 - The **integration regression versions this repository on purpose** — it invokes the tool against
   the real tree twice and asserts the second run moves Patch by exactly one. It leaves the working
   copy dirty, and it legitimately fails on the first run after a real Major or Minor change.

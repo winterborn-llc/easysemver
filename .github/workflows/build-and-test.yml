@@ -12,10 +12,11 @@ env:
 
 jobs:
   build-and-test:
-    # macOS, and only this job. The Swift-traited suites shell out to a real toolchain and the
-    # Xcode one needs `xcodebuild`; nothing else in this repository's pipeline does. Keeping that
-    # requirement inside one job is what lets the release that depends on it run on Linux.
-    runs-on: macos-latest
+    # Linux. This job ran on macOS for as long as the Swift suites shelled out to a real toolchain
+    # and the Xcode one needed `xcodebuild`. Neither does now - discovery reads Package.swift and
+    # project.pbxproj as text, and extraction reads the .swift files - so nothing in this
+    # repository's pipeline needs a Mac, and the whole of it runs on the cheaper runner.
+    runs-on: ubuntu-latest
 
     # Read-only: this job compiles and tests. Everything that writes - the version commit, the
     # tag, the package, the release - is in dotnet.yml, downstream of this passing.

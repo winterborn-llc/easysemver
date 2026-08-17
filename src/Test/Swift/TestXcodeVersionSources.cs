@@ -141,21 +141,61 @@ public class TestXcodeVersionSources : IDisposable
         Assert.Contains("$(MARKETING_VERSION)", File.ReadAllText(path));
     }
 
+    /// <summary>
+    /// SWD-02 - the target list comes from the project file. It used to come from
+    /// `xcodebuild -list -json`, which resolves the project's package dependencies before it will
+    /// print a set of names that are written in the file all along.
+    /// </summary>
     [Fact]
-    public void TargetsAreReadFromTheXcodebuildListing()
+    public void TargetsAreReadFromTheProjectFile()
     {
-        const string listing = """
-            {
-              "project" : {
-                "configurations" : [ "Debug", "Release" ],
-                "name" : "App",
-                "schemes" : [ "App" ],
-                "targets" : [ "AppTests", "App" ]
-              }
-            }
-            """;
+        var targets = XcodeProject.Read(PbxprojObjects.Read(ProjectFile), "/project");
 
-        Assert.Equal(["App", "AppTests"], XcodeProject.ReadTargetNames(listing));
+        Assert.Equal(["App", "AppUITests", "My App Tests"], targets.Select(t => t.Name));
+    }
+
+    /// <summary>
+    /// UNI-04 - unit-test and UI-test bundles both name themselves in their product type, and a
+    /// name is never matched against: a target called `AppTests` that ships is not test code.
+    /// </summary>
+    [Fact]
+    public void XcodeTestTargetsAreIdentifiedByProductType()
+    {
+        var targets = XcodeProject.Read(PbxprojObjects.Read(ProjectFile), "/project");
+
+        Assert.Equal(
+            ["AppUITests", "My App Tests"],
+            targets.Where(t => t.IsTest).Select(t => t.Name));
+    }
+
+    /// <summary>
+    /// A project with nothing in it, and one this cannot make sense of at all, both yield no
+    /// targets rather than throwing. A project that declares no unit is not a failed run.
+    /// </summary>
+    [Theory]
+    [InlineData("{ objects = { }; }")]
+    [InlineData("{ }")]
+    public void AProjectWithNoTargetsYieldsNone(string pbxproj)
+    {
+        Assert.Empty(XcodeProject.Read(PbxprojObjects.Read(pbxproj), "/project"));
+    }
+
+    /// <summary>
+    /// SWE-01 for Xcode - a target's sources are the files its Sources build phase lists, resolved
+    /// through the group hierarchy they hang from. This is what used to require a full
+    /// `xcodebuild build` per target.
+    /// </summary>
+    [Fact]
+    public void TargetSourcesAreResolvedThroughTheGroupHierarchy()
+    {
+        using var fixture = new XcodeProjectFixture();
+
+        var target = Assert.Single(XcodeProject.Read(fixture.ProjectPath));
+
+        Assert.Equal("App", target.Name);
+        Assert.Equal(
+            [Path.Combine(fixture.FolderRoot, "App", "Widget.swift")],
+            target.SourceFiles);
     }
 
     /// <summary>SWD-04 - system, binary, plugin and macro targets are never units.</summary>
@@ -163,18 +203,24 @@ public class TestXcodeVersionSources : IDisposable
     public void NonSourceSwiftPackageTargetsAreNotUnits()
     {
         const string manifest = """
-            {
-              "targets" : [
-                { "name" : "Widgets", "type" : "regular" },
-                { "name" : "WidgetsTests", "type" : "test" },
-                { "name" : "CLib", "type" : "system" },
-                { "name" : "Prebuilt", "type" : "binary" },
-                { "name" : "Gen", "type" : "plugin" }
-              ]
-            }
+            // swift-tools-version:5.9
+            import PackageDescription
+
+            let package = Package(
+                name: "Widgets",
+                targets: [
+                    .target(name: "Widgets"),
+                    .testTarget(name: "WidgetsTests", dependencies: ["Widgets"]),
+                    .systemLibrary(name: "CLib"),
+                    .binaryTarget(name: "Prebuilt", path: "Prebuilt.xcframework"),
+                    .plugin(name: "Gen", capability: .buildTool())
+                ]
+            )
             """;
 
-        Assert.Equal(["Widgets", "WidgetsTests"], SwiftPackageManifest.ReadTargetNames(manifest));
+        Assert.Equal(
+            ["Widgets", "WidgetsTests"],
+            SwiftPackageManifest.Read(manifest).Select(t => t.Name));
     }
 
     /// <summary>
@@ -186,77 +232,98 @@ public class TestXcodeVersionSources : IDisposable
     public void SwiftPackageTestTargetsAreIdentifiedByKindNotByName()
     {
         const string manifest = """
-            {
-              "targets" : [
-                { "name" : "Widgets", "type" : "regular" },
-                { "name" : "WidgetsTests", "type" : "regular" },
-                { "name" : "Scenarios", "type" : "test" },
-                { "name" : "Prebuilt", "type" : "binary" }
-              ]
-            }
+            // swift-tools-version:5.9
+            import PackageDescription
+
+            let package = Package(
+                name: "Widgets",
+                targets: [
+                    .target(name: "Widgets"),
+                    .target(name: "WidgetsTests"),
+                    .testTarget(name: "Scenarios"),
+                    .binaryTarget(name: "Prebuilt", path: "Prebuilt.xcframework")
+                ]
+            )
             """;
 
-        Assert.Equal(["Scenarios"], SwiftPackageManifest.ReadTestTargetNames(manifest));
+        var targets = SwiftPackageManifest.Read(manifest);
 
-        // ...and all three source targets are still units.
-        Assert.Equal(
-            ["Scenarios", "Widgets", "WidgetsTests"],
-            SwiftPackageManifest.ReadTargetNames(manifest));
+        Assert.Equal(["Scenarios"], targets.Where(t => t.IsTest).Select(t => t.Name));
+        Assert.Equal(["Scenarios", "Widgets", "WidgetsTests"], targets.Select(t => t.Name));
     }
 
     /// <summary>
-    /// UNI-04 - the Xcode half. `xcodebuild -list` reports names only, so the product type comes
-    /// from the project file, where unit-test and UI-test bundles both name themselves.
+    /// A manifest reads as text, so a comment that mentions a target does not declare one and a
+    /// name that is not a literal cannot be read. The second is the real limit of doing it this
+    /// way, and it is reported rather than guessed at.
     /// </summary>
     [Fact]
-    public void XcodeTestTargetsAreReadFromTheProjectFile()
+    public void OnlyTargetsActuallyDeclaredWithALiteralNameAreRead()
     {
-        const string pbxproj = """
-            // !$*UTF8*$!
-            {
-               objects = {
-                  AAA1 /* App */ = {
-                     isa = PBXNativeTarget;
-                     buildPhases = (
-                        BBB1 /* Sources */,
-                     );
-                     name = App;
-                     productType = "com.apple.product-type.application";
-                  };
-                  AAA2 /* My App Tests */ = {
-                     isa = PBXNativeTarget;
-                     name = "My App Tests";
-                     productType = "com.apple.product-type.bundle.unit-test";
-                  };
-                  AAA3 /* AppUITests */ = {
-                     isa = PBXNativeTarget;
-                     name = AppUITests;
-                     productType = "com.apple.product-type.bundle.ui-testing";
-                  };
-                  CCC1 /* Debug */ = {
-                     isa = XCBuildConfiguration;
-                     name = Debug;
-                  };
-               };
-            }
+        const string manifest = """
+            // swift-tools-version:5.9
+            import PackageDescription
+
+            // .target(name: "Commented"),
+            let generated = "Computed"
+            let package = Package(
+                name: "Widgets",
+                targets: [
+                    .target(name: "Widgets"),
+                    .target(name: generated)
+                ]
+            )
             """;
 
-        Assert.Equal(
-            ["AppUITests", "My App Tests"],
-            XcodeTestTarget.ReadTestTargetNames(pbxproj));
+        Assert.Equal(["Widgets"], SwiftPackageManifest.Read(manifest).Select(t => t.Name));
     }
 
-    /// <summary>
-    /// A project with no test bundle in it, and one this cannot make sense of at all, both yield
-    /// nothing rather than failing: discovery has already succeeded via xcodebuild by this point,
-    /// and the worst case is a test target keeping a vote it should not have.
-    /// </summary>
-    [Theory]
-    [InlineData("")]
-    [InlineData("{ objects = { }; }")]
-    [InlineData("nothing that resembles a project file")]
-    public void AProjectWithNoTestTargetsYieldsNone(string pbxproj)
+    /// <summary>The "path:" argument overrides the convention, and "exclude:" trims what is left.</summary>
+    [Fact]
+    public void TheManifestsPathAndExcludeArgumentsAreHonoured()
     {
-        Assert.Empty(XcodeTestTarget.ReadTestTargetNames(pbxproj));
+        const string manifest = """
+            let package = Package(
+                name: "Widgets",
+                targets: [
+                    .target(name: "Widgets", exclude: ["Legacy"], path: "Custom/Place")
+                ]
+            )
+            """;
+
+        var target = Assert.Single(SwiftPackageManifest.Read(manifest));
+
+        Assert.Equal("Custom/Place", target.Path);
+        Assert.Equal(["Legacy"], target.Excluded);
     }
+
+    private const string ProjectFile = """
+        // !$*UTF8*$!
+        {
+           objects = {
+              AAA1 /* App */ = {
+                 isa = PBXNativeTarget;
+                 buildPhases = (
+                    BBB1 /* Sources */,
+                 );
+                 name = App;
+                 productType = "com.apple.product-type.application";
+              };
+              AAA2 /* My App Tests */ = {
+                 isa = PBXNativeTarget;
+                 name = "My App Tests";
+                 productType = "com.apple.product-type.bundle.unit-test";
+              };
+              AAA3 /* AppUITests */ = {
+                 isa = PBXNativeTarget;
+                 name = AppUITests;
+                 productType = "com.apple.product-type.bundle.ui-testing";
+              };
+              CCC1 /* Debug */ = {
+                 isa = XCBuildConfiguration;
+                 name = Debug;
+              };
+           };
+        }
+        """;
 }

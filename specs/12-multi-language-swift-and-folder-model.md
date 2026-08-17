@@ -28,10 +28,16 @@ re-litigate them. Genuinely open items are collected in §20.
 
 **D-02 — Swift signatures come from the Swift toolchain's symbol graph.** No hand-rolled
 Swift parser, no tree-sitter, no shipped native helper.
+> **Superseded, 2026-08-16 (G-24).** Signatures come from the source. The graph was the more
+> accurate answer and it cost a build of the package on every versioned run, plus a network and
+> credentials for every private dependency. The hand-rolled reader this ruled out is what replaced
+> it; the shipped native helper is still ruled out. See SIG-20.
 
 **D-03 — Missing toolchain or failed build is fatal.** If the folder contains Swift units and
 their signatures cannot be extracted, the run fails (exit 1). No skip-and-warn, no partial
 baseline.
+> **Narrowed, 2026-08-16 (G-24).** Still fatal, but there is no toolchain to be missing and no
+> build to fail. What remains fatal is a declared target whose source cannot be found at all.
 
 **D-04 — Swift models the full native Swift topology.** `public` and `open` declarations of
 every kind: class, struct, enum (with cases and associated values), protocol (with
@@ -45,6 +51,9 @@ alike. Not products, not whole packages.
 with symbol-graph flags. Accepted cost: a repo containing an `.xcodeproj` pays an Xcode build
 on every versioned run, and CI needs Xcode configured. (See §20 O-03 for the mitigation the
 implementer should propose but not unilaterally adopt.)
+> **Cost withdrawn, 2026-08-16 (G-24).** Xcode is still in scope for signatures. The accepted cost
+> is not: targets and their sources are read from `project.pbxproj`, so a repository containing an
+> `.xcodeproj` pays no build and CI needs no Xcode. O-03's mitigation was never needed.
 
 **D-07 — Every Swift version location is read, and the highest wins**: Xcode
 `MARKETING_VERSION` / Info.plist `CFBundleShortVersionString`, `.podspec` `s.version`, git
@@ -302,6 +311,16 @@ The baseline SHALL be written to a temporary file in the same directory and move
 It SHALL NOT be written at all if any discovered unit failed extraction (SWE-05). Ordering
 within persistence stays: baseline first, then version write-back.
 
+**BAS-07 — Per-language signature versions.** ✅ *(added 2026-08-16, G-24)*
+Each unit SHALL carry a `signatureVersion` written by its own provider, and a unit whose recorded
+version is not the one its provider now writes SHALL be dropped on read and classified as new. A
+unit written before the attribute existed reads as version `1`.
+ℹ️ BAS-03's whole-file version is the wrong instrument for a change in how one language words its
+signatures: it rejects the file, so Swift changing its extraction would re-seed a repository's C#
+history too, and would hand a repository with no Swift in it a release it did not earn. That is
+G-23's mistake in a different place — a version bump nobody's code caused. This is deliberately
+*not* for a model change: a new field on a modelled entity diffs as an ordinary change and should.
+
 ## 7. Neutral classification (unit existence)
 
 Unit-level existence moves **out** of the language rule sets and into the neutral core, because
@@ -448,11 +467,20 @@ capturing `init` separately from `set` (CSX-03) is what makes it detectable.
 Every `Package.swift` under the root (subject to FLD-04) SHALL be a Swift package. Targets
 SHALL be enumerated by running **`swift package dump-package`** in the package directory and
 reading the JSON manifest — the manifest is executable Swift and SHALL NOT be text-parsed.
+> **Superseded, 2026-08-16 (G-24).** The manifest is text-parsed. It is executable Swift, and this
+> was the right call while the toolchain was already required for extraction — but `dump-package`
+> compiles the manifest and resolves the package's dependency graph before it will answer, and what
+> is wanted from it is a list of names that are literals in the file. A target whose name is
+> computed is not discovered, and says so in the log.
 
 **SWD-02 — Xcode projects.** ✅ required (D-06)
 Every `*.xcodeproj` under the root SHALL be an Xcode project. Targets SHALL be enumerated by
 `xcodebuild -list -json -project <path>`. `*.xcworkspace` is used only to locate projects, not
 as a unit itself.
+> **Superseded, 2026-08-16 (G-24).** Targets are read from `project.pbxproj`, which is where
+> `xcodebuild -list` reads them from. It reported names and nothing else, so the product types had
+> to be read from the file anyway (UNI-04); it also resolved the project's package dependencies
+> first. The workspace rule is unchanged.
 
 **SWD-03 — Unit kinds and identity.** ✅ required
 Per ML-03: `swiftpm-target` with id `<package-relative-dir>:<target>`, `xcode-target` with id
@@ -477,6 +505,8 @@ or, when a built module is already available, `swift symbolgraph-extract -module
 -target <triple> -I <build-dir> -output-dir <tempdir>`. For Xcode targets, the equivalent
 `xcodebuild` invocation with `OTHER_SWIFT_FLAGS` carrying the same emit flags. Extension blocks
 SHALL be requested (`-emit-extension-block-symbols`) so extension members are visible.
+> **Superseded, 2026-08-16 (G-24).** None of this runs. Signatures are read from the target's
+> `.swift` files; see SIG-20 and SIG-27 for what that sees and what it does not.
 
 **SWE-02 — Access level filter.** ✅ required
 Only `public` and `open` declarations enter the signature (`-minimum-access-level public`
@@ -502,11 +532,16 @@ non-zero exit, timeout, no symbol graph produced for a discovered target — the
 fail with exit 1, and the message SHALL name the unit, the exact command executed, and the
 tool's stderr. No baseline is written (BAS-06), no version is stamped, the working tree is
 untouched.
+> **Narrowed, 2026-08-16 (G-24).** The failure modes above no longer exist. A declared target whose
+> source directory cannot be found still fails the run with exit 1, still names the target, and
+> still writes nothing.
 
 **SWE-06 — Temp artifacts.** ✅ required
 Symbol graphs SHALL be emitted to a temporary directory outside the folder root and cleaned up
 afterwards, so extraction never dirties the user's tree or feeds its own output back into
 discovery.
+> **Moot, 2026-08-16 (G-24).** Extraction produces no artifacts at all. It opens files for reading
+> and nothing else, so there is nothing to put anywhere or clean up.
 
 ## 12. Swift signature model
 
@@ -814,6 +849,15 @@ skipping. Report the measured cost from the fixture project when P5 lands.
 > No opt-out was added: nothing measured here proves the tool impractical, and adding a config
 > file to skip units is a bigger decision than a timing number justifies. The recommendation
 > stands if a real Xcode project proves otherwise.
+>
+> **Closed, 2026-08-16, by removing the cost rather than opting out of it (G-24).** A real Xcode
+> project did prove otherwise, and not on the clock: `xcodebuild -list` and `swift package
+> dump-package` both resolve package dependencies before they answer, so client runs were failing
+> on machines that were offline, behind a proxy, or without credentials for a private package. The
+> recommended fallback would have let a user mark a unit version-sync-only, which trades a failing
+> run for a unit nobody is watching. Reading the project file and the source instead costs nothing
+> and watches everything. The measured floor of 4.1 s per Xcode project is now approximately zero;
+> the seven Swift and Xcode integration tests together run in about 0.3 s.
 
 **O-04 — `--dry-run`.** CLI-07 currently states, by design, that there is no preview mode. With
 Xcode builds in the loop and a 60-rule set, a mode that classifies and reports without writing

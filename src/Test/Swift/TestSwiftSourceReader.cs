@@ -1,17 +1,16 @@
-using Winterborn.Tools.EasySemVer.CodeReader.Swift;
 using Winterborn.Tools.EasySemVer.DataObject.Swift;
 using Winterborn.Tools.EasySemVer.Interfaces.Swift;
 
 namespace Test.Swift;
 
 /// <summary>
-/// TST-M5 - extraction tested by feeding checked-in symbol-graph JSON through the parser, so the
-/// unit suite runs on any machine, with or without a Swift toolchain. The fixture covers a
-/// struct, class, actor, enum with associated values, protocol with and without default
-/// implementations, extensions on in-module and external types, generics with constraints,
-/// async/throws, @available and @objc.
+/// TST-M5 - extraction tested by feeding checked-in Swift source through the reader, which is the
+/// whole of extraction now that no toolchain is involved. The fixture covers a struct, class,
+/// actor, enum with associated values, enum with a raw value type, protocol with and without
+/// default implementations, extensions on in-module and external types, generics with constraints,
+/// async/throws, mutating/inout/variadic, @frozen, @available and @objc.
 /// </summary>
-public class TestSymbolGraphReader
+public class TestSwiftSourceReader
 {
     private static ISwiftModule Module => Fixtures.WidgetsModule;
 
@@ -89,7 +88,9 @@ public class TestSymbolGraphReader
         Assert.False(add.Parameters[1].HasDefault);
         Assert.True(add.Parameters[1].IsInout);
         Assert.Equal("inout", add.Parameters[1].Ownership);
+        Assert.Equal("Int", add.Parameters[1].Type);
         Assert.True(add.Parameters[2].IsVariadic);
+        Assert.Equal("Mutator.add(_:into:extra:)", add.Name);
     }
 
     [Fact]
@@ -105,6 +106,18 @@ public class TestSymbolGraphReader
         Assert.Equal("Double", green.AssociatedValues[1].Type);
     }
 
+    /// <summary>
+    /// An enum's first inheritance entry is its raw value type when it is one, and a conformance
+    /// otherwise. "Colour" has no inheritance clause at all and must not acquire one.
+    /// </summary>
+    [Fact]
+    public void RawValueTypesAreToldFromConformances()
+    {
+        Assert.Equal("String", ((ISwiftEnum)Find("Size")).RawValueType);
+        Assert.Empty(((ISwiftEnum)Find("Size")).Conformances);
+        Assert.Equal(string.Empty, ((ISwiftEnum)Find("Colour")).RawValueType);
+    }
+
     [Fact]
     public void ProtocolRequirementsAndAssociatedTypesAreCaptured()
     {
@@ -115,7 +128,10 @@ public class TestSymbolGraphReader
         Assert.Contains(movable.Properties, p => p.Name == "Movable.speed");
     }
 
-    /// <summary>S20/S21 turn on this distinction.</summary>
+    /// <summary>
+    /// S20/S21 turn on this distinction. A requirement an extension supplies a body for is
+    /// defaulted; one nobody has written a body for is not.
+    /// </summary>
     [Fact]
     public void DefaultImplementationsAreDistinguished()
     {
@@ -126,6 +142,9 @@ public class TestSymbolGraphReader
 
         var withDefault = defaulted.Functions.First(f => f.Name == "Defaulted.withDefault()");
         Assert.True(withDefault.HasDefaultImplementation);
+
+        // Defaulting a requirement does not add a second member with the same name.
+        Assert.Single(defaulted.Functions, f => f.Name == "Defaulted.withDefault()");
     }
 
     /// <summary>SWM-02 - members an in-module extension adds are folded into the type.</summary>
@@ -141,7 +160,7 @@ public class TestSymbolGraphReader
     {
         var extension = Assert.Single(Module.Extensions);
 
-        Assert.Equal("Swift.String", extension.ExtendedType);
+        Assert.Equal("String", extension.ExtendedType);
         Assert.Contains(extension.Functions, f => f.Name == "String.widgetize()");
     }
 
@@ -160,7 +179,10 @@ public class TestSymbolGraphReader
     {
         Assert.Contains(Module.GlobalVariables, v => v.Name == "globalThing");
         Assert.Contains(Module.TypeAliases, a => a.Name == "Alias");
-        Assert.Contains(Module.Operators, o => o.Name == "<~>(_:_:)");
+
+        var declared = Module.Operators.First(o => o.Name == "<~>(_:_:)");
+        Assert.Equal("infix", declared.OperatorKind);
+        Assert.Equal("AdditionPrecedence", declared.PrecedenceGroup);
     }
 
     [Fact]
@@ -183,13 +205,17 @@ public class TestSymbolGraphReader
         Assert.Equal("@objc", ping.ObjCExposure);
     }
 
+    /// <summary>
+    /// SWM-03 - the first entry of a class's inheritance clause is its superclass unless this
+    /// module declares it as a protocol, which "Movable" is and "NSObject" is not.
+    /// </summary>
     [Fact]
     public void SuperclassAndConformancesAreCaptured()
     {
         var gadget = Find("Gadget");
 
-        Assert.Equal("ObjectiveC.NSObject", gadget.Superclass);
-        Assert.Contains("Movable", gadget.Conformances);
+        Assert.Equal("NSObject", gadget.Superclass);
+        Assert.Equal(["Movable"], gadget.Conformances);
     }
 
     [Fact]
@@ -198,6 +224,7 @@ public class TestSymbolGraphReader
         Assert.True(Find("Point").Properties.First(p => p.Name == "Point.x").IsSettable);
         Assert.False(Find("Gadget").Properties.First(p => p.Name == "Gadget.speed").IsSettable);
         Assert.False(Find("Frozen").Properties.First(p => p.Name == "Frozen.v").IsSettable);
+        Assert.True(Find("Gadget").Properties.First(p => p.Name == "Gadget.name").IsSettable);
     }
 
     [Fact]
@@ -205,11 +232,13 @@ public class TestSymbolGraphReader
     {
         Assert.Contains(Find("Gadget").Subscripts, s => s.Name == "Gadget.subscript(_:)");
         Assert.Contains(Find("Point").Initializers, i => i.Name == "Point.init(x:y:)");
+        Assert.True(Find("Point").Initializers.First().Parameters[1].HasDefault);
     }
 
     /// <summary>
-    /// Members the compiler synthesises for a conformance belong to the protocol, not to this
-    /// module. Including them would make a toolchain upgrade look like an API change.
+    /// A conformance's synthesised members - "==", "hashValue", a memberwise init - are the
+    /// compiler's, not this module's. Source never mentions them, which is the point: they cannot
+    /// reach the baseline and a toolchain upgrade cannot look like an API change.
     /// </summary>
     [Fact]
     public void SynthesizedConformanceMembersAreExcluded()
@@ -229,5 +258,17 @@ public class TestSymbolGraphReader
 
         Assert.DoesNotContain("::SYNTHESIZED::", xml);
         Assert.DoesNotContain("s:7Widgets", xml);
+    }
+
+    /// <summary>
+    /// A nested typealias is part of the owning type's surface and is recorded as a get-only
+    /// property, which is how it diffs.
+    /// </summary>
+    [Fact]
+    public void NestedTypeAliasesBelongToTheirType()
+    {
+        var distance = Find("Gadget").Properties.First(p => p.Name == "Gadget.Distance");
+
+        Assert.Equal("Int", distance.Type);
     }
 }

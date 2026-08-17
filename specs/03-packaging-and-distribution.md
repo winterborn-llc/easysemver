@@ -72,11 +72,11 @@ On every push to `main`, CI SHALL restore, build `Release`, run the unit suite a
 integration suite; and then, only if all of that passed, version the repository, commit and tag
 the bump, and push the tool package to nuget.org with `--skip-duplicate` (idempotent republish).
 ℹ️ Build-and-test is a [reusable workflow](../.github/workflows/build-and-test.yml) on
-`macos-latest`, because the Swift-traited suites need a Swift toolchain and Xcode. The release job
-that consumes it runs on `ubuntu-latest`: nothing it does — versioning, building the tool,
-committing, tagging, publishing — needs macOS, and confining that requirement to the one job that
-has it is what allows the split. The `needs:` edge carries the guarantee that step order used to:
-nothing is committed, tagged or published until the suite has passed on that commit.
+`ubuntu-latest`, as is the release job that consumes it. It ran on `macos-latest` for as long as
+the Swift suites needed a Swift toolchain and the Xcode one needed `xcodebuild`; neither does now
+(SIG-20), so nothing in this pipeline needs a Mac. The two jobs stay separate anyway: the `needs:`
+edge carries the guarantee that step order used to, that nothing is committed, tagged or published
+until the suite has passed on that commit.
 
 **CI-01a — Every other branch runs the same check.** ✅
 Every push to a branch other than `main` SHALL run the same build-and-test workflow, via

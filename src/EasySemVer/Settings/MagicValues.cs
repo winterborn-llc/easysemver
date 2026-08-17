@@ -19,6 +19,15 @@ internal static class MagicValues
     /// every unit in it would fail to resolve a provider and read as removed - Major, for a rename
     /// nobody made.
     /// </para>
+    /// <para>
+    /// Deliberately <em>not</em> bumped when Swift signatures stopped coming from the toolchain's
+    /// symbol graph and started coming from the source. That invalidates every Swift signature in
+    /// every baseline, but it does not touch the file's structure and it does not touch C# at all
+    /// - and bumping this would have made a repository with no Swift in it re-seed, and take a
+    /// release it did not earn, for a change that could not have affected it. What carries that
+    /// instead is the per-unit signature version (BAS-07), which drops the Swift units and leaves
+    /// everything around them intact.
+    /// </para>
     /// </summary>
     internal const string BaselineFormatVersion = "4";
 

@@ -4,9 +4,8 @@ using Winterborn.Tools.EasySemVer.DataObject.Swift;
 namespace Test.Swift;
 
 /// <summary>
-/// The checked-in symbol graphs (TST-M5). They were produced by a real toolchain from
-/// Fixtures/Widgets.swift.txt, then stripped of source locations so they carry nothing
-/// machine-specific.
+/// The checked-in Swift source the extraction tests read (TST-M5). It is the whole input: there is
+/// no toolchain in the loop and nothing to install, so the unit suite runs anywhere.
 /// </summary>
 internal static class Fixtures
 {
@@ -21,11 +20,6 @@ internal static class Fixtures
 
     private static SwiftModule ReadWidgets()
     {
-        return SymbolGraphReader.Read(
-            "Widgets",
-            [
-                File.ReadAllText(GetPath("Widgets.symbols.json")),
-                File.ReadAllText(GetPath("Widgets@Swift.symbols.json"))
-            ]);
+        return SwiftSourceReader.Read("Widgets", [File.ReadAllText(GetPath("Widgets.swift.txt"))]);
     }
 }

@@ -19,8 +19,8 @@ solution file at all. *Retired by FLD-02; closed gap G-09.*
 **DSC-03 — Unit enumeration.** ✅ *(generalized by UNI-01…UNI-03)*
 The unit set SHALL be every packageable unit found under the folder root, recursively:
 - one per `*.csproj` (UNI-02),
-- one per SwiftPM **target**, enumerated by `swift package dump-package` (SWD-01),
-- one per Xcode **target**, enumerated by `xcodebuild -list -json` (SWD-02).
+- one per SwiftPM **target**, read from the text of `Package.swift` (SWD-01),
+- one per Xcode **target**, read from `project.pbxproj` (SWD-02).
 
 ℹ️ There is deliberately no include/exclude configuration: test projects, sample projects and
 test targets all participate, both as signature sources and as version-sync targets.
@@ -44,8 +44,10 @@ location remains irrelevant to identity.
 A C# project's source set SHALL be every `*.cs` file under the `.csproj`'s directory,
 recursively, **subject to the same exclusions as discovery** (DSC-08). Generated files under
 `obj/` are therefore no longer parsed.
-ℹ️ Swift source is never enumerated directly: signatures come from the toolchain's symbol graph
-(SWE-01), so what is compiled is what is measured.
+ℹ️ A Swift target's source set SHALL be the files that target actually builds: for SwiftPM, what
+its `path:`, `sources:` and `exclude:` arguments resolve to, or the conventional `Sources/<target>`
+if none were written; for Xcode, the files its Sources build phase lists, resolved through the
+group hierarchy, plus everything under any folder it synchronises (SWE-01).
 ℹ️ Files outside the project directory (linked files) and conditional compilation are still not
 considered; the source on disk is the truth.
 

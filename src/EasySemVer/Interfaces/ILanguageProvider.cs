@@ -14,6 +14,25 @@ public interface ILanguageProvider
     /// <inheritdoc cref="IPackageableUnit.LanguageId"/>
     public string LanguageId { get; }
 
+    /// <summary>
+    /// BAS-07 - which generation of this language's signatures the provider writes and can read.
+    /// A baseline unit stamped with anything else is dropped rather than compared, so the unit
+    /// re-seeds from an empty history and everything around it keeps its own.
+    /// <para>
+    /// It exists because the alternative is the whole-file format version, and that is far too
+    /// blunt an instrument for this: changing how one language extracts its signatures would
+    /// invalidate every other language's history too, and hand a repository with no code in that
+    /// language at all a release it did not earn. A provider bumps this when the words it uses to
+    /// describe the same API change - not when the API model gains a field, which diffs as an
+    /// ordinary change and should.
+    /// </para>
+    /// <para>
+    /// Defaulted to the first generation, which is also what a baseline written before this
+    /// existed is read as. A new language starts here and stays here until it has a reason not to.
+    /// </para>
+    /// </summary>
+    public string SignatureVersion => "1";
+
     /// <summary>Enumerates the folder root once per run (FLD-03) and returns this language's units.</summary>
     public IReadOnlyList<IPackageableUnit> Discover(string folderRoot);
 

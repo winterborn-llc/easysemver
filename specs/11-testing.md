@@ -82,42 +82,49 @@ the round trip; that units are sorted by `(Language, UnitId)`; that an unknown o
 `formatVersion` is rejected; that an unreadable or missing file degrades to an empty baseline;
 and that the written file contains no absolute path.
 
-**TST-M5 — Swift extraction, toolchain-free.** ✅
-[`TestSymbolGraphReader`](../src/Test/Swift/TestSymbolGraphReader.cs) feeds **checked-in
-symbol-graph JSON** ([`src/Test/Fixtures/`](../src/Test/Fixtures)) through the parser, so the unit
-suite runs on any machine. The fixture covers struct, class, actor, enum with associated values,
-protocol with and without default implementations, extension on an in-module type, extension on
-an external type, generics with constraints, `async`/`throws`, `@available`, `@objc` — and
-asserts that synthesized conformance members and mangled names never reach the model.
-ℹ️ The fixtures were produced by a real toolchain from
-[`Widgets.swift.txt`](../src/Test/Fixtures/Widgets.swift.txt), then stripped of source locations
-so they carry nothing machine-specific.
+**TST-M5 — Swift extraction.** ✅
+[`TestSwiftSourceReader`](../src/Test/Swift/TestSwiftSourceReader.cs) feeds **checked-in Swift
+source** ([`Widgets.swift.txt`](../src/Test/Fixtures/Widgets.swift.txt)) through the reader, which
+is now the whole of extraction. The fixture covers struct, class, actor, enum with associated
+values, enum with a raw value type, protocol with and without default implementations, extension
+on an in-module type, extension on an external type, generics with constraints, `async`/`throws`,
+`mutating`/`inout`/variadic, `@frozen`, `@available` and `@objc` — and asserts that synthesized
+conformance members never reach the model.
+ℹ️ The same file used to be the input a real toolchain was run over to produce the checked-in
+symbol graphs this test read. It is now the input directly, and the graphs are gone.
 
-**TST-M6 — Swift extraction, live.** ✅
-[`SwiftRegression`](../src/IntegrationTest/SwiftRegression.cs) builds and extracts the fixture
-package [`src/TestFixtures/SwiftPackage/`](../src/TestFixtures/SwiftPackage) for real. It is
-marked `[Trait("Toolchain", "Swift")]` so it can be skipped where Swift is absent
-(`dotnet test --filter Toolchain!=Swift`). The package has **no external dependencies**, so
-`swift build` never resolves and the suite needs no network.
-ℹ️ The manifest is checked in as `Package.swift.template` and renamed by the fixture when it
-copies the tree to a temporary directory. A real `Package.swift` in this repository would make
-the repository itself a multi-language tree, so every run — including TST-05 — would require a
-Swift toolchain and an `swift build`.
+**TST-M5a — No toolchain, structurally.** ✅
+[`TestSwiftNeedsNoToolchain`](../src/Test/Swift/TestSwiftNeedsNoToolchain.cs) asserts that nothing
+under `CodeReader/Swift` except the git-tag version source can reach `IRunProcess` at all, that the
+Swift provider is not handed one, and that a whole package is discovered and extracted with an
+empty `PATH`. A process runner finding its way back into the Swift reader would leave every other
+test in the suite passing and merely make the tool need Xcode again, which is exactly the kind of
+regression an assertion about behaviour cannot see.
 
-**TST-M6a — Xcode extraction, live.** ✅
+**TST-M6 — Swift, end to end.** ✅
+[`SwiftRegression`](../src/IntegrationTest/SwiftRegression.cs) discovers, extracts and versions the
+fixture package [`src/TestFixtures/SwiftPackage/`](../src/TestFixtures/SwiftPackage) through the
+real tool. It carries no toolchain trait any more, because there is nothing to skip it for: one of
+its tests runs the whole tool with `PATH` emptied and asserts it succeeds.
+ℹ️ The manifest is still checked in as `Package.swift.template` and renamed by the fixture when it
+copies the tree to a temporary directory — otherwise this repository would be a multi-language
+tree and every run over it, including TST-05, would discover targets that are fixtures.
+
+**TST-M6a — Xcode, end to end.** ✅
 [`XcodeRegression`](../src/IntegrationTest/XcodeRegression.cs) exercises the Xcode path end to
-end against [`src/TestFixtures/XcodeProject/`](../src/TestFixtures/XcodeProject): target
-discovery via `xcodebuild -list -json`, symbol-graph extraction, `MARKETING_VERSION` read and
-written back, `CURRENT_PROJECT_VERSION` left untouched, and a byte-identical baseline on a second
-run. Same `Toolchain=Swift` trait.
+end against [`src/TestFixtures/XcodeProject/`](../src/TestFixtures/XcodeProject): target discovery
+from `project.pbxproj`, source resolution through the group hierarchy, extraction,
+`MARKETING_VERSION` read and written back, `CURRENT_PROJECT_VERSION` left untouched, and a
+byte-identical baseline on a second run. No trait, and no Xcode.
 ℹ️ The project bundle is checked in as `App.xcodeproj.template` and renamed by the fixture, for
 the same reason the SwiftPM manifest is.
 
 **TST-M7 — Failure path.** ✅
-[`TestSwiftExtractionFailure`](../src/Test/Swift/TestSwiftExtractionFailure.cs) stubs the process
-runner with "command not found", "non-zero exit" and "timed out", and asserts that the run fails,
-that the message names the unit, the exact command and the tool's stderr, and that both the
-baseline file and every file on disk are left byte-identical.
+[`TestSwiftExtractionFailure`](../src/Test/Swift/TestSwiftExtractionFailure.cs) declares a target
+in the manifest whose source directory does not exist, and asserts that the run fails, that the
+message names the target and says where it looked, and that both the baseline file and every file
+on disk are left byte-identical. It also asserts the case that is *not* a failure: a target whose
+directory holds no Swift is an empty module, not a broken package (O-06).
 `SwiftRegression.MissingToolchainFailsTheRun` asserts the same against a real empty `PATH`.
 
 **TST-M10 — Rule identifiers are pinned to the specs.** ✅
@@ -155,19 +162,13 @@ two dry runs produce byte-identical reports, and that a failed run leaves no rep
 | `IntegrationTest` | ✅ **65/65 passed** in about 30 seconds (6 `Regression`, 9 `JsonReportRegression`, 43 `ActionRegression`, 4 SwiftPM, 3 Xcode) |
 
 ℹ️ `ActionRegression` (ACT-09) needs `bash` and `tar`, which every GitHub-hosted runner has (`jq`
-went with the `jq` block CLI-10 removed from `action.yml`);
-it is traited `Toolchain=Bash` so a machine without them can exclude it the way the Swift tests are
-excluded. Filtering it out costs 43 tests. The seven Swift-traited ones now cost about 8 seconds
-together, against 28 for the other 58: the wall clock is `ActionRegression` shelling out to `bash`
-and `git` 43 times, not the toolchains.
+went with the `jq` block CLI-10 removed from `action.yml`); it is traited `Toolchain=Bash` so a
+machine without them can exclude it. Filtering it out costs 43 tests. It is also the whole of the
+wall clock: it shells out to `bash` and `git` 43 times.
 
-ℹ️ That is a recent reversal. The SwiftPM suite used to take about 90 seconds on an idle machine,
-nearly all of it `--build-tests` compiling and linking an XCTest bundle for a symbol graph UNI-04
-had already made unreadable. Dropping the flag took one SwiftPM run from ~11-20 seconds to ~1.3,
-and the whole suite from about a minute and a half to about 30 seconds;
-[`TestSwiftBuildCommand`](../src/Test/Swift/TestSwiftBuildCommand.cs) pins the argument list so it
-cannot come back as a silent slowdown.
-
-ℹ️ The Swift-traited tests still shell out to `swift` and `xcodebuild` and are therefore sensitive
-to machine load: on a box already saturated with another Swift build they will hit the five-minute
-manifest timeout and fail.
+ℹ️ The seven Swift and Xcode tests now run in about **0.3 seconds together**, and are no longer
+traited at all. They took the toolchain path's cost with them: a SwiftPM run was ~1.3 seconds after
+`--build-tests` was dropped (and ~11-20 before that), and an Xcode run was ~4.1, of which ~1.0 was
+`xcodebuild -list` doing nothing but resolving dependencies. They were also sensitive to machine
+load — a box already saturated with another Swift build could hit the five-minute manifest timeout
+and fail the suite. None of that applies to reading files.

@@ -9,12 +9,10 @@ using Xunit;
 namespace IntegrationTest;
 
 /// <summary>
-/// TST-M6 and acceptance criterion 5, against a real toolchain. Traited so a machine without
-/// Swift can run everything else: <c>dotnet test --filter Toolchain!=Swift</c>.
-/// The fixture package has no external dependencies, so `swift build` never resolves and the
-/// suite needs no network.
+/// TST-M6 and acceptance criterion 5, over a real package tree. There is no toolchain trait on
+/// this suite any more and no toolchain to install: discovery reads Package.swift as text and
+/// extraction reads the .swift files, so it runs on any machine that can run the tests at all.
 /// </summary>
-[Trait("Toolchain", "Swift")]
 public class SwiftRegression
 {
     [Fact]
@@ -43,8 +41,8 @@ public class SwiftRegression
         Assert.Contains("unitKind=\"swiftpm-target\"", baseline);
         Assert.Contains("<SwiftModule name=\"Widgets\"", baseline);
 
-        // UNI-04, against a real `swift package dump-package`: the fixture's `.testTarget` is
-        // discovered and versioned like any other target, and its symbols are not in the baseline.
+        // UNI-04: the fixture's `.testTarget` is discovered and versioned like any other target,
+        // and its symbols are not in the baseline.
         // Before this it was, and renaming an XCTest method moved the whole folder's version.
         Assert.DoesNotContain("<SwiftModule name=\"WidgetsTests\"", baseline);
         Assert.DoesNotContain("unitId=\"Widgets:WidgetsTests\"", baseline);
@@ -86,13 +84,13 @@ public class SwiftRegression
             File.ReadAllText(Path.Combine(fixture.FolderRoot, "EasySemVer.xml")));
     }
 
-    /// <summary>TST-M6 - the graph a real toolchain emits reaches the model intact.</summary>
+    /// <summary>TST-M6 - a real package tree on disk reaches the model intact.</summary>
     [Fact]
-    public void LiveSymbolGraphCarriesTheExpectedSymbols()
+    public void ExtractedModuleCarriesThePackagesSwiftSurface()
     {
         using var fixture = new SwiftPackageFixture();
 
-        var provider = new SwiftLanguageProvider(new ProcessRunner(), VersionSourceFactories.Create(new ProcessRunner()));
+        var provider = new SwiftLanguageProvider(VersionSourceFactories.Create(new ProcessRunner()));
         var units = provider.Discover(fixture.FolderRoot);
 
         // UNI-03: test targets are units too, and a plain `swift build` does not build them.
@@ -100,15 +98,14 @@ public class SwiftRegression
             ["SwiftPackage:Widgets", "SwiftPackage:WidgetsTests"],
             units.Select(u => u.UnitId).Order());
 
-        // UNI-04, from what a real `swift package dump-package` reported: the `.testTarget` is a
-        // unit that carries versions, and is the one the provider names as test code.
+        // UNI-04, from what the manifest declares: the `.testTarget` is a unit that carries
+        // versions, and is the one the provider names as test code.
         Assert.Equal(
             ["SwiftPackage:WidgetsTests"],
             units.Where(provider.IsTestCode).Select(u => u.UnitId).Order());
 
         // UNI-04, applied the way the run applies it: a test target is versioned but never
-        // extracted, so asking for its graph would ask the toolchain to build a bundle no
-        // classification, baseline or report ever reads.
+        // extracted, so nothing it declares reaches classification, the baseline or the report.
         foreach (var discovered in units.Where(u => !provider.IsTestCode(u)))
         {
             provider.Extract(discovered);
@@ -128,30 +125,37 @@ public class SwiftRegression
         Assert.Contains(gadget.Functions, f => f.Name == "Gadget.move(to:)" && f.Throws);
     }
 
-    /// <summary>Acceptance criterion 7, for real: no toolchain means exit 1 and nothing written.</summary>
+    /// <summary>
+    /// The inverse of the test that used to be here. With no toolchain on the PATH at all, the run
+    /// used to exit 1 having written nothing, because discovery could not start without
+    /// <c>swift package dump-package</c>. It now completes: the manifest and the source are both
+    /// files, and neither needs a process to read.
+    /// <para>
+    /// An empty PATH also takes git with it, which is the point of asserting on the podspec - the
+    /// git-tag version source drops out with a log line and the run seeds from the other sources
+    /// rather than failing (MVR-03).
+    /// </para>
+    /// </summary>
     [Fact]
-    public void MissingToolchainFailsTheRun()
+    public void TheRunNeedsNoToolchainOnThePath()
     {
         using var fixture = new SwiftPackageFixture();
-        var before = File.ReadAllText(fixture.PodspecPath);
         var reportPath = Path.Combine(fixture.FolderRoot, "report.json");
 
         var originalPath = Environment.GetEnvironmentVariable("PATH");
         try
         {
             Environment.SetEnvironmentVariable("PATH", "/nonexistent-for-easysemver");
-            Assert.Equal(1, Program.Main(fixture.FolderRoot, "--json", reportPath));
+            Assert.Equal(0, Program.Main(fixture.FolderRoot, "--json", reportPath));
         }
         finally
         {
             Environment.SetEnvironmentVariable("PATH", originalPath);
         }
 
-        Assert.False(File.Exists(Path.Combine(fixture.FolderRoot, "EasySemVer.xml")));
-        Assert.Equal(before, File.ReadAllText(fixture.PodspecPath));
-
-        // REP-08: the failure happened after classification, which is the case that could have
-        // produced a plausible-looking but untrue report.
-        Assert.False(File.Exists(reportPath));
+        var baseline = File.ReadAllText(Path.Combine(fixture.FolderRoot, "EasySemVer.xml"));
+        Assert.Contains("<SwiftModule name=\"Widgets\"", baseline);
+        Assert.Contains("s.version = '2.4.0'", File.ReadAllText(fixture.PodspecPath));
+        Assert.True(File.Exists(reportPath));
     }
 }

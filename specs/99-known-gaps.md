@@ -197,3 +197,53 @@ where the tool now lives. What is fixed is that the *next* one will not happen t
 ℹ️ The versions of test projects are deliberately still written. They are assemblies that ship in
 a build output and get stamped like anything else; what changed is only whose changes get a vote.
 *Satisfies:* UNI-04. *Relates to:* ML-02, UNI-02, UNI-03, NCL-03, BAS-01, R02.
+
+**G-24 — Reading Swift needed a Swift toolchain, and that failed in the field.** ✅ Resolved by
+**SIG-20**
+D-02 chose the toolchain's symbol graph over a hand-rolled parser, and the reasoning was sound: the
+compiler has resolved the program, so it knows the type of `public let store = Store()`, it knows
+which members a conformance synthesises, and it knows what a macro expanded to. A parser knows none
+of that. What the decision priced in was a build — §20 O-03 measured it, at 4.1 s per Xcode project
+and ~1.3 s per SwiftPM package, and concluded that nothing there proved the tool impractical.
+
+The clock was the wrong thing to measure. Four processes ran per versioned run — `swift package
+dump-package` and `xcodebuild -list -json` to discover targets, `swift build` and `xcodebuild build`
+to extract signatures — and the first two resolve the project's package dependencies before they
+will answer at all. So a versioning run required, transitively: a Swift toolchain; Xcode, for any
+repository containing an `.xcodeproj`; a network; and credentials for every private package the
+project depends on. D-03 made every one of those a hard failure. Clients hit it: runs failing on
+machines that were offline, behind a proxy, or without access to a private dependency — during
+versioning, which has no business needing any of it.
+
+Fixed by reading the source. Targets come from the text of `Package.swift` and from
+`project.pbxproj`; signatures come from the target's `.swift` files. Nothing runs a process.
+
+**What that costs, stated plainly.** The graph was more accurate and the reader is an
+approximation. It cannot see an inferred type, a macro-generated declaration, or which branch of an
+`#if` is live; it guesses at a superclass when the first inheritance entry is a foreign protocol.
+SIG-27 lists all of it. Every one of those errs towards reporting more public surface than exists,
+never less, and every one is *stable* — the same source produces the same answer on every machine —
+so none of them can churn a baseline.
+
+This is the same bargain the C# reader has always struck. G-16 records that cross-project and NuGet
+types stay as error symbols carrying their written names, because resolving them properly would
+mean building. A stable approximation that needs nothing installed beats a resolved answer that
+needs a working build environment, for a tool whose whole job is to run inside someone else's
+pipeline and decide a number.
+
+ℹ️ Two things improved on the way past. A member reached through a protocol extension is now
+recorded as having a default implementation, so adding one fires S21 (Minor) instead of S20 (Major)
+— the graph only reported the relationship for members that were also requirements, which made a
+new defaulted method a false Major. And the accuracy that was lost was partly notional: the symbol
+graph was already being filtered for `::SYNTHESIZED::` members precisely so that the compiler's
+derived members would *not* reach the baseline (SIG-23), which is exactly what source-reading gives
+for free.
+
+ℹ️ Swift signatures re-seed once. They are dropped by the per-unit signature version (BAS-07), not
+by a `formatVersion` bump, so a repository's C# history survives and a repository with no Swift in
+it sees nothing at all. Bumping the file version would have handed every C#-only consumer a release
+it did not earn — which is the G-23 mistake wearing a different hat.
+ℹ️ CI moved from `macos-latest` to `ubuntu-latest` with this, and the seven Swift and Xcode
+integration tests went from needing a Mac with Xcode to running in about 0.3 s anywhere.
+*Satisfies:* SIG-20, SIG-27, BAS-07. *Relates to:* D-02, D-03, D-06, SWD-01, SWD-02, SWE-01,
+SWE-05, SWE-06, O-03, G-16, G-23.
