@@ -86,21 +86,20 @@ jobs:
     # single step would force one of those to give. Nothing is committed yet: if the build fails,
     # the run dies and the working copy goes with the runner.
     # ------------------------------------------------------------------------------------------
+    # G-25. `vnext-token-name` belongs here and is deliberately absent for exactly one release.
+    # TOK-01 stamps the default token everywhere it appears under the folder root, and the folder
+    # root here is the repository that *documents* that token - so this step has to name a token
+    # nobody writes, or it stamps the version over every mention of it in the README and the specs
+    # and commits the result.
+    #
+    # It cannot be passed yet: this step runs the *published* binary (ACT-02), and the release
+    # pinned above predates the flag, which it would reject by name and fail the run. The binary
+    # this release publishes is the first one that understands it, so the input goes in the commit
+    # after it - the same two-step G-20 documents, for the same reason. Nothing is at risk in the
+    # meantime, because the binary that cannot be told about the token cannot stamp it either.
     - name: Compute and apply the version
       id: version
       uses: ./
-      with:
-        # CLI-13, and the one line here that is this repository's rather than every repository's.
-        # TOK-01 replaces the default token everywhere it appears under the folder root - and the
-        # folder root here is a repository whose README, specs and tests *document* that token.
-        # Left alone, this step would stamp the version over every mention of it and then commit
-        # the result, one release at a time, until the documentation said nothing.
-        #
-        # Naming a token nobody writes is how the escape hatch turns the replacement off, which is
-        # exactly the situation the input exists for. It is deliberately not in the README's block:
-        # no other repository needs it, and ACT-10's test asserts the documented step is contained
-        # in this one rather than identical to it.
-        vnext-token-name: easysemver-does-not-stamp-this
 
     # ------------------------------------------------------------------------------------------
     # CI-05. The manifest about to be tagged is repointed at the release this run is cutting, and

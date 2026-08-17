@@ -20,6 +20,22 @@ Cross-project and NuGet types resolve as error symbols in the ad-hoc compilation
 names may lack namespaces. Stable run-to-run, so diffs work, but theoretically collidable.
 *Relates to:* SIG-01.
 
+**G-25 — This repository's own release cannot pass `vnext-token-name` yet.** (Verified)
+CLI-13's input is absent from [`dotnet.yml`](../.github/workflows/dotnet.yml) for exactly one
+release. TOK-01 stamps the default token everywhere it appears under the folder root, and this
+repository's README, specs and source comments document that token — so its release step has to
+name a token nobody writes (see CLI-13). It cannot yet: ACT-02's step runs the **published**
+binary, and every release published so far rejects the flag by name.
+
+The release that ships TOK-01 publishes the first binary that understands it, so the input lands in
+the commit after that release. This is G-20's two-step shape, unavoidable for the same reason: an
+Action running a published binary cannot consume a capability in the commit that introduces it.
+
+ℹ️ Nothing is at risk in the window. The binary that cannot be told about the token is the binary
+that does not have the feature, so it stamps nothing. The exposure begins at the *next* release and
+ends with the commit that closes this gap, which is why that commit comes first, not eventually.
+*Relates to:* ACT-02, ACT-10, CLI-13, TOK-01, G-20.
+
 ## Informative / hygiene
 
 **G-17 — Stale documentation.** ✅ Resolved by the doc-12 rewrite of
