@@ -17,25 +17,14 @@ public class EnumMemberValueChanged : IEvaluateCsharpSignatures
 
     public IEnumerable<string> FindDifferences(ICsharpSignaturesToCompare signatures)
     {
-        foreach (var typePair in EnumMembers.GetPairedEnums(signatures))
+        foreach (var pair in EnumMembers.GetPairedMembers(signatures))
         {
-            var older = (ICsharpEnum)typePair.Older;
-            var newer = (ICsharpEnum)typePair.Newer;
-            foreach (var olderMember in older.Members)
+            if (pair.Older.Value == pair.Newer.Value)
             {
-                var newerMember = EnumMembers.Find(newer, olderMember.Name);
-                if (newerMember == null)
-                {
-                    continue;
-                }
-
-                if (newerMember.Value == olderMember.Value)
-                {
-                    continue;
-                }
-
-                yield return $"{newer.Name}.{olderMember.Name}";
+                continue;
             }
+
+            yield return $"{pair.DeclaringEnum.Name}.{pair.Newer.Name}";
         }
     }
 }

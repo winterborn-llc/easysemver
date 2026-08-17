@@ -1,6 +1,9 @@
 # 13 — Shared Rule Bases
 
-**Status: census complete, base class withdrawn by its own criterion.** RUL-10 required a full
+**Status: implemented, 2026-08-17 — as two pairing helpers, not as a base class.** §7 is built and
+green (§9); only RUL-14's contributor-guide note is outstanding.
+
+**How it got here: census complete, base class withdrawn by its own criterion.** RUL-10 required a full
 reading of all 79 registered rules before any base was written, and specified withdrawal if the
 identity-diff family came back under roughly a third of the rule set. It came back at **29% raw,
 19% effective** (§6). RUL-01…RUL-08 are therefore **withdrawn, 2026-08-17**, and kept below with
@@ -297,15 +300,34 @@ from prerequisite to primary deliverable, 2026-08-17)*
 
 C# SHALL gain, in `Evaluators/Csharp/`, matching Swift's `(Older, Newer)` value-tuple shape:
 
-- `Properties.GetPaired(signatures)` — every property present on both sides of a paired type
-- `Fields.GetPaired(signatures)` — the same for fields
-- `EnumMembers.GetPairedMembers(signatures)` — the same for enum members
+- [`Properties.GetPaired`](../src/EasySemVer/Evaluators/Csharp/Properties.cs) — every property
+  present on both sides of a paired type
+- [`EnumMembers.GetPairedMembers`](../src/EasySemVer/Evaluators/Csharp/EnumMembers.cs) — the same
+  for enum members
 
-Seven rules collapse onto them —
-[`PropertyEditabilityEnhanced`](../src/EasySemVer/Evaluators/Csharp/PropertyEditabilityEnhanced.cs),
-`PropertyEditabilityReduced`, `PropertyReadabilityEnhanced`, `PropertyReadabilityReduced`,
-`PropertyType`, `PropertySetterBecameInitOnly` and `EnumMemberValueChanged` — each losing its inline
-traversal and keeping only its predicate, which is the rule.
+Both yield `(DeclaringType, Older, Newer)`, carrying the **newer** type because that is the name
+every consumer qualifies its symbol with, and carrying entities rather than a formatted string per
+RUL-03.
+
+**Eight rules collapse onto them** — `PropertyEditabilityEnhanced`, `PropertyEditabilityReduced`,
+`PropertyReadabilityEnhanced`, `PropertyReadabilityReduced`, `PropertyType`,
+`PropertySetterBecameInitOnly`, `EnumMemberValueChanged`, and the property half of
+`MemberStaticnessChanged` — each losing its inline traversal and keeping only its predicate, which
+is the rule.
+
+> **`Fields.GetPaired` not built, 2026-08-17.** It was specified here and has **no consumer**.
+> `FieldAdded` is family A, and `FieldContractReduced` is family C precisely because it fuses the
+> missing case with two facet checks, so it needs the unpaired side that `GetPaired` by definition
+> drops. Writing it would have been a helper with one caller, itself. It is trivially addable the
+> day a field facet rule exists.
+>
+> ℹ️ Recorded rather than quietly dropped: the third helper was in this document because the
+> symmetry looked right, not because the census found a caller for it. The census counted rules by
+> shape, not helpers by demand, and this is the one place that difference showed.
+
+ℹ️ `MemberStaticnessChanged` is a family-C rule and was not in the original list of seven. Its
+property half is the same inline traversal character-for-character, so leaving it behind would have
+been the only remaining copy of the thing this work exists to delete.
 
 ℹ️ `Overloads.GetMatchedOverloads` already exists and is already used this way by
 `MemberOverridabilityReduced` and `ParameterModifierChanged`. This finishes a job C# started and
@@ -335,23 +357,28 @@ generic machinery makes `GetPairedDeclarations` mean anything outside Swift.
 Each step ends green: build clean, full suite passing, working tree committable.
 
 - ~~**B1 — Census.**~~ ✅ done, §6.
-- **B2 — The three C# helpers and their tests (§7, RUL-11).** Nothing uses them yet.
-- **B3 — Migrate the seven C# rules onto them.** One commit per rule or per pair; the suite is
-  unmodified throughout (RUL-12).
-- **B4 — Contributor guide (RUL-14).**
+- ~~**B2 — The C# helpers and their tests (§7, RUL-11).**~~ ✅ done, 2026-08-17.
+- ~~**B3 — Migrate the C# rules onto them.**~~ ✅ done, 2026-08-17 — eight rules.
+- **B4 — Contributor guide (RUL-14).** Outstanding.
 - ~~**B3–B5 — base class and rule migration.**~~ ❌ withdrawn, §6.
 
 ## 9. Acceptance criteria
 
-1. `dotnet build` clean, no new warnings.
-2. Full unit suite green with **no test file modified** (RUL-12).
-3. Every rule's name, impact, description and yielded symbols are byte-identical before and after —
-   demonstrated by an unchanged `--json` report over a fixture with a representative diff.
-4. No new type is added under `Evaluators/` (neutral); the three helpers are `internal` and live in
-   `Evaluators/Csharp/` (RUL-13).
-5. `IEvaluateCsharpSignatures` and `IEvaluateSwiftSignatures` are unchanged (RUL-02).
-6. The seven migrated rules each read as one traversal plus one predicate, and no migrated rule
-   contains a `Contains`-then-index pairing loop.
+Verified 2026-08-17 on .NET SDK 10.0.100.
+
+1. ✅ `dotnet build -c Release` — **0 warnings, 0 errors**.
+2. ✅ Unit suite **652/652** (637 before this work, plus 15 new helper tests). **No existing test
+   file was modified** — the only test changes are two added files (RUL-12).
+3. ✅ Integration suite **79/79** unmodified, including `JsonReportRegression`, so every rule's
+   name, impact, description and yielded symbols are unchanged.
+4. ✅ No new type under `Evaluators/` (neutral); `Properties` is `internal` in `Evaluators/Csharp/`
+   and `GetPairedMembers` went onto the existing `EnumMembers` (RUL-13).
+5. ✅ `IEvaluateCsharpSignatures` and `IEvaluateSwiftSignatures` unchanged (RUL-02).
+6. ✅ All eight migrated rules read as one traversal plus one predicate; no `Contains`-then-index
+   pairing loop remains in any of them.
+
+ℹ️ The suite grew from the 509 recorded in doc 12's snapshot to 637 before this work began. The
+baseline for RUL-12 is the 637, measured immediately before the first edit.
 
 ## 10. Open items
 

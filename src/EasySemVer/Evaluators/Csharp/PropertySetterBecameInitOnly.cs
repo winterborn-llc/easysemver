@@ -17,29 +17,19 @@ public class PropertySetterBecameInitOnly : IEvaluateCsharpSignatures
 
     public IEnumerable<string> FindDifferences(ICsharpSignaturesToCompare signatures)
     {
-        foreach (var typePair in signatures.ClassHistory)
+        foreach (var pair in Properties.GetPaired(signatures))
         {
-            foreach (var name in typePair.Older.Properties.Keys)
+            if (!pair.Older.IsWritable || pair.Older.IsInitOnly)
             {
-                if (!typePair.Newer.Properties.Contains(name))
-                {
-                    continue;
-                }
-
-                var older = typePair.Older.Properties[name];
-                var newer = typePair.Newer.Properties[name];
-                if (!older.IsWritable || older.IsInitOnly)
-                {
-                    continue;
-                }
-
-                if (!newer.IsInitOnly)
-                {
-                    continue;
-                }
-
-                yield return $"{typePair.Newer.Name}.{name}";
+                continue;
             }
+
+            if (!pair.Newer.IsInitOnly)
+            {
+                continue;
+            }
+
+            yield return $"{pair.DeclaringType.Name}.{pair.Newer.Name}";
         }
     }
 }

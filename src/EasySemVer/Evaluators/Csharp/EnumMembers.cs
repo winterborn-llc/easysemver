@@ -20,6 +20,31 @@ internal static class EnumMembers
         }
     }
 
+    /// <summary>
+    /// Every member present on both sides of a paired enum, in the older side's declared order
+    /// (RUL-09). <c>DeclaringEnum</c> is the newer one, for the same reason
+    /// <see cref="Properties.GetPaired"/> hands back the newer type.
+    /// </summary>
+    internal static IEnumerable<(ICsharpEnum DeclaringEnum, ICsharpEnumMember Older, ICsharpEnumMember Newer)>
+        GetPairedMembers(ICsharpSignaturesToCompare signatures)
+    {
+        foreach (var typePair in GetPairedEnums(signatures))
+        {
+            var older = (ICsharpEnum)typePair.Older;
+            var newer = (ICsharpEnum)typePair.Newer;
+            foreach (var olderMember in older.Members)
+            {
+                var newerMember = Find(newer, olderMember.Name);
+                if (newerMember == null)
+                {
+                    continue;
+                }
+
+                yield return (newer, olderMember, newerMember);
+            }
+        }
+    }
+
     internal static ICsharpEnumMember? Find(ICsharpEnum enumeration, string name)
     {
         foreach (var member in enumeration.Members)

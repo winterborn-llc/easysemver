@@ -27,23 +27,14 @@ public class MemberStaticnessChanged : IEvaluateCsharpSignatures
             yield return overloadPair.Symbol;
         }
 
-        foreach (var typePair in signatures.ClassHistory)
+        foreach (var pair in Properties.GetPaired(signatures))
         {
-            foreach (var name in typePair.Older.Properties.Keys)
+            if (pair.Older.IsStatic == pair.Newer.IsStatic)
             {
-                if (!typePair.Newer.Properties.Contains(name))
-                {
-                    continue;
-                }
-
-                if (typePair.Older.Properties[name].IsStatic ==
-                    typePair.Newer.Properties[name].IsStatic)
-                {
-                    continue;
-                }
-
-                yield return $"{typePair.Newer.Name}.{name}";
+                continue;
             }
+
+            yield return $"{pair.DeclaringType.Name}.{pair.Newer.Name}";
         }
     }
 }

@@ -14,31 +14,19 @@ public class PropertyReadabilityReduced : IEvaluateCsharpSignatures
 
     public IEnumerable<string> FindDifferences(ICsharpSignaturesToCompare signatures)
     {
-        foreach (var classPair in signatures.ClassHistory)
+        foreach (var pair in Properties.GetPaired(signatures))
         {
-            var oldClass = classPair.Older;
-            var newClass = classPair.Newer;
-            foreach (var oldPropertyName in oldClass.Properties.Keys)
+            if (pair.Newer.IsReadable)
             {
-                var oldProperty = oldClass.Properties[oldPropertyName];
-                if (!newClass.Properties.Contains(oldPropertyName))
-                {
-                    continue;
-                }
-
-                var newProperty = newClass.Properties[oldPropertyName];
-                if (newProperty.IsReadable)
-                {
-                    continue;
-                }
-
-                if (!oldProperty.IsReadable)
-                {
-                    continue;
-                }
-
-                yield return $"{newClass.Name}.{oldPropertyName}";
+                continue;
             }
+
+            if (!pair.Older.IsReadable)
+            {
+                continue;
+            }
+
+            yield return $"{pair.DeclaringType.Name}.{pair.Newer.Name}";
         }
     }
 }

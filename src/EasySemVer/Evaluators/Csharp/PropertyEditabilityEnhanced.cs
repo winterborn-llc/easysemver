@@ -14,31 +14,19 @@ public class PropertyEditabilityEnhanced : IEvaluateCsharpSignatures
 
     public IEnumerable<string> FindDifferences(ICsharpSignaturesToCompare signatures)
     {
-        foreach (var classPair in signatures.ClassHistory)
+        foreach (var pair in Properties.GetPaired(signatures))
         {
-            var oldClass = classPair.Older;
-            var newClass = classPair.Newer;
-            foreach (var oldPropertyName in oldClass.Properties.Keys)
+            if (pair.Older.IsWritable)
             {
-                var oldProperty = oldClass.Properties[oldPropertyName];
-                if (!newClass.Properties.Contains(oldPropertyName))
-                {
-                    continue;
-                }
-
-                var newProperty = newClass.Properties[oldPropertyName];
-                if (oldProperty.IsWritable)
-                {
-                    continue;
-                }
-
-                if (!newProperty.IsWritable)
-                {
-                    continue;
-                }
-
-                yield return $"{newClass.Name}.{oldPropertyName}";
+                continue;
             }
+
+            if (!pair.Newer.IsWritable)
+            {
+                continue;
+            }
+
+            yield return $"{pair.DeclaringType.Name}.{pair.Newer.Name}";
         }
     }
 }
