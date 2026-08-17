@@ -175,7 +175,8 @@ public class ActionRegression : IDisposable
         string folder,
         string dryRun,
         string maxMinor = "",
-        string maxPatch = "") => new()
+        string maxPatch = "",
+        string doNotExclude = "") => new()
     {
         ["RUNNER_OS"] = ThisRunner.Os,
         ["RUNNER_TEMP"] = this.RunnerTemp,
@@ -191,6 +192,7 @@ public class ActionRegression : IDisposable
         // under `set -u`, so omitting them here would fail the step for a reason no workflow has.
         ["EASYSEMVER_MAX_MINOR"] = maxMinor,
         ["EASYSEMVER_MAX_PATCH"] = maxPatch,
+        ["EASYSEMVER_DO_NOT_EXCLUDE"] = doNotExclude,
 
         // What appending to $GITHUB_PATH does for every later step.
         ["PATH"] = Path.Combine(this.RunnerTemp, "easysemver") + ":" +
@@ -316,14 +318,17 @@ public class ActionRegression : IDisposable
         string folder,
         string dryRun,
         string maxMinor = "",
-        string maxPatch = "")
+        string maxPatch = "",
+        string doNotExclude = "")
     {
         this.StubTheRelease(RidFor(ThisRunner.Os, ThisRunner.Arch)!);
 
         var install = this.RunScript(Script(0), this.InstallEnvironment(ThisRunner.Os, ThisRunner.Arch));
         Assert.True(install.ExitCode == 0, install.Output);
 
-        return this.RunScript(Script(1), this.RunEnvironment(folder, dryRun, maxMinor, maxPatch));
+        return this.RunScript(
+            Script(1),
+            this.RunEnvironment(folder, dryRun, maxMinor, maxPatch, doNotExclude));
     }
 
     // ----------------------------------------------------------------------------------------
@@ -822,6 +827,45 @@ public class ActionRegression : IDisposable
 
         Assert.Equal(0, result.ExitCode);
         Assert.Equal("2.4.2", this.PublishedOutputs()["version"]);
+    }
+
+    /// <summary>
+    /// CLI-12 through the Action: a kept name reaches the tool, and a unit under an otherwise
+    /// excluded directory is versioned. One per line, so a name containing a space survives.
+    /// </summary>
+    [Fact]
+    public void KeptDirectoryNamesReachTheTool()
+    {
+        var folder = this.CreateFolder();
+        var vendored = Directory.CreateDirectory(Path.Combine(folder, "Pods")).FullName;
+        File.WriteAllText(
+            Path.Combine(vendored, "Feature.csproj"),
+            """
+            <Project Sdk="Microsoft.NET.Sdk">
+               <PropertyGroup><AssemblyVersion>1.0.0</AssemblyVersion></PropertyGroup>
+            </Project>
+            """);
+
+        // The second name matches nothing and is there to prove the quoting: unquoted, `My Feature`
+        // would split and `Feature` would reach the tool as a second directory argument, which
+        // CLI-02 rejects - so a passing run is the assertion that names with spaces survive.
+        var result = this.InstallAndRun(folder, "false", doNotExclude: "Pods\nMy Feature");
+
+        Assert.Equal(0, result.ExitCode);
+        Assert.Contains("Feature.csproj", File.ReadAllText(Path.Combine(folder, "EasySemVer.xml")));
+    }
+
+    /// <summary>A path cannot match a single path segment, so it is named rather than ignored.</summary>
+    [Fact]
+    public void KeepingAPathRatherThanANameIsRejected()
+    {
+        var folder = this.CreateFolder();
+
+        var result = this.InstallAndRun(folder, "false", doNotExclude: "Pods/Alamofire");
+
+        Assert.Equal(1, result.ExitCode);
+        Assert.Contains("directory names, not paths", result.Output);
+        Assert.Empty(this.PublishedOutputs());
     }
 
     /// <summary>

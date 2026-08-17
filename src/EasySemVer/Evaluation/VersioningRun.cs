@@ -20,7 +20,11 @@ internal static class VersioningRun
         Log.WriteLine($"EasySemVer: {options.FolderRoot}{(options.IsDryRun ? " (dry run)" : string.Empty)}");
         Log.Indent();
 
+        // Before discovery, because the first walk is what consults it (FLD-04, CLI-12).
+        DirectoryExclusions.BeginRun(options.DoNotExclude);
+
         var units = Discover(options.FolderRoot, providers);
+        DirectoryExclusions.LogSkipped();
         Extract(units, providers);
 
         var baseline = BaselineFile.Read(options.FolderRoot, providers);

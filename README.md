@@ -173,6 +173,7 @@ Split it the moment something is built between the two, for the ordering reasons
 | `tag` | `false` | `true` also creates and pushes `v<version>`. Needs `commit: true` |
 | `max-minor` | — | Cap the minor segment, carrying into major. See [Segment ceilings](#segment-ceilings-and-the-255-limit) |
 | `max-patch` | — | Cap the patch segment, carrying into minor. Set both to `255` if you ship a framework or dylib target |
+| `do-not-exclude` | — | Directory names discovery should keep, one per line. See [Excluded directories](#excluded-directories) |
 | `report` | — | Act on an earlier step's `report` output instead of versioning again |
 | `version` | the release this manifest shipped with | Which EasySemVer release to run |
 | `token` | `${{ github.token }}` | Only needs overriding if this repository is private to you |
@@ -304,6 +305,7 @@ everything else is a flag:
 | `--github` / `--no-github` | Force the GitHub Actions outputs and job summary on or off |
 | `--max-minor <n>` | Carry minor into major once it passes `n`. No ceiling by default |
 | `--max-patch <n>` | Carry patch into minor once it passes `n`. No ceiling by default |
+| `--do-not-exclude <name>` | Keep a directory discovery would skip. Repeatable; a bare name, not a path |
 
 `0` on success. `1` on any failure, with the exception printed — deliberate, so that a versioning
 failure on a release build is impossible to miss.
@@ -503,9 +505,32 @@ acceptable rather than finding out afterwards.
 ## Excluded directories
 
 Discovery skips, at any depth: any directory whose name begins with `.` (so `.git`, `.build`,
-`.swiftpm`, `.packages`), plus `bin`, `obj`, `build`, `DerivedData`, `Pods`, `Carthage`,
-`node_modules` and `Packages`. This is not politeness — an unexcluded dependency checkout would
-pull other people's source into your signature and make every dependency update a Major change.
+`.swiftpm`, `.packages`), plus `bin`, `obj`, `build`, `DerivedData`, `Pods`, `Carthage` and
+`node_modules`. This is not politeness — an unexcluded dependency checkout would pull other
+people's source into your signature and make every dependency update a Major change.
+
+Every run says what it skipped:
+
+```
+Skipped 9 directories: bin (4), node_modules (1), obj (4). Pass --do-not-exclude <name> for any that holds code you version.
+```
+
+`--do-not-exclude <name>` keeps one of them, and repeats for more than one. It takes a bare
+directory name, never a path, because the exclusion matches a single path segment. It overrides
+the leading-dot rule too, so a project that genuinely keeps source under a dotted directory can
+say so:
+
+```bash
+easysemver . --do-not-exclude build --do-not-exclude .generated
+```
+
+`Packages` is **not** excluded, deliberately. SwiftPM cloned dependencies into `Packages/` in the
+Swift 3 era and has used `.build/checkouts/` since; today it is where a modular Xcode app keeps its
+own local packages. Excluding it defended a dead convention while silently dropping first-party
+units — and a silent false negative is much worse here than the visible false positive of
+discovering a vendored copy, which shows up as new units in your baseline. If you do vendor
+dependencies into `Packages/`, that is what the skip log and `--do-not-exclude` are for in
+reverse: you will see the extra units on the first run and can move them.
 
 ## How Swift is read
 

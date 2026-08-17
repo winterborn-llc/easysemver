@@ -59,11 +59,13 @@ re-discover anything, and the working-directory fallback that made it able to is
 **DSC-08 — Excluded directories.** ✅ *(FLD-04; G-10 resolved)*
 Discovery and source enumeration SHALL skip, at any depth:
 - any directory whose name begins with `.` — covers `.git`, `.build`, `.packages`, `.swiftpm`,
-- `bin`, `obj`, `build`, `DerivedData`, `Pods`, `Carthage`, `node_modules`, `Packages`.
+- `bin`, `obj`, `build`, `DerivedData`, `Pods`, `Carthage`, `node_modules`.
 
 The list lives in `MagicValues.ExcludedDirectoryNames`. This is not optional politeness: with a
 folder root instead of a solution root, an unexcluded `.packages/` or `.build/checkouts/` would
 pull **dependency source** into the signature and make every dependency update a Major change.
+Skips are logged (FLD-04) and any name can be kept with `--do-not-exclude` (CLI-12). `Packages`
+is deliberately absent — see FLD-04 for why it was removed.
 Resolved SwiftPM dependencies and system/binary/plugin/macro targets are excluded for the same
 reason (SWD-04).
 

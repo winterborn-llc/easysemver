@@ -53,7 +53,7 @@ internal static class FolderScanner
                 continue;
             }
 
-            if (MagicValues.IsExcludedDirectory(subDirectory.Name))
+            if (DirectoryExclusions.IsExcluded(subDirectory))
             {
                 continue;
             }

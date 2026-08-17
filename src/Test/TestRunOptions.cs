@@ -138,6 +138,36 @@ public class TestRunOptions
         Assert.Throws<InvalidOperationException>(() => RunOptions.Parse("--max-patch"));
     }
 
+    /// <summary>CLI-12 - repeatable, so several excluded names can be kept in one run.</summary>
+    [Fact]
+    public void KeptDirectoryNamesAccumulate()
+    {
+        var options = RunOptions.Parse("--do-not-exclude", "Pods", "--do-not-exclude", "build");
+
+        Assert.Equal(["Pods", "build"], options.DoNotExclude);
+    }
+
+    [Fact]
+    public void NothingIsKeptByDefault()
+    {
+        Assert.Empty(RunOptions.Parse().DoNotExclude);
+    }
+
+    /// <summary>The exclusion matches one path segment, so a path could never match it.</summary>
+    [Theory]
+    [InlineData("Pods/Alamofire")]
+    [InlineData("a\\b")]
+    public void KeepingAPathRatherThanANameIsAnError(string value)
+    {
+        Assert.Throws<InvalidOperationException>(() => RunOptions.Parse("--do-not-exclude", value));
+    }
+
+    [Fact]
+    public void KeepFlagWithoutAValueIsAnError()
+    {
+        Assert.Throws<InvalidOperationException>(() => RunOptions.Parse("--do-not-exclude"));
+    }
+
     /// <summary>A ceiling's value must not be mistaken for the folder argument.</summary>
     [Fact]
     public void CeilingValueIsNotMistakenForTheFolder()

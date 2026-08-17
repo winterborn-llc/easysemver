@@ -104,6 +104,22 @@ derives from `CURRENT_PROJECT_VERSION`, which MVR-06 now writes, so the first ru
 fails to link. App targets do not link that setting, and SwiftPM package versions — git tags — have
 no such ceiling.
 
+**CLI-12 — `--do-not-exclude <name>` keeps a directory FLD-04 would skip.** ✅
+It SHALL consume the following argument as a single directory **name** and SHALL fail if none
+follows, or if the value contains a path separator — the exclusion is matched against one path
+segment, so a path could never match and would fail silently. The flag is repeatable, and each
+occurrence adds one name. A named directory SHALL NOT be excluded by any rule, the leading-dot
+rule included, so a project that genuinely keeps versioned source under a dotted directory can say
+so.
+
+Repeatable rather than comma-separated: a project that vendors one thing usually vendors one
+thing, and a separator would make a directory name containing that separator unnameable.
+
+ℹ️ This exists because FLD-04's list cannot be right for every repository, and its failure mode is
+silent. The pairing is deliberate: the run names what it skipped, and this flag is what the reader
+does about it. Neither alone is enough — a list you cannot override is a wall, and an override you
+never learn you need is a footgun.
+
 ## Machine-readable report
 
 **REP-01 — `--json <path>` writes the run's verdict as a file.** ✅

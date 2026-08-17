@@ -44,7 +44,6 @@ public class TestFolderDiscovery : IDisposable
     [InlineData(".build/checkouts/dependency/Ghost.csproj")]
     [InlineData("node_modules/thing/Ghost.csproj")]
     [InlineData("Pods/Ghost.csproj")]
-    [InlineData("Packages/Local/Ghost.csproj")]
     [InlineData("DerivedData/Ghost.csproj")]
     public void ExcludedDirectoriesAreSkipped(string ghostPath)
     {
@@ -55,6 +54,46 @@ public class TestFolderDiscovery : IDisposable
 
         var unit = Assert.Single(units);
         Assert.Equal("Widgets", unit.UnitId);
+    }
+
+    /// <summary>
+    /// FLD-04 - `Packages` is not excluded. SwiftPM cloned dependencies there in the Swift 3 era
+    /// and has used `.build/checkouts/` since; today it is where a modular app keeps its own local
+    /// packages, so excluding it silently dropped first-party units.
+    /// </summary>
+    [Fact]
+    public void PackagesHoldsFirstPartyUnitsAndIsDiscovered()
+    {
+        this.WriteFile("app/Widgets.csproj");
+        this.WriteFile("Packages/Feature/Feature.csproj");
+
+        var units = new CsharpLanguageProvider(VersionSourceFactories.Create(new ProcessRunner())).Discover(this._folderRoot);
+
+        Assert.Equal(["Feature", "Widgets"], units.Select(unit => unit.UnitId).Order());
+    }
+
+    /// <summary>CLI-12 - a caller can keep any excluded name, including a dotted one.</summary>
+    [Theory]
+    [InlineData("Pods", "Pods/Vendored.csproj")]
+    [InlineData(".build", ".build/Vendored.csproj")]
+    public void ANameTheCallerKeepsIsNotExcluded(string keep, string ghostPath)
+    {
+        this.WriteFile("app/Widgets.csproj");
+        this.WriteFile(ghostPath);
+
+        try
+        {
+            DirectoryExclusions.BeginRun([keep]);
+
+            var units = new CsharpLanguageProvider(VersionSourceFactories.Create(new ProcessRunner())).Discover(this._folderRoot);
+
+            Assert.Equal(["Vendored", "Widgets"], units.Select(unit => unit.UnitId).Order());
+        }
+        finally
+        {
+            // The state is thread-scoped and xUnit reuses threads across tests in a collection.
+            DirectoryExclusions.BeginRun([]);
+        }
     }
 
     /// <summary>FLD-05 - a root with nothing recognisable in it is not an error.</summary>

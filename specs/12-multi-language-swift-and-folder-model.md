@@ -159,12 +159,23 @@ receives the two signatures and nothing else.
 **FLD-04 — Excluded directories.** ✅ required — *fixes G-10*
 Discovery SHALL skip, at any depth:
 - any directory whose name begins with `.` (covers `.git`, `.build`, `.packages`, `.swiftpm`),
-- `bin`, `obj`, `build`, `DerivedData`, `Pods`, `Carthage`, `node_modules`, `Packages`
-  (Xcode's local-package checkout dir).
+- `bin`, `obj`, `build`, `DerivedData`, `Pods`, `Carthage`, `node_modules`.
 
 The list lives in `MagicValues`. This is not optional politeness: with a folder root instead
 of a solution root, an unexcluded `.packages/` or `.build/checkouts/` would pull **dependency
 source** into the signature and make every dependency update a Major change.
+
+Every skipped directory SHALL be named in the run log, once per run, grouped by directory name.
+A skip that hides a first-party unit is otherwise invisible: the unit is never versioned and
+nothing says why. The log names *every* skip rather than only the ones that hid a unit, because
+telling those apart means walking into the directory — the cost the exclusion exists to avoid.
+
+ℹ️ **`Packages` removed, 2026-08-16.** It was listed as "Xcode's local-package checkout dir",
+which conflates two things. SwiftPM cloned dependencies into `Packages/` in the Swift 3 era and
+has used `.build/checkouts/` — already covered by the leading-dot rule — since; `Packages/` today
+is where a modular Xcode app keeps its **own** local packages. The entry defended a dead convention
+and silently swallowed first-party units. The failure modes are asymmetric: dropping it fails
+loudly (a vendored copy appears as new units in the baseline), keeping it failed silently.
 
 **FLD-05 — Empty folder is not an error.** ✅ required
 A root containing no recognizable units SHALL log that fact, classify as Patch, write an empty

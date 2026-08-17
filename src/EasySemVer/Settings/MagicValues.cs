@@ -39,6 +39,14 @@ internal static class MagicValues
     /// .packages would pull dependency source into the signature and make every dependency bump a
     /// Major change. Directories beginning with "." are excluded separately, which covers .git,
     /// .build, .packages, and .swiftpm.
+    /// <para>
+    /// `Packages` is deliberately absent. It was here as "Xcode's local-package checkout dir",
+    /// which conflates two things: SwiftPM cloned dependencies into `Packages/` in the Swift 3 era
+    /// and has used `.build/checkouts/` since, while `Packages/` today is where a modular Xcode app
+    /// keeps its *own* local packages. Excluding it defended a dead convention and silently swallowed
+    /// first-party units - and a silent false negative is far worse here than the visible false
+    /// positive of discovering a vendored copy, which shows up as new units in the baseline.
+    /// </para>
     /// </summary>
     internal static readonly string[] ExcludedDirectoryNames =
     [
@@ -48,12 +56,24 @@ internal static class MagicValues
         "DerivedData",
         "Pods",
         "Carthage",
-        "node_modules",
-        "Packages"
+        "node_modules"
     ];
 
-    internal static bool IsExcludedDirectory(string directoryName)
+    /// <summary>
+    /// CLI-12: a name the caller listed is never excluded, whichever rule would have excluded it -
+    /// including the leading-dot rule, so a project that really does keep source under a dotted
+    /// directory can say so.
+    /// </summary>
+    internal static bool IsExcludedDirectory(string directoryName, IReadOnlyList<string> doNotExclude)
     {
+        foreach (var kept in doNotExclude)
+        {
+            if (string.Equals(directoryName, kept, StringComparison.OrdinalIgnoreCase))
+            {
+                return false;
+            }
+        }
+
         if (directoryName.StartsWith('.'))
         {
             return true;

@@ -16,6 +16,8 @@ internal class RunOptions
 
     private const string MaxPatchFlag = "--max-patch";
 
+    private const string DoNotExcludeFlag = "--do-not-exclude";
+
     /// <summary>FLD-01 - the folder handed to the CLI is the root, full stop.</summary>
     internal string FolderRoot { get; private init; } = string.Empty;
 
@@ -57,6 +59,13 @@ internal class RunOptions
     /// <inheritdoc cref="MaximumMinor"/>
     internal int? MaximumPatch { get; private init; }
 
+    /// <summary>
+    /// CLI-12 - directory names FLD-04 would have excluded that this run keeps anyway. Repeatable,
+    /// because a project that vendors one thing usually vendors one thing, not a list, and a
+    /// comma-separated value would make a directory name containing a comma unnameable.
+    /// </summary>
+    internal IReadOnlyList<string> DoNotExclude { get; private init; } = [];
+
     internal static RunOptions Parse(params string[] args)
     {
         return Parse(Environment.GetEnvironmentVariable, args);
@@ -73,6 +82,7 @@ internal class RunOptions
         var directories = new List<string>();
         int? maximumMinor = null;
         int? maximumPatch = null;
+        var doNotExclude = new List<string>();
 
         // The flag whose value the next argument is, or null when the next argument is a flag or
         // the directory. One field rather than one bool per option, now that three flags take one.
@@ -96,9 +106,13 @@ internal class RunOptions
                 {
                     maximumMinor = ParseSegmentMaximum(flagAwaitingValue, arg);
                 }
-                else
+                else if (string.Equals(flagAwaitingValue, MaxPatchFlag, StringComparison.Ordinal))
                 {
                     maximumPatch = ParseSegmentMaximum(flagAwaitingValue, arg);
+                }
+                else
+                {
+                    doNotExclude.Add(ParseDirectoryName(arg));
                 }
 
                 flagAwaitingValue = null;
@@ -129,6 +143,12 @@ internal class RunOptions
                 continue;
             }
 
+            if (string.Equals(arg, DoNotExcludeFlag, StringComparison.OrdinalIgnoreCase))
+            {
+                flagAwaitingValue = DoNotExcludeFlag;
+                continue;
+            }
+
             if (string.Equals(arg, GitHubFlag, StringComparison.OrdinalIgnoreCase))
             {
                 writesGitHubActionsReport = true;
@@ -152,6 +172,11 @@ internal class RunOptions
         if (string.Equals(flagAwaitingValue, JsonFlag, StringComparison.Ordinal))
         {
             throw new InvalidOperationException($"{JsonFlag} requires a file path");
+        }
+
+        if (string.Equals(flagAwaitingValue, DoNotExcludeFlag, StringComparison.Ordinal))
+        {
+            throw new InvalidOperationException($"{DoNotExcludeFlag} requires a directory name");
         }
 
         if (flagAwaitingValue != null)
@@ -180,8 +205,26 @@ internal class RunOptions
             JsonReportPath = jsonReportPath,
             WritesGitHubActionsReport = writesGitHubActionsReport,
             MaximumMinor = maximumMinor,
-            MaximumPatch = maximumPatch
+            MaximumPatch = maximumPatch,
+            DoNotExclude = doNotExclude
         };
+    }
+
+    /// <summary>
+    /// A bare directory name, not a path: the exclusion is matched against one path segment, so
+    /// `--do-not-exclude Pods/Alamofire` would silently never match anything.
+    /// </summary>
+    private static string ParseDirectoryName(string text)
+    {
+        if (text.Length < 1 ||
+            text.Contains('/', StringComparison.Ordinal) ||
+            text.Contains('\\', StringComparison.Ordinal))
+        {
+            throw new InvalidOperationException(
+                $"{DoNotExcludeFlag} takes a single directory name, not a path, and got '{text}'");
+        }
+
+        return text;
     }
 
     /// <summary>

@@ -60,6 +60,16 @@ inputs:
     required: false
     default: ''
 
+  do-not-exclude:
+    description: >-
+      Directory names discovery would otherwise skip (FLD-04) but this project versions anyway,
+      one per line. A bare name, never a path - the exclusion matches a single path segment.
+      Use it when your own code lives somewhere the default list names, e.g. a repository that
+      keeps first-party modules under 'build'. The run logs every directory it skipped, which is
+      how you find out you need this.
+    required: false
+    default: ''
+
   report:
     description: >-
       Act on a report an earlier step produced instead of versioning again. Pass this the `report`
@@ -222,6 +232,7 @@ runs:
         EASYSEMVER_DRY_RUN: ${{ inputs.dry-run }}
         EASYSEMVER_MAX_MINOR: ${{ inputs.max-minor }}
         EASYSEMVER_MAX_PATCH: ${{ inputs.max-patch }}
+        EASYSEMVER_DO_NOT_EXCLUDE: ${{ inputs.do-not-exclude }}
       run: |
         set -euo pipefail
 
@@ -264,6 +275,23 @@ runs:
           *) caps="$caps --max-patch $EASYSEMVER_MAX_PATCH" ;;
         esac
 
+        # CLI-12's kept directory names, one per line so that a name containing a space is still
+        # nameable - which is also why these go into an array and are expanded quoted, unlike the
+        # two above. `${keep[@]+...}` is the expansion that survives an empty array under `set -u`
+        # on bash 3.2, still what a macOS runner's /bin/bash is.
+        keep=()
+        while IFS= read -r name; do
+          name="${name%$'\r'}"
+          [ -z "$name" ] && continue
+          case "$name" in
+            */*|*\\*)
+              echo "::error::do-not-exclude takes directory names, not paths, and got '$name'." >&2
+              exit 1
+              ;;
+          esac
+          keep+=(--do-not-exclude "$name")
+        done <<< "$EASYSEMVER_DO_NOT_EXCLUDE"
+
         # Exit 1 fails this step and stops the action, which is the whole point of CLI-06:
         # a versioning failure on a release build should be impossible to miss. REP-08 and
         # ACT-07 then leave nothing behind - no report, and no outputs - so a later step
@@ -282,7 +310,7 @@ runs:
         # replaces tripped `set -u` on bash 3.2 - still what a macOS runner's /bin/bash is.
         #
         # shellcheck disable=SC2086
-        easysemver "$EASYSEMVER_FOLDER" $dry_run $caps --github --json "$report"
+        easysemver "$EASYSEMVER_FOLDER" $dry_run $caps ${keep[@]+"${keep[@]}"} --github --json "$report"
 
     # ------------------------------------------------------------------------------------
     # ACT-11. Commit and tag, if the caller asked for it. Opt-in, and a no-op otherwise -
