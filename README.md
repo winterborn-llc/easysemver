@@ -89,7 +89,7 @@ jobs:
     # ── EasySemVer ── before your build, so what you build carries the new version
     - name: Compute and apply the version
       id: version
-      uses: winterborn-llc/easysemver@v18
+      uses: winterborn-llc/easysemver@v19
 
     # Your build, package and tests, unchanged.
     - run: dotnet build --configuration Release
@@ -97,7 +97,7 @@ jobs:
 
     # ── EasySemVer ── after your tests, before you publish
     - name: Commit and tag the release
-      uses: winterborn-llc/easysemver@v18
+      uses: winterborn-llc/easysemver@v19
       with:
         commit: true
         tag: true
@@ -127,12 +127,12 @@ The two steps, on their own — the first before your build, the second after yo
 ```yaml
 - name: Compute and apply the version
   id: version
-  uses: winterborn-llc/easysemver@v18
+  uses: winterborn-llc/easysemver@v19
 ```
 
 ```yaml
 - name: Commit and tag the release
-  uses: winterborn-llc/easysemver@v18
+  uses: winterborn-llc/easysemver@v19
   with:
     commit: true
     tag: true
@@ -154,7 +154,7 @@ goes into any repository unedited:
 ```yaml
 - name: Version, commit and tag
   id: version
-  uses: winterborn-llc/easysemver@v18
+  uses: winterborn-llc/easysemver@v19
   with:
     commit: true
     tag: true
@@ -185,7 +185,7 @@ from the tool falling over.
 ### Versioning a subdirectory
 
 ```yaml
-- uses: winterborn-llc/easysemver@v18
+- uses: winterborn-llc/easysemver@v19
   with:
     folder: src
 ```
@@ -200,7 +200,7 @@ PR check that says what merging would do:
 
 ```yaml
 - id: version
-  uses: winterborn-llc/easysemver@v18
+  uses: winterborn-llc/easysemver@v19
   with:
     dry-run: true
 
@@ -228,7 +228,7 @@ Every invocation publishes its verdict as step outputs, whether or not it commit
 
 ```yaml
 - id: version
-  uses: winterborn-llc/easysemver@v18
+  uses: winterborn-llc/easysemver@v19
 
 - run: echo "${{ steps.version.outputs.change-type }} → ${{ steps.version.outputs.version }}"
 ```

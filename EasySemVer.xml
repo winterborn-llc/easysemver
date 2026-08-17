@@ -45,7 +45,7 @@
                <Fields />
                <Events />
             </Class>
-            <Class name="Winterborn.Tools.EasySemVer.CodeReader.Swift.SwiftToolchainException" declaringType="" static="false" abstract="false" sealed="false" base="Exception">
+            <Class name="Winterborn.Tools.EasySemVer.CodeReader.Swift.SwiftSourceException" declaringType="" static="false" abstract="false" sealed="false" base="Exception">
                <Implements />
                <GenericParameters />
                <Methods>
@@ -55,7 +55,7 @@
                            <GenericParameters />
                            <Parameters>
                               <Parameter name="unitDescription" type="string" required="true" refKind="None" params="false" />
-                              <Parameter name="result" type="Winterborn.Tools.EasySemVer.DataObject.ProcessResult" required="true" refKind="None" params="false" />
+                              <Parameter name="detail" type="string" required="true" refKind="None" params="false" />
                            </Parameters>
                         </Override>
                      </Overrides>
@@ -4454,6 +4454,7 @@
                </Methods>
                <Properties>
                   <Property name="LanguageId" type="string" readable="true" writable="false" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
+                  <Property name="SignatureVersion" type="string" readable="true" writable="false" initOnly="false" static="false" required="false" hasDefaultImplementation="true" />
                </Properties>
                <Fields />
                <Events />
