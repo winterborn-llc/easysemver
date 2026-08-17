@@ -214,9 +214,21 @@ The commit after it removed the input, its release published **v20.0.2** — the
 understands the flag — and the commit after *that* put the input back. Same two-step as G-20, same
 cause: an Action running a published binary cannot consume a capability in the commit that
 introduces it. Expect it again for anything this repository's own pipeline consumes.
-ℹ️ The window between the two was safe by construction, not by luck: the binary that could not be
-told about the token was the binary that did not have the feature.
-*Satisfies:* CLI-13. *Relates to:* ACT-02, ACT-10, TOK-01, G-20.
+
+**The window between those two commits was not safe, and it was entered.** The reasoning at the
+time was that the binary which could not be told about the token was the binary that did not have
+the feature — true of the *pin*, and irrelevant, because the release in the middle rewrites the pin
+(CI-05). An unrelated push landed four minutes later, ran the freshly published v20.0.2 against a
+workflow that could not yet name the token, and **v20.0.3 committed the version over every mention
+of `{{vnext}}`** in the README, `readme-contributors.md`, three specs and three source comments —
+"mark the spot with `20.0.3`" — which is precisely the failure CLI-13 exists to prevent, arriving
+by the one route nobody was watching.
+
+The text was restored in a forward commit; the release commit stands, because published history is
+not rewritten here. What the incident says for next time is narrow and worth stating plainly:
+**during a two-step adoption, the exposure starts the moment the middle release publishes, not when
+the second commit lands** — so hold the branch, or land the second commit before anything else can.
+*Satisfies:* CLI-13. *Relates to:* ACT-02, ACT-10, CI-05, TOK-01, G-20.
 
 **G-24 — Reading Swift needed a Swift toolchain, and that failed in the field.** ✅ Resolved by
 **SIG-20**

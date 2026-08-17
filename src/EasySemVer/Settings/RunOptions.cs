@@ -70,7 +70,7 @@ internal class RunOptions
 
     /// <summary>
     /// CLI-13 - the name inside the braces of the token TOK-01 replaces, defaulting to
-    /// <see cref="MagicValues.DefaultVersionTokenName"/> so that <c>20.0.3</c> is what a run
+    /// <see cref="MagicValues.DefaultVersionTokenName"/> so that <c>{{vnext}}</c> is what a run
     /// searches for unless told otherwise.
     /// <para>
     /// It is a name rather than an on/off switch because the only reason to change it is that the

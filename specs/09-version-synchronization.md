@@ -53,7 +53,7 @@ written. A failed run leaves the working tree byte-identical.
 
 Source: [`VersionTokens.cs`](../src/EasySemVer/Persistence/VersionTokens.cs).
 
-**TOK-01 — `20.0.3` becomes the new version.** ✅ *(added 2026-08-16)*
+**TOK-01 — `{{vnext}}` becomes the new version.** ✅ *(added 2026-08-16)*
 After every version location has been written, the run SHALL replace every occurrence of the token
 under the folder root with the same version, in files of any kind, and SHALL report each file it
 changed as a written file (REP-10).

@@ -1,23 +1,30 @@
 # 13 — Shared Rule Bases
 
-**Status: forward-looking specification.** Nothing here is implemented. Docs 01–12 describe the
-system as built; this document specifies one refactor inside it, and where it conflicts with an
-existing requirement it says so explicitly.
+**Status: census complete, base class withdrawn by its own criterion.** RUL-10 required a full
+reading of all 79 registered rules before any base was written, and specified withdrawal if the
+identity-diff family came back under roughly a third of the rule set. It came back at **29% raw,
+19% effective** (§6). RUL-01…RUL-08 are therefore **withdrawn, 2026-08-17**, and kept below with
+their reasoning intact rather than deleted, per this folder's convention.
 
-This is a **behaviour-preserving** change. Every rule keeps its name, its impact, its symbols and
-its tests. If any test changes, the refactor is wrong.
+What the census found instead is that the duplication is real but sits somewhere else — in the
+**pairing traversal**, not the diff loop. RUL-09, written here as a mere prerequisite, turns out to
+be the whole opportunity, and §7 promotes it. It needs no generic base, no inheritance, and comes
+nowhere near ML-01.
+
+This remains a **behaviour-preserving** change. Every rule keeps its name, its impact, its symbols
+and its tests. If any test changes, the refactor is wrong.
 
 ## 0. What changes
 
 | Aspect | Today | After this work |
 |--------|-------|-----------------|
-| The "is it on the other side?" loop | hand-written in each rule that needs it | written once, in one generic base per language-neutral shape |
-| Agreeing with another language | copy the loop into your `Evaluators/<Language>/` folder | derive from the base and supply an identity |
-| Disagreeing | the only option | still available: do not derive, write `FindDifferences` by hand |
-| Rule interfaces | `IEvaluateCsharpSignatures`, `IEvaluateSwiftSignatures`, unrelated | **unchanged** — the bases are not in either hierarchy |
+| C# member pairing | hand-rolled inline in each rule that needs it, ~8 lines a time | `Properties.GetPaired` / `Fields.GetPaired`, matching Swift's existing shape |
+| C# facet rules | 15–20 lines, most of it pairing | 6 lines, like Swift's |
+| ~~The "is it on the other side?" loop~~ | ~~hand-written per rule~~ | ~~one generic base~~ — **withdrawn, §6** |
+| Rule interfaces | `IEvaluateCsharpSignatures`, `IEvaluateSwiftSignatures`, unrelated | **unchanged** |
 | Rule count, names, impacts, symbols | 41 C# + 38 Swift | identical |
 
-## 1. Why
+## 1. Why *(original motivation — retained)*
 
 **Rule bodies are the part of a language provider that scales worst.** A provider is written once;
 its rules are written once *per rule*, and the rule count does not fall as languages are added. At
@@ -26,42 +33,20 @@ TypeScript, Java, Kotlin, Dart, Go, Rust, PHP, Python — a 40-rule average is r
 classes and, under TST-01, 500 test classes**. That is the maintenance cliff, and it arrives long
 before any individual parser becomes the bottleneck.
 
-Most of those rules are not 40 different ideas. Reading the current ones, a large share are the
-same loop over different nouns:
+That premise survives the census unchanged. What did not survive is the assumption about *which*
+duplication the cliff is made of.
 
-```
-foreach (entity in <one side>.<collection>)
-    if (<a language-specific filter>)       continue;
-    if (findIn(<other side>, <key>) != null) continue;
-    yield return <symbol>;
-```
-
-[`Evaluators/Csharp/TypeAdded.cs`](../src/EasySemVer/Evaluators/Csharp/TypeAdded.cs) and
-[`Evaluators/Swift/TypeAdded.cs`](../src/EasySemVer/Evaluators/Swift/TypeAdded.cs) are that loop
-twice. So are `TypeRemoved` in both languages, `NestedTypeAdded`, `FieldAdded` and
-`EnumMemberAdded` in C#, and `MemberAdded` and `EnumCaseAdded` in Swift.
-
-What differs between the two `TypeAdded` classes is worth stating precisely, because it is exactly
-what must survive:
-
-| | C# | Swift |
-|---|---|---|
-| Filter | skips `Kind == Class` — classes have their own rule | none |
-| Key | `(Name, Kind)` — a struct becoming an interface is a different type | `Name` — the kind change is `TypeKindChanged`'s job |
-| Symbol | `Name` | `Name` |
-
-Those are real semantic differences between two languages, arrived at deliberately. A base that
-erased them would be worse than the duplication.
-
-ℹ️ This is not a new pattern in the codebase.
-[`UnitRemovedRule`](../src/EasySemVer/Evaluators/UnitRemovedRule.cs) already does exactly this for
-unit existence, and its doc comment already states the bargain: *"Subclass and declare a name to
-agree with every other language; override `FindDifferences` to disagree."* This document extends a
-proven shape from 2 rules to a family, and changes no principle.
+> **Qualified, 2026-08-17 (census).** Reading 14 rules suggested the repeated thing was the
+> key-matched lookup. Reading all 79 shows it is the traversal that produces the pairs the lookup
+> runs over — a different problem, with a much duller solution. See §6 and §7.
 
 ## 2. What may be shared, and what may not
 
-**RUL-01 — The shared thing is the set operation, never the concept.** ✅ required
+> **Withdrawn, 2026-08-17 (census).** RUL-01 and RUL-02 are retained in full because the ML-01
+> boundary they draw is correct and will be needed again the next time a shared base is proposed.
+> Only their application to an identity-diff base is withdrawn.
+
+**RUL-01 — The shared thing is the set operation, never the concept.** ⚠️ *withdrawn as applied*
 A shared base SHALL abstract only the *mechanics of a difference* — pair a collection against
 another by a key, yield what has no counterpart. It SHALL NOT name, model, or constrain what the
 things being diffed are.
@@ -69,204 +54,292 @@ things being diffed are.
 This is the ML-01 line, and the test for it is mechanical: **a base's type parameters carry no
 constraint**. There is no `where TEntity : IHasName`, no `IDeclaration`, no `IMember`. The base
 cannot ask an entity for its name, its kind, its visibility, or its members, because a base that
-could would be the cross-language abstraction of "member" that ML-01 forbids. It can only ask the
-*rule* to turn one into a string, and the rule is language-specific by construction.
+could would be the cross-language abstraction of "member" that ML-01 forbids.
 
-ℹ️ The distinction that makes this legal is worth keeping in view, because a later base could
-easily cross it. `IdentityDiffRule<ICsharpType>` and `IdentityDiffRule<ISwiftType>` are two closed
-generic types with no supertype in common and no shared vocabulary; the C# rule and the Swift rule
-still meet nowhere. A hypothetical `IdentityDiffRule<IDeclaration>` would be a different
-proposition entirely, and is refused.
+ℹ️ Retained as the standing test for any future proposal. A base whose type parameter carries a
+constraint is refused on sight; the argument does not need re-running.
 
-**RUL-02 — The bases are outside both rule hierarchies.** ✅ required
-`IEvaluateCsharpSignatures` and `IEvaluateSwiftSignatures`
-([Interfaces/Csharp/](../src/EasySemVer/Interfaces/Csharp/IEvaluateCsharpSignatures.cs),
-[Interfaces/Swift/](../src/EasySemVer/Interfaces/Swift/IEvaluateSwiftSignatures.cs)) SHALL be
-unchanged, SHALL gain no base type, and SHALL remain unrelated to each other. A rule implements its
-language's interface and *separately* derives from a base for help with the diffing. The base is a
-utility reachable by inheritance, not a place the two languages meet.
+**RUL-02 — The bases are outside both rule hierarchies.** ⚠️ *withdrawn as applied*
+`IEvaluateCsharpSignatures` and `IEvaluateSwiftSignatures` SHALL be unchanged, SHALL gain no base
+type, and SHALL remain unrelated to each other.
 
-CLS-01's statement that "there is deliberately no shared base type" therefore stands as written,
-and doc 07 needs no amendment beyond a pointer here.
+ℹ️ Now satisfied trivially: §7 introduces no base at all. CLS-01's "there is deliberately no shared
+base type" stands as written, and doc 07 needs no amendment.
 
-**RUL-03 — Scoping stays in the rule.** ✅ required
-A base SHALL receive **two collections** and nothing else. Deciding *which* collections — the
-unit's own types, the paired types' fields, the paired enums' cases, the paired functions — SHALL
-remain in the rule.
+**RUL-03 — Scoping stays in the rule.** ✅ **required — survives, and is now the point**
+A shared helper SHALL receive **two collections** and nothing else. Deciding *which* collections —
+the unit's own types, the paired types' fields, the paired enums' cases, the paired functions —
+SHALL remain in the rule.
 
-This is the requirement that keeps the base honest. `signatures.ClassHistory`,
-`signatures.TypeHistory`, `SwiftEnums.GetPaired` and `SwiftMembers.GetPairedFunctions` are
-language-specific traversals of language-specific topologies; a base that knew how to obtain them
-would know what a type and a member are, in violation of RUL-01. Handing the base two collections
-costs the rule one `foreach` it was going to write anyway, and buys the base its ignorance.
+> **Reinterpreted, 2026-08-17 (census).** Written as a constraint on the base, this is the census's
+> central finding read backwards. If scoping cannot be shared and scoping is where the duplication
+> lives, then the base was solving the smaller half of the problem. §7 shares the scoping *within* a
+> language, where ML-01 has no opinion, and shares nothing across languages.
 
-It also solves the reporting problem for free. Symbols are qualified differently per rule —
-`TypeAdded` yields `Widget`, `FieldAdded` yields `Widget.Count` — and the qualifier comes from the
-scope the rule is already standing in. So the base yields **entities**, and the rule formats the
-symbol with the scope it holds:
+Symbols are qualified differently per rule — `TypeAdded` yields `Widget`, `FieldAdded` yields
+`Widget.Count` — and the qualifier comes from the scope the rule is already standing in. Any helper
+therefore yields **entities or pairs**, never formatted symbols, and the rule does the formatting.
 
-```csharp
-foreach (var pair in signatures.ClassHistory)
-{
-    foreach (var field in this.FindAdded(pair.Older.Fields, pair.Newer.Fields))
-    {
-        yield return $"{pair.Newer.Name}.{field.Name}";
-    }
-}
-```
+**RUL-04 — One base, two directions.** ❌ *withdrawn, 2026-08-17*
+**RUL-05 — Impact and description are inheritable defaults.** ❌ *withdrawn, 2026-08-17*
 
-ℹ️ An earlier draft had the base project the symbol too, via a `GetSymbol` override. It cannot: at
-the point the base has an entity it does not have the enclosing type, and passing one in would mean
-the base knew entities have enclosing types. Yielding entities is both simpler and the only shape
-that is actually available.
+The proposed `IdentityDiffRule<TEntity>` with `FindAdded` / `FindRemoved` wrappers is not built.
+§6 shows it would serve 15 rules of 79 at a saving of roughly eight lines each, in exchange for a
+generic base class, its test class, and an inheritance relationship in fifteen files.
 
-## 3. The identity-diff base
-
-**RUL-04 — One base, two directions.** ✅ required
-There SHALL be a single generic base carrying the identity diff, in
-`src/EasySemVer/Evaluators/`, alongside the existing neutral rule bases:
-
-```csharp
-public abstract class IdentityDiffRule<TEntity>
-{
-    /// Abstract, never defaulted from the class name - see RUL-06.
-    public abstract string Rule { get; }
-
-    /// The key two entities are the same entity by. Language-specific by construction.
-    protected abstract string GetIdentity(TEntity entity);
-
-    /// Entities this rule does not speak for. Defaults to all of them.
-    protected virtual bool Includes(TEntity entity) => true;
-
-    /// Every included entity in `present` with no counterpart in `absent`, by identity.
-    protected IEnumerable<TEntity> FindMissing(
-        IEnumerable<TEntity> present,
-        IEnumerable<TEntity> absent);
-}
-```
-
-`FindAdded(older, newer)` and `FindRemoved(older, newer)` SHALL be provided as named, ordered
-wrappers over `FindMissing`, because `FindMissing(newer, older)` and `FindMissing(older, newer)`
-differ only in argument order and a transposition would be a silent inversion of a rule's meaning.
-
-**RUL-05 — Impact and description are inheritable defaults.** ✅ required
-The base SHALL carry `EvaluationImpact` and `ChangeDescription` as `virtual` members with the
-family's usual answer — Minor / "was added" for the added direction, Major / "was removed" for the
-removed direction — so that a rule which agrees declares only its identity and its name. A rule
-that disagrees overrides, exactly as `UnitRemovedRule` already permits.
-
-**RUL-06 — `Rule` stays abstract, in every base, forever.** ✅ required
+**RUL-06 — `Rule` stays abstract, in every base, forever.** ✅ **required — retained**
 The rule name is half of the published `(language, rule)` key in the JSON report (REP-02) and is
-therefore a contract. It SHALL NOT be derived from the class name by any base, at any point,
-because a base that filled it in would make a class rename silently break a consumer — which is
-the precise reason `UnitRemovedRule` already documents for keeping it abstract there.
+therefore a contract. It SHALL NOT be derived from the class name by any base or helper, at any
+point, because doing so would make a class rename silently break a consumer — the reason
+[`UnitRemovedRule`](../src/EasySemVer/Evaluators/UnitRemovedRule.cs) already documents for keeping
+it abstract there.
 
-**RUL-07 — Deriving is optional, and not deriving is not a defect.** ✅ required
-Nothing SHALL require a rule to use a base. A rule whose diffing does not fit — because it compares
-two collections at once, or unions two traversals, or treats several facets as one finding —
-implements its language's interface directly and is complete and correct. No test, lint, or review
-gate SHALL treat a hand-written `FindDifferences` as a smell.
+ℹ️ Retained independently of everything else in this document. It is a standing constraint on the
+two existing neutral bases and on anything added later.
 
-ℹ️ Four shapes already in the codebase are outside the family and are expected to stay there:
-`MemberStaticnessChanged` (C#) unions two traversals over different collections;
-[`EffectAdded`](../src/EasySemVer/Evaluators/Swift/EffectAdded.cs) treats `throws` and `async` as
-one thing that happened, so a generic facet loop would report it twice;
-[`FunctionSignatureChanged`](../src/EasySemVer/Evaluators/Swift/FunctionSignatureChanged.cs) treats
-return type and parameters as one signature; and the C# overload rules match overload *sets*, not
-entities. These are the "unique cases", and they are the reason RUL-07 exists.
+**RUL-07 — Deriving is optional, and not deriving is not a defect.** ✅ **required — retained**
+Nothing SHALL require a rule to use a base or a helper. A rule whose diffing does not fit — because
+it compares two collections at once, or unions two traversals, or treats several facets as one
+finding — implements its language's interface directly and is complete and correct. No test, lint,
+or review gate SHALL treat a hand-written `FindDifferences` as a smell.
 
-## 4. Considered and rejected: a facet-change base
+ℹ️ The census makes this load-bearing rather than defensive: **22 of 79 rules are in family C** and
+are expected to stay there permanently.
 
-**RUL-08 — There SHALL NOT be a base for the directional-facet family.** ℹ️
-A second family is visible in the rules — "iterate pairs, fire when one facet flipped one way":
-[`ClassMadeFinal`](../src/EasySemVer/Evaluators/Swift/ClassMadeFinal.cs),
-`PropertySetterAdded`/`Removed`, `FrozenAdded`/`Removed`, `MutatingAdded`/`Removed`,
-`PropertyEditabilityEnhanced`/`Reduced`. It looks like the same opportunity. It is not, and it was
-measured rather than assumed:
+## 3. Considered and rejected: a facet-change base
 
-- The **identity-diff** family's shared part is the key-matched lookup — roughly ten lines,
-  including the `HashSet` that stops it being quadratic, and it is the part most likely to be
-  written subtly differently twice.
-- The **facet** family's shared part is `foreach (pair) { if (!predicate) continue; yield
-  pair.Newer; }` — four lines, of which the predicate *is the rule*. `ClassMadeFinal` is six lines
-  of body in total.
+**RUL-08 — There SHALL NOT be a base for the directional-facet family.** ✅ **confirmed, for a
+different reason than the one originally given**
 
-A base would replace four lines of obvious loop with an inheritance relationship and an override,
-and would not remove a single test. LINQ already expresses the residue. Swift's pair helpers
-already return `(Older, Newer)` value tuples
-([`SwiftMembers.GetPairedFunctions`](../src/EasySemVer/Evaluators/Swift/SwiftMembers.cs)), so the
-rules that want it can write `.Where(...).Select(p => p.Newer.Name)` today with no new type at all.
+The original argument was that the facet family's shared part is four lines of loop, of which the
+predicate is the rule — measured against `ClassMadeFinal` (six lines of body) and its Swift
+siblings.
 
-ℹ️ Recorded here rather than left unsaid because the family is genuinely tempting and will be
-proposed again. The general principle: **share the part that is easy to get subtly wrong twice, not
-the part that is merely typed twice.**
+> **Right answer, wrong evidence, 2026-08-17 (census).** The sampled rules were the *cheap* ones.
+> Family B is not small — at **34 of 79 it is the largest family in the codebase**, and C#'s members
+> of it run 15–20 lines, not six. The four-line claim held only for Swift, and only because Swift
+> already has `GetPairedFunctions` / `GetPairedProperties` while C# hand-rolls the same traversal
+> inline.
+>
+> The conclusion survives intact, and is now better supported: what makes a C# facet rule long is
+> not the facet, it is the missing pairing helper. Give C# the helper and its facet rules collapse
+> to Swift's six-line shape — at which point a base would once again be saving four lines. **The
+> helper captures the whole saving; the base would capture what is left after the helper, which is
+> nothing.**
 
-## 5. Prerequisite — C# member pairing
+ℹ️ The general principle stands and is worth keeping: **share the part that is easy to get subtly
+wrong twice, not the part that is merely typed twice.** The census refines it — before deciding
+which part that is, check whether the expensive part is the comparison or the traversal that feeds
+it.
 
-**RUL-09 — C# SHALL gain the paired-member helpers Swift already has.** ✅ required
-Swift's rules obtain paired members from `SwiftMembers.GetPairedFunctions`,
-`GetPairedProperties` and `SwiftEnums.GetPaired`. C# has the equivalent only for overloads
-(`Overloads.GetMatchedOverloads`); its property and field rules hand-roll the pairing inline —
-[`PropertyEditabilityEnhanced`](../src/EasySemVer/Evaluators/Csharp/PropertyEditabilityEnhanced.cs)
-walks `Older.Properties.Keys` and re-checks `Contains` on the newer side, and
-`MemberStaticnessChanged` repeats the same lines.
+## 4. Testing *(RUL-11 revised, RUL-12 unchanged)*
 
-C# SHALL gain `Properties.GetPaired` and `Fields.GetPaired` in `Evaluators/Csharp/`, matching
-Swift's `(Older, Newer)` tuple shape, before the base work lands. This is a prerequisite and not a
-detail: without it, adopting the base in C# would leave the two halves of each rule at different
-levels of abstraction, and the resulting diff would be much harder to confirm as
-behaviour-preserving.
-
-ℹ️ This is worth doing on its own merits regardless of whether §3 proceeds.
-
-## 6. Census before code
-
-**RUL-10 — The family membership SHALL be established by reading all 79 rules.** ✅ required
-This document's family assignments come from reading a **sample** — nine identity-diff rules, six
-facet rules, four bespoke ones. The full census across all 41 C# and 38 Swift rules SHALL be the
-first work item, and its result SHALL be recorded here as a table of (rule, family, notes) before
-any base class is written.
-
-If the census finds the identity-diff family is smaller than roughly a third of the rule set, the
-base does not pay and this document SHALL be withdrawn rather than implemented. Say so in the
-summary either way.
-
-ℹ️ Stated as a requirement because the sample is the weakest evidence in this document and the
-whole case rests on it. The measured-cost discipline that closed §20 O-03 in doc 12 applies here
-too: the refactor is justified by a number nobody has produced yet.
-
-## 7. Testing
-
-**RUL-11 — The base gets its own tests; the rules keep theirs.** ✅ required
-`IdentityDiffRule<TEntity>` SHALL have a dedicated test class exercising the diff against a
-purpose-built dummy entity type — not against `ICsharpType` or `ISwiftType`, so the test cannot
-quietly become a test of one language. It SHALL cover: no difference, one added, one removed, an
-entity excluded by `Includes`, two entities sharing an identity, and empty collections on each
-side.
+**RUL-11 — Helpers get their own tests; the rules keep theirs.** ✅ required *(revised
+2026-08-17: was written for the base class)*
+Each new pairing helper SHALL have a dedicated test class covering: both sides empty, one side
+empty, a member present on one side only, a member present on both, and two members sharing a name.
+Pairing is where an off-by-one or an inverted argument order hides silently, and it is now shared by
+a dozen rules apiece.
 
 TST-01 is **unchanged**: every rule keeps its own test class asserting declared impact, a
-no-difference negative, and a representative positive. The base removes duplicated production code,
-not duplicated tests — a derived rule's identity function and filter are exactly what its test
-exists to pin down, and they are the part the base cannot see.
+no-difference negative, and a representative positive. Helpers remove duplicated production code,
+not duplicated tests — a rule's facet predicate is exactly what its test exists to pin down, and it
+is the part no helper can see.
 
 **RUL-12 — The refactor is proved by the suite not changing.** ✅ required
-No test file SHALL be edited as part of adopting a base in an existing rule. The full unit suite
+No test file SHALL be edited as part of adopting a helper in an existing rule. The full unit suite
 (509 tests at the doc-12 verification snapshot) SHALL pass unmodified before and after each rule is
 migrated. A migration that requires a test edit has changed behaviour and SHALL be reverted.
+
+## 5. *(reserved — was "Prerequisite: C# member pairing", now §7)*
+
+## 6. The census
+
+**RUL-10 — The family membership SHALL be established by reading all 79 rules.** ✅ **done,
+2026-08-17**
+
+All 41 C# and 38 Swift registered rules were read from
+[`CompareSignatures`](../src/EasySemVer/Evaluators/Csharp/CompareSignatures.cs) and
+[`CompareSwiftSignatures`](../src/EasySemVer/Evaluators/Swift/CompareSwiftSignatures.cs). Families:
+
+- **A — identity diff.** Walk one side's collection; yield what has no counterpart on the other by
+  key. Nothing about the paired entity is examined.
+- **B — paired facet.** Pair by identity first, then compare one facet or value on the pair.
+- **C — bespoke.** Multiple traversals unioned, several facets fused into one finding, set-matching
+  over overloads, or already delegating to a shared per-language helper.
+
+### C# — 41 rules
+
+| Rule | Family | Note |
+|---|:--:|---|
+| MethodsContinueToExist | A | keyed list; `Contains` is already O(1) and one line |
+| MethodAdded | A | keyed list, as above |
+| PropertiesContinueToExist | A | keyed list, as above |
+| PropertyAdded | A | keyed list, as above |
+| ImplementedInterfaceRemoved | A | `.Contains` over a string list |
+| ImplementedInterfaceAdded | A | `.Contains` over a string list |
+| TypeRemoved | A | linear `FindType`, key `(Name, Kind)`, filter `Kind != Class` |
+| TypeAdded | A | as above |
+| ProjectClassesContinueToExist | A | linear `FindType` over `.Classes` |
+| ProjectClassAdded | A | as above |
+| NestedTypeRemoved | A | linear `FindTypeOfAnyKind`, filter on `DeclaringType` |
+| NestedTypeAdded | A | as above |
+| EnumMemberRemoved | A | scoped to paired enums, linear `EnumMembers.Find` |
+| EnumMemberAdded | A | as above |
+| FieldAdded | A | scoped to paired types, linear `Fields.Find` |
+| EventAdded | A | scoped to paired types, linear `Events.Find` |
+| PropertyEditabilityEnhanced | B | **pairs inline** — ~8 lines before the facet is reached |
+| PropertyEditabilityReduced | B | pairs inline |
+| PropertyReadabilityEnhanced | B | pairs inline |
+| PropertyReadabilityReduced | B | pairs inline |
+| PropertyType | B | pairs inline |
+| PropertySetterBecameInitOnly | B | pairs inline |
+| EnumMemberValueChanged | B | pairs inline via `EnumMembers.Find` |
+| EnumUnderlyingTypeChanged | B | over `ClassHistory`, cast to `ICsharpEnum` |
+| MemberOverridabilityReduced | B | over `Overloads.GetMatchedOverloads` — helper exists |
+| ParameterModifierChanged | B | over `Overloads.GetMatchedOverloads` |
+| TypeInheritanceRestricted | B | four ways to tighten, one finding, via a private predicate |
+| RecordPositionalParametersChanged | B | kind filter, then composite parameter-list compare |
+| DelegateSignatureChanged | B | kind filter, then return type + parameters as one signature |
+| MethodInputParameterOverrideRemoved | C | overload-set matching |
+| MethodInputParameterMadeRequired | C | overload-set matching plus requiredness |
+| MethodReturnType | C | method-level check, then per-overload |
+| MethodOverrideAdded | C | overload-signature-set membership |
+| FieldContractReduced | C | removal, retype and readonly-gain fused into one rule |
+| EventContractReduced | C | removal and handler change fused |
+| TypeInheritanceRelaxed | C | two facets, one finding (`continue` after yield) |
+| MemberStaticnessChanged | C | unions overloads and properties |
+| GenericConstraintTightened | C | unions types and overloads |
+| GenericConstraintLoosened | C | unions types and overloads |
+| InterfaceRequirementAdded | C | already delegates to `InterfaceRequirements.GetAddedRequirements` |
+| InterfaceRequirementAddedWithDefault | C | same helper, opposite flag |
+
+**C#: A 16 · B 13 · C 12.**
+
+### Swift — 38 rules
+
+| Rule | Family | Note |
+|---|:--:|---|
+| TypeRemoved | A | linear `FindType`, key `Name` |
+| TypeAdded | A | as above |
+| MemberRemoved | A | scoped to `TypeHistory`, `SwiftMembers.Find` |
+| MemberAdded | A | as above |
+| EnumCaseAdded | A | scoped to paired enums |
+| ConformanceRemoved | A | `.Contains` over a string list |
+| ConformanceAdded | A | `.Contains` over a string list |
+| TypeKindChanged | B | over `TypeHistory` |
+| ClassSubclassingWithdrawn | B | over `TypeHistory` |
+| ClassSubclassingOffered | B | over `TypeHistory` |
+| ClassMadeFinal | B | over `TypeHistory` |
+| ClassFinalRemoved | B | over `TypeHistory` |
+| SuperclassChanged | B | over `TypeHistory` |
+| FrozenRemoved | B | over `TypeHistory` |
+| FrozenAdded | B | over `TypeHistory` |
+| MutatingAdded | B | over `GetPairedFunctions` |
+| MutatingRemoved | B | over `GetPairedFunctions` |
+| FunctionSignatureChanged | B | composite: return type + parameters as one signature |
+| PropertySetterRemoved | B | over `GetPairedProperties` |
+| PropertySetterAdded | B | over `GetPairedProperties` |
+| PropertyTypeChanged | B | over `GetPairedProperties` |
+| DeclarationWithdrawn | B | over `GetPairedDeclarations` |
+| DeclarationDeprecated | B | over `GetPairedDeclarations` |
+| ObjCExposureRemoved | B | over `GetPairedDeclarations` |
+| ObjCExposureAdded | B | over `GetPairedDeclarations` |
+| DefaultArgumentRemoved | B | nested: `GetPairedFunctions` then `SwiftParameters.GetPaired` |
+| DefaultArgumentAdded | B | nested, as above |
+| ParameterModifierChanged | B | nested, as above |
+| EnumCaseChanged | C | removal, raw value and associated values fused |
+| OperatorChanged | C | removal, precedence and kind fused |
+| EffectAdded | C | `throws` and `async`, one finding |
+| EffectRemoved | C | `throws` and `async`, one finding |
+| MemberStaticnessChanged | C | unions functions and properties |
+| GenericParameterCountChanged | C | unions types and functions |
+| GenericConstraintTightened | C | unions types and functions |
+| GenericConstraintLoosened | C | unions types and functions |
+| ProtocolRequirementAdded | C | already delegates to `SwiftProtocolRequirements.GetAddedRequirements` |
+| ProtocolRequirementAddedWithDefault | C | same helper, opposite flag |
+
+**Swift: A 7 · B 21 · C 10.**
+
+### Verdict
+
+| Family | Count | Share |
+|---|--:|--:|
+| A — identity diff | 23 | **29%** |
+| B — paired facet | 34 | **43%** |
+| C — bespoke | 22 | 28% |
+
+**Family A is 29%, below RUL-10's threshold — and the effective figure is worse.** Eight of the 23
+(`MethodsContinueToExist`, `MethodAdded`, `PropertiesContinueToExist`, `PropertyAdded`, both
+`ImplementedInterface*`, both `Conformance*`) diff a keyed list or a string list where `Contains`
+is already O(1) and a single line. A base saves them nothing. That leaves **15 rules, 19%**, where
+the base would replace roughly eight lines apiece — about 120 lines, against a generic base class,
+a test class, and an inheritance relationship in fifteen files.
+
+**RUL-04/RUL-05 are withdrawn on that number**, per the criterion agreed before it was measured.
+
+**Family B is the finding.** At 34 rules it is the largest family, and it splits cleanly by
+language: Swift's 21 are already short because `GetPairedFunctions`, `GetPairedProperties`,
+`GetPairedDeclarations` and `SwiftParameters.GetPaired` exist. C#'s 13 are long because seven of
+them re-implement the same `foreach (name in Older.X.Keys) { if (!Newer.X.Contains(name)) continue;
+… }` traversal inline before they reach the one line that is actually the rule.
+
+ℹ️ The codebase already reached this conclusion twice without stating it.
+`InterfaceRequirements.GetAddedRequirements` and `SwiftProtocolRequirements.GetAddedRequirements`
+are the same idea — a per-language helper parameterised by a flag, collapsing two rules into two
+one-line bodies — arrived at independently in each language. §7 generalises what the code found on
+its own.
+
+## 7. C# member pairing — the actual work
+
+**RUL-09 — C# SHALL gain the paired-member helpers Swift already has.** ✅ required *(promoted
+from prerequisite to primary deliverable, 2026-08-17)*
+
+C# SHALL gain, in `Evaluators/Csharp/`, matching Swift's `(Older, Newer)` value-tuple shape:
+
+- `Properties.GetPaired(signatures)` — every property present on both sides of a paired type
+- `Fields.GetPaired(signatures)` — the same for fields
+- `EnumMembers.GetPairedMembers(signatures)` — the same for enum members
+
+Seven rules collapse onto them —
+[`PropertyEditabilityEnhanced`](../src/EasySemVer/Evaluators/Csharp/PropertyEditabilityEnhanced.cs),
+`PropertyEditabilityReduced`, `PropertyReadabilityEnhanced`, `PropertyReadabilityReduced`,
+`PropertyType`, `PropertySetterBecameInitOnly` and `EnumMemberValueChanged` — each losing its inline
+traversal and keeping only its predicate, which is the rule.
+
+ℹ️ `Overloads.GetMatchedOverloads` already exists and is already used this way by
+`MemberOverridabilityReduced` and `ParameterModifierChanged`. This finishes a job C# started and
+left half-done; it is not a new pattern.
+
+**RUL-13 — Helpers are per-language, and stay that way.** ✅ required
+The helpers SHALL live in `Evaluators/Csharp/` and be `internal`. They SHALL NOT be generalised,
+promoted to `Evaluators/`, or shared with Swift. Two languages having a `GetPaired` of the same
+shape is ML-04 working as intended, not duplication to be removed — and it sidesteps ML-01 entirely,
+because nothing crosses a language boundary.
+
+ℹ️ This is the answer to §10 O-08, which asked whether the shared machinery belonged to a language.
+It does. The question dissolves once the machinery is a per-language static rather than a neutral
+base.
+
+**RUL-14 — A new language gets the pattern, not the code.** ✅ required
+The contributor guide SHALL record that a provider is expected to write its own pairing helpers for
+its own topology, before it writes the rules that consume them, and that the rules should read as a
+traversal plus a predicate. Swift's `SwiftMembers` is the worked example.
+
+ℹ️ This is the honest answer to what a twelfth language inherits: a documented shape, not a library.
+The census shows why — 43% of rules pair over a topology only that language has, and no amount of
+generic machinery makes `GetPairedDeclarations` mean anything outside Swift.
 
 ## 8. Implementation order
 
 Each step ends green: build clean, full suite passing, working tree committable.
 
-- **B1 — Census (§6).** Read all 79 rules, record the family table in this document. Decide
-  go/no-go.
-- **B2 — C# pairing helpers (§5).** Behaviour-preserving on its own; lands independently.
-- **B3 — The base and its tests (§3, RUL-11).** No rule uses it yet.
-- **B4 — Migrate Swift's identity-diff rules.** Swift first because its pair helpers already exist,
-  so the diff is smallest and the base gets exercised before C# depends on it.
-- **B5 — Migrate C#'s identity-diff rules.**
-- **B6 — Docs.** CLS-01 in [07](07-change-classification.md) gains a pointer here; the
-  contributor guide gains "deriving is optional" as the standing answer.
+- ~~**B1 — Census.**~~ ✅ done, §6.
+- **B2 — The three C# helpers and their tests (§7, RUL-11).** Nothing uses them yet.
+- **B3 — Migrate the seven C# rules onto them.** One commit per rule or per pair; the suite is
+  unmodified throughout (RUL-12).
+- **B4 — Contributor guide (RUL-14).**
+- ~~**B3–B5 — base class and rule migration.**~~ ❌ withdrawn, §6.
 
 ## 9. Acceptance criteria
 
@@ -274,25 +347,31 @@ Each step ends green: build clean, full suite passing, working tree committable.
 2. Full unit suite green with **no test file modified** (RUL-12).
 3. Every rule's name, impact, description and yielded symbols are byte-identical before and after —
    demonstrated by an unchanged `--json` report over a fixture with a representative diff.
-4. No base class in `Evaluators/` declares a type constraint on any type parameter (RUL-01).
+4. No new type is added under `Evaluators/` (neutral); the three helpers are `internal` and live in
+   `Evaluators/Csharp/` (RUL-13).
 5. `IEvaluateCsharpSignatures` and `IEvaluateSwiftSignatures` are unchanged (RUL-02).
-6. At least one rule per language remains a hand-written `FindDifferences` and is not marked as
-   debt (RUL-07).
-7. The census table from RUL-10 is present in this document.
+6. The seven migrated rules each read as one traversal plus one predicate, and no migrated rule
+   contains a `Contains`-then-index pairing loop.
 
 ## 10. Open items
 
-**O-07 — Does a new language get the bases, or a template?** A base helps a language that has
-already modelled its topology. It does nothing for the 60% of a provider that is the reader. If the
-real cost of language number five is still the parser, the bases are a modest saving on the cheap
-half, and the more valuable artifact might be a documented worked example — "here is Swift's
-provider, annotated" — rather than more shared code. Recommend landing §3 and then reassessing
-against the *next* language actually added, not against the hypothetical twelve. **Confirm.**
+**O-07 — Does a new language get the bases, or a template?** ✅ **resolved by the census — a
+template.** RUL-14. The census settles it: 43% of rules pair over a topology only their own language
+has, so there is no shared code to inherit, and the valuable artifact is Swift's provider read as a
+worked example. The original recommendation — land the base, then reassess against the next real
+language — is moot, because there is no base to land.
 
-**O-08 — Do the bases belong to a language after all?** RUL-02 keeps them neutral, in
-`Evaluators/`. An alternative is one copy per language folder, duplicated on purpose, so that a
-language can change its diffing without a shared file becoming a coordination point between
-languages. That is the position ML-04 takes for rules themselves, and it is not obviously wrong
-here. The case for neutral is that the identity diff is genuinely the same operation and a
-`HashSet` bug fixed once should stay fixed. Flagging it because it is the one place this document
-argues against ML-04's instinct, and doing so knowingly. **Confirm.**
+**O-08 — Do the bases belong to a language after all?** ✅ **resolved — yes, and the question
+dissolves.** RUL-13. With the neutral base withdrawn, the shared machinery is a per-language
+`internal static`, which is exactly ML-04's position and creates no coordination point between
+languages.
+
+**O-09 — Is family C worth revisiting for its own reasons?** ℹ️ **new, 2026-08-17.** Twenty-two
+rules are bespoke, and four pairs among them are suspiciously alike: `FieldContractReduced` /
+`EventContractReduced` fuse removal-plus-change identically, as do Swift's `EnumCaseChanged` /
+`OperatorChanged`; and both languages independently union two traversals for their generic-constraint
+and staticness rules. None of that is *shared* work — each pair is within one language — but the
+fused shape is worth examining on its own merits, because a rule that reports "removed" and "retyped"
+under one name is harder to read in the `--json` report than two rules would be. This is a
+classification question, not a refactoring one, and belongs in doc 07 rather than here. **Raise
+separately; do not fold into this work.**

@@ -26,12 +26,12 @@ folder-based, multi-language system that exists today.
 | [06-signature-persistence.md](06-signature-persistence.md) | The `EasySemVer.xml` baseline file: format, read/write rules |
 | [07-change-classification.md](07-change-classification.md) | The evaluator rules that map API diffs to Major/Minor/Patch |
 | [08-version-model.md](08-version-model.md) | Version parsing, comparison, incrementing, seed resolution |
-| [09-version-synchronization.md](09-version-synchronization.md) | Writing the new version back into every version location, and into `20.0.3` anywhere else |
+| [09-version-synchronization.md](09-version-synchronization.md) | Writing the new version back into every version location, and into `{{vnext}}` anywhere else |
 | [10-logging-and-error-handling.md](10-logging-and-error-handling.md) | Console output and failure behavior |
 | [11-testing.md](11-testing.md) | Required test coverage and current verification results |
 | [99-known-gaps.md](99-known-gaps.md) | Consolidated list of deviations, defects, and dead code |
 | [12-multi-language-swift-and-folder-model.md](12-multi-language-swift-and-folder-model.md) | The multi-language rework, **implemented**: folder-based invocation, per-language native topologies (`ICsharp*` / `ISwift*`), serializable baseline v2, Swift and Xcode support. Holds the Swift rule table (§13) and the settled decisions (§1). |
-| [13-shared-rule-bases.md](13-shared-rule-bases.md) | **Not implemented.** A behaviour-preserving refactor: one generic identity-diff base a rule may derive from to stop hand-writing the "is it on the other side?" loop, with deriving optional and the two rule interfaces unchanged. |
+| [13-shared-rule-bases.md](13-shared-rule-bases.md) | **Not implemented.** Holds the census of all 79 rules by diffing shape (§6). The generic base it originally proposed is withdrawn by its own criterion; what remains is three per-language C# pairing helpers and the seven rules that collapse onto them. |
 
 > Doc 12 is the design record for the rework; docs 01–11 and 99 were updated as it landed and
 > describe the result. Where a requirement was replaced or retired, the older document says so
