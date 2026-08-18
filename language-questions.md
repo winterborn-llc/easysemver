@@ -8,6 +8,39 @@ Read the ⏳ ones first — those get more expensive the longer they wait.
 
 ---
 
+## 🔴 Read this one first — I shipped a defect
+
+### Q-00 — the VB work cut an unearned v21.0.0, and I should have prevented it
+
+**What happened.** Adding VB.NET exposed a real bug in the C# reader:
+`GetFullyQualifiedName` cut Roslyn's display string at the first `::`, which for a generic type threw
+away everything before its last type argument. `List<CsharpMethodParameter>` was being recorded as
+`Winterborn…CsharpMethodParameter>` — dangling bracket, no `List<`. **81 type names in this
+repository's own baseline were wrong that way.** Fixing it was right and is VB-07.
+
+**What I got wrong.** Correcting the wording changed 81 recorded strings, R13 read them as
+property-type changes, and the next run cut **v21.0.0** — a major release for an API nobody touched.
+This is exactly what BAS-07's per-unit signature version exists to prevent, and I should have moved
+C#'s `SignatureVersion` to `2` in the same commit. I did not.
+
+**Blast radius.** Every consumer holding a C# baseline written before v20.1.0 takes the same
+unearned Major on their first run after upgrading. Once, then never again.
+
+**What I did about it:** nothing, deliberately, and I want you to confirm that. Bumping
+`SignatureVersion` now would drop every C# baseline a second time — consumers who already paid the
+Major would pay again, while those who have not would trade a Major for a Minor. Doing nothing is
+self-limiting. It is also the call G-23 made about v17.0.0: the release is real and immutable, and
+what gets fixed is the next one. Written up as **G-26**.
+
+**The thing actually worth your time.** Nothing in the build fails when a provider changes how it
+words a signature without bumping `SignatureVersion`. A test that extracts a fixture and compares it
+against a checked-in expected signature would have caught this the moment the wording changed rather
+than a release later. **That test does not exist, and I think it should.** I did not add it
+unsupervised because it means choosing what the canonical fixture is, and getting that wrong bakes in
+a wrong expectation.
+
+---
+
 ## VB.NET — shipped, full signature support
 
 ### ⏳ Q-01 — VB units are persisted in `<CsharpProject>` elements. Rename now or never?

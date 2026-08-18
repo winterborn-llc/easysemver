@@ -279,3 +279,43 @@ it did not earn — which is the G-23 mistake wearing a different hat.
 integration tests went from needing a Mac with Xcode to running in about 0.3 s anywhere.
 *Satisfies:* SIG-20, SIG-27, BAS-07. *Relates to:* D-02, D-03, D-06, SWD-01, SWD-02, SWE-01,
 SWE-05, SWE-06, O-03, G-16, G-23.
+
+**G-26 — Fixing corrupt generic type names cut an unearned major release.** ⚠️ Open, and
+deliberately not undone
+`ExtendINamedTypeSymbol.GetFullyQualifiedName` cut a Roslyn display string at the first `::`, which
+for a generic type threw away everything before its last type argument. A property of type
+`List<CsharpMethodParameter>` was recorded as
+`Winterborn.Tools.EasySemVer.DataObject.Csharp.CsharpMethodParameter>` — a name with a dangling
+angle bracket, no `List<`, and no way to tell it apart from a property of the element type. **81
+type names in this repository's own baseline were wrong that way.**
+
+It was found by adding VB.NET: VB writes `Global.` where C# writes `global::`, so every VB type
+would have entered the baseline under a prefix no rule could match. Asking Roslyn to omit the global
+namespace (`SymbolDisplayGlobalNamespaceStyle.Omitted`) fixes both without either language being
+special-cased, and is VB-07.
+
+**What was missed is BAS-07.** Correcting the wording changed 81 recorded strings, R13 read them as
+property-type changes, and the run cut **v21.0.0** — a major release for an API nobody touched.
+That is precisely the case the per-unit signature version exists for, and C#'s
+`SignatureVersion` should have gone to `2` in the same commit. It did not, so every consumer holding
+a C# baseline written before v20.1.0 takes the same unearned Major on their first run after
+upgrading.
+
+ℹ️ The delay is worth understanding, because it is a safety feature working. The fix shipped in
+v20.1.0's *source*, but that release was computed by the previously published binary (PKG — the
+Action downloads a published binary, never the one the run builds). The corrected names first
+reached a baseline on the next run, which is when the Major fired. A change that mis-versions
+breaks the release *after* the one that introduced it, exactly as intended.
+
+**Not fixed by bumping now, on purpose.** Bumping `SignatureVersion` at this point would drop every
+C# baseline again: consumers who have already taken the unearned Major would take a second unearned
+bump for the same cause, while those who have not would trade a Major for a Minor. Doing nothing is
+self-limiting — each consumer pays exactly one unearned Major, once, on first upgrade, and never
+again. That is the same call G-23 made about v17.0.0: the release is real and immutable, and what
+gets fixed is the next one.
+
+⚠️ **The lesson is the requirement, and it is still not enforced.** Nothing in the build fails when
+a provider changes how it words a signature without bumping its `SignatureVersion`. A test that
+extracts a fixture and compares against a checked-in expected signature would have caught this at
+the moment the wording changed, rather than one release later. That test does not exist.
+*Relates to:* BAS-07, VB-07, SIG-01, G-16, G-23, G-24.
