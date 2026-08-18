@@ -127,7 +127,7 @@
                </Methods>
                <Properties>
                   <Property name="Kind" type="string" readable="true" writable="false" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
-                  <Property name="Parameters" type="Winterborn.Tools.EasySemVer.DataObject.Csharp.CsharpMethodParameter&gt;" readable="true" writable="true" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
+                  <Property name="Parameters" type="List&lt;Winterborn.Tools.EasySemVer.DataObject.Csharp.CsharpMethodParameter&gt;" readable="true" writable="true" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
                   <Property name="ReturnType" type="string" readable="true" writable="true" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
                </Properties>
                <Fields />
@@ -150,7 +150,7 @@
                </Methods>
                <Properties>
                   <Property name="Kind" type="string" readable="true" writable="false" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
-                  <Property name="Members" type="Winterborn.Tools.EasySemVer.DataObject.Csharp.CsharpEnumMember&gt;" readable="true" writable="true" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
+                  <Property name="Members" type="List&lt;Winterborn.Tools.EasySemVer.DataObject.Csharp.CsharpEnumMember&gt;" readable="true" writable="true" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
                   <Property name="UnderlyingType" type="string" readable="true" writable="true" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
                </Properties>
                <Fields />
@@ -292,7 +292,7 @@
                <Fields />
                <Events />
             </Class>
-            <Class name="Winterborn.Tools.EasySemVer.DataObject.Csharp.CsharpMethodList" declaringType="" static="false" abstract="false" sealed="false" base="Winterborn.Tools.EasySemVer.DataObject.Csharp.CsharpMethod&gt;">
+            <Class name="Winterborn.Tools.EasySemVer.DataObject.Csharp.CsharpMethodList" declaringType="" static="false" abstract="false" sealed="false" base="List&lt;Winterborn.Tools.EasySemVer.DataObject.Csharp.CsharpMethod&gt;">
                <Implements>
                   <Interface>Winterborn.Tools.EasySemVer.Interfaces.Csharp.ICsharpMethodList</Interface>
                </Implements>
@@ -345,20 +345,20 @@
                   </Method>
                </Methods>
                <Properties>
-                  <Property name="GenericParameters" type="Winterborn.Tools.EasySemVer.DataObject.Csharp.CsharpGenericParameter&gt;" readable="true" writable="true" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
+                  <Property name="GenericParameters" type="List&lt;Winterborn.Tools.EasySemVer.DataObject.Csharp.CsharpGenericParameter&gt;" readable="true" writable="true" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
                   <Property name="HasDefaultImplementation" type="bool" readable="true" writable="true" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
                   <Property name="IsAbstract" type="bool" readable="true" writable="true" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
                   <Property name="IsOverride" type="bool" readable="true" writable="true" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
                   <Property name="IsSealed" type="bool" readable="true" writable="true" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
                   <Property name="IsStatic" type="bool" readable="true" writable="true" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
                   <Property name="IsVirtual" type="bool" readable="true" writable="true" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
-                  <Property name="Parameters" type="Winterborn.Tools.EasySemVer.DataObject.Csharp.CsharpMethodParameter&gt;" readable="true" writable="true" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
+                  <Property name="Parameters" type="List&lt;Winterborn.Tools.EasySemVer.DataObject.Csharp.CsharpMethodParameter&gt;" readable="true" writable="true" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
                   <Property name="ReturnType" type="string" readable="true" writable="true" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
                </Properties>
                <Fields />
                <Events />
             </Class>
-            <Class name="Winterborn.Tools.EasySemVer.DataObject.Csharp.CsharpMethodOverrides" declaringType="" static="false" abstract="false" sealed="false" base="Winterborn.Tools.EasySemVer.DataObject.Csharp.CsharpMethodOverride&gt;">
+            <Class name="Winterborn.Tools.EasySemVer.DataObject.Csharp.CsharpMethodOverrides" declaringType="" static="false" abstract="false" sealed="false" base="List&lt;Winterborn.Tools.EasySemVer.DataObject.Csharp.CsharpMethodOverride&gt;">
                <Implements>
                   <Interface>Winterborn.Tools.EasySemVer.Interfaces.Csharp.ICsharpMethodOverrides</Interface>
                </Implements>
@@ -434,13 +434,13 @@
                   </Method>
                </Methods>
                <Properties>
-                  <Property name="Classes" type="Winterborn.Tools.EasySemVer.DataObject.Csharp.CsharpClass&gt;" readable="true" writable="true" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
-                  <Property name="Delegates" type="Winterborn.Tools.EasySemVer.DataObject.Csharp.CsharpDelegate&gt;" readable="true" writable="true" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
-                  <Property name="Enums" type="Winterborn.Tools.EasySemVer.DataObject.Csharp.CsharpEnum&gt;" readable="true" writable="true" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
-                  <Property name="Interfaces" type="Winterborn.Tools.EasySemVer.DataObject.Csharp.CsharpInterface&gt;" readable="true" writable="true" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
+                  <Property name="Classes" type="List&lt;Winterborn.Tools.EasySemVer.DataObject.Csharp.CsharpClass&gt;" readable="true" writable="true" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
+                  <Property name="Delegates" type="List&lt;Winterborn.Tools.EasySemVer.DataObject.Csharp.CsharpDelegate&gt;" readable="true" writable="true" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
+                  <Property name="Enums" type="List&lt;Winterborn.Tools.EasySemVer.DataObject.Csharp.CsharpEnum&gt;" readable="true" writable="true" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
+                  <Property name="Interfaces" type="List&lt;Winterborn.Tools.EasySemVer.DataObject.Csharp.CsharpInterface&gt;" readable="true" writable="true" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
                   <Property name="Name" type="string" readable="true" writable="true" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
-                  <Property name="Records" type="Winterborn.Tools.EasySemVer.DataObject.Csharp.CsharpRecord&gt;" readable="true" writable="true" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
-                  <Property name="Structs" type="Winterborn.Tools.EasySemVer.DataObject.Csharp.CsharpStruct&gt;" readable="true" writable="true" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
+                  <Property name="Records" type="List&lt;Winterborn.Tools.EasySemVer.DataObject.Csharp.CsharpRecord&gt;" readable="true" writable="true" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
+                  <Property name="Structs" type="List&lt;Winterborn.Tools.EasySemVer.DataObject.Csharp.CsharpStruct&gt;" readable="true" writable="true" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
                </Properties>
                <Fields />
                <Events />
@@ -473,7 +473,7 @@
                <Fields />
                <Events />
             </Class>
-            <Class name="Winterborn.Tools.EasySemVer.DataObject.Csharp.CsharpPropertyList" declaringType="" static="false" abstract="false" sealed="false" base="Winterborn.Tools.EasySemVer.DataObject.Csharp.CsharpProperty&gt;">
+            <Class name="Winterborn.Tools.EasySemVer.DataObject.Csharp.CsharpPropertyList" declaringType="" static="false" abstract="false" sealed="false" base="List&lt;Winterborn.Tools.EasySemVer.DataObject.Csharp.CsharpProperty&gt;">
                <Implements>
                   <Interface>Winterborn.Tools.EasySemVer.Interfaces.Csharp.ICsharpPropertyList</Interface>
                </Implements>
@@ -522,7 +522,7 @@
                <Properties>
                   <Property name="IsValueType" type="bool" readable="true" writable="true" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
                   <Property name="Kind" type="string" readable="true" writable="false" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
-                  <Property name="PositionalParameters" type="Winterborn.Tools.EasySemVer.DataObject.Csharp.CsharpMethodParameter&gt;" readable="true" writable="true" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
+                  <Property name="PositionalParameters" type="List&lt;Winterborn.Tools.EasySemVer.DataObject.Csharp.CsharpMethodParameter&gt;" readable="true" writable="true" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
                </Properties>
                <Fields />
                <Events />
@@ -557,9 +557,9 @@
                <Properties>
                   <Property name="BaseType" type="string" readable="true" writable="true" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
                   <Property name="DeclaringType" type="string" readable="true" writable="true" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
-                  <Property name="Events" type="Winterborn.Tools.EasySemVer.DataObject.Csharp.CsharpEvent&gt;" readable="true" writable="true" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
-                  <Property name="Fields" type="Winterborn.Tools.EasySemVer.DataObject.Csharp.CsharpField&gt;" readable="true" writable="true" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
-                  <Property name="GenericParameters" type="Winterborn.Tools.EasySemVer.DataObject.Csharp.CsharpGenericParameter&gt;" readable="true" writable="true" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
+                  <Property name="Events" type="List&lt;Winterborn.Tools.EasySemVer.DataObject.Csharp.CsharpEvent&gt;" readable="true" writable="true" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
+                  <Property name="Fields" type="List&lt;Winterborn.Tools.EasySemVer.DataObject.Csharp.CsharpField&gt;" readable="true" writable="true" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
+                  <Property name="GenericParameters" type="List&lt;Winterborn.Tools.EasySemVer.DataObject.Csharp.CsharpGenericParameter&gt;" readable="true" writable="true" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
                   <Property name="ImplementedInterfaces" type="List&lt;string&gt;" readable="true" writable="true" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
                   <Property name="IsAbstract" type="bool" readable="true" writable="true" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
                   <Property name="IsSealed" type="bool" readable="true" writable="true" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
@@ -605,7 +605,7 @@
                   <Property name="Signature" type="object" readable="true" writable="true" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
                   <Property name="UnitId" type="string" readable="true" writable="true" initOnly="true" static="false" required="false" hasDefaultImplementation="false" />
                   <Property name="UnitKind" type="string" readable="true" writable="true" initOnly="true" static="false" required="false" hasDefaultImplementation="false" />
-                  <Property name="VersionSources" type="Winterborn.Tools.EasySemVer.Interfaces.IVersionSource&gt;" readable="true" writable="true" initOnly="true" static="false" required="false" hasDefaultImplementation="false" />
+                  <Property name="VersionSources" type="IReadOnlyList&lt;Winterborn.Tools.EasySemVer.Interfaces.IVersionSource&gt;" readable="true" writable="true" initOnly="true" static="false" required="false" hasDefaultImplementation="false" />
                </Properties>
                <Fields />
                <Events />
@@ -713,7 +713,7 @@
                <Methods />
                <Properties>
                   <Property name="AccessLevel" type="string" readable="true" writable="true" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
-                  <Property name="Availability" type="Winterborn.Tools.EasySemVer.DataObject.Swift.SwiftAvailability&gt;" readable="true" writable="true" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
+                  <Property name="Availability" type="List&lt;Winterborn.Tools.EasySemVer.DataObject.Swift.SwiftAvailability&gt;" readable="true" writable="true" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
                   <Property name="Name" type="string" readable="true" writable="true" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
                   <Property name="ObjCExposure" type="string" readable="true" writable="true" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
                </Properties>
@@ -736,7 +736,7 @@
                   </Method>
                </Methods>
                <Properties>
-                  <Property name="Cases" type="Winterborn.Tools.EasySemVer.DataObject.Swift.SwiftEnumCase&gt;" readable="true" writable="true" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
+                  <Property name="Cases" type="List&lt;Winterborn.Tools.EasySemVer.DataObject.Swift.SwiftEnumCase&gt;" readable="true" writable="true" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
                   <Property name="Kind" type="string" readable="true" writable="false" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
                   <Property name="RawValueType" type="string" readable="true" writable="true" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
                </Properties>
@@ -759,7 +759,7 @@
                   </Method>
                </Methods>
                <Properties>
-                  <Property name="AssociatedValues" type="Winterborn.Tools.EasySemVer.DataObject.Swift.SwiftParameter&gt;" readable="true" writable="true" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
+                  <Property name="AssociatedValues" type="List&lt;Winterborn.Tools.EasySemVer.DataObject.Swift.SwiftParameter&gt;" readable="true" writable="true" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
                   <Property name="RawValue" type="string" readable="true" writable="true" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
                </Properties>
                <Fields />
@@ -784,10 +784,10 @@
                   <Property name="AddedConformances" type="List&lt;string&gt;" readable="true" writable="true" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
                   <Property name="Constraints" type="string" readable="true" writable="true" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
                   <Property name="ExtendedType" type="string" readable="true" writable="true" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
-                  <Property name="Functions" type="Winterborn.Tools.EasySemVer.DataObject.Swift.SwiftFunction&gt;" readable="true" writable="true" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
+                  <Property name="Functions" type="List&lt;Winterborn.Tools.EasySemVer.DataObject.Swift.SwiftFunction&gt;" readable="true" writable="true" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
                   <Property name="Key" type="string" readable="true" writable="false" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
-                  <Property name="Properties" type="Winterborn.Tools.EasySemVer.DataObject.Swift.SwiftProperty&gt;" readable="true" writable="true" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
-                  <Property name="Subscripts" type="Winterborn.Tools.EasySemVer.DataObject.Swift.SwiftSubscript&gt;" readable="true" writable="true" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
+                  <Property name="Properties" type="List&lt;Winterborn.Tools.EasySemVer.DataObject.Swift.SwiftProperty&gt;" readable="true" writable="true" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
+                  <Property name="Subscripts" type="List&lt;Winterborn.Tools.EasySemVer.DataObject.Swift.SwiftSubscript&gt;" readable="true" writable="true" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
                </Properties>
                <Fields />
                <Events />
@@ -809,13 +809,13 @@
                </Methods>
                <Properties>
                   <Property name="ExtensionConstraints" type="string" readable="true" writable="true" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
-                  <Property name="GenericParameters" type="Winterborn.Tools.EasySemVer.DataObject.Swift.SwiftGenericParameter&gt;" readable="true" writable="true" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
+                  <Property name="GenericParameters" type="List&lt;Winterborn.Tools.EasySemVer.DataObject.Swift.SwiftGenericParameter&gt;" readable="true" writable="true" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
                   <Property name="HasDefaultImplementation" type="bool" readable="true" writable="true" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
                   <Property name="IsAsync" type="bool" readable="true" writable="true" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
                   <Property name="IsFinal" type="bool" readable="true" writable="true" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
                   <Property name="IsMutating" type="bool" readable="true" writable="true" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
                   <Property name="IsStatic" type="bool" readable="true" writable="true" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
-                  <Property name="Parameters" type="Winterborn.Tools.EasySemVer.DataObject.Swift.SwiftParameter&gt;" readable="true" writable="true" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
+                  <Property name="Parameters" type="List&lt;Winterborn.Tools.EasySemVer.DataObject.Swift.SwiftParameter&gt;" readable="true" writable="true" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
                   <Property name="ReturnType" type="string" readable="true" writable="true" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
                   <Property name="Throws" type="bool" readable="true" writable="true" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
                </Properties>
@@ -864,7 +864,7 @@
                   <Property name="IsConvenience" type="bool" readable="true" writable="true" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
                   <Property name="IsFailable" type="bool" readable="true" writable="true" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
                   <Property name="IsRequired" type="bool" readable="true" writable="true" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
-                  <Property name="Parameters" type="Winterborn.Tools.EasySemVer.DataObject.Swift.SwiftParameter&gt;" readable="true" writable="true" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
+                  <Property name="Parameters" type="List&lt;Winterborn.Tools.EasySemVer.DataObject.Swift.SwiftParameter&gt;" readable="true" writable="true" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
                   <Property name="Throws" type="bool" readable="true" writable="true" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
                </Properties>
                <Fields />
@@ -892,17 +892,17 @@
                   </Method>
                </Methods>
                <Properties>
-                  <Property name="Actors" type="Winterborn.Tools.EasySemVer.DataObject.Swift.SwiftActor&gt;" readable="true" writable="true" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
-                  <Property name="Classes" type="Winterborn.Tools.EasySemVer.DataObject.Swift.SwiftClass&gt;" readable="true" writable="true" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
-                  <Property name="Enums" type="Winterborn.Tools.EasySemVer.DataObject.Swift.SwiftEnum&gt;" readable="true" writable="true" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
-                  <Property name="Extensions" type="Winterborn.Tools.EasySemVer.DataObject.Swift.SwiftExtension&gt;" readable="true" writable="true" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
-                  <Property name="GlobalFunctions" type="Winterborn.Tools.EasySemVer.DataObject.Swift.SwiftFunction&gt;" readable="true" writable="true" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
-                  <Property name="GlobalVariables" type="Winterborn.Tools.EasySemVer.DataObject.Swift.SwiftProperty&gt;" readable="true" writable="true" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
+                  <Property name="Actors" type="List&lt;Winterborn.Tools.EasySemVer.DataObject.Swift.SwiftActor&gt;" readable="true" writable="true" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
+                  <Property name="Classes" type="List&lt;Winterborn.Tools.EasySemVer.DataObject.Swift.SwiftClass&gt;" readable="true" writable="true" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
+                  <Property name="Enums" type="List&lt;Winterborn.Tools.EasySemVer.DataObject.Swift.SwiftEnum&gt;" readable="true" writable="true" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
+                  <Property name="Extensions" type="List&lt;Winterborn.Tools.EasySemVer.DataObject.Swift.SwiftExtension&gt;" readable="true" writable="true" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
+                  <Property name="GlobalFunctions" type="List&lt;Winterborn.Tools.EasySemVer.DataObject.Swift.SwiftFunction&gt;" readable="true" writable="true" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
+                  <Property name="GlobalVariables" type="List&lt;Winterborn.Tools.EasySemVer.DataObject.Swift.SwiftProperty&gt;" readable="true" writable="true" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
                   <Property name="Name" type="string" readable="true" writable="true" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
-                  <Property name="Operators" type="Winterborn.Tools.EasySemVer.DataObject.Swift.SwiftOperator&gt;" readable="true" writable="true" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
-                  <Property name="Protocols" type="Winterborn.Tools.EasySemVer.DataObject.Swift.SwiftProtocol&gt;" readable="true" writable="true" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
-                  <Property name="Structs" type="Winterborn.Tools.EasySemVer.DataObject.Swift.SwiftStruct&gt;" readable="true" writable="true" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
-                  <Property name="TypeAliases" type="Winterborn.Tools.EasySemVer.DataObject.Swift.SwiftTypeAlias&gt;" readable="true" writable="true" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
+                  <Property name="Operators" type="List&lt;Winterborn.Tools.EasySemVer.DataObject.Swift.SwiftOperator&gt;" readable="true" writable="true" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
+                  <Property name="Protocols" type="List&lt;Winterborn.Tools.EasySemVer.DataObject.Swift.SwiftProtocol&gt;" readable="true" writable="true" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
+                  <Property name="Structs" type="List&lt;Winterborn.Tools.EasySemVer.DataObject.Swift.SwiftStruct&gt;" readable="true" writable="true" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
+                  <Property name="TypeAliases" type="List&lt;Winterborn.Tools.EasySemVer.DataObject.Swift.SwiftTypeAlias&gt;" readable="true" writable="true" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
                </Properties>
                <Fields />
                <Events />
@@ -1044,7 +1044,7 @@
                <Properties>
                   <Property name="IsSettable" type="bool" readable="true" writable="true" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
                   <Property name="IsStatic" type="bool" readable="true" writable="true" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
-                  <Property name="Parameters" type="Winterborn.Tools.EasySemVer.DataObject.Swift.SwiftParameter&gt;" readable="true" writable="true" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
+                  <Property name="Parameters" type="List&lt;Winterborn.Tools.EasySemVer.DataObject.Swift.SwiftParameter&gt;" readable="true" writable="true" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
                   <Property name="ReturnType" type="string" readable="true" writable="true" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
                </Properties>
                <Fields />
@@ -1058,14 +1058,14 @@
                <Methods />
                <Properties>
                   <Property name="Conformances" type="List&lt;string&gt;" readable="true" writable="true" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
-                  <Property name="Functions" type="Winterborn.Tools.EasySemVer.DataObject.Swift.SwiftFunction&gt;" readable="true" writable="true" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
-                  <Property name="GenericParameters" type="Winterborn.Tools.EasySemVer.DataObject.Swift.SwiftGenericParameter&gt;" readable="true" writable="true" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
-                  <Property name="Initializers" type="Winterborn.Tools.EasySemVer.DataObject.Swift.SwiftInitializer&gt;" readable="true" writable="true" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
+                  <Property name="Functions" type="List&lt;Winterborn.Tools.EasySemVer.DataObject.Swift.SwiftFunction&gt;" readable="true" writable="true" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
+                  <Property name="GenericParameters" type="List&lt;Winterborn.Tools.EasySemVer.DataObject.Swift.SwiftGenericParameter&gt;" readable="true" writable="true" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
+                  <Property name="Initializers" type="List&lt;Winterborn.Tools.EasySemVer.DataObject.Swift.SwiftInitializer&gt;" readable="true" writable="true" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
                   <Property name="IsFinal" type="bool" readable="true" writable="true" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
                   <Property name="IsFrozen" type="bool" readable="true" writable="true" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
                   <Property name="Kind" type="string" readable="true" writable="false" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
-                  <Property name="Properties" type="Winterborn.Tools.EasySemVer.DataObject.Swift.SwiftProperty&gt;" readable="true" writable="true" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
-                  <Property name="Subscripts" type="Winterborn.Tools.EasySemVer.DataObject.Swift.SwiftSubscript&gt;" readable="true" writable="true" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
+                  <Property name="Properties" type="List&lt;Winterborn.Tools.EasySemVer.DataObject.Swift.SwiftProperty&gt;" readable="true" writable="true" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
+                  <Property name="Subscripts" type="List&lt;Winterborn.Tools.EasySemVer.DataObject.Swift.SwiftSubscript&gt;" readable="true" writable="true" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
                   <Property name="Superclass" type="string" readable="true" writable="true" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
                </Properties>
                <Fields />
@@ -3836,9 +3836,9 @@
                </Implements>
                <GenericParameters />
                <Methods>
-                  <Method name="FindDifferences" returns="Winterborn.Tools.EasySemVer.Interfaces.IPackageableUnit&gt;">
+                  <Method name="FindDifferences" returns="IEnumerable&lt;Winterborn.Tools.EasySemVer.Interfaces.IPackageableUnit&gt;">
                      <Overrides>
-                        <Override returns="Winterborn.Tools.EasySemVer.Interfaces.IPackageableUnit&gt;" static="false" virtual="true" abstract="false" override="false" sealed="false" hasDefaultImplementation="false">
+                        <Override returns="IEnumerable&lt;Winterborn.Tools.EasySemVer.Interfaces.IPackageableUnit&gt;" static="false" virtual="true" abstract="false" override="false" sealed="false" hasDefaultImplementation="false">
                            <GenericParameters />
                            <Parameters>
                               <Parameter name="units" type="Winterborn.Tools.EasySemVer.Interfaces.IUnitsToCompare" required="true" refKind="None" params="false" />
@@ -3859,13 +3859,13 @@
                <Implements />
                <GenericParameters />
                <Methods>
-                  <Method name="GetFindings" returns="Winterborn.Tools.EasySemVer.DataObject.ChangeFinding&gt;">
+                  <Method name="GetFindings" returns="IEnumerable&lt;Winterborn.Tools.EasySemVer.DataObject.ChangeFinding&gt;">
                      <Overrides>
-                        <Override returns="Winterborn.Tools.EasySemVer.DataObject.ChangeFinding&gt;" static="true" virtual="false" abstract="false" override="false" sealed="false" hasDefaultImplementation="false">
+                        <Override returns="IEnumerable&lt;Winterborn.Tools.EasySemVer.DataObject.ChangeFinding&gt;" static="true" virtual="false" abstract="false" override="false" sealed="false" hasDefaultImplementation="false">
                            <GenericParameters />
                            <Parameters>
                               <Parameter name="languageId" type="string" required="true" refKind="None" params="false" />
-                              <Parameter name="rules" type="Winterborn.Tools.EasySemVer.Interfaces.IEvaluateUnitExistence&gt;" required="true" refKind="None" params="false" />
+                              <Parameter name="rules" type="IEnumerable&lt;Winterborn.Tools.EasySemVer.Interfaces.IEvaluateUnitExistence&gt;" required="true" refKind="None" params="false" />
                               <Parameter name="units" type="Winterborn.Tools.EasySemVer.Interfaces.IUnitsToCompare" required="true" refKind="None" params="false" />
                            </Parameters>
                         </Override>
@@ -3882,9 +3882,9 @@
                </Implements>
                <GenericParameters />
                <Methods>
-                  <Method name="FindDifferences" returns="Winterborn.Tools.EasySemVer.Interfaces.IPackageableUnit&gt;">
+                  <Method name="FindDifferences" returns="IEnumerable&lt;Winterborn.Tools.EasySemVer.Interfaces.IPackageableUnit&gt;">
                      <Overrides>
-                        <Override returns="Winterborn.Tools.EasySemVer.Interfaces.IPackageableUnit&gt;" static="false" virtual="true" abstract="false" override="false" sealed="false" hasDefaultImplementation="false">
+                        <Override returns="IEnumerable&lt;Winterborn.Tools.EasySemVer.Interfaces.IPackageableUnit&gt;" static="false" virtual="true" abstract="false" override="false" sealed="false" hasDefaultImplementation="false">
                            <GenericParameters />
                            <Parameters>
                               <Parameter name="units" type="Winterborn.Tools.EasySemVer.Interfaces.IUnitsToCompare" required="true" refKind="None" params="false" />
@@ -3973,7 +3973,7 @@
                </Methods>
                <Properties>
                   <Property name="ChangeType" type="string" readable="true" writable="true" initOnly="true" static="false" required="false" hasDefaultImplementation="false" />
-                  <Property name="Findings" type="Winterborn.Tools.EasySemVer.Reporting.JsonReportFinding&gt;" readable="true" writable="true" initOnly="true" static="false" required="false" hasDefaultImplementation="false" />
+                  <Property name="Findings" type="IReadOnlyList&lt;Winterborn.Tools.EasySemVer.Reporting.JsonReportFinding&gt;" readable="true" writable="true" initOnly="true" static="false" required="false" hasDefaultImplementation="false" />
                   <Property name="FormatVersion" type="int" readable="true" writable="true" initOnly="true" static="false" required="false" hasDefaultImplementation="false" />
                   <Property name="IsDryRun" type="bool" readable="true" writable="true" initOnly="true" static="false" required="false" hasDefaultImplementation="false" />
                   <Property name="NewVersion" type="Winterborn.Tools.EasySemVer.Reporting.JsonReportVersion" readable="true" writable="true" initOnly="true" static="false" required="false" hasDefaultImplementation="false" />
@@ -4059,7 +4059,7 @@
                <GenericParameters />
                <Methods />
                <Properties>
-                  <Property name="Parameters" type="Winterborn.Tools.EasySemVer.Interfaces.Csharp.ICsharpMethodParameter&gt;" readable="true" writable="false" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
+                  <Property name="Parameters" type="IReadOnlyList&lt;Winterborn.Tools.EasySemVer.Interfaces.Csharp.ICsharpMethodParameter&gt;" readable="true" writable="false" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
                   <Property name="ReturnType" type="string" readable="true" writable="false" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
                </Properties>
                <Fields />
@@ -4072,7 +4072,7 @@
                <GenericParameters />
                <Methods />
                <Properties>
-                  <Property name="Members" type="Winterborn.Tools.EasySemVer.Interfaces.Csharp.ICsharpEnumMember&gt;" readable="true" writable="false" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
+                  <Property name="Members" type="IReadOnlyList&lt;Winterborn.Tools.EasySemVer.Interfaces.Csharp.ICsharpEnumMember&gt;" readable="true" writable="false" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
                   <Property name="UnderlyingType" type="string" readable="true" writable="false" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
                </Properties>
                <Fields />
@@ -4150,7 +4150,7 @@
             </Interface>
             <Interface name="Winterborn.Tools.EasySemVer.Interfaces.Csharp.ICsharpMethodList" declaringType="" static="false" abstract="true" sealed="false" base="">
                <Implements>
-                  <Interface>Winterborn.Tools.EasySemVer.Interfaces.Csharp.ICsharpMethod&gt;</Interface>
+                  <Interface>IEnumerable&lt;Winterborn.Tools.EasySemVer.Interfaces.Csharp.ICsharpMethod&gt;</Interface>
                </Implements>
                <GenericParameters />
                <Methods>
@@ -4176,14 +4176,14 @@
                <GenericParameters />
                <Methods />
                <Properties>
-                  <Property name="GenericParameters" type="Winterborn.Tools.EasySemVer.Interfaces.Csharp.ICsharpGenericParameter&gt;" readable="true" writable="false" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
+                  <Property name="GenericParameters" type="IReadOnlyList&lt;Winterborn.Tools.EasySemVer.Interfaces.Csharp.ICsharpGenericParameter&gt;" readable="true" writable="false" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
                   <Property name="HasDefaultImplementation" type="bool" readable="true" writable="false" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
                   <Property name="IsAbstract" type="bool" readable="true" writable="false" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
                   <Property name="IsOverride" type="bool" readable="true" writable="false" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
                   <Property name="IsSealed" type="bool" readable="true" writable="false" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
                   <Property name="IsStatic" type="bool" readable="true" writable="false" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
                   <Property name="IsVirtual" type="bool" readable="true" writable="false" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
-                  <Property name="Parameters" type="Winterborn.Tools.EasySemVer.Interfaces.Csharp.ICsharpMethodParameter&gt;" readable="true" writable="false" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
+                  <Property name="Parameters" type="IReadOnlyList&lt;Winterborn.Tools.EasySemVer.Interfaces.Csharp.ICsharpMethodParameter&gt;" readable="true" writable="false" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
                   <Property name="ReturnType" type="string" readable="true" writable="false" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
                </Properties>
                <Fields />
@@ -4191,7 +4191,7 @@
             </Interface>
             <Interface name="Winterborn.Tools.EasySemVer.Interfaces.Csharp.ICsharpMethodOverrides" declaringType="" static="false" abstract="true" sealed="false" base="">
                <Implements>
-                  <Interface>Winterborn.Tools.EasySemVer.Interfaces.Csharp.ICsharpMethodOverride&gt;</Interface>
+                  <Interface>IEnumerable&lt;Winterborn.Tools.EasySemVer.Interfaces.Csharp.ICsharpMethodOverride&gt;</Interface>
                </Implements>
                <GenericParameters />
                <Methods>
@@ -4229,14 +4229,14 @@
                <GenericParameters />
                <Methods />
                <Properties>
-                  <Property name="Classes" type="Winterborn.Tools.EasySemVer.Interfaces.Csharp.ICsharpClass&gt;" readable="true" writable="false" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
-                  <Property name="Delegates" type="Winterborn.Tools.EasySemVer.Interfaces.Csharp.ICsharpDelegate&gt;" readable="true" writable="false" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
-                  <Property name="Enums" type="Winterborn.Tools.EasySemVer.Interfaces.Csharp.ICsharpEnum&gt;" readable="true" writable="false" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
-                  <Property name="Interfaces" type="Winterborn.Tools.EasySemVer.Interfaces.Csharp.ICsharpInterface&gt;" readable="true" writable="false" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
+                  <Property name="Classes" type="IReadOnlyList&lt;Winterborn.Tools.EasySemVer.Interfaces.Csharp.ICsharpClass&gt;" readable="true" writable="false" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
+                  <Property name="Delegates" type="IReadOnlyList&lt;Winterborn.Tools.EasySemVer.Interfaces.Csharp.ICsharpDelegate&gt;" readable="true" writable="false" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
+                  <Property name="Enums" type="IReadOnlyList&lt;Winterborn.Tools.EasySemVer.Interfaces.Csharp.ICsharpEnum&gt;" readable="true" writable="false" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
+                  <Property name="Interfaces" type="IReadOnlyList&lt;Winterborn.Tools.EasySemVer.Interfaces.Csharp.ICsharpInterface&gt;" readable="true" writable="false" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
                   <Property name="Name" type="string" readable="true" writable="false" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
-                  <Property name="Records" type="Winterborn.Tools.EasySemVer.Interfaces.Csharp.ICsharpRecord&gt;" readable="true" writable="false" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
-                  <Property name="Structs" type="Winterborn.Tools.EasySemVer.Interfaces.Csharp.ICsharpStruct&gt;" readable="true" writable="false" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
-                  <Property name="Types" type="Winterborn.Tools.EasySemVer.Interfaces.Csharp.ICsharpType&gt;" readable="true" writable="false" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
+                  <Property name="Records" type="IReadOnlyList&lt;Winterborn.Tools.EasySemVer.Interfaces.Csharp.ICsharpRecord&gt;" readable="true" writable="false" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
+                  <Property name="Structs" type="IReadOnlyList&lt;Winterborn.Tools.EasySemVer.Interfaces.Csharp.ICsharpStruct&gt;" readable="true" writable="false" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
+                  <Property name="Types" type="IReadOnlyList&lt;Winterborn.Tools.EasySemVer.Interfaces.Csharp.ICsharpType&gt;" readable="true" writable="false" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
                </Properties>
                <Fields />
                <Events />
@@ -4260,7 +4260,7 @@
             </Interface>
             <Interface name="Winterborn.Tools.EasySemVer.Interfaces.Csharp.ICsharpPropertyList" declaringType="" static="false" abstract="true" sealed="false" base="">
                <Implements>
-                  <Interface>Winterborn.Tools.EasySemVer.Interfaces.Csharp.ICsharpProperty&gt;</Interface>
+                  <Interface>IEnumerable&lt;Winterborn.Tools.EasySemVer.Interfaces.Csharp.ICsharpProperty&gt;</Interface>
                </Implements>
                <GenericParameters />
                <Methods>
@@ -4289,7 +4289,7 @@
                <Methods />
                <Properties>
                   <Property name="IsValueType" type="bool" readable="true" writable="false" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
-                  <Property name="PositionalParameters" type="Winterborn.Tools.EasySemVer.Interfaces.Csharp.ICsharpMethodParameter&gt;" readable="true" writable="false" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
+                  <Property name="PositionalParameters" type="IReadOnlyList&lt;Winterborn.Tools.EasySemVer.Interfaces.Csharp.ICsharpMethodParameter&gt;" readable="true" writable="false" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
                </Properties>
                <Fields />
                <Events />
@@ -4323,9 +4323,9 @@
                <Properties>
                   <Property name="BaseType" type="string" readable="true" writable="false" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
                   <Property name="DeclaringType" type="string" readable="true" writable="false" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
-                  <Property name="Events" type="Winterborn.Tools.EasySemVer.Interfaces.Csharp.ICsharpEvent&gt;" readable="true" writable="false" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
-                  <Property name="Fields" type="Winterborn.Tools.EasySemVer.Interfaces.Csharp.ICsharpField&gt;" readable="true" writable="false" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
-                  <Property name="GenericParameters" type="Winterborn.Tools.EasySemVer.Interfaces.Csharp.ICsharpGenericParameter&gt;" readable="true" writable="false" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
+                  <Property name="Events" type="IReadOnlyList&lt;Winterborn.Tools.EasySemVer.Interfaces.Csharp.ICsharpEvent&gt;" readable="true" writable="false" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
+                  <Property name="Fields" type="IReadOnlyList&lt;Winterborn.Tools.EasySemVer.Interfaces.Csharp.ICsharpField&gt;" readable="true" writable="false" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
+                  <Property name="GenericParameters" type="IReadOnlyList&lt;Winterborn.Tools.EasySemVer.Interfaces.Csharp.ICsharpGenericParameter&gt;" readable="true" writable="false" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
                   <Property name="ImplementedInterfaces" type="IReadOnlyList&lt;string&gt;" readable="true" writable="false" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
                   <Property name="IsAbstract" type="bool" readable="true" writable="false" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
                   <Property name="IsSealed" type="bool" readable="true" writable="false" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
@@ -4365,9 +4365,9 @@
                <Implements />
                <GenericParameters />
                <Methods>
-                  <Method name="Discover" returns="Winterborn.Tools.EasySemVer.Interfaces.IVersionSource&gt;">
+                  <Method name="Discover" returns="IEnumerable&lt;Winterborn.Tools.EasySemVer.Interfaces.IVersionSource&gt;">
                      <Overrides>
-                        <Override returns="Winterborn.Tools.EasySemVer.Interfaces.IVersionSource&gt;" static="false" virtual="false" abstract="true" override="false" sealed="false" hasDefaultImplementation="false">
+                        <Override returns="IEnumerable&lt;Winterborn.Tools.EasySemVer.Interfaces.IVersionSource&gt;" static="false" virtual="false" abstract="true" override="false" sealed="false" hasDefaultImplementation="false">
                            <GenericParameters />
                            <Parameters>
                               <Parameter name="scope" type="Winterborn.Tools.EasySemVer.DataObject.VersionSourceScope" required="true" refKind="None" params="false" />
@@ -4387,9 +4387,9 @@
                <Implements />
                <GenericParameters />
                <Methods>
-                  <Method name="FindDifferences" returns="Winterborn.Tools.EasySemVer.Interfaces.IPackageableUnit&gt;">
+                  <Method name="FindDifferences" returns="IEnumerable&lt;Winterborn.Tools.EasySemVer.Interfaces.IPackageableUnit&gt;">
                      <Overrides>
-                        <Override returns="Winterborn.Tools.EasySemVer.Interfaces.IPackageableUnit&gt;" static="false" virtual="false" abstract="true" override="false" sealed="false" hasDefaultImplementation="false">
+                        <Override returns="IEnumerable&lt;Winterborn.Tools.EasySemVer.Interfaces.IPackageableUnit&gt;" static="false" virtual="false" abstract="true" override="false" sealed="false" hasDefaultImplementation="false">
                            <GenericParameters />
                            <Parameters>
                               <Parameter name="units" type="Winterborn.Tools.EasySemVer.Interfaces.IUnitsToCompare" required="true" refKind="None" params="false" />
@@ -4410,9 +4410,9 @@
                <Implements />
                <GenericParameters />
                <Methods>
-                  <Method name="Classify" returns="Winterborn.Tools.EasySemVer.DataObject.ChangeFinding&gt;">
+                  <Method name="Classify" returns="IReadOnlyList&lt;Winterborn.Tools.EasySemVer.DataObject.ChangeFinding&gt;">
                      <Overrides>
-                        <Override returns="Winterborn.Tools.EasySemVer.DataObject.ChangeFinding&gt;" static="false" virtual="false" abstract="true" override="false" sealed="false" hasDefaultImplementation="false">
+                        <Override returns="IReadOnlyList&lt;Winterborn.Tools.EasySemVer.DataObject.ChangeFinding&gt;" static="false" virtual="false" abstract="true" override="false" sealed="false" hasDefaultImplementation="false">
                            <GenericParameters />
                            <Parameters>
                               <Parameter name="units" type="Winterborn.Tools.EasySemVer.Interfaces.IUnitsToCompare" required="true" refKind="None" params="false" />
@@ -4420,9 +4420,9 @@
                         </Override>
                      </Overrides>
                   </Method>
-                  <Method name="Discover" returns="Winterborn.Tools.EasySemVer.Interfaces.IPackageableUnit&gt;">
+                  <Method name="Discover" returns="IReadOnlyList&lt;Winterborn.Tools.EasySemVer.Interfaces.IPackageableUnit&gt;">
                      <Overrides>
-                        <Override returns="Winterborn.Tools.EasySemVer.Interfaces.IPackageableUnit&gt;" static="false" virtual="false" abstract="true" override="false" sealed="false" hasDefaultImplementation="false">
+                        <Override returns="IReadOnlyList&lt;Winterborn.Tools.EasySemVer.Interfaces.IPackageableUnit&gt;" static="false" virtual="false" abstract="true" override="false" sealed="false" hasDefaultImplementation="false">
                            <GenericParameters />
                            <Parameters>
                               <Parameter name="folderRoot" type="string" required="true" refKind="None" params="false" />
@@ -4460,9 +4460,9 @@
                         </Override>
                      </Overrides>
                   </Method>
-                  <Method name="ReadVersions" returns="Winterborn.Tools.EasySemVer.DataObject.Version&gt;">
+                  <Method name="ReadVersions" returns="IReadOnlyList&lt;Winterborn.Tools.EasySemVer.DataObject.Version&gt;">
                      <Overrides>
-                        <Override returns="Winterborn.Tools.EasySemVer.DataObject.Version&gt;" static="false" virtual="false" abstract="true" override="false" sealed="false" hasDefaultImplementation="false">
+                        <Override returns="IReadOnlyList&lt;Winterborn.Tools.EasySemVer.DataObject.Version&gt;" static="false" virtual="false" abstract="true" override="false" sealed="false" hasDefaultImplementation="false">
                            <GenericParameters />
                            <Parameters>
                               <Parameter name="unit" type="Winterborn.Tools.EasySemVer.Interfaces.IPackageableUnit" required="true" refKind="None" params="false" />
@@ -4511,7 +4511,7 @@
                   <Property name="Signature" type="object" readable="true" writable="true" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
                   <Property name="UnitId" type="string" readable="true" writable="false" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
                   <Property name="UnitKind" type="string" readable="true" writable="false" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
-                  <Property name="VersionSources" type="Winterborn.Tools.EasySemVer.Interfaces.IVersionSource&gt;" readable="true" writable="false" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
+                  <Property name="VersionSources" type="IReadOnlyList&lt;Winterborn.Tools.EasySemVer.Interfaces.IVersionSource&gt;" readable="true" writable="false" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
                </Properties>
                <Fields />
                <Events />
@@ -4543,8 +4543,8 @@
                <GenericParameters />
                <Methods />
                <Properties>
-                  <Property name="Newer" type="Winterborn.Tools.EasySemVer.Interfaces.IPackageableUnit&gt;" readable="true" writable="false" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
-                  <Property name="Older" type="Winterborn.Tools.EasySemVer.Interfaces.IPackageableUnit&gt;" readable="true" writable="false" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
+                  <Property name="Newer" type="IReadOnlyList&lt;Winterborn.Tools.EasySemVer.Interfaces.IPackageableUnit&gt;" readable="true" writable="false" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
+                  <Property name="Older" type="IReadOnlyList&lt;Winterborn.Tools.EasySemVer.Interfaces.IPackageableUnit&gt;" readable="true" writable="false" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
                </Properties>
                <Fields />
                <Events />
@@ -4645,7 +4645,7 @@
                <Methods />
                <Properties>
                   <Property name="AccessLevel" type="string" readable="true" writable="false" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
-                  <Property name="Availability" type="Winterborn.Tools.EasySemVer.Interfaces.Swift.ISwiftAvailability&gt;" readable="true" writable="false" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
+                  <Property name="Availability" type="IReadOnlyList&lt;Winterborn.Tools.EasySemVer.Interfaces.Swift.ISwiftAvailability&gt;" readable="true" writable="false" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
                   <Property name="Name" type="string" readable="true" writable="false" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
                   <Property name="ObjCExposure" type="string" readable="true" writable="false" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
                </Properties>
@@ -4659,7 +4659,7 @@
                <GenericParameters />
                <Methods />
                <Properties>
-                  <Property name="Cases" type="Winterborn.Tools.EasySemVer.Interfaces.Swift.ISwiftEnumCase&gt;" readable="true" writable="false" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
+                  <Property name="Cases" type="IReadOnlyList&lt;Winterborn.Tools.EasySemVer.Interfaces.Swift.ISwiftEnumCase&gt;" readable="true" writable="false" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
                   <Property name="RawValueType" type="string" readable="true" writable="false" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
                </Properties>
                <Fields />
@@ -4672,7 +4672,7 @@
                <GenericParameters />
                <Methods />
                <Properties>
-                  <Property name="AssociatedValues" type="Winterborn.Tools.EasySemVer.Interfaces.Swift.ISwiftParameter&gt;" readable="true" writable="false" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
+                  <Property name="AssociatedValues" type="IReadOnlyList&lt;Winterborn.Tools.EasySemVer.Interfaces.Swift.ISwiftParameter&gt;" readable="true" writable="false" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
                   <Property name="RawValue" type="string" readable="true" writable="false" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
                </Properties>
                <Fields />
@@ -4686,10 +4686,10 @@
                   <Property name="AddedConformances" type="IReadOnlyList&lt;string&gt;" readable="true" writable="false" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
                   <Property name="Constraints" type="string" readable="true" writable="false" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
                   <Property name="ExtendedType" type="string" readable="true" writable="false" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
-                  <Property name="Functions" type="Winterborn.Tools.EasySemVer.Interfaces.Swift.ISwiftFunction&gt;" readable="true" writable="false" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
+                  <Property name="Functions" type="IReadOnlyList&lt;Winterborn.Tools.EasySemVer.Interfaces.Swift.ISwiftFunction&gt;" readable="true" writable="false" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
                   <Property name="Key" type="string" readable="true" writable="false" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
-                  <Property name="Properties" type="Winterborn.Tools.EasySemVer.Interfaces.Swift.ISwiftProperty&gt;" readable="true" writable="false" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
-                  <Property name="Subscripts" type="Winterborn.Tools.EasySemVer.Interfaces.Swift.ISwiftSubscript&gt;" readable="true" writable="false" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
+                  <Property name="Properties" type="IReadOnlyList&lt;Winterborn.Tools.EasySemVer.Interfaces.Swift.ISwiftProperty&gt;" readable="true" writable="false" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
+                  <Property name="Subscripts" type="IReadOnlyList&lt;Winterborn.Tools.EasySemVer.Interfaces.Swift.ISwiftSubscript&gt;" readable="true" writable="false" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
                </Properties>
                <Fields />
                <Events />
@@ -4702,13 +4702,13 @@
                <Methods />
                <Properties>
                   <Property name="ExtensionConstraints" type="string" readable="true" writable="false" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
-                  <Property name="GenericParameters" type="Winterborn.Tools.EasySemVer.Interfaces.Swift.ISwiftGenericParameter&gt;" readable="true" writable="false" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
+                  <Property name="GenericParameters" type="IReadOnlyList&lt;Winterborn.Tools.EasySemVer.Interfaces.Swift.ISwiftGenericParameter&gt;" readable="true" writable="false" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
                   <Property name="HasDefaultImplementation" type="bool" readable="true" writable="false" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
                   <Property name="IsAsync" type="bool" readable="true" writable="false" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
                   <Property name="IsFinal" type="bool" readable="true" writable="false" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
                   <Property name="IsMutating" type="bool" readable="true" writable="false" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
                   <Property name="IsStatic" type="bool" readable="true" writable="false" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
-                  <Property name="Parameters" type="Winterborn.Tools.EasySemVer.Interfaces.Swift.ISwiftParameter&gt;" readable="true" writable="false" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
+                  <Property name="Parameters" type="IReadOnlyList&lt;Winterborn.Tools.EasySemVer.Interfaces.Swift.ISwiftParameter&gt;" readable="true" writable="false" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
                   <Property name="ReturnType" type="string" readable="true" writable="false" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
                   <Property name="Throws" type="bool" readable="true" writable="false" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
                </Properties>
@@ -4737,7 +4737,7 @@
                   <Property name="IsConvenience" type="bool" readable="true" writable="false" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
                   <Property name="IsFailable" type="bool" readable="true" writable="false" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
                   <Property name="IsRequired" type="bool" readable="true" writable="false" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
-                  <Property name="Parameters" type="Winterborn.Tools.EasySemVer.Interfaces.Swift.ISwiftParameter&gt;" readable="true" writable="false" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
+                  <Property name="Parameters" type="IReadOnlyList&lt;Winterborn.Tools.EasySemVer.Interfaces.Swift.ISwiftParameter&gt;" readable="true" writable="false" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
                   <Property name="Throws" type="bool" readable="true" writable="false" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
                </Properties>
                <Fields />
@@ -4748,13 +4748,13 @@
                <GenericParameters />
                <Methods />
                <Properties>
-                  <Property name="Extensions" type="Winterborn.Tools.EasySemVer.Interfaces.Swift.ISwiftExtension&gt;" readable="true" writable="false" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
-                  <Property name="GlobalFunctions" type="Winterborn.Tools.EasySemVer.Interfaces.Swift.ISwiftFunction&gt;" readable="true" writable="false" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
-                  <Property name="GlobalVariables" type="Winterborn.Tools.EasySemVer.Interfaces.Swift.ISwiftProperty&gt;" readable="true" writable="false" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
+                  <Property name="Extensions" type="IReadOnlyList&lt;Winterborn.Tools.EasySemVer.Interfaces.Swift.ISwiftExtension&gt;" readable="true" writable="false" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
+                  <Property name="GlobalFunctions" type="IReadOnlyList&lt;Winterborn.Tools.EasySemVer.Interfaces.Swift.ISwiftFunction&gt;" readable="true" writable="false" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
+                  <Property name="GlobalVariables" type="IReadOnlyList&lt;Winterborn.Tools.EasySemVer.Interfaces.Swift.ISwiftProperty&gt;" readable="true" writable="false" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
                   <Property name="Name" type="string" readable="true" writable="false" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
-                  <Property name="Operators" type="Winterborn.Tools.EasySemVer.Interfaces.Swift.ISwiftOperator&gt;" readable="true" writable="false" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
-                  <Property name="TypeAliases" type="Winterborn.Tools.EasySemVer.Interfaces.Swift.ISwiftTypeAlias&gt;" readable="true" writable="false" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
-                  <Property name="Types" type="Winterborn.Tools.EasySemVer.Interfaces.Swift.ISwiftType&gt;" readable="true" writable="false" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
+                  <Property name="Operators" type="IReadOnlyList&lt;Winterborn.Tools.EasySemVer.Interfaces.Swift.ISwiftOperator&gt;" readable="true" writable="false" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
+                  <Property name="TypeAliases" type="IReadOnlyList&lt;Winterborn.Tools.EasySemVer.Interfaces.Swift.ISwiftTypeAlias&gt;" readable="true" writable="false" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
+                  <Property name="Types" type="IReadOnlyList&lt;Winterborn.Tools.EasySemVer.Interfaces.Swift.ISwiftType&gt;" readable="true" writable="false" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
                </Properties>
                <Fields />
                <Events />
@@ -4849,7 +4849,7 @@
                <Properties>
                   <Property name="IsSettable" type="bool" readable="true" writable="false" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
                   <Property name="IsStatic" type="bool" readable="true" writable="false" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
-                  <Property name="Parameters" type="Winterborn.Tools.EasySemVer.Interfaces.Swift.ISwiftParameter&gt;" readable="true" writable="false" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
+                  <Property name="Parameters" type="IReadOnlyList&lt;Winterborn.Tools.EasySemVer.Interfaces.Swift.ISwiftParameter&gt;" readable="true" writable="false" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
                   <Property name="ReturnType" type="string" readable="true" writable="false" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
                </Properties>
                <Fields />
@@ -4863,14 +4863,14 @@
                <Methods />
                <Properties>
                   <Property name="Conformances" type="IReadOnlyList&lt;string&gt;" readable="true" writable="false" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
-                  <Property name="Functions" type="Winterborn.Tools.EasySemVer.Interfaces.Swift.ISwiftFunction&gt;" readable="true" writable="false" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
-                  <Property name="GenericParameters" type="Winterborn.Tools.EasySemVer.Interfaces.Swift.ISwiftGenericParameter&gt;" readable="true" writable="false" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
-                  <Property name="Initializers" type="Winterborn.Tools.EasySemVer.Interfaces.Swift.ISwiftInitializer&gt;" readable="true" writable="false" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
+                  <Property name="Functions" type="IReadOnlyList&lt;Winterborn.Tools.EasySemVer.Interfaces.Swift.ISwiftFunction&gt;" readable="true" writable="false" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
+                  <Property name="GenericParameters" type="IReadOnlyList&lt;Winterborn.Tools.EasySemVer.Interfaces.Swift.ISwiftGenericParameter&gt;" readable="true" writable="false" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
+                  <Property name="Initializers" type="IReadOnlyList&lt;Winterborn.Tools.EasySemVer.Interfaces.Swift.ISwiftInitializer&gt;" readable="true" writable="false" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
                   <Property name="IsFinal" type="bool" readable="true" writable="false" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
                   <Property name="IsFrozen" type="bool" readable="true" writable="false" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
                   <Property name="Kind" type="string" readable="true" writable="false" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
-                  <Property name="Properties" type="Winterborn.Tools.EasySemVer.Interfaces.Swift.ISwiftProperty&gt;" readable="true" writable="false" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
-                  <Property name="Subscripts" type="Winterborn.Tools.EasySemVer.Interfaces.Swift.ISwiftSubscript&gt;" readable="true" writable="false" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
+                  <Property name="Properties" type="IReadOnlyList&lt;Winterborn.Tools.EasySemVer.Interfaces.Swift.ISwiftProperty&gt;" readable="true" writable="false" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
+                  <Property name="Subscripts" type="IReadOnlyList&lt;Winterborn.Tools.EasySemVer.Interfaces.Swift.ISwiftSubscript&gt;" readable="true" writable="false" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
                   <Property name="Superclass" type="string" readable="true" writable="false" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
                </Properties>
                <Fields />
@@ -4904,7 +4904,7 @@
          <Records>
             <Record name="Winterborn.Tools.EasySemVer.DataObject.VersionSourceScope" declaringType="" static="false" abstract="false" sealed="true" base="" valueType="false">
                <Implements>
-                  <Interface>System.IEquatable&lt;global::Winterborn.Tools.EasySemVer.DataObject.VersionSourceScope&gt;</Interface>
+                  <Interface>System.IEquatable&lt;Winterborn.Tools.EasySemVer.DataObject.VersionSourceScope&gt;</Interface>
                </Implements>
                <GenericParameters />
                <Methods>
