@@ -3901,6 +3901,44 @@
                <Fields />
                <Events />
             </Class>
+            <Class name="Winterborn.Tools.EasySemVer.Evaluators.Vb.UnitAdded" declaringType="" static="false" abstract="false" sealed="false" base="Winterborn.Tools.EasySemVer.Evaluators.UnitAddedRule">
+               <Implements />
+               <GenericParameters />
+               <Methods>
+                  <Method name=".ctor" returns="void">
+                     <Overrides>
+                        <Override returns="void" static="false" virtual="false" abstract="false" override="false" sealed="false" hasDefaultImplementation="false">
+                           <GenericParameters />
+                           <Parameters />
+                        </Override>
+                     </Overrides>
+                  </Method>
+               </Methods>
+               <Properties>
+                  <Property name="Rule" type="string" readable="true" writable="false" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
+               </Properties>
+               <Fields />
+               <Events />
+            </Class>
+            <Class name="Winterborn.Tools.EasySemVer.Evaluators.Vb.UnitRemoved" declaringType="" static="false" abstract="false" sealed="false" base="Winterborn.Tools.EasySemVer.Evaluators.UnitRemovedRule">
+               <Implements />
+               <GenericParameters />
+               <Methods>
+                  <Method name=".ctor" returns="void">
+                     <Overrides>
+                        <Override returns="void" static="false" virtual="false" abstract="false" override="false" sealed="false" hasDefaultImplementation="false">
+                           <GenericParameters />
+                           <Parameters />
+                        </Override>
+                     </Overrides>
+                  </Method>
+               </Methods>
+               <Properties>
+                  <Property name="Rule" type="string" readable="true" writable="false" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
+               </Properties>
+               <Fields />
+               <Events />
+            </Class>
             <Class name="Winterborn.Tools.EasySemVer.Program" declaringType="" static="true" abstract="false" sealed="false" base="">
                <Implements />
                <GenericParameters />
