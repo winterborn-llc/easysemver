@@ -128,7 +128,12 @@ internal static class VersioningRun
             // counts as test code is entirely the provider's to decide; what happens next is not.
             foreach (var unit in found)
             {
-                unit.HasPublicApiSurface = !provider.IsTestCode(unit);
+                // LNG-04: the question can only ever take a surface away. A unit arrives claiming
+                // one (UNI-01 defaults it true), so this is exactly UNI-04 for every provider that
+                // reads an API - and a version-sync-tier provider, which reads none, says so once
+                // at discovery instead of having to call all of its production code "test code" to
+                // get the same effect.
+                unit.HasPublicApiSurface = unit.HasPublicApiSurface && !provider.IsTestCode(unit);
             }
 
             Log.WriteLine($"{provider.LanguageId}: {found.Count} units");

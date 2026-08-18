@@ -98,6 +98,66 @@ surprising product: the tool becomes a version stamper rather than a version dec
 **Decided:** correct as-is, and the run log says so explicitly per unit, so it cannot be mistaken for
 "no breaking changes found".
 
+---
+
+## Version-sync languages — shipped: JavaScript/TypeScript, Rust, Python, Dart, PHP, Java
+
+### ⏳ Q-08 — Gradle has no honest language id. What should it be?
+
+`build.gradle` / `build.gradle.kts` is shared by **Java, Kotlin and Groovy**, often in the same
+module, so a Gradle unit cannot say which language it is. Maven has the same ambiguity in principle
+but not in practice, so Java shipped on `pom.xml` alone.
+
+The options as I see them:
+
+1. **A `gradle` "language"** — honest about what it is, dishonest about being a language. The report
+   would say `gradle/UnitAdded`, which is at least not wrong.
+2. **A `jvm` language** covering Maven and Gradle both — then `java` is the wrong id for the Maven
+   provider that already shipped, and renaming it later costs a re-seed.
+3. **Guess from the module's source directories** — `src/main/kotlin` vs `src/main/java`. Works
+   often, fails silently on mixed modules, which is the failure mode this codebase keeps deciding
+   against.
+
+**Decided:** shipped nothing for Gradle. `gradle.properties` support is about four lines once the id
+is settled, so this is genuinely blocked on your answer and not on effort.
+
+**My weak preference is (1)**, on the grounds that the unit really is a Gradle project and pretending
+otherwise is what creates the silent-failure options.
+
+### Q-09 — Go is unlisted because nothing is writable
+
+`go.mod` has no version field; a Go module's version *is* its git tag. Reading tags already works.
+Writing one is doc 12 §20 **O-02**, which you have not confirmed — and it is outward-facing and
+effectively irreversible, so I did not decide it for you.
+
+**Decided:** Go stays unlisted rather than shipping a provider that discovers units and changes
+nothing.
+
+**If you confirm O-02** (`--tag`, local only, never pushed, off by default), Go becomes worth adding
+and so does a `git-tag` write path for PHP and Python, which mostly version by tag too.
+
+### Q-10 — should the Full-tier providers move onto `ManifestLanguageProvider`'s loops?
+
+`ReadVersions` and `WriteVersion` are **character-for-character identical** in the C#, VB and Swift
+providers, and now a fourth copy lives on the version-sync base. That is the same duplication the
+pairing helpers just removed, one layer up.
+
+**Decided:** left alone. It is a refactor of three shipped Full-tier providers, and doing it
+unsupervised on the same night as six new languages is how a version-stamping tool starts writing
+versions to the wrong files. It is easy and safe to do deliberately.
+
+### Q-11 — a `package.json` version is matched at up to two spaces of indent
+
+The pattern anchors to `^\s{0,2}"version"` so it cannot match a nested one — a dependency's, or the
+`engines` block. Every formatter npm ships indents top-level keys by two, so this holds for
+generated and hand-written files alike.
+
+**It would miss** a `package.json` formatted with four-space or tab indentation. The consequence is
+a missed version, not a wrong one: the package is discovered, contributes no version source, and is
+stamped nowhere. That is the safe direction and it is MVR-04's behaviour anyway.
+
+**Decided:** shipped as-is. Worth revisiting if anyone reports a package that is not being stamped.
+
 ### Q-07 — directory exclusions are still global, not per-language
 
 We agreed exclusions should become language-owned and contextual (a `vendor` beside a `go.mod`, a

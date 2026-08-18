@@ -129,8 +129,18 @@ public class TestLanguageSeam
                 nameof(ILanguageProvider.IsTestCode),
                 [typeof(IPackageableUnit)]);
 
+            // A version-sync provider (LNG-01) answers at its tier rather than per language, and
+            // ManifestLanguageProvider is where that answer is written down: a unit with no API
+            // surface at all has nothing for test code to be excluded from, so the question is
+            // settled for every language in the tier at once. Requiring six identical overrides
+            // would be ceremony that reads like coverage.
+            //
+            // What must still never happen is a provider silently inheriting the *interface's*
+            // default, which is what this has always been guarding against.
+            var answeredByTheTier = declared?.DeclaringType == typeof(ManifestLanguageProvider);
+
             Assert.True(
-                declared?.DeclaringType == provider.GetType(),
+                declared?.DeclaringType == provider.GetType() || answeredByTheTier,
                 $"{provider.LanguageId} inherits ILanguageProvider.IsTestCode's default. Its test "
                 + "code will be compared like production code and vote on the version (UNI-04).");
         }

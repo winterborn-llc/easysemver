@@ -46,6 +46,75 @@ reused rather than restated.
 | C# | **Full** | `.csproj` | `AssemblyVersion`, `PackageVersion`, `FileVersion` | Roslyn, doc 05 |
 | VB.NET | **Full** | `.vbproj` | as C# | §3 — shares C#'s model |
 | Swift | **Full** | SwiftPM target, Xcode target | 7 sources, MVR-03 | doc 12 |
+| JavaScript / TypeScript | Version-sync | `package.json` | `"version"` | §4 |
+| Rust | Version-sync | `Cargo.toml` | `[package] version` | §4 |
+| Python | Version-sync | `pyproject.toml` | `[project]` / `[tool.poetry] version` | §4 |
+| Dart | Version-sync | `pubspec.yaml` | top-level `version:` | §4 |
+| PHP | Version-sync | `composer.json` | `"version"`, usually absent | §4 |
+| Java | Version-sync | `pom.xml` | `/project/version` | §4, Maven only |
+
+## 4. The version-sync ecosystems
+
+**LNG-04 — A provider may declare a unit surfaceless at discovery.** ✅ required
+`HasPublicApiSurface` SHALL be narrowed by `IsTestCode`, never widened by it:
+
+```csharp
+unit.HasPublicApiSurface = unit.HasPublicApiSurface && !provider.IsTestCode(unit);
+```
+
+A unit arrives claiming a surface (UNI-01 defaults it true), so this preserves UNI-04 exactly for
+every Full-tier provider. What it adds is a way for a version-sync provider to say so **once, at
+discovery**, instead of having to call all of its production code "test code" to get the same
+effect — which would be a lie in the log and in `IsTestCode`'s contract.
+
+**LNG-05 — One manifest, one unit, one pattern.** ✅ required
+A version-sync language SHALL be a subclass of `ManifestLanguageProvider` declaring only its
+language id, its unit kind and its manifest filename. Its version convention SHALL be one
+registration line naming the pattern that finds a **literal** version in that manifest.
+
+Unit identity is the manifest's folder-root-relative **directory** (ML-03), normalised to `.` at the
+root. Two packages of the same name in different folders stay distinct, and nothing machine-specific
+reaches the baseline.
+
+**LNG-06 — Manifests are edited textually, and only the first match.** ✅ required
+Version write-back SHALL replace the matched span and nothing else, leaving quoting, key order and
+formatting untouched. SYN-04's DOM rewrite is right for a `.csproj`, whose formatting MSBuild owns;
+it is hostile to a `package.json`, where reserialising would restyle a file the team reads daily.
+
+Only the **first** match is replaced, and every pattern is anchored to the manifest's own top-level
+scope. **A manifest mentions versions it does not own** — a dependency's, a parent POM's, an
+`engines` constraint — and rewriting one of those pins somebody else's package to this repository's
+number, silently, in a committed and published file.
+
+ℹ️ This is the requirement most likely to be broken by a well-meaning pattern change, so it is
+tested per language rather than in general:
+`TestVersionSyncLanguages.ADependencysVersionIsNeverRewritten` gives every fixture a second version
+belonging to something else and asserts it survives.
+
+**LNG-07 — Maven is read as XML, not matched.** ✅ required
+`pom.xml` SHALL be read with `XDocument` and only `/project/version` — the root's direct child —
+SHALL be read or written. A pom names `<version>` for its parent and for every dependency, so LNG-06's
+anchoring is not available to it. A module inheriting its version from a parent has no such element
+and is read-skipped and write-skipped (MVR-04); the parent is where that version lives, and the
+parent is its own unit.
+
+**LNG-08 — TypeScript is not a separate language here.** ℹ️
+A TypeScript package is an npm package: same manifest, same `version` key, same publish. They are
+one language because they are one *unit*. If a reader is written it will read `.d.ts`, which is what
+both of them ship.
+
+**LNG-09 — Gradle is deliberately unsupported.** ℹ️
+Not only because `build.gradle` and `build.gradle.kts` are executable Groovy and Kotlin — the
+reasoning that keeps `Package.swift` to literals applies (SWD-01) — but because **a Gradle module
+does not say which language it is.** Java, Kotlin and Groovy share the build system and frequently
+the same module, so there is no honest language id to file it under. Recorded as an open question
+rather than guessed at.
+
+**LNG-10 — Go is not listed, because there is nothing to write.** ℹ️
+`go.mod` carries no version field; a Go module's version *is* its git tag. Reading tags already works
+(`GitTagVersionSources`), but writing one is §20 O-02 in doc 12 — still unconfirmed, outward-facing
+and effectively irreversible. Until that is decided, a Go provider would discover units and change
+nothing, so listing Go would promise more than it delivers.
 
 ## 3. VB.NET
 

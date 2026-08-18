@@ -1,4 +1,5 @@
 using Winterborn.Tools.EasySemVer.CodeReader.Csharp;
+using Winterborn.Tools.EasySemVer.CodeReader.Manifests;
 using Winterborn.Tools.EasySemVer.CodeReader.Swift;
 using Winterborn.Tools.EasySemVer.CodeReader.Vb;
 using Winterborn.Tools.EasySemVer.DataObject;
@@ -29,7 +30,38 @@ internal static class VersionSourceFactories
             new SwiftVersionFileSources(),
             new MarketingVersionSources(),
             new BuildCounterVersionSources(),
-            new InfoPlistVersionSources()
+            new InfoPlistVersionSources(),
+
+            // The version-sync ecosystems (LNG-01). One line each, because the convention they
+            // share - a literal version in the package's own manifest - differs only in the
+            // pattern that finds it. Maven is the exception and is read as XML, because a pom
+            // mentions <version> for its parent and every dependency too.
+            new ManifestVersionSources(
+                JavascriptLanguageProvider.JavascriptLanguageId,
+                JavascriptLanguageProvider.JavascriptUnitKind,
+                "package.json",
+                ManifestPatterns.Json()),
+            new ManifestVersionSources(
+                RustLanguageProvider.RustLanguageId,
+                RustLanguageProvider.RustUnitKind,
+                "cargo",
+                ManifestPatterns.Toml()),
+            new ManifestVersionSources(
+                PythonLanguageProvider.PythonLanguageId,
+                PythonLanguageProvider.PythonUnitKind,
+                "pyproject",
+                ManifestPatterns.Toml()),
+            new ManifestVersionSources(
+                DartLanguageProvider.DartLanguageId,
+                DartLanguageProvider.DartUnitKind,
+                "pubspec",
+                ManifestPatterns.Yaml()),
+            new ManifestVersionSources(
+                PhpLanguageProvider.PhpLanguageId,
+                PhpLanguageProvider.PhpUnitKind,
+                "composer.json",
+                ManifestPatterns.Json()),
+            new PomVersionSources()
         ];
     }
 

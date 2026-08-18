@@ -14,9 +14,20 @@ internal static class LanguageProviders
         var versionSources = VersionSourceFactories.Create(runProcess);
         return
         [
+            // Full tier (LNG-01): discovered, read, classified, stamped.
             new CsharpLanguageProvider(versionSources),
             new VbLanguageProvider(versionSources),
-            new SwiftLanguageProvider(versionSources)
+            new SwiftLanguageProvider(versionSources),
+
+            // Version-sync tier (LNG-01): discovered, seeded and stamped, never read and so never
+            // voting on the change type. Each is one file, because ManifestLanguageProvider holds
+            // everything except the language's id, unit kind and manifest name.
+            new JavascriptLanguageProvider(versionSources),
+            new RustLanguageProvider(versionSources),
+            new PythonLanguageProvider(versionSources),
+            new DartLanguageProvider(versionSources),
+            new PhpLanguageProvider(versionSources),
+            new JavaLanguageProvider(versionSources)
         ];
     }
 
