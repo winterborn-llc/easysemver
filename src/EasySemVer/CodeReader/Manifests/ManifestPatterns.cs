@@ -64,4 +64,24 @@ internal static partial class ManifestPatterns
     /// </summary>
     [GeneratedRegex("""(?m)^\s*(?:our|my)?\s*\$VERSION\s*=\s*["'](?<version>[0-9][^"']*)["']""")]
     internal static partial Regex PerlVariable();
+
+    /// <summary>
+    /// A gemspec assigning its version as a literal - <c>spec.version = "1.2.3"</c> - rather than
+    /// pointing at a constant. Both conventions are in wide use, and a gem using the constant is
+    /// covered by <see cref="RubyConstant"/> in its version.rb instead.
+    /// </summary>
+    [GeneratedRegex("""(?m)^\s*\w+\.version\s*=\s*["'](?<version>[0-9][^"']*)["']""")]
+    internal static partial Regex GemspecLiteral();
+
+    /// <summary>
+    /// CMake's <c>project(Name VERSION 1.2.3)</c>, which is where a C or C++ project states its own
+    /// version. Only the <c>project()</c> call is matched: <c>find_package(Foo 2.0)</c> and
+    /// <c>set(SOMETHING_VERSION ...)</c> are somebody else's version or a derived one.
+    /// <para>
+    /// The name between <c>project(</c> and <c>VERSION</c> is skipped without crossing a closing
+    /// parenthesis, so a later call cannot be spliced onto an earlier one.
+    /// </para>
+    /// </summary>
+    [GeneratedRegex(@"(?is)\bproject\s*\(\s*[^)]*?\bVERSION\s+(?<version>[0-9][0-9.]*)")]
+    internal static partial Regex CMakeProject();
 }

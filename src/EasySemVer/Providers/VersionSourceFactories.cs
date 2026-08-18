@@ -61,7 +61,37 @@ internal static class VersionSourceFactories
                 PhpLanguageProvider.PhpUnitKind,
                 "composer.json",
                 ManifestPatterns.Json()),
-            new PomVersionSources()
+            new PomVersionSources(),
+            new ManifestVersionSources(
+                CppLanguageProvider.CppLanguageId,
+                CppLanguageProvider.CppUnitKind,
+                "cmake",
+                ManifestPatterns.CMakeProject()),
+
+            // Ruby and Perl keep the number beside the manifest rather than in it, so each
+            // registers both: the literal where one exists, and the constant it points at.
+            new ManifestVersionSources(
+                RubyLanguageProvider.RubyLanguageId,
+                RubyLanguageProvider.RubyUnitKind,
+                "gemspec",
+                ManifestPatterns.GemspecLiteral()),
+            new NearbyVersionSources(
+                RubyLanguageProvider.RubyLanguageId,
+                RubyLanguageProvider.RubyUnitKind,
+                "version.rb",
+                "version.rb",
+                ManifestPatterns.RubyConstant()),
+            new ManifestVersionSources(
+                PerlLanguageProvider.PerlLanguageId,
+                PerlLanguageProvider.PerlUnitKind,
+                "dist.ini",
+                ManifestPatterns.Properties()),
+            new NearbyVersionSources(
+                PerlLanguageProvider.PerlLanguageId,
+                PerlLanguageProvider.PerlUnitKind,
+                "pm",
+                "*.pm",
+                ManifestPatterns.PerlVariable())
         ];
     }
 

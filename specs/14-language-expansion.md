@@ -52,6 +52,9 @@ reused rather than restated.
 | Dart | Version-sync | `pubspec.yaml` | top-level `version:` | §4 |
 | PHP | Version-sync | `composer.json` | `"version"`, usually absent | §4 |
 | Java | Version-sync | `pom.xml` | `/project/version` | §4, Maven only |
+| C / C++ | Version-sync | `CMakeLists.txt` | `project(… VERSION …)` | §4, likely permanent |
+| Ruby | Version-sync | `*.gemspec` | gemspec literal, `VERSION` in version.rb | §4, likely permanent |
+| Perl | Version-sync | `Makefile.PL`, `Build.PL`, `dist.ini` | `dist.ini` version, `$VERSION` in every .pm | §4, permanent |
 
 ## 4. The version-sync ecosystems
 
@@ -109,6 +112,27 @@ reasoning that keeps `Package.swift` to literals applies (SWD-01) — but becaus
 does not say which language it is.** Java, Kotlin and Groovy share the build system and frequently
 the same module, so there is no honest language id to file it under. Recorded as an open question
 rather than guessed at.
+
+**LNG-11 — Some languages are version-sync permanently, not provisionally.** ℹ️
+LNG-02 frames the tier as a waiting room, and for most of its occupants it is. Three are not:
+
+- **C++** — a header does not say what it declares until the preprocessor has run, and the
+  preprocessor needs include paths, which need the build system. That is the toolchain dependency
+  G-24 removed, arriving through a different door.
+- **Ruby** — `private` is a method call, not a declaration, and a class's surface can be assembled at
+  load time. There is no honest static answer to what a gem's public API is.
+- **Perl** — only perl can parse Perl: source filters and prototypes let a program change its own
+  grammar as it is read. `@EXPORT_OK` and a list of sub names is not an API worth classifying against.
+
+Recording this matters because otherwise each will look like an unfinished job to whoever reads the
+tier table next, and they will try.
+
+**LNG-12 — A directory is a unit, not a manifest file.** ✅ required
+Where a language has several possible manifests, a directory holding more than one SHALL still be
+one unit. Perl is the case: a distribution carrying both a `Makefile.PL` and a `dist.ini` is one
+package, and discovering it twice would version it twice and read as two units appearing the first
+time anyone upgraded. Manifests are searched in declared name order then path order, so the same one
+claims the directory on every machine (BAS-04).
 
 **LNG-10 — Go is not listed, because there is nothing to write.** ℹ️
 `go.mod` carries no version field; a Go module's version *is* its git tag. Reading tags already works

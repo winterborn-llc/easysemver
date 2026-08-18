@@ -31,10 +31,18 @@ internal abstract class ManifestLanguageProvider(
     protected abstract string UnitKind { get; }
 
     /// <summary>
-    /// The file whose presence marks a package - package.json, Cargo.toml, pubspec.yaml. One unit
-    /// per occurrence under the folder root.
+    /// The file whose presence marks a package - package.json, Cargo.toml, pubspec.yaml. May be a
+    /// pattern (<c>*.gemspec</c>). One unit per <em>directory</em> holding one, not per file.
     /// </summary>
     protected abstract string ManifestFileName { get; }
+
+    /// <summary>
+    /// Every name that marks a package of this language, for the ecosystems that have more than
+    /// one. Perl is the reason: a distribution is marked by a Makefile.PL, a Build.PL or a dist.ini
+    /// depending on which decade and which toolchain built it, and a distribution carrying two of
+    /// them is one package, not two.
+    /// </summary>
+    protected virtual IReadOnlyList<string> ManifestFileNames => [this.ManifestFileName];
 
     /// <summary>
     /// Empty, and deliberately not abstract. A version-sync language's units are dropped by
@@ -48,9 +56,20 @@ internal abstract class ManifestLanguageProvider(
     public IReadOnlyList<IPackageableUnit> Discover(string folderRoot)
     {
         var units = new List<IPackageableUnit>();
-        foreach (var manifestPath in FolderScanner.FindFiles(folderRoot, this.ManifestFileName))
+
+        // One unit per directory, not per manifest file. A Perl distribution with both a
+        // Makefile.PL and a dist.ini is one package; discovering it twice would version it twice
+        // and read as two units appearing the first time anyone upgraded.
+        var claimed = new HashSet<string>(StringComparer.Ordinal);
+
+        foreach (var manifestPath in this.FindManifests(folderRoot))
         {
             var directory = Path.GetDirectoryName(manifestPath)!;
+            if (!claimed.Add(directory))
+            {
+                continue;
+            }
+
             var relativePath = FolderScanner.GetRelativePath(folderRoot, manifestPath);
 
             units.Add(new PackageableUnit
@@ -77,6 +96,21 @@ internal abstract class ManifestLanguageProvider(
         }
 
         return units;
+    }
+
+    /// <summary>
+    /// Every manifest under the root, in declared name order then path order, so that a directory
+    /// holding several is always claimed by the same one on every machine (BAS-04).
+    /// </summary>
+    private IEnumerable<string> FindManifests(string folderRoot)
+    {
+        foreach (var name in this.ManifestFileNames)
+        {
+            foreach (var path in FolderScanner.FindFiles(folderRoot, name))
+            {
+                yield return path;
+            }
+        }
     }
 
     private static string NormaliseUnitId(string relativeDirectory)

@@ -108,6 +108,30 @@ public class TestVersionSyncLanguages : IDisposable
         </project>
         """;
 
+    private const string CMakeLists = """
+        cmake_minimum_required(VERSION 3.20)
+        project(widgets VERSION 1.2.3 LANGUAGES CXX)
+
+        find_package(Boost 9.9.9 REQUIRED)
+        set(VENDORED_VERSION 9.9.9)
+        """;
+
+    private const string Gemspec = """
+        Gem::Specification.new do |spec|
+          spec.name = "widgets"
+          spec.version = "1.2.3"
+          spec.add_dependency "rails", "9.9.9"
+        end
+        """;
+
+    private const string DistIni = """
+        name = Widgets
+        version = 1.2.3
+
+        [Prereqs]
+        Moose = 9.9.9
+        """;
+
     public static TheoryData<string, string, string> Languages() => new()
     {
         { "javascript", "package.json", PackageJson },
@@ -115,7 +139,10 @@ public class TestVersionSyncLanguages : IDisposable
         { "python", "pyproject.toml", PyprojectToml },
         { "dart", "pubspec.yaml", PubspecYaml },
         { "php", "composer.json", ComposerJson },
-        { "java", "pom.xml", PomXml }
+        { "java", "pom.xml", PomXml },
+        { "cpp", "CMakeLists.txt", CMakeLists },
+        { "ruby", "widgets.gemspec", Gemspec },
+        { "perl", "dist.ini", DistIni }
     };
 
     [Theory]
@@ -259,6 +286,71 @@ public class TestVersionSyncLanguages : IDisposable
         this.Write("package.json", PackageJson);
 
         Assert.Equal(".", this.Provider("javascript").Discover(this._folderRoot).Single().UnitId);
+    }
+
+    /// <summary>
+    /// The Ruby convention that actually predominates: the gemspec points at a constant, which is
+    /// not a literal and so is untouchable (MVR-04), and the number lives in version.rb.
+    /// </summary>
+    [Fact]
+    public void ARubyVersionConstantIsReadAndWritten()
+    {
+        this.Write(
+            "widgets/widgets.gemspec",
+            """
+            Gem::Specification.new do |spec|
+              spec.name = "widgets"
+              spec.version = Widgets::VERSION
+            end
+            """);
+        var versionFile = this.Write(
+            "widgets/lib/widgets/version.rb",
+            """
+            module Widgets
+              VERSION = "1.2.3"
+            end
+            """);
+
+        var provider = this.Provider("ruby");
+        var unit = provider.Discover(this._folderRoot).Single();
+
+        Assert.Equal("1.2.3", Assert.Single(provider.ReadVersions(unit)).ToString());
+
+        provider.WriteVersion(unit, new Version("4.5.6"));
+        Assert.Contains("4.5.6", File.ReadAllText(versionFile));
+    }
+
+    /// <summary>
+    /// MVR-05 - every .pm carrying a literal $VERSION is written, because keeping them in step by
+    /// hand is the chore this removes.
+    /// </summary>
+    [Fact]
+    public void EveryPerlModuleVersionIsWritten()
+    {
+        this.Write("Widgets/Makefile.PL", "use ExtUtils::MakeMaker;\n");
+        var main = this.Write("Widgets/lib/Widgets.pm", "package Widgets;\nour $VERSION = '1.2.3';\n1;\n");
+        var part = this.Write("Widgets/lib/Widgets/Part.pm", "package Widgets::Part;\nour $VERSION = '1.2.3';\n1;\n");
+
+        var provider = this.Provider("perl");
+        var unit = provider.Discover(this._folderRoot).Single();
+        provider.WriteVersion(unit, new Version("4.5.6"));
+
+        Assert.Contains("4.5.6", File.ReadAllText(main));
+        Assert.Contains("4.5.6", File.ReadAllText(part));
+    }
+
+    /// <summary>
+    /// LNG-05 - a distribution carrying two of Perl's three manifests is one package. Discovering
+    /// it twice would version it twice and read as two units appearing on the first upgrade.
+    /// </summary>
+    [Fact]
+    public void APerlDistributionWithSeveralManifestsIsOneUnit()
+    {
+        this.Write("Widgets/Makefile.PL", "use ExtUtils::MakeMaker;\n");
+        this.Write("Widgets/Build.PL", "use Module::Build;\n");
+        this.Write("Widgets/dist.ini", "name = Widgets\nversion = 1.2.3\n");
+
+        Assert.Single(this.Provider("perl").Discover(this._folderRoot));
     }
 
     /// <summary>Each provider claims only its own manifest, or one repository becomes many units twice over.</summary>

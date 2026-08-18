@@ -27,7 +27,10 @@ internal static class LanguageProviders
             new PythonLanguageProvider(versionSources),
             new DartLanguageProvider(versionSources),
             new PhpLanguageProvider(versionSources),
-            new JavaLanguageProvider(versionSources)
+            new JavaLanguageProvider(versionSources),
+            new CppLanguageProvider(versionSources),
+            new RubyLanguageProvider(versionSources),
+            new PerlLanguageProvider(versionSources)
         ];
     }
 
