@@ -1,3 +1,4 @@
+using Winterborn.Tools.EasySemVer.DataObject;
 using Winterborn.Tools.EasySemVer.Interfaces;
 
 namespace Winterborn.Tools.EasySemVer.Providers;
@@ -19,6 +20,10 @@ internal class JavaLanguageProvider(
     internal const string JavaLanguageId = "java";
 
     internal const string JavaUnitKind = "maven-project";
+
+    /// <summary>FLD-06. Maven's build directory, vouched for by the pom beside it.</summary>
+    public override IReadOnlyList<DirectoryExclusion> DirectoryExclusions =>
+        [DirectoryExclusion.Beside("target", "pom.xml")];
 
     public override string LanguageId => JavaLanguageId;
 

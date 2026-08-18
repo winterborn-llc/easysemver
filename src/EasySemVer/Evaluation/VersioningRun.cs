@@ -21,7 +21,7 @@ internal static class VersioningRun
         Log.Indent();
 
         // Before discovery, because the first walk is what consults it (FLD-04, CLI-12).
-        DirectoryExclusions.BeginRun(options.DoNotExclude);
+        DirectoryExclusions.BeginRun(options.DoNotExclude, CollectExclusions(providers));
 
         var units = Discover(options.FolderRoot, providers);
         DirectoryExclusions.LogSkipped();
@@ -112,6 +112,23 @@ internal static class VersioningRun
                 options.JsonReportPath,
                 Environment.GetEnvironmentVariable);
         }
+    }
+
+    /// <summary>
+    /// FLD-06 - every registered language's declared exclusions, unioned. A dependency tree should
+    /// be invisible to every provider rather than only to the one that recognised it: a vendored Go
+    /// module holding a stray .csproj is not this repository's C# either.
+    /// </summary>
+    private static IReadOnlyList<DirectoryExclusion> CollectExclusions(
+        IReadOnlyList<ILanguageProvider> providers)
+    {
+        var exclusions = new List<DirectoryExclusion>();
+        foreach (var provider in providers)
+        {
+            exclusions.AddRange(provider.DirectoryExclusions);
+        }
+
+        return exclusions;
     }
 
     private static IReadOnlyList<IPackageableUnit> Discover(

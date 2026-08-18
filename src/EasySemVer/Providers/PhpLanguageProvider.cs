@@ -1,3 +1,4 @@
+using Winterborn.Tools.EasySemVer.DataObject;
 using Winterborn.Tools.EasySemVer.Interfaces;
 
 namespace Winterborn.Tools.EasySemVer.Providers;
@@ -17,6 +18,14 @@ internal class PhpLanguageProvider(
     internal const string PhpLanguageId = "php";
 
     internal const string PhpUnitKind = "composer-package";
+
+    /// <summary>
+    /// FLD-06. Composer installs every dependency's full source into `vendor`, which is where a
+    /// composer.json of somebody else's lives - so without this, every dependency would be
+    /// discovered as a first-party PHP package.
+    /// </summary>
+    public override IReadOnlyList<DirectoryExclusion> DirectoryExclusions =>
+        [DirectoryExclusion.Beside("vendor", "composer.json")];
 
     public override string LanguageId => PhpLanguageId;
 

@@ -1,3 +1,4 @@
+using Winterborn.Tools.EasySemVer.DataObject;
 using Winterborn.Tools.EasySemVer.Settings;
 
 namespace Winterborn.Tools.EasySemVer.Evaluation;
@@ -21,19 +22,26 @@ internal static class DirectoryExclusions
     [ThreadStatic]
     private static string[]? _doNotExclude;
 
+    /// <summary>FLD-06 - what the registered providers asked to skip, unioned for the whole walk.</summary>
+    [ThreadStatic]
+    private static DirectoryExclusion[]? _declared;
+
     /// <summary>Full paths, so a directory skipped by several walks is still one skip.</summary>
     [ThreadStatic]
     private static HashSet<string>? _skipped;
 
-    internal static void BeginRun(IReadOnlyList<string> doNotExclude)
+    internal static void BeginRun(
+        IReadOnlyList<string> doNotExclude,
+        IReadOnlyList<DirectoryExclusion>? declared = null)
     {
         _doNotExclude = [.. doNotExclude];
+        _declared = declared == null ? [] : [.. declared];
         _skipped = new HashSet<string>(StringComparer.Ordinal);
     }
 
     internal static bool IsExcluded(DirectoryInfo directory)
     {
-        if (!MagicValues.IsExcludedDirectory(directory.Name, _doNotExclude ?? []))
+        if (!IsExcludedByAnyRule(directory))
         {
             return false;
         }
@@ -43,6 +51,38 @@ internal static class DirectoryExclusions
         _skipped ??= new HashSet<string>(StringComparer.Ordinal);
         _skipped.Add(directory.FullName);
         return true;
+    }
+
+    /// <summary>
+    /// CLI-12 first, then the frozen global list (FLD-04), then whatever the languages declared
+    /// (FLD-06). CLI-12 is checked once here rather than by each rule, so that a name the caller
+    /// asked to keep is kept whichever rule would have excluded it.
+    /// </summary>
+    private static bool IsExcludedByAnyRule(DirectoryInfo directory)
+    {
+        var kept = _doNotExclude ?? [];
+        foreach (var name in kept)
+        {
+            if (string.Equals(directory.Name, name, StringComparison.OrdinalIgnoreCase))
+            {
+                return false;
+            }
+        }
+
+        if (MagicValues.IsExcludedDirectory(directory.Name, kept))
+        {
+            return true;
+        }
+
+        foreach (var exclusion in _declared ?? [])
+        {
+            if (exclusion.Matches(directory))
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /// <summary>

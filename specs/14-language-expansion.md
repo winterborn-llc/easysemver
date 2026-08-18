@@ -156,7 +156,54 @@ is outside its manifest, and the only one that writes nothing at all unless `--t
 Without the flag a Go module is still discovered and still seeds the run from its highest existing
 tag. It simply has nowhere to write, which MVR-04 already treats as an ordinary outcome.
 
-## 5. Writing git tags
+## 5. Directory exclusions
+
+**FLD-06 — A language declares what to skip, with the evidence.** ✅ required *(decided 2026-08-17)*
+A provider MAY declare directories the walk should skip, each as a name plus the **sibling markers**
+that prove it is that directory rather than one that merely shares its name. Declarations are
+unioned across every registered provider and applied to the whole walk — a dependency tree should be
+invisible to every language, not only to the one that recognised it.
+
+A marker is looked for in the excluded directory's **parent**, because the marker identifies the
+package the directory belongs to: a `go.mod` sits beside `vendor`, not inside it.
+
+| Name | Vouched for by | Declared by |
+|---|---|---|
+| `vendor` | `go.mod` | Go |
+| `vendor` | `composer.json` | PHP |
+| `target` | `Cargo.toml` | Rust |
+| `target` | `pom.xml` | Java |
+| `venv` | `pyproject.toml`, `setup.py`, `setup.cfg` | Python |
+| `blib` | `Makefile.PL`, `Build.PL`, `dist.ini` | Perl |
+| `__pycache__`, `site-packages` | *unconditional* | Python |
+
+**This is the `Packages` post-mortem written down as a mechanism.** That entry was removed because
+the name alone did not identify the thing, and every name in the table above is in exactly the same
+position — build output or vendored source in one ecosystem, ordinary code in another. Excluding
+them globally would reintroduce the silent-swallow failure at a rate that grows with the language
+count.
+
+**FLD-07 — The pre-existing global list is frozen, not distributed.** ✅ required
+`MagicValues.ExcludedDirectoryNames` keeps `bin`, `obj`, `build`, `DerivedData`, `Pods`, `Carthage`
+and `node_modules` as unconditional, and the leading-dot rule is unchanged.
+
+Moving those to their owning languages would be more consistent and is **deliberately not done**:
+`bin` is currently skipped in every repository, and making it conditional on a neighbouring
+`.csproj` would change what existing repositories discover. Freezing the old list while requiring
+every *new* exclusion to be contextual solves the actual problem — the list growing with the
+language count — at no risk to anyone already using the tool.
+
+ℹ️ CLI-12 outranks everything, declared or frozen: a name the caller passed to `--do-not-exclude` is
+kept whichever rule would have excluded it.
+
+ℹ️ `DirectoryExclusions` is declared **virtual on `ManifestLanguageProvider`** rather than left to
+the interface default. Interface mapping is fixed at the type that implements the interface, so a
+subclass adding its own property with nothing to override would be adding a member interface
+dispatch never reaches — the default would keep winning, silently, and every declared exclusion
+would be ignored. `TestContextualExclusions.DeclaredExclusionsActuallyReachTheProvider` is what says
+so.
+
+## 6. Writing git tags
 
 **TAG-01 — Tag writing is opt-in, local, and never pushed.** ✅ required *(doc 12 §20 O-02,
 confirmed 2026-08-17)*

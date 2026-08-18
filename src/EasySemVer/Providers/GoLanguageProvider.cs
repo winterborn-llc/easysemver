@@ -1,3 +1,4 @@
+using Winterborn.Tools.EasySemVer.DataObject;
 using Winterborn.Tools.EasySemVer.Interfaces;
 
 namespace Winterborn.Tools.EasySemVer.Providers;
@@ -25,6 +26,14 @@ internal class GoLanguageProvider(
     internal const string GoLanguageId = "go";
 
     internal const string GoUnitKind = "go-module";
+
+    /// <summary>
+    /// FLD-06. `vendor` is Go's committed dependency tree - real source, first-party-looking, and
+    /// emphatically not this repository's API. It is also an ordinary directory name outside Go,
+    /// which is why the go.mod beside it has to vouch for it.
+    /// </summary>
+    public override IReadOnlyList<DirectoryExclusion> DirectoryExclusions =>
+        [DirectoryExclusion.Beside("vendor", "go.mod")];
 
     public override string LanguageId => GoLanguageId;
 

@@ -17,9 +17,10 @@ namespace Winterborn.Tools.EasySemVer.Providers;
 /// tool's whole job is to be trusted with a number nobody checks.
 /// </para>
 /// <para>
-/// A subclass declares four things: its language id, its unit kind, the manifest that marks a
-/// package, and its own unit-existence rules. Everything below that is mechanical and shared,
-/// including the read/write loops that were already identical in all three Full-tier providers.
+/// A subclass declares three things: its language id, its unit kind, and the manifest that marks a
+/// package. Everything below that is mechanical and shared, and the version read/write loops are
+/// shared further still - <see cref="UnitVersions"/> holds the copy every provider uses, Full tier
+/// included.
 /// </para>
 /// </summary>
 internal abstract class ManifestLanguageProvider(
@@ -119,6 +120,17 @@ internal abstract class ManifestLanguageProvider(
     }
 
     /// <summary>
+    /// FLD-06 - declared virtual here, and empty, rather than left to the interface default.
+    /// <para>
+    /// This is not style. Interface mapping is fixed at the type that implements the interface, so
+    /// a subclass adding its own <c>DirectoryExclusions</c> without something to override would be
+    /// adding a new member that interface dispatch never reaches - the default would keep winning,
+    /// silently, and every declared exclusion would be ignored.
+    /// </para>
+    /// </summary>
+    public virtual IReadOnlyList<DirectoryExclusion> DirectoryExclusions => [];
+
+    /// <summary>
     /// UNI-04. Declared rather than inherited so <c>TestLanguageSeam</c> can see the question was
     /// answered, and false because a version-sync unit already has no surface for test code to be
     /// excluded from - <see cref="Discover"/> said so.
@@ -155,37 +167,12 @@ internal abstract class ManifestLanguageProvider(
 
     public IReadOnlyList<Version> ReadVersions(IPackageableUnit unit)
     {
-        var versions = new List<Version>();
-        foreach (var source in unit.VersionSources)
-        {
-            var version = source.Read();
-            if (version == null)
-            {
-                continue;
-            }
-
-            versions.Add(version);
-        }
-
-        return versions;
+        return UnitVersions.Read(unit);
     }
 
     public IReadOnlyList<string> WriteVersion(IPackageableUnit unit, Version version)
     {
-        var written = new List<string>();
-        foreach (var source in unit.VersionSources)
-        {
-            if (!source.IsWritable)
-            {
-                continue;
-            }
-
-            source.Write(version);
-            Log.WriteLine($"Wrote {version} to {source.Location}");
-            written.Add(source.Location);
-        }
-
-        return written;
+        return UnitVersions.Write(unit, version);
     }
 
     /// <summary>

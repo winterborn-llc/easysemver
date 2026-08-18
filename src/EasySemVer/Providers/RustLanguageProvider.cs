@@ -1,3 +1,4 @@
+using Winterborn.Tools.EasySemVer.DataObject;
 using Winterborn.Tools.EasySemVer.Interfaces;
 
 namespace Winterborn.Tools.EasySemVer.Providers;
@@ -17,6 +18,14 @@ internal class RustLanguageProvider(
     internal const string RustLanguageId = "rust";
 
     internal const string RustUnitKind = "cargo-package";
+
+    /// <summary>
+    /// FLD-06. `target` is Cargo's build directory, and it holds the full source of every
+    /// dependency under `target/package`. It is also the most dangerous name to exclude globally -
+    /// plenty of projects have a `target` that is theirs - so the Cargo.toml has to vouch for it.
+    /// </summary>
+    public override IReadOnlyList<DirectoryExclusion> DirectoryExclusions =>
+        [DirectoryExclusion.Beside("target", "Cargo.toml")];
 
     public override string LanguageId => RustLanguageId;
 

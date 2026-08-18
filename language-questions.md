@@ -182,17 +182,19 @@ just has nowhere to write, which MVR-04 already treats as ordinary.
 **Still open, and smaller:** PHP and Python mostly version by tag too, and neither is registered
 against the tag source yet. Say the word and it is two registration lines each.
 
-### Q-10 — should the Full-tier providers move onto `ManifestLanguageProvider`'s loops?
+### ✅ Q-10 — should the Full-tier providers move onto shared loops? — *answered: hoisted to `UnitVersions`*
 
 `ReadVersions` and `WriteVersion` are **character-for-character identical** in the C#, VB and Swift
 providers, and now a fourth copy lives on the version-sync base. That is the same duplication the
 pairing helpers just removed, one layer up.
 
-**Decided:** left alone. It is a refactor of three shipped Full-tier providers, and doing it
-unsupervised on the same night as six new languages is how a version-stamping tool starts writing
-versions to the wrong files. It is easy and safe to do deliberately.
+**Answered: hoisted.** Both loops now live in `UnitVersions`, used by all four providers. A static
+helper rather than a base class, because the Full-tier providers are not otherwise related and
+giving three shipped providers a common ancestor to share eight lines would be a bigger change than
+the duplication cost. Behaviour-preserving, and proved the way the pairing helpers were: the suite
+passes unmodified.
 
-### Q-11 — a `package.json` version is matched at up to two spaces of indent
+### ✅ Q-11 — `package.json` matched at up to two spaces of indent — *answered: leave it*
 
 The pattern anchors to `^\s{0,2}"version"` so it cannot match a nested one — a dependency's, or the
 `engines` block. Every formatter npm ships indents top-level keys by two, so this holds for
@@ -204,15 +206,20 @@ stamped nowhere. That is the safe direction and it is MVR-04's behaviour anyway.
 
 **Decided:** shipped as-is. Worth revisiting if anyone reports a package that is not being stamped.
 
-### Q-07 — directory exclusions are still global, not per-language
+### ✅ Q-07 — directory exclusions are still global, not per-language — *answered: built, FLD-06*
 
 We agreed exclusions should become language-owned and contextual (a `vendor` beside a `go.mod`, a
 `target` beside a `Cargo.toml`). **I have not built that yet**, and each new ecosystem makes it more
 necessary — `target`, `vendor`, `dist`, `deps` and `blib` are all somebody's real source directory.
 
-**Decided:** for now I am *not* adding any new global exclusions, so nothing new can be silently
-swallowed. The cost is that a vendored dependency directory may be discovered as first-party units,
-which fails loudly and visibly (new units appear in the baseline) — the failure direction the
-`Packages` post-mortem chose deliberately.
+**Answered: built as FLD-06.** A provider declares a name plus the sibling markers that prove it is
+that directory — `vendor` beside a `go.mod`, `target` beside a `Cargo.toml`, `venv` beside a
+`pyproject.toml`. Unconditional is reserved for names that cannot mean anything else
+(`__pycache__`, `site-packages`).
 
-This wants doing properly before the language count grows much further.
+**One deliberate limit.** The pre-existing global list — `bin`, `obj`, `build`, `DerivedData`,
+`Pods`, `Carthage`, `node_modules` — is **frozen, not distributed** (FLD-07). Making `bin`
+conditional on a neighbouring `.csproj` would change what existing repositories discover, and that
+risk buys nothing: the problem was the list *growing* with the language count, and freezing it while
+requiring every new exclusion to be contextual solves that completely. Say if you would rather I
+migrated the old entries too — it is mechanical, it just is not free.

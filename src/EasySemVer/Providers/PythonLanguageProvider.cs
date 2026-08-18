@@ -1,3 +1,4 @@
+using Winterborn.Tools.EasySemVer.DataObject;
 using Winterborn.Tools.EasySemVer.Interfaces;
 
 namespace Winterborn.Tools.EasySemVer.Providers;
@@ -17,6 +18,18 @@ internal class PythonLanguageProvider(
     internal const string PythonLanguageId = "python";
 
     internal const string PythonUnitKind = "python-project";
+
+    /// <summary>
+    /// FLD-06. `__pycache__` and `site-packages` mean one thing wherever they appear; `venv` does
+    /// not, so it needs the pyproject beside it. `.venv`, `.tox` and `.eggs` are already covered by
+    /// the leading-dot rule.
+    /// </summary>
+    public override IReadOnlyList<DirectoryExclusion> DirectoryExclusions =>
+    [
+        DirectoryExclusion.Always("__pycache__"),
+        DirectoryExclusion.Always("site-packages"),
+        DirectoryExclusion.Beside("venv", "pyproject.toml", "setup.py", "setup.cfg")
+    ];
 
     public override string LanguageId => PythonLanguageId;
 

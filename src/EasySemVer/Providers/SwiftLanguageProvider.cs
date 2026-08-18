@@ -210,37 +210,12 @@ internal class SwiftLanguageProvider(
 
     public IReadOnlyList<Version> ReadVersions(IPackageableUnit unit)
     {
-        var versions = new List<Version>();
-        foreach (var source in unit.VersionSources)
-        {
-            var version = source.Read();
-            if (version == null)
-            {
-                continue;
-            }
-
-            versions.Add(version);
-        }
-
-        return versions;
+        return UnitVersions.Read(unit);
     }
 
     public IReadOnlyList<string> WriteVersion(IPackageableUnit unit, Version version)
     {
-        var written = new List<string>();
-        foreach (var source in unit.VersionSources)
-        {
-            if (!source.IsWritable)
-            {
-                continue;
-            }
-
-            source.Write(version);
-            Log.WriteLine($"Wrote {version} to {source.Location}");
-            written.Add(source.Location);
-        }
-
-        return written;
+        return UnitVersions.Write(unit, version);
     }
 
     public XElement WriteSignature(IPackageableUnit unit)

@@ -33,6 +33,25 @@ public interface ILanguageProvider
     /// </summary>
     public string SignatureVersion => "1";
 
+    /// <summary>
+    /// FLD-06 - directories this language asks the walk to skip, each with the sibling marker that
+    /// proves it is that directory rather than one sharing its name.
+    /// <para>
+    /// Owned by the language because only the language knows what its build output and vendored
+    /// dependencies are called, and because a global list grows with the language count while the
+    /// chance that one of its names is somebody's real source directory grows with it. `vendor`,
+    /// `target`, `venv` and `blib` are each build output in one ecosystem and ordinary code in
+    /// another.
+    /// </para>
+    /// <para>
+    /// Defaulted to empty, so a language that has nothing to exclude says nothing, and adding this
+    /// broke no implementer. The exclusions are unioned across every registered provider and applied
+    /// to the whole walk - a dependency tree should be invisible to every language, not only to the
+    /// one that recognised it.
+    /// </para>
+    /// </summary>
+    public IReadOnlyList<DirectoryExclusion> DirectoryExclusions => [];
+
     /// <summary>Enumerates the folder root once per run (FLD-03) and returns this language's units.</summary>
     public IReadOnlyList<IPackageableUnit> Discover(string folderRoot);
 

@@ -122,7 +122,22 @@ internal static class VersionSourceFactories
                 runProcess,
                 writesGitTag,
                 GoLanguageProvider.GoLanguageId,
-                GoLanguageProvider.GoUnitKind)
+                GoLanguageProvider.GoUnitKind),
+
+            // PHP and Python version by tag at least as often as by a literal - Composer's own docs
+            // advise against declaring a version in composer.json, and a pyproject using
+            // setuptools-scm has none either. For those packages the tag is not a second opinion,
+            // it is the only one, so both read it and both write it under --tag (TAG-01).
+            new GitTagVersionSources(
+                runProcess,
+                writesGitTag,
+                PhpLanguageProvider.PhpLanguageId,
+                PhpLanguageProvider.PhpUnitKind),
+            new GitTagVersionSources(
+                runProcess,
+                writesGitTag,
+                PythonLanguageProvider.PythonLanguageId,
+                PythonLanguageProvider.PythonUnitKind)
         ];
     }
 

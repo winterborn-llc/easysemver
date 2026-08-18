@@ -1,3 +1,4 @@
+using Winterborn.Tools.EasySemVer.DataObject;
 using Winterborn.Tools.EasySemVer.Interfaces;
 
 namespace Winterborn.Tools.EasySemVer.Providers;
@@ -28,6 +29,12 @@ internal class PerlLanguageProvider(
     internal const string PerlLanguageId = "perl";
 
     internal const string PerlUnitKind = "perl-distribution";
+
+    /// <summary>FLD-06. `blib` is what a Perl build copies lib into, vouched for by the manifest.</summary>
+    public override IReadOnlyList<DirectoryExclusion> DirectoryExclusions =>
+    [
+        DirectoryExclusion.Beside("blib", "Makefile.PL", "Build.PL", "dist.ini")
+    ];
 
     public override string LanguageId => PerlLanguageId;
 
