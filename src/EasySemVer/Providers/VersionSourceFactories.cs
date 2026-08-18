@@ -91,7 +91,23 @@ internal static class VersionSourceFactories
                 PerlLanguageProvider.PerlUnitKind,
                 "pm",
                 "*.pm",
-                ManifestPatterns.PerlVariable())
+                ManifestPatterns.PerlVariable()),
+
+            // Gradle keeps its version in the build script or in gradle.properties beside it, and
+            // plenty of builds have both. Writing both is MVR-05 working: every module in a folder
+            // root gets the same version anyway (ML-06), so a properties file claimed by a parent
+            // and by its own module is written the same value twice.
+            new ManifestVersionSources(
+                GradleLanguageProvider.GradleLanguageId,
+                GradleLanguageProvider.GradleUnitKind,
+                "gradle",
+                ManifestPatterns.GradleScript()),
+            new NearbyVersionSources(
+                GradleLanguageProvider.GradleLanguageId,
+                GradleLanguageProvider.GradleUnitKind,
+                "gradle.properties",
+                "gradle.properties",
+                ManifestPatterns.Properties())
         ];
     }
 

@@ -142,8 +142,23 @@ public class TestVersionSyncLanguages : IDisposable
         { "java", "pom.xml", PomXml },
         { "cpp", "CMakeLists.txt", CMakeLists },
         { "ruby", "widgets.gemspec", Gemspec },
-        { "perl", "dist.ini", DistIni }
+        { "perl", "dist.ini", DistIni },
+        { "gradle", "build.gradle.kts", GradleScript }
     };
+
+    private const string GradleScript = """
+        plugins { id("java") }
+
+        version = "1.2.3"
+
+        dependencies {
+            implementation("com.example:widgets:9.9.9")
+        }
+
+        subprojects {
+            version = "9.9.9"
+        }
+        """;
 
     [Theory]
     [MemberData(nameof(Languages))]
@@ -351,6 +366,40 @@ public class TestVersionSyncLanguages : IDisposable
         this.Write("Widgets/dist.ini", "name = Widgets\nversion = 1.2.3\n");
 
         Assert.Single(this.Provider("perl").Discover(this._folderRoot));
+    }
+
+    /// <summary>
+    /// The Gradle convention that predominates in multi-module builds: the build script says
+    /// nothing about the version and gradle.properties beside it carries it.
+    /// </summary>
+    [Fact]
+    public void AGradlePropertiesVersionIsReadAndWritten()
+    {
+        this.Write("app/build.gradle.kts", "plugins { id(\"java\") }\n");
+        var properties = this.Write("app/gradle.properties", "group=com.example\nversion=1.2.3\n");
+
+        var provider = this.Provider("gradle");
+        var unit = provider.Discover(this._folderRoot).Single();
+
+        Assert.Equal("1.2.3", Assert.Single(provider.ReadVersions(unit)).ToString());
+
+        provider.WriteVersion(unit, new Version("4.5.6"));
+        Assert.Contains("version=4.5.6", File.ReadAllText(properties));
+        Assert.Contains("group=com.example", File.ReadAllText(properties));
+    }
+
+    /// <summary>A Groovy build.gradle and a Kotlin build.gradle.kts are the same kind of unit.</summary>
+    [Fact]
+    public void GroovyAndKotlinBuildScriptsAreBothGradleUnits()
+    {
+        this.Write("groovy-module/build.gradle", "version = '1.2.3'\n");
+        this.Write("kotlin-module/build.gradle.kts", "version = \"1.2.3\"\n");
+
+        var units = this.Provider("gradle").Discover(this._folderRoot);
+
+        Assert.Equal(
+            ["groovy-module", "kotlin-module"],
+            units.Select(u => u.UnitId).OrderBy(id => id));
     }
 
     /// <summary>Each provider claims only its own manifest, or one repository becomes many units twice over.</summary>

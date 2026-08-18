@@ -55,6 +55,7 @@ reused rather than restated.
 | C / C++ | Version-sync | `CMakeLists.txt` | `project(… VERSION …)` | §4, likely permanent |
 | Ruby | Version-sync | `*.gemspec` | gemspec literal, `VERSION` in version.rb | §4, likely permanent |
 | Perl | Version-sync | `Makefile.PL`, `Build.PL`, `dist.ini` | `dist.ini` version, `$VERSION` in every .pm | §4, permanent |
+| Gradle (Java / Kotlin / Groovy) | Version-sync | `build.gradle`, `build.gradle.kts` | script literal, `gradle.properties` | §4, LNG-09 |
 
 ## 4. The version-sync ecosystems
 
@@ -106,12 +107,23 @@ A TypeScript package is an npm package: same manifest, same `version` key, same 
 one language because they are one *unit*. If a reader is written it will read `.d.ts`, which is what
 both of them ship.
 
-**LNG-09 — Gradle is deliberately unsupported.** ℹ️
-Not only because `build.gradle` and `build.gradle.kts` are executable Groovy and Kotlin — the
-reasoning that keeps `Package.swift` to literals applies (SWD-01) — but because **a Gradle module
-does not say which language it is.** Java, Kotlin and Groovy share the build system and frequently
-the same module, so there is no honest language id to file it under. Recorded as an open question
-rather than guessed at.
+**LNG-09 — Gradle is a language id, because the module is not.** ✅ required
+*(Was "deliberately unsupported" for the length of one commit; superseded 2026-08-17.)*
+
+A Gradle module does not say whether it is Java, Kotlin or Groovy, frequently contains more than
+one, and inferring it from `src/main/kotlin` is a guess that fails silently on exactly the mixed
+modules hardest to notice. So the unit is registered as what it demonstrably is — a **Gradle
+project** — rather than as a language nobody can prove it is.
+
+ℹ️ The original objection was that picking the wrong id would be expensive to correct. It is not,
+for this tier: a version-sync unit is absent from the baseline (UNI-04), so **no repository persists
+the id** and renaming it costs no re-seed. Only a report consumer matching on it would notice, and a
+version-sync language emits no findings to match. The decision that looked irreversible was free,
+which is why it did not have to wait.
+
+Only a **literal** version is read — `version = "1.2.3"` at column zero of the build script, or in
+`gradle.properties` beside it. A script that computes its version has nothing to match: it is a
+Groovy or Kotlin program, and SWD-01's reasoning about `Package.swift` applies to it in full.
 
 **LNG-11 — Some languages are version-sync permanently, not provisionally.** ℹ️
 LNG-02 frames the tier as a waiting room, and for most of its occupants it is. Three are not:

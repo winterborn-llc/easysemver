@@ -42,10 +42,10 @@ internal static partial class ManifestPatterns
     internal static partial Regex Yaml();
 
     /// <summary>
-    /// gradle.properties, and any other Java-style properties file carrying <c>version=</c> at
-    /// column zero. Deliberately not <c>build.gradle</c>: that is executable Groovy or Kotlin, and
-    /// the same reasoning that stopped Package.swift being text-parsed for anything but literals
-    /// applies (SWD-01).
+    /// gradle.properties and Perl's dist.ini - any key-value file carrying <c>version=</c> at column
+    /// zero. The build script's own literal is <see cref="GradleScript"/>; what neither of them does
+    /// is read a version a build script *computes*, because that is a Groovy or Kotlin program and
+    /// the reasoning that keeps Package.swift to literals applies to it in full (SWD-01).
     /// </summary>
     [GeneratedRegex(@"(?m)^version[ \t]*=[ \t]*(?<version>[0-9][^\s#]*)")]
     internal static partial Regex Properties();
@@ -84,4 +84,13 @@ internal static partial class ManifestPatterns
     /// </summary>
     [GeneratedRegex(@"(?is)\bproject\s*\(\s*[^)]*?\bVERSION\s+(?<version>[0-9][0-9.]*)")]
     internal static partial Regex CMakeProject();
+
+    /// <summary>
+    /// A literal <c>version = "1.2.3"</c> at the top level of a build.gradle or build.gradle.kts.
+    /// Column zero is doing real work here: the same assignment indented sits inside an
+    /// <c>allprojects</c>, <c>subprojects</c> or dependency block, where it is either a duplicate or
+    /// somebody else's, and a build script that computes its version has no literal to match at all.
+    /// </summary>
+    [GeneratedRegex("""(?m)^version\s*=\s*["'](?<version>[0-9][^"']*)["']""")]
+    internal static partial Regex GradleScript();
 }

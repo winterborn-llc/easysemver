@@ -100,9 +100,10 @@ surprising product: the tool becomes a version stamper rather than a version dec
 
 ---
 
-## Version-sync languages — shipped: JavaScript/TypeScript, Rust, Python, Dart, PHP, Java
+## Version-sync languages — shipped: JavaScript/TypeScript, Rust, Python, Dart, PHP, Java,
+## C/C++, Ruby, Perl, Gradle
 
-### ⏳ Q-08 — Gradle has no honest language id. What should it be?
+### ✅ Q-08 — Gradle has no honest language id. What should it be? — *shipped as `gradle`*
 
 `build.gradle` / `build.gradle.kts` is shared by **Java, Kotlin and Groovy**, often in the same
 module, so a Gradle unit cannot say which language it is. Maven has the same ambiguity in principle
@@ -118,11 +119,17 @@ The options as I see them:
    often, fails silently on mixed modules, which is the failure mode this codebase keeps deciding
    against.
 
-**Decided:** shipped nothing for Gradle. `gradle.properties` support is about four lines once the id
-is settled, so this is genuinely blocked on your answer and not on effort.
+**Decided, and shipped: option (1), `gradle`.** I initially held this back as blocked on you, then
+realised the thing I was protecting against does not exist.
 
-**My weak preference is (1)**, on the grounds that the unit really is a Gradle project and pretending
-otherwise is what creates the silent-failure options.
+The fear was that a wrong id would be expensive to correct. It is not, at this tier: a version-sync
+unit is **absent from the baseline** (UNI-04), so no repository stores the string, and renaming it
+costs nobody a re-seed. The only observer is a report consumer matching on `language`, and a
+version-sync language emits no findings to match. A decision that looked irreversible turned out to
+be free, so it did not need your night.
+
+**Still worth your opinion**, just not urgently: if you would rather it were `jvm`, or split by
+guessing at source directories, say so and it is a one-line change.
 
 ### Q-09 — Go is unlisted because nothing is writable
 

@@ -30,7 +30,8 @@ internal static class LanguageProviders
             new JavaLanguageProvider(versionSources),
             new CppLanguageProvider(versionSources),
             new RubyLanguageProvider(versionSources),
-            new PerlLanguageProvider(versionSources)
+            new PerlLanguageProvider(versionSources),
+            new GradleLanguageProvider(versionSources)
         ];
     }
 

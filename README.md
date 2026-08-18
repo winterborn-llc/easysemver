@@ -454,6 +454,7 @@ version decider, which is useful, but it is not the same product.
 | C / C++ | Versioned | a `CMakeLists.txt` | `project(… VERSION …)` |
 | Ruby | Versioned | a `.gemspec` | the gemspec literal, or `VERSION` in `version.rb` |
 | Perl | Versioned | a `Makefile.PL`, `Build.PL` or `dist.ini` | `dist.ini`, and `$VERSION` in every `.pm` |
+| Java / Kotlin / Groovy (Gradle) | Versioned | a `build.gradle` or `build.gradle.kts` | `version = "…"`, or `gradle.properties` |
 
 Why the split: a hand-rolled reader that quietly misses part of your public API turns a breaking
 change into a Patch, on a run nobody is watching. A Versioned language is *visibly* incomplete —
@@ -465,9 +466,12 @@ header does not say what it declares until the preprocessor has run; Ruby's `pri
 call, not a declaration; and Perl's grammar can be changed by the program being parsed. For those
 three there is no honest static answer, so none is invented.
 
+Gradle modules are listed as `gradle` rather than as a language, because a Gradle module does not
+say whether it is Java, Kotlin or Groovy and often contains more than one. Guessing from the source
+directories would be wrong silently, which is worse than being vague accurately.
+
 **Not supported yet, on purpose:** Go, because `go.mod` has no version field — a Go module's version
-*is* its git tag, and EasySemVer does not create tags. Gradle, because a Gradle module does not say
-whether it is Java, Kotlin or Groovy, and guessing would be wrong silently.
+*is* its git tag, and EasySemVer does not create tags.
 
 Adding a package for one of these does not require configuration. If the manifest is there and it
 carries a literal version, it is found.
