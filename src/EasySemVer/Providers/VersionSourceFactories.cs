@@ -19,13 +19,19 @@ namespace Winterborn.Tools.EasySemVer.Providers;
 /// </summary>
 internal static class VersionSourceFactories
 {
-    internal static IReadOnlyList<IDiscoverVersionSources> Create(IRunProcess runProcess)
+    internal static IReadOnlyList<IDiscoverVersionSources> Create(
+        IRunProcess runProcess,
+        bool writesGitTag = false)
     {
         return
         [
             new CsProjVersionSources(),
             new VbProjVersionSources(),
-            new GitTagVersionSources(runProcess),
+            new GitTagVersionSources(
+                runProcess,
+                writesGitTag,
+                SwiftLanguageProvider.SwiftLanguageId,
+                SwiftLanguageProvider.SwiftPackageTargetUnitKind),
             new PodspecVersionSources(),
             new SwiftVersionFileSources(),
             new MarketingVersionSources(),
@@ -107,7 +113,16 @@ internal static class VersionSourceFactories
                 GradleLanguageProvider.GradleUnitKind,
                 "gradle.properties",
                 "gradle.properties",
-                ManifestPatterns.Properties())
+                ManifestPatterns.Properties()),
+
+            // Go's only version location. A go.mod never names its own version - `go get` resolves
+            // against the tag and nothing else - so unlike every other language here, this is not
+            // one source among several (TAG-01).
+            new GitTagVersionSources(
+                runProcess,
+                writesGitTag,
+                GoLanguageProvider.GoLanguageId,
+                GoLanguageProvider.GoUnitKind)
         ];
     }
 

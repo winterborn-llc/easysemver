@@ -10,7 +10,7 @@ Read the ⏳ ones first — those get more expensive the longer they wait.
 
 ## 🔴 Read this one first — I shipped a defect
 
-### Q-00 — the VB work cut an unearned v21.0.0, and I should have prevented it
+### ✅ Q-00 — the VB work cut an unearned v21.0.0 — *answered: leave it*
 
 **What happened.** Adding VB.NET exposed a real bug in the C# reader:
 `GetFullyQualifiedName` cut Roslyn's display string at the first `::`, which for a generic type threw
@@ -47,20 +47,20 @@ correcting it is now a deliberate two-line act rather than an accident.
 
 ## VB.NET — shipped, full signature support
 
-### ⏳ Q-01 — VB units are persisted in `<CsharpProject>` elements. Rename now or never?
+### ✅ Q-01 — VB units are persisted in `<CsharpProject>` elements — *answered: renamed to `<VisualBasicProject>`*
 
-**Decided:** left as `<CsharpProject>`, matching your "reuse C# types" answer.
+**Answered: Visual Basic gets its own name.** A VB unit now writes `<VisualBasicProject>` (VB-08).
+The model stays C#'s per VB-01 — that was the right call and nothing about it changed — but the name
+in the file a human reads is VB's own. Someone opening `EasySemVer.xml` and finding their Visual
+Basic project described as a `<CsharpProject>` would reasonably conclude the tool had misread it.
 
-**Why it is time-sensitive.** No repository has a VB baseline yet, because VB shipped tonight. Right
-now, changing the element name costs nothing. The moment someone runs the tool on a VB project, it
-costs them a forced re-seed (a Major-looking release for a rename nobody made — the G-23 shape).
+Done immediately because the window was closing: no repository had a VB baseline yet, so it was free
+exactly once. C#'s element name is deliberately untouched — renaming *that* would re-seed every
+existing baseline, which is G-26 chosen on purpose.
 
-The options, if you want it changed, are: bump VB's `SignatureVersion` and accept one re-seed for
-early adopters, or write the element as `<DotNetProject>` for VB only while C# keeps its own name.
-The second is odd but free.
-
-**My read:** leave it. The baseline is an internal format, `formatVersion` already gates it, and the
-name is visible only to someone reading the XML. Not worth spending anything on.
+**Left as-is:** the language id stays `vb` rather than `visualbasic`. It is already VB's own name
+rather than C#'s, which was the actual complaint. Say so if you want the long form and it is a
+one-line change — nothing persists it for a Full-tier language except the report's `language` field.
 
 ### Q-02 — VB `Module` is modelled as a class
 
@@ -98,7 +98,7 @@ differs.
 
 ## Cross-cutting
 
-### ⏳ Q-05 — what does "supported" mean in the README?
+### ✅ Q-05 — what does "supported" mean in the README? — *answered: keep the tier as shipped*
 
 This is the one I would most like your answer on, because it shapes how the rest of the languages
 get described.
@@ -119,12 +119,9 @@ stamped across every manifest that already carries one, driven by whatever *is* 
 the README says "supports Go" without qualification, someone will reasonably expect Go breaking
 changes to be detected, and they will not be.
 
-**Decided, so I could keep going:** every language is listed with its tier, in a table, and
-version-sync languages say in plain words that they do not vote on the change type.
-
-**What I need from you:** whether you are happy shipping the version-sync tier at all, or whether a
-language should stay unlisted until its reader exists. If the latter, the work is still not wasted —
-it is the half every reader needs underneath it.
+**Answered: ship it as-is.** Every language is listed with its tier, and the README says in plain
+words that a Versioned language never votes on the change type — including the consequence that a
+repository containing only Versioned languages sees a Patch on every run.
 
 ### Q-06 — a version-sync-only language and the "every run is a release" rule
 
@@ -168,17 +165,22 @@ be free, so it did not need your night.
 **Still worth your opinion**, just not urgently: if you would rather it were `jvm`, or split by
 guessing at source directories, say so and it is a one-line change.
 
-### Q-09 — Go is unlisted because nothing is writable
+### ✅ Q-09 — Go is unlisted because nothing is writable — *answered: O-02 confirmed, Go shipped*
 
 `go.mod` has no version field; a Go module's version *is* its git tag. Reading tags already works.
 Writing one is doc 12 §20 **O-02**, which you have not confirmed — and it is outward-facing and
 effectively irreversible, so I did not decide it for you.
 
-**Decided:** Go stays unlisted rather than shipping a provider that discovers units and changes
-nothing.
+**Answered: O-02 confirmed as specified.** Shipped as TAG-01: `--tag` is opt-in, off by default,
+creates a **local** `v<version>` and never pushes. An existing tag is left alone rather than failing,
+so a re-run is safe (TAG-02).
 
-**If you confirm O-02** (`--tag`, local only, never pushed, off by default), Go becomes worth adding
-and so does a `git-tag` write path for PHP and Python, which mostly version by tag too.
+Go shipped with it, and is the only language whose sole version location is outside its manifest.
+Without `--tag` a Go module is still discovered and still seeds from its highest existing tag — it
+just has nowhere to write, which MVR-04 already treats as ordinary.
+
+**Still open, and smaller:** PHP and Python mostly version by tag too, and neither is registered
+against the tag source yet. Say the word and it is two registration lines each.
 
 ### Q-10 — should the Full-tier providers move onto `ManifestLanguageProvider`'s loops?
 

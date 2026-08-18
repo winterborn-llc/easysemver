@@ -21,7 +21,7 @@ It reads **C#**, **VB.NET** and **Swift** — `.csproj` and `.vbproj` projects, 
 targets — and it reads them from source rather than from compiled assemblies, so it does not care
 whether your build has run yet.
 
-It also **versions** nine more ecosystems without reading them. See
+It also **versions** ten more ecosystems without reading them. See
 [Languages](#languages) for exactly which, and for what the difference means.
 
 **It reads the objects you declared, and only those.** Types, members, signatures, conformances,
@@ -451,6 +451,7 @@ version decider, which is useful, but it is not the same product.
 | Dart / Flutter | Versioned | a `pubspec.yaml` | top-level `version:` |
 | Java | Versioned | a `pom.xml` | `/project/version` (Maven only) |
 | PHP | Versioned | a `composer.json` | `"version"`, if you declare one |
+| Go | Versioned | a `go.mod` | a git tag — see below |
 | C / C++ | Versioned | a `CMakeLists.txt` | `project(… VERSION …)` |
 | Ruby | Versioned | a `.gemspec` | the gemspec literal, or `VERSION` in `version.rb` |
 | Perl | Versioned | a `Makefile.PL`, `Build.PL` or `dist.ini` | `dist.ini`, and `$VERSION` in every `.pm` |
@@ -470,8 +471,9 @@ Gradle modules are listed as `gradle` rather than as a language, because a Gradl
 say whether it is Java, Kotlin or Groovy and often contains more than one. Guessing from the source
 directories would be wrong silently, which is worse than being vague accurately.
 
-**Not supported yet, on purpose:** Go, because `go.mod` has no version field — a Go module's version
-*is* its git tag, and EasySemVer does not create tags.
+**Go is the odd one out.** A `go.mod` has no version field — a Go module's version *is* its git tag,
+because `go get` resolves against the tag and nothing else. So Go seeds from your highest existing
+tag like every other language, but it has nowhere to write unless you pass `--tag`.
 
 Adding a package for one of these does not require configuration. If the manifest is there and it
 carries a literal version, it is found.
@@ -489,8 +491,8 @@ written back to every one of them that already exists.
 | Swift / Xcode | `CFBundleShortVersionString` in `Info.plist` | ✅ | ✅ |
 | Swift | `s.version` in a `.podspec` | ✅ | ✅ |
 | Swift | a `*Version.swift` constant, e.g. `static let version = "1.2.3"` | ✅ | ✅ |
-| the nine Versioned languages | their own manifest, per the [Languages](#languages) table | ✅ | ✅ |
-| any | git tags matching `v?MAJOR.MINOR.PATCH` | ✅ | ❌ never |
+| the Versioned languages | their own manifest, per the [Languages](#languages) table | ✅ | ✅ |
+| any | git tags matching `v?MAJOR.MINOR.PATCH` | ✅ | only with `--tag` |
 
 A manifest is only written where the version is already a **literal**. A `composer.json` with no
 `version` key, a `pyproject.toml` using `dynamic = ["version"]`, a Maven module inheriting its
@@ -508,8 +510,14 @@ Reading it would be a disaster: the value is routinely a bare integer like `87`,
 the whole folder's version up with no way back down. `CFBundleVersion` in `Info.plist` is usually
 `$(CURRENT_PROJECT_VERSION)` and follows from it.
 
-Git tags are read as a seed but never written: creating a tag is an outward-facing act EasySemVer
-will not take on your behalf.
+Git tags are read as a seed on every run. Writing one needs `--tag`, and even then EasySemVer
+creates a **local** tag and never pushes it — a local tag is something you can delete, a pushed one
+is not. Publishing it is left to whatever already publishes your releases; the GitHub Action's own
+`tag: true` step does that, after your tests rather than before them. If the tag already exists the
+run leaves it alone rather than failing, so re-running is safe.
+
+`--tag` is what makes Go versionable at all, and it is worth having for PHP and Python too, since
+both commonly version by tag rather than by a literal in the manifest.
 
 ### Segment ceilings, and the 255 limit
 

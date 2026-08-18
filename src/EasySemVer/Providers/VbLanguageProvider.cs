@@ -26,11 +26,16 @@ namespace Winterborn.Tools.EasySemVer.Providers;
 /// in the tool is a parse front end (<see cref="VbUnitBuilder"/>) and this file.
 /// </para>
 /// <para>
-/// The cost is named rather than hidden: VB signatures live in types spelled <c>Csharp*</c> and are
-/// persisted in <c>&lt;CsharpProject&gt;</c> elements, which is exactly the "one language described
-/// in another's vocabulary" that ML-01 forbids. It is allowed here, and only here, because the
-/// vocabulary is really the CLR's rather than C#'s. A language that does not compile to that
-/// metadata gets its own topology, no matter how similar it looks.
+/// The cost is named rather than hidden: VB signatures live in types spelled <c>Csharp*</c>, which
+/// is exactly the "one language described in another's vocabulary" that ML-01 forbids. It is allowed
+/// here, and only here, because the vocabulary is really the CLR's rather than C#'s. A language that
+/// does not compile to that metadata gets its own topology, no matter how similar it looks.
+/// </para>
+/// <para>
+/// The cost stops at the type names. In the baseline - the surface a human actually reads - a VB
+/// unit is a <c>&lt;VisualBasicProject&gt;</c> (VB-08), because someone opening EasySemVer.xml and
+/// finding their Visual Basic project described as a <c>&lt;CsharpProject&gt;</c> would reasonably
+/// conclude the tool had misread it.
 /// </para>
 /// <para>
 /// What is <em>not</em> shared is anything keyed by language: VB owns its own unit-existence rules
@@ -43,6 +48,18 @@ internal class VbLanguageProvider(
     internal const string VbLanguageId = "vb";
 
     internal const string VbprojUnitKind = "vbproj";
+
+    /// <summary>
+    /// What a VB unit's signature is called in the baseline. The model is C#'s (VB-01) but the
+    /// name is not: a reader opening EasySemVer.xml and finding their Visual Basic project
+    /// described as a &lt;CsharpProject&gt; would reasonably conclude the tool had misread it.
+    /// <para>
+    /// Renaming this is a BAS-07 event and it is free exactly once - now, before any repository has
+    /// a VB baseline. After that it would cost every VB consumer a forced re-seed, which is why it
+    /// was decided rather than deferred (VB-08).
+    /// </para>
+    /// </summary>
+    private const string SignatureElementName = "VisualBasicProject";
 
     /// <inheritdoc cref="CsharpLanguageProvider"/>
     private static readonly IEvaluateUnitExistence[] ExistenceRules =
@@ -155,12 +172,21 @@ internal class VbLanguageProvider(
     {
         var project = unit.Signature as CsharpProject ?? new CsharpProject(unit.UnitId);
         project.SortForPersistence();
-        return project.SerializeToElement();
+
+        // Renaming the finished element rather than handing XmlSerializer an XmlRootAttribute: that
+        // overload is the one .NET does not cache, so it would generate a serialization assembly on
+        // every unit read, to change one string.
+        var element = project.SerializeToElement();
+        element.Name = SignatureElementName;
+        return element;
     }
 
     public object ReadSignature(XElement element)
     {
-        return element.DeserializeElement<CsharpProject>();
+        // Back to the name the serializer derives from the type, on a copy, so the caller's parsed
+        // baseline is not mutated by having been read.
+        var forDeserialisation = new XElement(element) { Name = nameof(CsharpProject) };
+        return forDeserialisation.DeserializeElement<CsharpProject>();
     }
 
     private string GetProjectFilePath(IPackageableUnit unit)

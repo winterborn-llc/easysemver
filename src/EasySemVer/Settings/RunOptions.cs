@@ -20,6 +20,8 @@ internal class RunOptions
 
     private const string VnextTokenNameFlag = "--vnext-token-name";
 
+    private const string TagFlag = "--tag";
+
     /// <summary>FLD-01 - the folder handed to the CLI is the root, full stop.</summary>
     internal string FolderRoot { get; private init; } = string.Empty;
 
@@ -82,6 +84,18 @@ internal class RunOptions
     /// </summary>
     internal string VersionTokenName { get; private init; } = MagicValues.DefaultVersionTokenName;
 
+    /// <summary>
+    /// TAG-01 (§20 O-02, confirmed 2026-08-17) - whether the run may create a **local** git tag for
+    /// the new version. Off by default and never pushed.
+    /// <para>
+    /// Reading tags as a seed has always been safe. Writing one is the only outward-facing act this
+    /// tool can take, which is why it is opt-in rather than following MVR-05 like every other
+    /// location: a tag is how several ecosystems - Go above all - state a release, and creating one
+    /// nobody asked for is not a thing to do quietly.
+    /// </para>
+    /// </summary>
+    internal bool WritesGitTag { get; private init; }
+
     internal static RunOptions Parse(params string[] args)
     {
         return Parse(Environment.GetEnvironmentVariable, args);
@@ -100,6 +114,7 @@ internal class RunOptions
         int? maximumPatch = null;
         var doNotExclude = new List<string>();
         var versionTokenName = MagicValues.DefaultVersionTokenName;
+        var writesGitTag = false;
 
         // The flag whose value the next argument is, or null when the next argument is a flag or
         // the directory. One field rather than one bool per option, now that three flags take one.
@@ -143,6 +158,12 @@ internal class RunOptions
             if (string.Equals(arg, DryRunFlag, StringComparison.OrdinalIgnoreCase))
             {
                 isDryRun = true;
+                continue;
+            }
+
+            if (string.Equals(arg, TagFlag, StringComparison.OrdinalIgnoreCase))
+            {
+                writesGitTag = true;
                 continue;
             }
 
@@ -234,6 +255,7 @@ internal class RunOptions
         {
             FolderRoot = new DirectoryInfo(folderRoot).FullName,
             IsDryRun = isDryRun,
+            WritesGitTag = writesGitTag,
             JsonReportPath = jsonReportPath,
             WritesGitHubActionsReport = writesGitHubActionsReport,
             MaximumMinor = maximumMinor,

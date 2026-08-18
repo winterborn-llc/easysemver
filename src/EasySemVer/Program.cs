@@ -19,7 +19,7 @@ public static class Program
         try
         {
             var options = RunOptions.Parse(args);
-            var providers = LanguageProviders.Create(new ProcessRunner());
+            var providers = LanguageProviders.Create(new ProcessRunner(), options.WritesGitTag);
             VersioningRun.Execute(options, providers);
             return 0;
         }

@@ -86,12 +86,46 @@ public class TestSwiftVersionSources : IDisposable
         Assert.Null(GitTagVersionSource.GetHighestTag(["latest", "release-candidate"]));
     }
 
+    /// <summary>
+    /// TAG-01 - off by default. This used to assert "never writable"; §20 O-02 was confirmed on
+    /// 2026-08-17 and writing is now opt-in, so what has to hold is that nothing writes a tag
+    /// unless a caller asked for it in so many words.
+    /// </summary>
     [Fact]
-    public void GitTagSourceIsNeverWritable()
+    public void GitTagSourceIsNotWritableByDefault()
     {
-        IVersionSource source = new GitTagVersionSource(new NeverRunsProcess(), this._folderRoot);
+        IVersionSource source = new GitTagVersionSource(
+            new NeverRunsProcess(),
+            this._folderRoot,
+            isWritable: false);
 
         Assert.False(source.IsWritable);
+    }
+
+    /// <summary>
+    /// And that a run which did not ask for a tag cannot get one by accident: the source is handed
+    /// a process runner that fails the test if it is called at all.
+    /// </summary>
+    [Fact]
+    public void WritingWithoutTheFlagRunsNoGitCommand()
+    {
+        IVersionSource source = new GitTagVersionSource(
+            new NeverRunsProcess(),
+            this._folderRoot,
+            isWritable: false);
+
+        source.Write(new Winterborn.Tools.EasySemVer.DataObject.Version("1.2.3"));
+    }
+
+    [Fact]
+    public void GitTagSourceIsWritableWhenOptedIn()
+    {
+        IVersionSource source = new GitTagVersionSource(
+            new NeverRunsProcess(),
+            this._folderRoot,
+            isWritable: true);
+
+        Assert.True(source.IsWritable);
     }
 
     private class NeverRunsProcess : IRunProcess

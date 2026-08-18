@@ -52,6 +52,7 @@ reused rather than restated.
 | Dart | Version-sync | `pubspec.yaml` | top-level `version:` | §4 |
 | PHP | Version-sync | `composer.json` | `"version"`, usually absent | §4 |
 | Java | Version-sync | `pom.xml` | `/project/version` | §4, Maven only |
+| Go | Version-sync | `go.mod` | git tag only, `--tag` to write | §5 |
 | C / C++ | Version-sync | `CMakeLists.txt` | `project(… VERSION …)` | §4, likely permanent |
 | Ruby | Version-sync | `*.gemspec` | gemspec literal, `VERSION` in version.rb | §4, likely permanent |
 | Perl | Version-sync | `Makefile.PL`, `Build.PL`, `dist.ini` | `dist.ini` version, `$VERSION` in every .pm | §4, permanent |
@@ -146,11 +147,36 @@ package, and discovering it twice would version it twice and read as two units a
 time anyone upgraded. Manifests are searched in declared name order then path order, so the same one
 claims the directory on every machine (BAS-04).
 
-**LNG-10 — Go is not listed, because there is nothing to write.** ℹ️
-`go.mod` carries no version field; a Go module's version *is* its git tag. Reading tags already works
-(`GitTagVersionSources`), but writing one is §20 O-02 in doc 12 — still unconfirmed, outward-facing
-and effectively irreversible. Until that is decided, a Go provider would discover units and change
-nothing, so listing Go would promise more than it delivers.
+**LNG-10 — Go's only version location is a git tag.** ✅ required *(superseded its own "not listed"
+status, 2026-08-17, when O-02 was confirmed)*
+`go.mod` carries no version field; a Go module's version *is* its git tag, because `go get` resolves
+against the tag and nothing else. Go is therefore the only language here whose single version source
+is outside its manifest, and the only one that writes nothing at all unless `--tag` is passed.
+
+Without the flag a Go module is still discovered and still seeds the run from its highest existing
+tag. It simply has nowhere to write, which MVR-04 already treats as an ordinary outcome.
+
+## 5. Writing git tags
+
+**TAG-01 — Tag writing is opt-in, local, and never pushed.** ✅ required *(doc 12 §20 O-02,
+confirmed 2026-08-17)*
+`--tag` SHALL permit a run to create a local `v<version>` tag. It SHALL default to off, and it SHALL
+NOT push, ever.
+
+Reading a tag as a seed has always been safe. Writing one is the only **outward-facing** act this
+tool can take, which is why it does not simply follow MVR-05 like every other location. The
+local-only rule is what makes it acceptable: a local tag is deletable by whoever ran the command, a
+pushed one is not. Publishing is left to whatever already publishes releases — in this repository,
+the Action's own tag step, which runs *after* the tests rather than before them.
+
+**TAG-02 — An existing tag is left alone, not an error.** ✅ required
+A repeated run recomputes the same version from the same source and therefore wants a tag that
+already exists. `git tag` fails on that. Failing the run there would make a repeat invocation an
+error over a tag that already says exactly what this run wanted it to say, so the tag is checked
+first and skipped if present.
+
+ℹ️ Everything else about tags stays as it was: a folder that is not a checkout is an ordinary input,
+not a failure, and the tag list is still read once per run rather than once per unit.
 
 ## 3. VB.NET
 
@@ -210,6 +236,18 @@ and it is what a VB developer reads.
 The one case it bites is a project converted in place from C# to VB under the same project name:
 every primitive-typed member reads as retyped, and the run is Major. The rewrite was already a
 Major, so this is recorded rather than fixed.
+
+**VB-08 — A VB unit is named for VB in the baseline.** ✅ required *(decided 2026-08-17)*
+A VB unit's signature SHALL be written as `<VisualBasicProject>`, not `<CsharpProject>`.
+
+The model is C#'s (VB-01) and stays C#'s; what does not follow is the name in the file a human
+reads. Someone opening `EasySemVer.xml` and finding their Visual Basic project described as a
+`<CsharpProject>` would reasonably conclude the tool had misread it.
+
+ℹ️ This is a BAS-07 event and it was free exactly once — before any repository had a VB baseline,
+which is why it was decided immediately rather than deferred. After that it would have cost every VB
+consumer a forced re-seed. C#'s element name is deliberately untouched: renaming *that* would re-seed
+every existing baseline, which is G-26 chosen on purpose.
 
 ### Fix carried by this work
 

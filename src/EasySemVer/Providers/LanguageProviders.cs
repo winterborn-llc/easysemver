@@ -9,9 +9,11 @@ namespace Winterborn.Tools.EasySemVer.Providers;
 /// </summary>
 internal static class LanguageProviders
 {
-    internal static IReadOnlyList<ILanguageProvider> Create(IRunProcess runProcess)
+    internal static IReadOnlyList<ILanguageProvider> Create(
+        IRunProcess runProcess,
+        bool writesGitTag = false)
     {
-        var versionSources = VersionSourceFactories.Create(runProcess);
+        var versionSources = VersionSourceFactories.Create(runProcess, writesGitTag);
         return
         [
             // Full tier (LNG-01): discovered, read, classified, stamped.
@@ -31,7 +33,8 @@ internal static class LanguageProviders
             new CppLanguageProvider(versionSources),
             new RubyLanguageProvider(versionSources),
             new PerlLanguageProvider(versionSources),
-            new GradleLanguageProvider(versionSources)
+            new GradleLanguageProvider(versionSources),
+            new GoLanguageProvider(versionSources)
         ];
     }
 
