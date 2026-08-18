@@ -17,9 +17,12 @@ Roughly eighty rules sit behind those three lines; [what counts as a change](#wh
 has the shape of them and the specs have the tables. Every successful run increments by at least a
 Patch, because it assumes it is running for a release.
 
-It reads **C#** and **Swift** — `.csproj` projects, SwiftPM targets, Xcode targets — and it reads
-them from source rather than from compiled assemblies, so it does not care whether your build has
-run yet.
+It reads **C#**, **VB.NET** and **Swift** — `.csproj` and `.vbproj` projects, SwiftPM targets, Xcode
+targets — and it reads them from source rather than from compiled assemblies, so it does not care
+whether your build has run yet.
+
+It also **versions** nine more ecosystems without reading them. See
+[Languages](#languages) for exactly which, and for what the difference means.
 
 **It reads the objects you declared, and only those.** Types, members, signatures, conformances,
 as they are written down. It does not interpret your logic, so an API you assemble at runtime is
@@ -424,6 +427,51 @@ value is how a team opts a location in:
 Add as many or as few as you want kept in sync. If they disagree, the highest wins and everything
 converges on it from the next run onwards.
 
+## Languages
+
+Languages come in two tiers, and the difference is worth understanding before you rely on either.
+
+**Read** languages are the product as described above: EasySemVer finds their packages, reads their
+public API, decides Major/Minor/Patch, and stamps the result.
+
+**Versioned** languages are found and stamped, but **never read** — so they never contribute to the
+Major/Minor/Patch decision. In a repository that mixes tiers, the change type is decided by the
+Read languages and the resulting version is written into everything. In a repository with *only*
+Versioned languages, every run is a Patch: EasySemVer becomes a version stamper rather than a
+version decider, which is useful, but it is not the same product.
+
+| Language | Tier | Package is | Version lives in |
+|---|---|---|---|
+| C# | **Read** | a `.csproj` | `AssemblyVersion`, `PackageVersion`, `FileVersion` |
+| VB.NET | **Read** | a `.vbproj` | the same MSBuild properties |
+| Swift | **Read** | a SwiftPM or Xcode target | six locations, below |
+| JavaScript / TypeScript | Versioned | a `package.json` | `"version"` |
+| Rust | Versioned | a `Cargo.toml` | `[package] version` |
+| Python | Versioned | a `pyproject.toml` | `[project]` or `[tool.poetry] version` |
+| Dart / Flutter | Versioned | a `pubspec.yaml` | top-level `version:` |
+| Java | Versioned | a `pom.xml` | `/project/version` (Maven only) |
+| PHP | Versioned | a `composer.json` | `"version"`, if you declare one |
+| C / C++ | Versioned | a `CMakeLists.txt` | `project(… VERSION …)` |
+| Ruby | Versioned | a `.gemspec` | the gemspec literal, or `VERSION` in `version.rb` |
+| Perl | Versioned | a `Makefile.PL`, `Build.PL` or `dist.ini` | `dist.ini`, and `$VERSION` in every `.pm` |
+
+Why the split: a hand-rolled reader that quietly misses part of your public API turns a breaking
+change into a Patch, on a run nobody is watching. A Versioned language is *visibly* incomplete —
+this table says so, and so does the run log, once per package. A bad reader would be *invisibly*
+wrong, and this tool's whole job is to be trusted with a number nobody double-checks.
+
+C++, Ruby and Perl are expected to stay Versioned permanently rather than provisionally. A C++
+header does not say what it declares until the preprocessor has run; Ruby's `private` is a method
+call, not a declaration; and Perl's grammar can be changed by the program being parsed. For those
+three there is no honest static answer, so none is invented.
+
+**Not supported yet, on purpose:** Go, because `go.mod` has no version field — a Go module's version
+*is* its git tag, and EasySemVer does not create tags. Gradle, because a Gradle module does not say
+whether it is Java, Kotlin or Groovy, and guessing would be wrong silently.
+
+Adding a package for one of these does not require configuration. If the manifest is there and it
+carries a literal version, it is found.
+
 ## Version locations
 
 The starting version is the **highest** value found across all of these, and the new version is
@@ -431,13 +479,23 @@ written back to every one of them that already exists.
 
 | Language | Location | Read | Write |
 |----------|----------|:----:|:-----:|
-| C# | `.csproj` `AssemblyVersion`, `PackageVersion`, `FileVersion` | ✅ | ✅ |
+| C# / VB.NET | `.csproj` / `.vbproj` `AssemblyVersion`, `PackageVersion`, `FileVersion` | ✅ | ✅ |
 | Swift / Xcode | `MARKETING_VERSION` in `project.pbxproj` | ✅ | ✅ |
 | Swift / Xcode | `CURRENT_PROJECT_VERSION` in `project.pbxproj` | ❌ never | ✅ |
 | Swift / Xcode | `CFBundleShortVersionString` in `Info.plist` | ✅ | ✅ |
 | Swift | `s.version` in a `.podspec` | ✅ | ✅ |
 | Swift | a `*Version.swift` constant, e.g. `static let version = "1.2.3"` | ✅ | ✅ |
+| the nine Versioned languages | their own manifest, per the [Languages](#languages) table | ✅ | ✅ |
 | any | git tags matching `v?MAJOR.MINOR.PATCH` | ✅ | ❌ never |
+
+A manifest is only written where the version is already a **literal**. A `composer.json` with no
+`version` key, a `pyproject.toml` using `dynamic = ["version"]`, a Maven module inheriting its
+version from a parent — all are left exactly as they are. EasySemVer updates version locations; it
+never creates one, in any language.
+
+It also never touches a version that is not yours. A manifest mentions versions it does not own — a
+dependency's, a parent POM's, an `engines` constraint — and only the package's own version is
+rewritten.
 
 `CURRENT_PROJECT_VERSION` is **written but never read**. Writing it means the build counter moves
 on every run without anyone maintaining it by hand, which is what Xcode and the App Store want.
