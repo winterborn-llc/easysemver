@@ -314,8 +314,10 @@ self-limiting — each consumer pays exactly one unearned Major, once, on first 
 again. That is the same call G-23 made about v17.0.0: the release is real and immutable, and what
 gets fixed is the next one.
 
-⚠️ **The lesson is the requirement, and it is still not enforced.** Nothing in the build fails when
-a provider changes how it words a signature without bumping its `SignatureVersion`. A test that
-extracts a fixture and compares against a checked-in expected signature would have caught this at
-the moment the wording changed, rather than one release later. That test does not exist.
+✅ **The lesson is now enforced.** `TestSignatureWording` extracts a fixture dense with the
+constructs whose rendering has moved before - nested generics, arrays, nullable value types, tuples,
+a generic base class - and compares the serialized signature against a checked-in expected file. It
+fails the build the moment the wording changes, naming the only two correct responses: restore it,
+or bump `SignatureVersion` and regenerate in the same commit. Verified by mutation: flipping the
+global-namespace style back to `Included` fails it.
 *Relates to:* BAS-07, VB-07, SIG-01, G-16, G-23, G-24.

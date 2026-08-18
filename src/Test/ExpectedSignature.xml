@@ -1,0 +1,75 @@
+<CsharpProject name="Widgets">
+  <Classes>
+    <Class name="Widgets.Registry" declaringType="" static="false" abstract="false" sealed="false" base="System.Collections.Generic.List&lt;System.Collections.Generic.Dictionary&lt;string, System.Collections.Generic.IReadOnlyList&lt;int&gt;&gt;&gt;">
+      <Implements />
+      <GenericParameters />
+      <Methods>
+        <Method name=".ctor" returns="void">
+          <Overrides>
+            <Override returns="void" static="false" virtual="false" abstract="false" override="false" sealed="false" hasDefaultImplementation="false">
+              <GenericParameters />
+              <Parameters />
+            </Override>
+          </Overrides>
+        </Method>
+        <Method name="Register" returns="void">
+          <Overrides>
+            <Override returns="void" static="false" virtual="false" abstract="false" override="false" sealed="false" hasDefaultImplementation="false">
+              <GenericParameters>
+                <GenericParameter name="TItem" constraints="" />
+              </GenericParameters>
+              <Parameters>
+                <Parameter name="item" type="TItem" required="true" refKind="None" params="false" />
+                <Parameter name="tags" type="System.ReadOnlySpan&lt;string&gt;" required="true" refKind="None" params="true" />
+              </Parameters>
+            </Override>
+          </Overrides>
+        </Method>
+      </Methods>
+      <Properties>
+        <Property name="ByName" type="System.Collections.Generic.Dictionary&lt;string, System.Collections.Generic.List&lt;Widgets.Widget&gt;&gt;" readable="true" writable="true" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
+        <Property name="Counts" type="int?[]" readable="true" writable="true" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
+        <Property name="Summary" type="(string Name, int Count)" readable="true" writable="true" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
+      </Properties>
+      <Fields />
+      <Events />
+    </Class>
+    <Class name="Widgets.Widget" declaringType="" static="false" abstract="false" sealed="false" base="">
+      <Implements />
+      <GenericParameters />
+      <Methods>
+        <Method name=".ctor" returns="void">
+          <Overrides>
+            <Override returns="void" static="false" virtual="false" abstract="false" override="false" sealed="false" hasDefaultImplementation="false">
+              <GenericParameters />
+              <Parameters />
+            </Override>
+          </Overrides>
+        </Method>
+      </Methods>
+      <Properties>
+        <Property name="Name" type="string" readable="true" writable="true" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
+      </Properties>
+      <Fields />
+      <Events />
+    </Class>
+  </Classes>
+  <Interfaces>
+    <Interface name="Widgets.IGadget&lt;T&gt;" declaringType="" static="false" abstract="true" sealed="false" base="">
+      <Implements />
+      <GenericParameters>
+        <GenericParameter name="T" constraints="class" />
+      </GenericParameters>
+      <Methods />
+      <Properties>
+        <Property name="Items" type="System.Collections.Generic.IReadOnlyList&lt;T&gt;" readable="true" writable="false" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
+      </Properties>
+      <Fields />
+      <Events />
+    </Interface>
+  </Interfaces>
+  <Structs />
+  <Records />
+  <Enums />
+  <Delegates />
+</CsharpProject>

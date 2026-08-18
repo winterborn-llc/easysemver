@@ -32,12 +32,16 @@ Major would pay again, while those who have not would trade a Major for a Minor.
 self-limiting. It is also the call G-23 made about v17.0.0: the release is real and immutable, and
 what gets fixed is the next one. Written up as **G-26**.
 
-**The thing actually worth your time.** Nothing in the build fails when a provider changes how it
-words a signature without bumping `SignatureVersion`. A test that extracts a fixture and compares it
-against a checked-in expected signature would have caught this the moment the wording changed rather
-than a release later. **That test does not exist, and I think it should.** I did not add it
-unsupervised because it means choosing what the canonical fixture is, and getting that wrong bakes in
-a wrong expectation.
+**The thing actually worth your time — now done.** Nothing in the build failed when a provider
+changed how it words a signature. `TestSignatureWording` now does: it extracts a fixture dense with
+the constructs whose rendering has moved before and compares against a checked-in expected file,
+failing with the only two correct responses spelled out. I mutation-tested it by flipping the
+global-namespace style back, and it catches exactly the change that caused this.
+
+The judgement call I could not avoid: the expected file is **generated from current behaviour**, so
+it asserts the wording did not change, not that it is right. That is the honest scope of a golden
+test, and it is what would have caught G-26. If you think today's wording is wrong somewhere,
+correcting it is now a deliberate two-line act rather than an accident.
 
 ---
 
