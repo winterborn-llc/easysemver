@@ -38,6 +38,11 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.CodeAnalysis.Common" Version="5.0.0" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="5.0.0" />
+    <!-- VB.NET reaches the same INamedTypeSymbol model C# does, so this buys a whole language for
+         a parse front end: only the syntax trees and the compilation differ, and everything
+         downstream of them is shared. Keep the version in step with the C# one - they resolve a
+         common Microsoft.CodeAnalysis.Common and a mismatch is a load failure at run time. -->
+    <PackageReference Include="Microsoft.CodeAnalysis.VisualBasic" Version="5.0.0" />
   </ItemGroup>
   <ItemGroup>
     <None Remove="Resources/logo.png" />

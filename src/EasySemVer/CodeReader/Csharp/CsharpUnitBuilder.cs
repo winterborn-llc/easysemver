@@ -36,22 +36,43 @@ internal static class CsharpUnitBuilder
             return projectDef;
         }
 
-        // A minimal reference set: enough for object, LINQ and Console to resolve. Types from
-        // other projects and NuGet packages stay as error symbols with their written names,
-        // which is stable run to run even though it is not namespace-qualified (SIG-01, G-16).
-        var references = new List<MetadataReference>
-        {
-            MetadataReference.CreateFromFile(typeof(object).GetTypeInfo().Assembly.Location),
-            MetadataReference.CreateFromFile(typeof(Enumerable).GetTypeInfo().Assembly.Location),
-            MetadataReference.CreateFromFile(typeof(Console).GetTypeInfo().Assembly.Location)
-        };
-
         var compilation = CSharpCompilation.Create(
             assemblyName: projectDef.Name,
             syntaxTrees: syntaxTrees,
-            references: references,
+            references: CreateReferences(),
             options: new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
 
+        return AppendCompilation(projectDef, compilation);
+    }
+
+    /// <summary>
+    /// A minimal reference set: enough for object, LINQ and Console to resolve. Types from other
+    /// projects and NuGet packages stay as error symbols with their written names, which is stable
+    /// run to run even though it is not namespace-qualified (SIG-01, G-16).
+    /// </summary>
+    internal static List<MetadataReference> CreateReferences()
+    {
+        return
+        [
+            MetadataReference.CreateFromFile(typeof(object).GetTypeInfo().Assembly.Location),
+            MetadataReference.CreateFromFile(typeof(Enumerable).GetTypeInfo().Assembly.Location),
+            MetadataReference.CreateFromFile(typeof(Console).GetTypeInfo().Assembly.Location)
+        ];
+    }
+
+    /// <summary>
+    /// The half of extraction that is not C#'s. It takes a <see cref="Compilation"/> and reads
+    /// symbols, and Roslyn builds the same <c>INamedTypeSymbol</c> model from Visual Basic as it
+    /// does from C# - so <see cref="Vb.VbUnitBuilder"/> supplies its own syntax trees and shares
+    /// everything from here down.
+    /// <para>
+    /// That is the whole reason a .NET language costs a front end rather than a provider's worth of
+    /// modelling: the two languages compile to one metadata format, and this walks the metadata's
+    /// shape rather than either language's grammar.
+    /// </para>
+    /// </summary>
+    internal static CsharpProject AppendCompilation(CsharpProject projectDef, Compilation compilation)
+    {
         // Walk the symbols this project actually declares. The compilation's global namespace is
         // the merged view across every reference, so walking it would pull public types out of
         // System.Console.dll and friends into this project's signature (Internal.Console was

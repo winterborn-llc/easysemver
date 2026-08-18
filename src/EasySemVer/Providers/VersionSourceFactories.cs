@@ -1,5 +1,6 @@
 using Winterborn.Tools.EasySemVer.CodeReader.Csharp;
 using Winterborn.Tools.EasySemVer.CodeReader.Swift;
+using Winterborn.Tools.EasySemVer.CodeReader.Vb;
 using Winterborn.Tools.EasySemVer.DataObject;
 using Winterborn.Tools.EasySemVer.Interfaces;
 
@@ -22,6 +23,7 @@ internal static class VersionSourceFactories
         return
         [
             new CsProjVersionSources(),
+            new VbProjVersionSources(),
             new GitTagVersionSources(runProcess),
             new PodspecVersionSources(),
             new SwiftVersionFileSources(),
