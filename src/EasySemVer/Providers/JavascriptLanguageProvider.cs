@@ -1,3 +1,4 @@
+using Winterborn.Tools.EasySemVer.DataObject;
 using Winterborn.Tools.EasySemVer.Interfaces;
 
 namespace Winterborn.Tools.EasySemVer.Providers;
@@ -17,6 +18,14 @@ internal class JavascriptLanguageProvider(
     internal const string JavascriptLanguageId = "javascript";
 
     internal const string JavascriptUnitKind = "npm-package";
+
+    /// <summary>
+    /// FLD-06. `node_modules` is the one name in the old global list that genuinely cannot mean
+    /// anything else, so it stays unconditional - it is simply owned by the language a reader would
+    /// look under, rather than by a shared list.
+    /// </summary>
+    public override IReadOnlyList<DirectoryExclusion> DirectoryExclusions =>
+        [DirectoryExclusion.Always("node_modules")];
 
     public override string LanguageId => JavascriptLanguageId;
 

@@ -1,3 +1,4 @@
+using Winterborn.Tools.EasySemVer.DataObject;
 using Winterborn.Tools.EasySemVer.Interfaces;
 
 namespace Winterborn.Tools.EasySemVer.Providers;
@@ -24,6 +25,14 @@ internal class CppLanguageProvider(
     internal const string CppLanguageId = "cpp";
 
     internal const string CppUnitKind = "cmake-project";
+
+    /// <summary>
+    /// FLD-06 - CMake's conventional out-of-source build directory. `build` is the most contested
+    /// name in the old global list: it is build output beside a CMakeLists or a build.gradle, and
+    /// somebody's build scripts anywhere else.
+    /// </summary>
+    public override IReadOnlyList<DirectoryExclusion> DirectoryExclusions =>
+        [DirectoryExclusion.Beside("build", "CMakeLists.txt")];
 
     public override string LanguageId => CppLanguageId;
 

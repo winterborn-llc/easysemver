@@ -72,6 +72,13 @@ internal class VbLanguageProvider(
 
     public string LanguageId => VbLanguageId;
 
+    /// <summary>FLD-06 - the same MSBuild output, vouched for by a .vbproj.</summary>
+    public IReadOnlyList<DirectoryExclusion> DirectoryExclusions =>
+    [
+        DirectoryExclusion.Beside("bin", "*.vbproj"),
+        DirectoryExclusion.Beside("obj", "*.vbproj")
+    ];
+
     public IReadOnlyList<IPackageableUnit> Discover(string folderRoot)
     {
         this._folderRoot = folderRoot;

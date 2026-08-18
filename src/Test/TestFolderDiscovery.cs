@@ -9,6 +9,13 @@ public class TestFolderDiscovery : IDisposable
 {
     private readonly string _folderRoot = Directory.CreateTempSubdirectory("easysemver-discovery").FullName;
 
+    public TestFolderDiscovery()
+    {
+        // FLD-06 - exclusions come from the registered providers now, so a test that skips this is
+        // testing a walk no run performs.
+        Exclusions.BeginRun();
+    }
+
     public void Dispose()
     {
         Directory.Delete(this._folderRoot, recursive: true);
@@ -35,15 +42,18 @@ public class TestFolderDiscovery : IDisposable
         Assert.Equal("app/Widgets.csproj", unit.RelativePath);
     }
 
-    /// <summary>FLD-04 - build output and package caches never contribute units.</summary>
+    /// <summary>
+    /// FLD-04/FLD-06 - build output and package caches never contribute units. The `app/bin` and
+    /// `app/obj` cases sit beside `app/Widgets.csproj`, which is what vouches for them now that
+    /// exclusions are owned by the language rather than global (FLD-07).
+    /// </summary>
     [Theory]
-    [InlineData("bin/Debug/Ghost.csproj")]
-    [InlineData("obj/Ghost.csproj")]
+    [InlineData("app/bin/Debug/Ghost.csproj")]
+    [InlineData("app/obj/Ghost.csproj")]
     [InlineData("app/bin/Ghost.csproj")]
     [InlineData(".packages/some.package/Ghost.csproj")]
     [InlineData(".build/checkouts/dependency/Ghost.csproj")]
     [InlineData("node_modules/thing/Ghost.csproj")]
-    [InlineData("Pods/Ghost.csproj")]
     [InlineData("DerivedData/Ghost.csproj")]
     public void ExcludedDirectoriesAreSkipped(string ghostPath)
     {
@@ -54,6 +64,43 @@ public class TestFolderDiscovery : IDisposable
 
         var unit = Assert.Single(units);
         Assert.Equal("Widgets", unit.UnitId);
+    }
+
+    /// <summary>
+    /// FLD-07, stated as a test because it is the behaviour that changed. A `bin` or `obj` with no
+    /// project file beside it is not provably build output - it is as likely to be somebody's source
+    /// - so it is walked. Anything found there appears as a new unit, which is loud and reviewable,
+    /// where the old global rule hid first-party code silently.
+    /// </summary>
+    [Theory]
+    [InlineData("bin/Debug/Stray.csproj")]
+    [InlineData("obj/Stray.csproj")]
+    public void BuildOutputNamesWithNothingVouchingForThemAreWalked(string strayPath)
+    {
+        this.WriteFile("app/Widgets.csproj");
+        this.WriteFile(strayPath);
+
+        var units = new CsharpLanguageProvider(VersionSourceFactories.Create(new ProcessRunner()))
+            .Discover(this._folderRoot);
+
+        Assert.Equal(["Stray", "Widgets"], units.Select(u => u.UnitId).OrderBy(id => id));
+    }
+
+    /// <summary>
+    /// Pods is Swift's, and needs the Podfile that creates it. Without one, `Pods` is a plausible
+    /// module name and is kept.
+    /// </summary>
+    [Fact]
+    public void PodsIsSkippedOnlyBesideAPodfile()
+    {
+        this.WriteFile("app/Widgets.csproj");
+        this.WriteFile("Pods/Ghost.csproj");
+
+        var provider = new CsharpLanguageProvider(VersionSourceFactories.Create(new ProcessRunner()));
+        Assert.Equal(2, provider.Discover(this._folderRoot).Count);
+
+        this.WriteFile("Podfile");
+        Assert.Single(provider.Discover(this._folderRoot));
     }
 
     /// <summary>
@@ -83,7 +130,7 @@ public class TestFolderDiscovery : IDisposable
 
         try
         {
-            DirectoryExclusions.BeginRun([keep]);
+            Exclusions.BeginRun(keep);
 
             var units = new CsharpLanguageProvider(VersionSourceFactories.Create(new ProcessRunner())).Discover(this._folderRoot);
 
@@ -92,7 +139,7 @@ public class TestFolderDiscovery : IDisposable
         finally
         {
             // The state is thread-scoped and xUnit reuses threads across tests in a collection.
-            DirectoryExclusions.BeginRun([]);
+            Exclusions.BeginRun();
         }
     }
 

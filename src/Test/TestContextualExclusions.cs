@@ -112,14 +112,69 @@ public class TestContextualExclusions : IDisposable
     }
 
     /// <summary>
-    /// FLD-04's frozen list still applies to everyone. Freezing it rather than distributing it is
-    /// what keeps this change from altering any existing repository's discovery.
+    /// FLD-07 - the names that used to be global now belong to a language and need its evidence.
+    /// The common case is unchanged: MSBuild puts bin and obj beside the project file, CocoaPods
+    /// puts Pods beside the Podfile, Xcode's build sits beside the .xcodeproj.
     /// </summary>
     [Theory]
-    [InlineData("src/Widgets/bin")]
-    [InlineData("src/Widgets/obj")]
-    [InlineData("Pods")]
-    public void TheGlobalListIsUnchanged(string path)
+    [InlineData("src/Widgets/bin", "Widgets.csproj")]
+    [InlineData("src/Widgets/obj", "Widgets.csproj")]
+    [InlineData("src/Widgets/bin", "Widgets.vbproj")]
+    [InlineData("app/Pods", "Podfile")]
+    [InlineData("app/Carthage", "Cartfile")]
+    [InlineData("app/build", "App.xcodeproj")]
+    [InlineData("svc/build", "CMakeLists.txt")]
+    [InlineData("mod/build", "build.gradle.kts")]
+    public void TheMigratedNamesStillSkipWhenVouchedFor(string path, string marker)
+    {
+        Assert.True(DirectoryExclusions.IsExcluded(this.Make(path, marker)));
+    }
+
+    /// <summary>
+    /// And the behaviour that actually changed. Each of these was skipped in every repository
+    /// before; now, with nothing identifying it as build output, it is walked. Anything found
+    /// surfaces as a new unit - loud and reviewable - where the global rule hid first-party code
+    /// silently, which is the failure `Packages` was removed for.
+    /// </summary>
+    [Theory]
+    [InlineData("tools/bin")]
+    [InlineData("scripts/build")]
+    [InlineData("music/Pods")]
+    [InlineData("gear/Carthage")]
+    public void TheMigratedNamesAreKeptWhenNothingVouchesForThem(string path)
+    {
+        Assert.False(DirectoryExclusions.IsExcluded(this.Make(path)));
+    }
+
+    /// <summary>
+    /// The two that survived as unconditional, because neither name can mean anything else. They
+    /// are owned by a language now rather than by a shared list, but they still need no marker.
+    /// </summary>
+    [Theory]
+    [InlineData("anywhere/node_modules")]
+    [InlineData("anywhere/DerivedData")]
+    public void TheUnambiguousNamesStayUnconditional(string path)
+    {
+        Assert.True(DirectoryExclusions.IsExcluded(this.Make(path)));
+    }
+
+    /// <summary>
+    /// FLD-07 - the global list is now empty, and the bar for putting anything back in it is that
+    /// the name cannot mean anything else in any language. This is what would notice a regression
+    /// to the old shape.
+    /// </summary>
+    [Fact]
+    public void NothingIsExcludedGloballyByNameAnyMore()
+    {
+        Assert.Empty(Winterborn.Tools.EasySemVer.Settings.MagicValues.ExcludedDirectoryNames);
+    }
+
+    /// <summary>The leading-dot rule is a convention rather than an ecosystem, and stays global.</summary>
+    [Theory]
+    [InlineData("app/.build")]
+    [InlineData("app/.git")]
+    [InlineData("app/.venv")]
+    public void TheLeadingDotRuleIsStillGlobal(string path)
     {
         Assert.True(DirectoryExclusions.IsExcluded(this.Make(path)));
     }

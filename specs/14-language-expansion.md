@@ -183,15 +183,51 @@ position — build output or vendored source in one ecosystem, ordinary code in 
 them globally would reintroduce the silent-swallow failure at a rate that grows with the language
 count.
 
-**FLD-07 — The pre-existing global list is frozen, not distributed.** ✅ required
-`MagicValues.ExcludedDirectoryNames` keeps `bin`, `obj`, `build`, `DerivedData`, `Pods`, `Carthage`
-and `node_modules` as unconditional, and the leading-dot rule is unchanged.
+**FLD-07 — There is no global exclusion list.** ✅ required
+*(Was "frozen, not distributed" for the length of one commit; superseded 2026-08-17 on the owner's
+instruction to migrate.)*
 
-Moving those to their owning languages would be more consistent and is **deliberately not done**:
-`bin` is currently skipped in every repository, and making it conditional on a neighbouring
-`.csproj` would change what existing repositories discover. Freezing the old list while requiring
-every *new* exclusion to be contextual solves the actual problem — the list growing with the
-language count — at no risk to anyone already using the tool.
+`MagicValues.ExcludedDirectoryNames` is **empty**. Every name that was in it now belongs to the
+language that recognises it, carrying the evidence that identifies it:
+
+| Was global | Now owned by | Vouched for by |
+|---|---|---|
+| `bin`, `obj` | C# / VB.NET | `*.csproj` / `*.vbproj` beside it |
+| `build` | C++ / Gradle / Swift | `CMakeLists.txt` / `build.gradle(.kts)` / `*.xcodeproj` |
+| `Pods` | Swift | `Podfile` |
+| `Carthage` | Swift | `Cartfile` |
+| `DerivedData` | Swift | *unconditional* |
+| `node_modules` | JavaScript | *unconditional* |
+
+Two survive as unconditional because their names cannot mean anything else. The rest could not
+justify it: `bin` and `build` are somebody's source directory somewhere, and `Pods` is a plausible
+module name — which is exactly the test `Packages` failed.
+
+The array is kept rather than deleted so that the one place a name could be excluded for everyone
+still exists and still has to be argued for. `TestContextualExclusions.NothingIsExcludedGloballyByNameAnyMore`
+asserts it is empty, so a regression to the old shape is a build failure rather than a habit.
+
+**What this changed, stated plainly.** A `bin`, `obj`, `build`, `Pods` or `Carthage` with **nothing
+beside it to vouch for it** is now walked where it used to be skipped in every repository. The
+common cases are untouched — MSBuild puts `bin` beside the project file, CocoaPods puts `Pods`
+beside the `Podfile` — but a centralised output directory, or a `build/` full of shell scripts, is
+now entered.
+
+The failure directions are asymmetric and that is why this is the right way round. Walking a
+directory that really was build output costs a walk and finds nothing, because build output contains
+no manifests; and it cannot reach extraction, which only ever scans a project's own directory. Not
+walking a directory that held first-party code hides a unit forever, with nothing in the log to say
+why. `TestFolderDiscovery.BuildOutputNamesWithNothingVouchingForThemAreWalked` states the new
+behaviour as a requirement rather than leaving it as a surprise.
+
+ℹ️ The leading-dot rule stays global. It is a convention rather than an ecosystem — `.git`,
+`.build`, `.packages`, `.swiftpm`, `.venv` — and no language owns it.
+
+ℹ️ Collecting exclusions from the providers means a caller that walks without calling
+`DirectoryExclusions.BeginRun` with them gets **no** exclusions at all, silently. Production is
+safe — `VersioningRun` does it before discovery — but three test classes were quietly walking
+unprotected trees, which is why `Test.Exclusions` now exists to set up a run's worth of state the
+way a run does.
 
 ℹ️ CLI-12 outranks everything, declared or frozen: a name the caller passed to `--do-not-exclude` is
 kept whichever rule would have excluded it.

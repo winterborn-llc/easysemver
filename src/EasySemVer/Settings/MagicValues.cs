@@ -43,29 +43,19 @@ internal static class MagicValues
     internal const string DefaultVersionTokenName = "vnext";
 
     /// <summary>
-    /// FLD-04. With a folder root instead of a solution root, an unexcluded .build/checkouts or
-    /// .packages would pull dependency source into the signature and make every dependency bump a
-    /// Major change. Directories beginning with "." are excluded separately, which covers .git,
-    /// .build, .packages, and .swiftpm.
+    /// FLD-04's list, now empty: every entry moved to the language that recognises it, carrying the
+    /// sibling marker that proves it (FLD-06/FLD-07). What remains global is the leading-dot rule,
+    /// which is a convention rather than an ecosystem - `.git`, `.build`, `.packages`, `.swiftpm`.
     /// <para>
-    /// `Packages` is deliberately absent. It was here as "Xcode's local-package checkout dir",
-    /// which conflates two things: SwiftPM cloned dependencies into `Packages/` in the Swift 3 era
-    /// and has used `.build/checkouts/` since, while `Packages/` today is where a modular Xcode app
-    /// keeps its *own* local packages. Excluding it defended a dead convention and silently swallowed
-    /// first-party units - and a silent false negative is far worse here than the visible false
-    /// positive of discovering a vendored copy, which shows up as new units in the baseline.
+    /// Kept as an empty array rather than deleted so that the one place a name could be excluded
+    /// for everyone still exists and still has to be argued for. The bar is now explicit: a name
+    /// belongs here only if it cannot mean anything else in any language, and every name that was
+    /// here failed that bar. `bin` and `build` are somebody's source directory somewhere; `Pods` is
+    /// a module name; only `node_modules` came close, and it is better owned by JavaScript, which
+    /// is where a reader would look for it.
     /// </para>
     /// </summary>
-    internal static readonly string[] ExcludedDirectoryNames =
-    [
-        "bin",
-        "obj",
-        "build",
-        "DerivedData",
-        "Pods",
-        "Carthage",
-        "node_modules"
-    ];
+    internal static readonly string[] ExcludedDirectoryNames = [];
 
     /// <summary>
     /// CLI-12: a name the caller listed is never excluded, whichever rule would have excluded it -

@@ -22,6 +22,13 @@ public class TestVersionTokens : IDisposable
     private readonly string _folder =
         Directory.CreateTempSubdirectory("easysemver-tokens").FullName;
 
+    public TestVersionTokens()
+    {
+        // FLD-06 - the token walk honours the same exclusions discovery does, and they now come
+        // from the registered providers rather than from a global list.
+        Exclusions.BeginRun();
+    }
+
     public void Dispose()
     {
         Directory.Delete(this._folder, recursive: true);

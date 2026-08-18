@@ -217,9 +217,19 @@ that directory — `vendor` beside a `go.mod`, `target` beside a `Cargo.toml`, `
 `pyproject.toml`. Unconditional is reserved for names that cannot mean anything else
 (`__pycache__`, `site-packages`).
 
-**One deliberate limit.** The pre-existing global list — `bin`, `obj`, `build`, `DerivedData`,
-`Pods`, `Carthage`, `node_modules` — is **frozen, not distributed** (FLD-07). Making `bin`
-conditional on a neighbouring `.csproj` would change what existing repositories discover, and that
-risk buys nothing: the problem was the list *growing* with the language count, and freezing it while
-requiring every new exclusion to be contextual solves that completely. Say if you would rather I
-migrated the old entries too — it is mechanical, it just is not free.
+**And then the legacy list was migrated too, on your instruction.** FLD-07 now says there is no
+global list at all: `bin` and `obj` belong to C#/VB and need a project file beside them, `build`
+belongs to C++/Gradle/Swift, `Pods` and `Carthage` need their Podfile and Cartfile. Only
+`node_modules` and `DerivedData` stayed unconditional, because neither name can mean anything else.
+
+**What it changed:** a `bin`, `build`, `Pods` or `Carthage` with nothing vouching for it is now
+walked where it used to be skipped everywhere. The common cases are untouched — MSBuild puts `bin`
+beside the project file — but a centralised output directory or a `build/` of shell scripts is now
+entered. That costs a walk and finds nothing, because build output holds no manifests; the reverse
+mistake hides a unit forever. Verified on this repository: `bin` and `obj` are still skipped, the
+skip count fell from 18 to 11, and the newly-walked directories produced no units.
+
+**One thing the migration exposed.** Exclusions now come from the registered providers, so any
+caller that walks without passing them gets *none* — silently. Production was fine, but three test
+classes were walking unprotected trees and passing for the wrong reason. `Test.Exclusions` now sets
+up a run's worth of state the way a run does, and the tests use it.

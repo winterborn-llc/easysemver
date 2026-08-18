@@ -1,3 +1,4 @@
+using Winterborn.Tools.EasySemVer.DataObject;
 using Winterborn.Tools.EasySemVer.Interfaces;
 
 namespace Winterborn.Tools.EasySemVer.Providers;
@@ -32,6 +33,10 @@ internal class GradleLanguageProvider(
     internal const string GradleLanguageId = "gradle";
 
     internal const string GradleUnitKind = "gradle-project";
+
+    /// <summary>FLD-06 - Gradle's output, vouched for by the build script beside it.</summary>
+    public override IReadOnlyList<DirectoryExclusion> DirectoryExclusions =>
+        [DirectoryExclusion.Beside("build", "build.gradle", "build.gradle.kts")];
 
     public override string LanguageId => GradleLanguageId;
 

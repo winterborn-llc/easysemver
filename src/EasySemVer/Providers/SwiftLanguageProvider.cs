@@ -80,6 +80,19 @@ internal class SwiftLanguageProvider(
         return this._testUnitIds.Contains(unit.UnitId);
     }
 
+    /// <summary>
+    /// FLD-06. `DerivedData` is unconditional because nothing else is ever called that; `Pods` and
+    /// `Carthage` are not - both are plausible module names - so each is vouched for by the file
+    /// that creates it. `.build` and `.swiftpm` are already covered by the leading-dot rule.
+    /// </summary>
+    public IReadOnlyList<DirectoryExclusion> DirectoryExclusions =>
+    [
+        DirectoryExclusion.Always("DerivedData"),
+        DirectoryExclusion.Beside("Pods", "Podfile"),
+        DirectoryExclusion.Beside("Carthage", "Cartfile"),
+        DirectoryExclusion.Beside("build", "*.xcodeproj")
+    ];
+
     public IReadOnlyList<IPackageableUnit> Discover(string folderRoot)
     {
         this._folderRoot = folderRoot;

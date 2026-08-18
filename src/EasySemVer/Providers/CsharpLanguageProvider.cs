@@ -34,6 +34,24 @@ internal class CsharpLanguageProvider(
 
     public string LanguageId => CsharpLanguageId;
 
+    /// <summary>
+    /// FLD-06/FLD-07 - MSBuild's output, vouched for by the project file beside it. These were
+    /// global until every language owned its own: `bin` is an ordinary source directory in plenty
+    /// of repositories, and excluding it everywhere is the silent-swallow failure `Packages` was
+    /// removed for.
+    /// <para>
+    /// A project using a centralised output path - .NET 8's artifacts layout, or a custom
+    /// OutputPath - has a `bin` that is not beside a project file and is therefore walked. That
+    /// costs a walk and finds no units, because build output contains no project files; and it
+    /// cannot reach extraction, which only ever scans a project's own directory.
+    /// </para>
+    /// </summary>
+    public IReadOnlyList<DirectoryExclusion> DirectoryExclusions =>
+    [
+        DirectoryExclusion.Beside("bin", "*.csproj"),
+        DirectoryExclusion.Beside("obj", "*.csproj")
+    ];
+
     public IReadOnlyList<IPackageableUnit> Discover(string folderRoot)
     {
         this._folderRoot = folderRoot;
