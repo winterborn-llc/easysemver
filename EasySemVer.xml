@@ -4493,6 +4493,7 @@
                   </Method>
                </Methods>
                <Properties>
+                  <Property name="DirectoryExclusions" type="IReadOnlyList&lt;Winterborn.Tools.EasySemVer.DataObject.DirectoryExclusion&gt;" readable="true" writable="false" initOnly="false" static="false" required="false" hasDefaultImplementation="true" />
                   <Property name="LanguageId" type="string" readable="true" writable="false" initOnly="false" static="false" required="false" hasDefaultImplementation="false" />
                   <Property name="SignatureVersion" type="string" readable="true" writable="false" initOnly="false" static="false" required="false" hasDefaultImplementation="true" />
                </Properties>
@@ -4902,6 +4903,139 @@
          </Interfaces>
          <Structs />
          <Records>
+            <Record name="Winterborn.Tools.EasySemVer.DataObject.DirectoryExclusion" declaringType="" static="false" abstract="false" sealed="false" base="" valueType="false">
+               <Implements>
+                  <Interface>System.IEquatable&lt;Winterborn.Tools.EasySemVer.DataObject.DirectoryExclusion&gt;</Interface>
+               </Implements>
+               <GenericParameters />
+               <Methods>
+                  <Method name=".ctor" returns="void">
+                     <Overrides>
+                        <Override returns="void" static="false" virtual="false" abstract="false" override="false" sealed="false" hasDefaultImplementation="false">
+                           <GenericParameters />
+                           <Parameters>
+                              <Parameter name="DirectoryName" type="string" required="true" refKind="None" params="false" />
+                              <Parameter name="SiblingMarkers" type="IReadOnlyList&lt;string&gt;" required="true" refKind="None" params="false" />
+                           </Parameters>
+                        </Override>
+                     </Overrides>
+                  </Method>
+                  <Method name="&lt;Clone&gt;$" returns="Winterborn.Tools.EasySemVer.DataObject.DirectoryExclusion">
+                     <Overrides>
+                        <Override returns="Winterborn.Tools.EasySemVer.DataObject.DirectoryExclusion" static="false" virtual="true" abstract="false" override="false" sealed="false" hasDefaultImplementation="false">
+                           <GenericParameters />
+                           <Parameters />
+                        </Override>
+                     </Overrides>
+                  </Method>
+                  <Method name="Always" returns="Winterborn.Tools.EasySemVer.DataObject.DirectoryExclusion">
+                     <Overrides>
+                        <Override returns="Winterborn.Tools.EasySemVer.DataObject.DirectoryExclusion" static="true" virtual="false" abstract="false" override="false" sealed="false" hasDefaultImplementation="false">
+                           <GenericParameters />
+                           <Parameters>
+                              <Parameter name="directoryName" type="string" required="true" refKind="None" params="false" />
+                           </Parameters>
+                        </Override>
+                     </Overrides>
+                  </Method>
+                  <Method name="Beside" returns="Winterborn.Tools.EasySemVer.DataObject.DirectoryExclusion">
+                     <Overrides>
+                        <Override returns="Winterborn.Tools.EasySemVer.DataObject.DirectoryExclusion" static="true" virtual="false" abstract="false" override="false" sealed="false" hasDefaultImplementation="false">
+                           <GenericParameters />
+                           <Parameters>
+                              <Parameter name="directoryName" type="string" required="true" refKind="None" params="false" />
+                              <Parameter name="siblingMarkers" type="string[]" required="true" refKind="None" params="true" />
+                           </Parameters>
+                        </Override>
+                     </Overrides>
+                  </Method>
+                  <Method name="Deconstruct" returns="void">
+                     <Overrides>
+                        <Override returns="void" static="false" virtual="false" abstract="false" override="false" sealed="false" hasDefaultImplementation="false">
+                           <GenericParameters />
+                           <Parameters>
+                              <Parameter name="DirectoryName" type="string" required="true" refKind="Out" params="false" />
+                              <Parameter name="SiblingMarkers" type="IReadOnlyList&lt;string&gt;" required="true" refKind="Out" params="false" />
+                           </Parameters>
+                        </Override>
+                     </Overrides>
+                  </Method>
+                  <Method name="Equals" returns="bool">
+                     <Overrides>
+                        <Override returns="bool" static="false" virtual="true" abstract="false" override="false" sealed="false" hasDefaultImplementation="false">
+                           <GenericParameters />
+                           <Parameters>
+                              <Parameter name="other" type="Winterborn.Tools.EasySemVer.DataObject.DirectoryExclusion" required="false" refKind="None" params="false" />
+                           </Parameters>
+                        </Override>
+                        <Override returns="bool" static="false" virtual="false" abstract="false" override="true" sealed="false" hasDefaultImplementation="false">
+                           <GenericParameters />
+                           <Parameters>
+                              <Parameter name="obj" type="object" required="false" refKind="None" params="false" />
+                           </Parameters>
+                        </Override>
+                     </Overrides>
+                  </Method>
+                  <Method name="GetHashCode" returns="int">
+                     <Overrides>
+                        <Override returns="int" static="false" virtual="false" abstract="false" override="true" sealed="false" hasDefaultImplementation="false">
+                           <GenericParameters />
+                           <Parameters />
+                        </Override>
+                     </Overrides>
+                  </Method>
+                  <Method name="Matches" returns="bool">
+                     <Overrides>
+                        <Override returns="bool" static="false" virtual="false" abstract="false" override="false" sealed="false" hasDefaultImplementation="false">
+                           <GenericParameters />
+                           <Parameters>
+                              <Parameter name="directory" type="DirectoryInfo" required="true" refKind="None" params="false" />
+                           </Parameters>
+                        </Override>
+                     </Overrides>
+                  </Method>
+                  <Method name="ToString" returns="string">
+                     <Overrides>
+                        <Override returns="string" static="false" virtual="false" abstract="false" override="true" sealed="false" hasDefaultImplementation="false">
+                           <GenericParameters />
+                           <Parameters />
+                        </Override>
+                     </Overrides>
+                  </Method>
+                  <Method name="op_Equality" returns="bool">
+                     <Overrides>
+                        <Override returns="bool" static="true" virtual="false" abstract="false" override="false" sealed="false" hasDefaultImplementation="false">
+                           <GenericParameters />
+                           <Parameters>
+                              <Parameter name="left" type="Winterborn.Tools.EasySemVer.DataObject.DirectoryExclusion" required="false" refKind="None" params="false" />
+                              <Parameter name="right" type="Winterborn.Tools.EasySemVer.DataObject.DirectoryExclusion" required="false" refKind="None" params="false" />
+                           </Parameters>
+                        </Override>
+                     </Overrides>
+                  </Method>
+                  <Method name="op_Inequality" returns="bool">
+                     <Overrides>
+                        <Override returns="bool" static="true" virtual="false" abstract="false" override="false" sealed="false" hasDefaultImplementation="false">
+                           <GenericParameters />
+                           <Parameters>
+                              <Parameter name="left" type="Winterborn.Tools.EasySemVer.DataObject.DirectoryExclusion" required="false" refKind="None" params="false" />
+                              <Parameter name="right" type="Winterborn.Tools.EasySemVer.DataObject.DirectoryExclusion" required="false" refKind="None" params="false" />
+                           </Parameters>
+                        </Override>
+                     </Overrides>
+                  </Method>
+               </Methods>
+               <Properties>
+                  <Property name="DirectoryName" type="string" readable="true" writable="true" initOnly="true" static="false" required="false" hasDefaultImplementation="false" />
+                  <Property name="SiblingMarkers" type="IReadOnlyList&lt;string&gt;" readable="true" writable="true" initOnly="true" static="false" required="false" hasDefaultImplementation="false" />
+               </Properties>
+               <Fields />
+               <Events />
+               <PositionalParameters>
+                  <Parameter name="DirectoryName" type="string" required="true" refKind="Out" params="false" />
+                  <Parameter name="SiblingMarkers" type="IReadOnlyList&lt;string&gt;" required="true" refKind="Out" params="false" />
+               </PositionalParameters>
+            </Record>
             <Record name="Winterborn.Tools.EasySemVer.DataObject.VersionSourceScope" declaringType="" static="false" abstract="false" sealed="true" base="" valueType="false">
                <Implements>
                   <Interface>System.IEquatable&lt;Winterborn.Tools.EasySemVer.DataObject.VersionSourceScope&gt;</Interface>
